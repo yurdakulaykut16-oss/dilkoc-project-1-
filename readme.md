@@ -73,7 +73,7 @@ Projenizi kendi yerel ortamınızda çalıştırmak için aşağıdaki adımlar�
 
 Uygulamanın Android APK sürümünü doğrudan telefonunuza indirebilirsiniz:
 
-[📥 Android APK İndir (Sürüm 1.0.0)](https://github.com/yurdakulaykut16-oss/dilkoc-project-1-/releases/download/v1.0.0_apk/app-debug.apk)
+📲 **[DilKoç Android APK'yı Doğrudan İndir](https://github.com/yurdakulaykut16-oss/dilkoc-project-1-/releases/download/v1.0.0/Rusca.apk)**
 
 ---
 
