@@ -1,23 +1,15 @@
 import { TextToSpeech } from '@capacitor-community/text-to-speech';
 import React, { useState, useEffect, useRef } from 'react';
-import { TOPICS_100, TOPICS_100_TOTAL, TOPIC_100_CATS, topicCatInfo, buildTopicDrills, topicFullText, LEVELS, topicSourceUnits, sourceUnitInfo } from './topics100';
+import { TOPICS_100, TOPICS_100_TOTAL, topicCatInfo, buildTopicDrills, topicFullText, LEVELS, topicSourceUnits, sourceUnitInfo } from './topics100';
 import type { Topic100, Topic100Question, CefrTag } from './topics100';
 
-// Seviye renkleri (haritada + 100 Konu kartlarında ortak kullanılır)
+// Seviye renkleri (tek yol kartlarındaki seviye etiketlerinde ortak kullanılır)
 const LEVEL_COLORS: Record<CefrTag, string> = {
   A1: '#10b981',
   A2: '#38bdf8',
   B1: '#f59e0b',
   B2: '#f43f5e',
   'C1/C2': '#a78bfa',
-};
-
-const LEVEL_META: Record<CefrTag, { title: string; desc: string }> = {
-  A1: { title: 'A1 — Başlangıç', desc: 'Tanışma, aile, kafe, yol sorma, sayılar, hava durumu' },
-  A2: { title: 'A2 — Temel', desc: 'Alışveriş, telefon, randevu, duygular, doktor, nezaket' },
-  B1: { title: 'B1 — Günlük Yaşam', desc: 'İş görüşmesi, hastane, kiralık, flört, şikayet, polis' },
-  B2: { title: 'B2 — İleri Günlük', desc: 'Maaş pazarlığı, miras, düğün, kaza, sınır koyma' },
-  'C1/C2': { title: 'C1/C2 — Üst Düzey', desc: 'Deyimler, mahkeme, ironi, sunum, jargon, analiz' },
 };
 
 import { UNITS_DATA, ALL_WORDS, ALL_SENTENCES } from './curriculumData';
@@ -30,23 +22,25 @@ export type { WordDetail, DialogueLine, SmesharikiQuestion, SmesharikiScene, Uni
 // 1. VERİ MODELLERİ & TİPLER
 // ==========================================
 
+// ==========================================
+// 2. SADE HARF KARTLARI — Kalıcı öğrenme için minimalist yapı:
+//    HARF → SES İPUCU → NET FONETİK KURAL → 1-2 TEMEL ÖRNEK KELİME.
+//    (Uzun açıklamalar ve yoğun metinler bilerek kaldırıldı.)
+// ==========================================
+
 export interface AlphabetLetter {
   id: string;
   upper: string;
   lower: string;
-  translit: string;
-  soundHint: string;
-  phoneticRule: string;
-  example: { ru: string; reading: string; tr: string; context: string };
-  pronunciationDetails: string;
-  moreExamples: { ru: string; reading: string; tr: string; context: string }[];
-  commonMistakes: string;
-  practiceTips: string;
+  translit: string;      // Kısa ses kodu: "A", "O / A"
+  soundHint: string;     // Kısa ses ipucu (tek satır, kafa karıştırmaz)
+  phoneticRule: string;  // Net ve tek cümlelik fonetik kural
+  examples: { ru: string; reading: string; tr: string }[]; // 1-2 temel örnek kelime
 }
 
 
 // ==========================================
-// 2. DETAYLI HARF & FONETİK DERSLERİ (Tüm Kiril Alfabesi - 33 Harf)
+// 2. HARF DERSLERİ & FONETİK (Tüm Kiril Alfabesi - 33 Harf, 8 Ünite)
 // ==========================================
 
 export interface ReadingDrill {
@@ -59,13 +53,13 @@ export interface ReadingDrill {
 export const ALPHABET_LESSONS: { id: string; title: string; subtitle: string; letters: AlphabetLetter[]; readingDrills: ReadingDrill[] }[] = [
   {
     id: 'alpha_1',
-    title: 'Ünite 1: Temel Sesler & Akanje (А/О) Kuralı',
-    subtitle: "Rusçanın en hayati fonetik kuralı: Vurgusuz O harfinin A okunması",
+    title: 'Temel Sesler',
+    subtitle: 'А, О, К, М + akanje kuralı (О → A)',
     letters: [
-      { id: 'a', upper: 'А', lower: 'а', translit: 'A', soundHint: 'Türkçedeki net A gibi', phoneticRule: 'Vurgu nerede olursa olsun net "A" okunur.', example: { ru: 'Аптека', reading: 'Aptéka', tr: 'Eczane', context: 'Gündelik Hayat' }, pronunciationDetails: 'Ağızı genişlet, dil dişlere değmeden net bir "a" sesi çıkar. Yuvarlak değil, açık bir ses.', moreExamples: [{ ru: 'Анна', reading: 'Ánna', tr: 'Anna (isim)', context: 'İsimler' }, { ru: 'Мама', reading: 'Máma', tr: 'Anne', context: 'Aile' }, { ru: 'Стол', reading: 'Stol', tr: 'Masa', context: 'Ev Eşyası' }, { ru: 'Автобус', reading: 'Aftóbus', tr: 'Otobüs', context: 'Ulaşım' }], commonMistakes: 'Vurgusuz pozisyonlarda bile "a" sesi kaymaz, her zaman net kalır.', practiceTips: 'Türkçedeki "a" ile aynı, bol bol pratik yap.' },
-      { id: 'o', upper: 'О', lower: 'о', translit: 'O / A', soundHint: 'Akanje Kuralı (Kritik!)', phoneticRule: 'Rusçada O harfi vurguluysa "O", vurgusuzsa "A" okunur. Örn: Окно -> Aknó', example: { ru: 'Окно', reading: 'Aknó', tr: 'Pencere', context: 'Fonetik Temel' }, pronunciationDetails: 'Vurguluyken dudaklar yuvarlaklaşır, vurgusuzken ağız biraz açılır, "a" sesine yaklaşır.', moreExamples: [{ ru: 'Работа', reading: 'Rabóta', tr: 'İş', context: 'İş Hayatı' }, { ru: 'Дом', reading: 'Dom', tr: 'Ev', context: 'Konut' }, { ru: 'Слово', reading: 'Slóva', tr: 'Kelime', context: 'Dil' }, { ru: 'Огонь', reading: 'Agón\'', tr: 'Ateş', context: 'Doğa' }], commonMistakes: 'Vurgusuz "о" harflerini "o" olarak okumak en sık yapılan hatadır.', practiceTips: 'Her zaman vurgu pozisyonuna dikkat et, akanje kuralı Rusça için hayati önem taşır.' },
-      { id: 'k', upper: 'К', lower: 'к', translit: 'K', soundHint: 'Sert K sesi', phoneticRule: 'Türkçedeki K ile birebir aynıdır.', example: { ru: 'Кафе', reading: 'Kafé', tr: 'Kafe', context: 'Sosyalleşme' }, pronunciationDetails: 'Dil arka damakta durur, sert bir "k" sesi çıkar. Türkçedeki ile birebir aynı.', moreExamples: [{ ru: 'Книга', reading: 'Kníga', tr: 'Kitap', context: 'Eğitim' }, { ru: 'Ключ', reading: 'Klyuch', tr: 'Anahtar', context: 'Ev' }, { ru: 'Кошка', reading: 'Kóshka', tr: 'Kedi', context: 'Hayvanlar' }, { ru: 'Кино', reading: 'Kinó', tr: 'Sinema', context: 'Eğlence' }], commonMistakes: 'Yumuşak "k" sesi yoktur, her zaman sert kalır.', practiceTips: 'Türkçedeki "k" ile tam aynı, rahatlıkla kullanabilirsin.' },
-      { id: 'm', upper: 'М', lower: 'м', translit: 'M', soundHint: 'Dudak Mʼsi', phoneticRule: 'Dudaklar tam kapatılarak çıkarılır.', example: { ru: 'Москва', reading: 'Maskvá', tr: 'Moskova', context: 'Şehir İsmi' }, pronunciationDetails: 'Dudaklar tam kapanır, nazal bir "m" sesi çıkar. Türkçedeki ile aynı.', moreExamples: [{ ru: 'Море', reading: 'Mórye', tr: 'Deniz', context: 'Doğa' }, { ru: 'Муж', reading: 'Muzh', tr: 'Koca', context: 'Aile' }, { ru: 'Мыло', reading: 'Mýlo', tr: 'Sabun', context: 'Kozmetik' }, { ru: 'Магазин', reading: 'Magazín', tr: 'Mağaza', context: 'Alışveriş' }], commonMistakes: 'Genelde doğru okunur, nadiren sorun yaşanır.', practiceTips: 'Dudakları tam kapatmayı alışkanlık haline getir.' }
+      { id: 'a', upper: 'А', lower: 'а', translit: "A", soundHint: "Türkçedeki net A gibi", phoneticRule: "Vurgulu ya da vurgusuz, hep net A okunur.", examples: [{ ru: "АПТЕКА", reading: "Aptéka", tr: "Eczane" }, { ru: "МАМА", reading: "Máma", tr: "Anne" }] },
+      { id: 'o', upper: 'О', lower: 'о', translit: "O / A", soundHint: "Vurguluyken O, vurgusuzken A", phoneticRule: "Vurguluysa O, vurgusuzsa A okunur (akanje kuralı).", examples: [{ ru: "ОКНО", reading: "Aknó", tr: "Pencere" }, { ru: "ДОМ", reading: "Dom", tr: "Ev" }] },
+      { id: 'k', upper: 'К', lower: 'к', translit: "K", soundHint: "Sert K sesi", phoneticRule: "Türkçedeki K ile birebir aynıdır.", examples: [{ ru: "КАФЕ", reading: "Kafé", tr: "Kafe" }, { ru: "КНИГА", reading: "Kníga", tr: "Kitap" }] },
+      { id: 'm', upper: 'М', lower: 'м', translit: "M", soundHint: "Dudak M sesi", phoneticRule: "Türkçedeki M ile birebir aynıdır.", examples: [{ ru: "МОСКВА", reading: "Maskvá", tr: "Moskova" }, { ru: "МОРЕ", reading: "Mórye", tr: "Deniz" }] },
     ],
     readingDrills: [
       { word: 'мама', correct: 'Máma', distractors: ['Mamá', 'Momo', 'Amam'], tr: 'Anne' },
@@ -77,12 +71,12 @@ export const ALPHABET_LESSONS: { id: string; title: string; subtitle: string; le
   },
   {
     id: 'alpha_2',
-    title: 'Ünite 2: Yalancı Dostlar & Ikanje (Е/И) Kuralı',
-    subtitle: 'Latin harflerine benzeyip farklı okunan harfler ve E->İ dönüşümü',
+    title: 'Yalancı Dostlar',
+    subtitle: 'Latin gibi görünen В, Р, Е + ikanje (Е → İ)',
     letters: [
-      { id: 'v', upper: 'В', lower: 'в', translit: 'V', soundHint: 'Bʼye benzer ama V okunur', phoneticRule: 'Alt dudak üst dişlere yumuşakça değer.', example: { ru: 'Вода', reading: 'Vadá', tr: 'Su', context: 'Temel İhtiyaç' }, pronunciationDetails: 'Alt dudak üst dişlere hafifçe değer, nazal bir "v" sesi çıkar. Türkçedeki "v" ile benzer.', moreExamples: [{ ru: 'Врач', reading: 'Vrach', tr: 'Doktor', context: 'Sağlık' }, { ru: 'Вечер', reading: 'Vécher', tr: 'Akşam', context: 'Zaman' }, { ru: 'Время', reading: 'Vrémya', tr: 'Zaman', context: 'Zaman' }, { ru: 'Вопрос', reading: 'Vaprós', tr: 'Soru', context: 'İletişim' }], commonMistakes: 'Bazen "b" ile karıştırılır, diş teması ayırt edici özelliktir.', practiceTips: 'Alt dudak hafifçe üst dişlere değerek, nazal sesi hisset.' },
-      { id: 'r', upper: 'Р', lower: 'р', translit: 'R', soundHint: 'Pʼye benzer ama R okunur', phoneticRule: 'Dil damakta güçlü titretilir.', example: { ru: 'Работа', reading: 'Rabóta', tr: 'İş / Çalışma', context: 'İş Hayatı' }, pronunciationDetails: 'Dil ucu damakta güçlü titretilir, sesli "r" sesi çıkar. Türkçedeki "r"den daha güçlüdür.', moreExamples: [{ ru: 'Русский', reading: 'Rússkiy', tr: 'Rusça', context: 'Dil' }, { ru: 'Рыба', reading: 'Rýba', tr: 'Balık', context: 'Yiyecek' }, { ru: 'Рука', reading: 'Ruká', tr: 'El', context: 'Vücut' }, { ru: 'Ресторан', reading: 'Restarán', tr: 'Restoran', context: 'Yiyecek' }], commonMistakes: 'Türkçedeki gibi hafif titreterek değil, güçlü titreterek okunmalıdır.', practiceTips: 'Dil ucu damakta güçlü titreş almayı pratik et.' },
-{ id: 'e', upper: 'Е', lower: 'е', translit: 'E / İ', soundHint: 'Ikanje Kuralı', phoneticRule: 'Vurgusuz "Е" harfi konuşma dilinde "İ" sesine kayar. Örn: Метро -> Mitró', example: { ru: 'Метро', reading: 'Mitró', tr: 'Metro', context: 'Ulaşım' }, pronunciationDetails: 'Vurguluyken net "e", vurgusuzken "i" sesine yaklaşır. Akanje kuralının bir parçasıdır.', moreExamples: [{ ru: 'Еда', reading: 'Yedá', tr: 'Yemek', context: 'Gıda' }, { ru: 'Ещё', reading: 'Yeshchó', tr: 'Henüz', context: 'Zaman' }, { ru: 'Европа', reading: 'Yevrópa', tr: 'Avrupa', context: 'Coğrafya' }, { ru: 'Апрель', reading: 'Aprél\'', tr: 'Nisan', context: 'Zaman' }], commonMistakes: 'Vurgusuz pozisyonlarda "e" okumak yaygın bir hatadır.', practiceTips: 'Vurgu pozisyonuna dikkat et, ikanje kuralı hayatidir.' }
+      { id: 'v', upper: 'В', lower: 'в', translit: "V", soundHint: "B görünümlü ama V okunur", phoneticRule: "Her zaman V okunur; alt dudak üst dişlere değer.", examples: [{ ru: "ВОДА", reading: "Vadá", tr: "Su" }, { ru: "ВРАЧ", reading: "Vrach", tr: "Doktor" }] },
+      { id: 'r', upper: 'Р', lower: 'р', translit: "R", soundHint: "P görünümlü ama R okunur", phoneticRule: "Dil damakta titreyen güçlü R sesidir.", examples: [{ ru: "РАБОТА", reading: "Rabóta", tr: "İş" }, { ru: "РУКА", reading: "Ruká", tr: "El" }] },
+      { id: 'e', upper: 'Е', lower: 'е', translit: "E / İ", soundHint: "Vurguluyken E, vurgusuzken İ", phoneticRule: "Vurgulu yerde E, vurgusuz yerde İ sesine kayar (ikanje kuralı).", examples: [{ ru: "МЕТРО", reading: "Mitró", tr: "Metro" }, { ru: "ЕДА", reading: "Yedá", tr: "Yemek" }] },
     ],
     readingDrills: [
       { word: 'море', correct: 'Mórye', distractors: ['Moré', 'Mero', 'Ormé'], tr: 'Deniz' },
@@ -94,14 +88,14 @@ export const ALPHABET_LESSONS: { id: string; title: string; subtitle: string; le
   },
   {
     id: 'alpha_3',
-    title: 'Ünite 3: Temel Patlamalı Ünsüzler & Sonda Sedasızlaşma',
-    subtitle: 'Б, Д, Г, П, Т harfleri ve kelime sonunda sedasızlaşma kuralı',
+    title: 'Patlamalı Ünsüzler',
+    subtitle: 'Б, Д, Г, П, Т + sonda sedasızlaşma',
     letters: [
-      { id: 'b', upper: 'Б', lower: 'б', translit: 'B', soundHint: 'Dudak patlamalı B', phoneticRule: "Kelime sonunda sedasızlaşarak P olarak okunur. Örn: Хлеб -> Khlep", example: { ru: 'Банк', reading: 'Bank', tr: 'Banka', context: 'Finans' }, pronunciationDetails: 'Dudaklar patlayarak açılır, net bir "b" sesi çıkar. Kelime sonunda "p" sesine dönüşür.', moreExamples: [{ ru: 'Брат', reading: 'Brat', tr: 'Erkek kardeş', context: 'Aile' }, { ru: 'Большой', reading: 'Bol\'shóy', tr: 'Büyük', context: 'Sıfat' }, { ru: 'Белый', reading: 'Bélyy', tr: 'Beyaz', context: 'Renk' }, { ru: 'Библиотека', reading: 'Bibliatéka', tr: 'Kütüphane', context: 'Eğitim' }], commonMistakes: 'Kelime sonunda "b" okumak sık yapılan hatadır, "p" olmalıdır.', practiceTips: 'Kelime sonuna dikkat et, sedasızlaşma kuralını alışkanlık haline getir.' },
-      { id: 'd', upper: 'Д', lower: 'д', translit: 'D', soundHint: 'Net D sesi', phoneticRule: "Kelime sonunda sedasızlaşarak T olarak okunur. Örn: Город -> Górat", example: { ru: 'Дом', reading: 'Dom', tr: 'Ev', context: 'Günlük Yaşam' }, pronunciationDetails: 'Dil üst dişlere değerek patlatılır, net bir "d" sesi çıkar. Kelime sonunda "t" sesine dönüşür.', moreExamples: [{ ru: 'День', reading: 'Dyen\'', tr: 'Gün', context: 'Zaman' }, { ru: 'Дерево', reading: 'Dérevo', tr: 'Ağaç', context: 'Doğa' }, { ru: 'Девушка', reading: 'Dévushka', tr: 'Kız (genç kadın)', context: 'İnsan' }, { ru: 'Сад', reading: 'Sat', tr: 'Bahçe', context: 'Doğa' }], commonMistakes: 'Kelime sonunda "d" okumak sık yapılan hatadır, "t" olmalıdır.', practiceTips: 'Kelime sonuna dikkat et, sedasızlaşma kuralını alışkanlık haline getir.' },
-      { id: 'g', upper: 'Г', lower: 'г', translit: 'G', soundHint: 'Sert G sesi', phoneticRule: "Kelime sonunda K olarak sedasızlaşır (Друг -> Druk). Bazı ek hallerinde (Его, Сегодня) istisnai olarak V okunur.", example: { ru: 'Год', reading: 'God', tr: 'Yıl', context: 'Zaman' }, pronunciationDetails: 'Arka damakta oluşan sert bir "g" sesi. Kelime sonunda "k" sesine dönüşür. İstisnai durumlarda "v" okunur.', moreExamples: [{ ru: 'Голова', reading: 'Galavá', tr: 'Baş', context: 'Vücut' }, { ru: 'Город', reading: 'Górat', tr: 'Şehir', context: 'Yerleşim' }, { ru: 'Гость', reading: 'Gost\'', tr: 'Misafir', context: 'Sosyal' }, { ru: 'Флаг', reading: 'Flak', tr: 'Bayrak', context: 'Sembol' }], commonMistakes: 'İstisnai "v" okunuşlarını ezberlemek gerekir, genelde "k" dönüşür.', practiceTips: 'İstisnai durumları not et, genelde kelime sonunda "k" beklenir.' },
-      { id: 'p', upper: 'П', lower: 'п', translit: 'P', soundHint: 'Nefessiz sert P', phoneticRule: 'Her zaman sert ve nefessiz bir P sesi verir.', example: { ru: 'Парк', reading: 'Park', tr: 'Park', context: 'Şehir' }, pronunciationDetails: 'Dudaklar patlayarak açılır, nefessiz bir "p" sesi çıkar. Türkçedeki ile birebir aynıdır.', moreExamples: [{ ru: 'Папа', reading: 'Pápa', tr: 'Baba', context: 'Aile' }, { ru: 'Письмо', reading: 'Pís\'mo', tr: 'Mektup', context: 'İletişim' }, { ru: 'Первый', reading: 'Pérvy', tr: 'İlk', context: 'Sıfat' }, { ru: 'Компьютер', reading: 'Kamp\'yúter', tr: 'Bilgisayar', context: 'Teknoloji' }], commonMistakes: 'Genelde doğru okunur, nadiren sorun yaşanır.', practiceTips: 'Türkçedeki "p" ile tam aynı, rahatlıkla kullanabilirsin.' },
-      { id: 't', upper: 'Т', lower: 'т', translit: 'T', soundHint: 'Net T sesi', phoneticRule: 'Türkçedeki gibi net bir T sesi verir.', example: { ru: 'Такси', reading: 'Taksí', tr: 'Taksi', context: 'Ulaşım' }, pronunciationDetails: 'Dil üst dişlere değerek patlatılır, net bir "t" sesi çıkar. Türkçedeki ile birebir aynıdır.', moreExamples: [{ ru: 'Телефон', reading: 'Tilifón', tr: 'Telefon', context: 'Teknoloji' }, { ru: 'Товарищ', reading: 'Tavárishch', tr: 'Arkadaş', context: 'Sosyal' }, { ru: 'Там', reading: 'Tam', tr: 'Orada', context: 'Zarf' }, { ru: 'Тетрадь', reading: 'Titrát\'', tr: 'Defter', context: 'Eğitim' }], commonMistakes: 'Genelde doğru okunur, nadiren sorun yaşanır.', practiceTips: 'Türkçedeki "t" ile tam aynı, rahatlıkla kullanabilirsin.' }
+      { id: 'b', upper: 'Б', lower: 'б', translit: "B / P", soundHint: "Dudak patlamalı B", phoneticRule: "Kelime sonunda P sesine döner: хлеб → khlep.", examples: [{ ru: "БАНК", reading: "Bank", tr: "Banka" }, { ru: "ХЛЕБ", reading: "Khlep", tr: "Ekmek" }] },
+      { id: 'd', upper: 'Д', lower: 'д', translit: "D / T", soundHint: "Net D sesi", phoneticRule: "Kelime sonunda T sesine döner: город → górat.", examples: [{ ru: "ДОМ", reading: "Dom", tr: "Ev" }, { ru: "ГОРОД", reading: "Górat", tr: "Şehir" }] },
+      { id: 'g', upper: 'Г', lower: 'г', translit: "G / K", soundHint: "Sert G sesi", phoneticRule: "Kelime sonunda K sesine döner: друг → druk. (его kelimesinde istisna olarak V okunur)", examples: [{ ru: "ГОД", reading: "Gót", tr: "Yıl" }, { ru: "ГОЛОВА", reading: "Galavá", tr: "Baş" }] },
+      { id: 'p', upper: 'П', lower: 'п', translit: "P", soundHint: "Nefessiz P sesi", phoneticRule: "Her zaman net P okunur.", examples: [{ ru: "ПАРК", reading: "Park", tr: "Park" }, { ru: "ПАПА", reading: "Pápa", tr: "Baba" }] },
+      { id: 't', upper: 'Т', lower: 'т', translit: "T", soundHint: "Net T sesi", phoneticRule: "Türkçedeki T ile birebir aynıdır.", examples: [{ ru: "ТАКСИ", reading: "Taksí", tr: "Taksi" }, { ru: "ТАМ", reading: "Tam", tr: "Orada" }] },
     ],
     readingDrills: [
       { word: 'город', correct: 'Górat', distractors: ['Gorod', 'Garod', 'Gorat'], tr: 'Şehir' },
@@ -113,15 +107,15 @@ export const ALPHABET_LESSONS: { id: string; title: string; subtitle: string; le
   },
   {
     id: 'alpha_4',
-    title: 'Ünite 4: Akıcı Ünsüzler & Sürtünmeliler',
-    subtitle: 'Н, Л, С, Ф, Х, У harfleri ve temel telaffuz incelikleri',
+    title: 'Akıcı Ünsüzler',
+    subtitle: 'Н, Л, С, Ф, Х, У',
     letters: [
-      { id: 'n', upper: 'Н', lower: 'н', translit: 'N', soundHint: 'Diş arkası N', phoneticRule: 'Dil ucu üst dişlere değerek çıkar.', example: { ru: 'Нет', reading: 'Nyet', tr: 'Hayır', context: 'Temel Kelime' }, pronunciationDetails: 'Dil ucu üst dişlere hafifçe değerek nazal bir "n" sesi çıkar. Türkçedeki ile benzer.', moreExamples: [{ ru: 'Новый', reading: 'Nóvy', tr: 'Yeni', context: 'Sıfat' }, { ru: 'Начало', reading: 'Nachálo', tr: 'Başlangıç', context: 'Zaman' }, { ru: 'Ночь', reading: 'Noch\'', tr: 'Gece', context: 'Zaman' }, { ru: 'Небо', reading: 'Nyéba', tr: 'Gökyüzü', context: 'Doğa' }], commonMistakes: 'Genelde doğru okunur, nadiren sorun yaşanır.', practiceTips: 'Dil ucu diş temasını hafif tut, nazal sesi hisset.' },
-      { id: 'l', upper: 'Л', lower: 'л', translit: 'L', soundHint: 'Kalın L sesi', phoneticRule: 'Genelde kalın (İngilizce "dark L" gibi) okunur, yumuşak ünlü önünde yumuşar.', example: { ru: 'Стол', reading: 'Stol', tr: 'Masa', context: 'Ev Eşyası' }, pronunciationDetails: 'Dil ucu damakta durur, kalın bir "l" sesi çıkar. Yumuşak ünlülerden önce yumuşar.', moreExamples: [{ ru: 'Люди', reading: 'Lyúdi', tr: 'İnsanlar', context: 'Toplum' }, { ru: 'Лето', reading: 'Léto', tr: 'Yaz', context: 'Mevsim' }, { ru: 'Лимон', reading: 'Limón', tr: 'Limon', context: 'Yiyecek' }, { ru: 'Лимонад', reading: 'Limanát', tr: 'Limonata', context: 'İçecek' }], commonMistakes: 'İngilizce "dark L" ile karıştırılabilir, ancak Türkçedeki "l" daha yakındır.', practiceTips: 'Dil ucu damakta kalın bir ses çıkarmaya odaklan.' },
-      { id: 's', upper: 'С', lower: 'с', translit: 'S', soundHint: 'Sedasız S', phoneticRule: 'Her zaman sedasız S sesi verir, asla Z okunmaz.', example: { ru: 'Сыр', reading: 'Syr', tr: 'Peynir', context: 'Yiyecek' }, pronunciationDetails: 'Dil üst dişlere yakın durur, sedasız bir "s" sesi çıkar. Asla z sesine dönüşmez.', moreExamples: [{ ru: 'Сказка', reading: 'Skázka', tr: 'Masal', context: 'Edebiyat' }, { ru: 'Семья', reading: 'Sim\'ya', tr: 'Aile', context: 'Aile' }, { ru: 'Срок', reading: 'Srok', tr: 'Süre', context: 'Zaman' }, { ru: 'Сумка', reading: 'Súmka', tr: 'Çanta', context: 'Eşya' }], commonMistakes: 'Bazen "z" ile karıştırılır, sedasız olduğunu hatırla.', practiceTips: 'Sedasız sese odaklan, z sesinden ayırt.' },
-      { id: 'f', upper: 'Ф', lower: 'ф', translit: 'F', soundHint: 'Dudak-diş F', phoneticRule: 'Türkçedeki F ile birebir aynıdır.', example: { ru: 'Фильм', reading: "Fil'm", tr: 'Film', context: 'Eğlence' }, pronunciationDetails: 'Alt dudak üst dişlere değerek nazal bir "f" sesi çıkar. Türkçedeki ile birebir aynıdır.', moreExamples: [{ ru: 'Факультет', reading: 'Fakúl\'tet', tr: 'Fakülte', context: 'Eğitim' }, { ru: 'Фамилия', reading: 'Famíliya', tr: 'Soyadı', context: 'Kimlik' }, { ru: 'Флаг', reading: 'Flag', tr: 'Bayrak', context: 'Sembol' }, { ru: 'Фото', reading: 'Fóta', tr: 'Fotoğraf', context: 'Teknoloji' }], commonMistakes: 'Genelde doğru okunur, nadiren sorun yaşanır.', practiceTips: 'Türkçedeki "f" ile tam aynı, rahatlıkla kullanabilirsin.' },
-      { id: 'kh', upper: 'Х', lower: 'х', translit: 'H (Kh)', soundHint: 'Boğazdan gelen kalın H', phoneticRule: 'Arapçadaki "Hı" harfine yakın, boğazdan sürtünerek çıkan bir sestir.', example: { ru: 'Хорошо', reading: 'Haraşó', tr: 'İyi / Güzel', context: 'Günlük Onay' }, pronunciationDetails: 'Boğazın arkasından sürtünerek çıkan kalın bir "h" sesi. Arapçadaki "hı"ya benzer.', moreExamples: [{ ru: 'Хлеб', reading: 'Khlep', tr: 'Ekmek', context: 'Yiyecek' }, { ru: 'Хотеть', reading: 'Hotét\'', tr: 'İstemek', context: 'Fiil' }, { ru: 'Холод', reading: 'Kholód', tr: 'Soğuk', context: 'Hava' }, { ru: 'Художник', reading: 'Khudózhnik', tr: 'Ressam', context: 'Meslek' }], commonMistakes: 'Bazen "h" yerine daha yumuşak bir sesle okunur, kalın sesi korumak gerekir.', practiceTips: 'Boğazdan sürtünerek kalın sesi hisset.' },
-      { id: 'u', upper: 'У', lower: 'у', translit: 'U', soundHint: 'Net U sesi', phoneticRule: 'Vurgudan bağımsız, her zaman net bir "U" sesi verir.', example: { ru: 'Утро', reading: 'Útra', tr: 'Sabah', context: 'Zaman' }, pronunciationDetails: 'Dudaklar yuvarlaklaşır, net bir "u" sesi çıkar. Vurgudan bağımsız her zaman aynı okunur.', moreExamples: [{ ru: 'Улица', reading: 'Úlitsa', tr: 'Sokak', context: 'Yerleşim' }, { ru: 'Учитель', reading: 'Uchítel\'', tr: 'Öğretmen', context: 'Eğitim' }, { ru: 'Урок', reading: 'Urok', tr: 'Ders', context: 'Eğitim' }, { ru: 'Улыбка', reading: 'Ulýpka', tr: 'Gülümseme', context: 'Duygu' }], commonMistakes: 'Genelde doğru okunur, nadiren sorun yaşanır.', practiceTips: 'Dudakları yuvarlaklaştırarak net u sesi üret.' }
+      { id: 'n', upper: 'Н', lower: 'н', translit: "N", soundHint: "Diş arkası N", phoneticRule: "Türkçedeki N ile birebir aynıdır.", examples: [{ ru: "НЕТ", reading: "Nyet", tr: "Hayır" }, { ru: "НОЧЬ", reading: "Noch'", tr: "Gece" }] },
+      { id: 'l', upper: 'Л', lower: 'л', translit: "L", soundHint: "Kalın L sesi", phoneticRule: "Genelde kalın L okunur; E ve İ önünde yumuşar.", examples: [{ ru: "СТОЛ", reading: "Stol", tr: "Masa" }, { ru: "ЛЕТО", reading: "Léto", tr: "Yaz" }] },
+      { id: 's', upper: 'С', lower: 'с', translit: "S", soundHint: "Sedasız S sesi", phoneticRule: "Her zaman S okunur, Z sesine dönüşmez.", examples: [{ ru: "СЫР", reading: "Syr", tr: "Peynir" }, { ru: "СУП", reading: "Sup", tr: "Çorba" }] },
+      { id: 'f', upper: 'Ф', lower: 'ф', translit: "F", soundHint: "Dudak-diş F", phoneticRule: "Türkçedeki F ile birebir aynıdır.", examples: [{ ru: "ФИЛЬМ", reading: "Fil'm", tr: "Film" }, { ru: "ФОТО", reading: "Fóta", tr: "Fotoğraf" }] },
+      { id: 'kh', upper: 'Х', lower: 'х', translit: "H (Kh)", soundHint: "Boğazdan kalın H", phoneticRule: "Boğazdan sürtünmeli kalın H sesi (Arapçadaki ح gibi).", examples: [{ ru: "ХОРОШО", reading: "Haraşó", tr: "İyi / Güzel" }, { ru: "ХОЛОД", reading: "Kholód", tr: "Soğuk" }] },
+      { id: 'u', upper: 'У', lower: 'у', translit: "U", soundHint: "Net U sesi", phoneticRule: "Her zaman net U okunur, değişmez.", examples: [{ ru: "УТРО", reading: "Útra", tr: "Sabah" }, { ru: "УЛИЦА", reading: "Úlitsa", tr: "Sokak" }] },
     ],
     readingDrills: [
       { word: 'суп', correct: 'Sup', distractors: ['Sap', 'Sop', 'Sub'], tr: 'Çorba' },
@@ -133,13 +127,13 @@ export const ALPHABET_LESSONS: { id: string; title: string; subtitle: string; le
   },
   {
     id: 'alpha_5',
-    title: 'Ünite 5: Vızıltılı ve Kaynaşık Ünsüzler',
-    subtitle: 'Ж, З, Ц, Ч harfleri — dizilerde en sık duyacağınız sesler',
+    title: 'Vızıltılı Ünsüzler',
+    subtitle: 'Ж, З, Ц, Ч — dizilerde en sık duyulan sesler',
     letters: [
-      { id: 'zh', upper: 'Ж', lower: 'ж', translit: 'J (Zh)', soundHint: 'Fransızca "J" gibi', phoneticRule: 'Her zaman sert okunur (jambon kelimesindeki J gibi); vurgusuzken hafifçe "Şı"ya yaklaşır.', example: { ru: 'Жена', reading: 'Zhená', tr: 'Eş (Kadın)', context: 'Aile' }, pronunciationDetails: 'Dilin önü damakta sıkıca kapanır, sert bir "zh" sesi çıkar. Fransızca "j" gibidir.', moreExamples: [{ ru: 'Жизнь', reading: 'Zhizn\'', tr: 'Hayat', context: 'Yaşam' }, { ru: 'Журнал', reading: 'Zhurnál', tr: 'Dergi', context: 'Basın' }, { ru: 'Желтый', reading: 'Zhélty', tr: 'Sarı', context: 'Renk' }, { ru: 'Жёлтый', reading: 'Zhyólty', tr: 'Sarı', context: 'Renk' }], commonMistakes: 'Bazen "ş" ile karıştırılır, ancak "zh" daha sert ve gıcırtılıdır.', practiceTips: 'Dil önü damakta sıkıca kapanarak sert sesi hisset.' },
-      { id: 'z', upper: 'З', lower: 'з', translit: 'Z', soundHint: 'Vızıltılı Z', phoneticRule: 'Kelime sonunda sedasızlaşarak S olarak okunur.', example: { ru: 'Зима', reading: 'Zimá', tr: 'Kış', context: 'Mevsim' }, pronunciationDetails: 'Dil üst dişlere yakın durur, vızıltılı bir "z" sesi çıkar. Kelime sonunda "s" sesine dönüşür.', moreExamples: [{ ru: 'Завтра', reading: 'Záfta', tr: 'Yarın', context: 'Zaman' }, { ru: 'Завод', reading: 'Zavód', tr: 'Fabrika', context: 'Sanayi' }, { ru: 'Здание', reading: 'Zdániye', tr: 'Bina', context: 'Mimari' }, { ru: 'Здание', reading: 'Zdániye', tr: 'Bina', context: 'Mimari' }], commonMistakes: 'Kelime sonunda "z" okumak sık yapılan hatadır, "s" olmalıdır.', practiceTips: 'Kelime sonuna dikkat et, sedasızlaşma kuralını alışkanlık haline getir.' },
-      { id: 'ts', upper: 'Ц', lower: 'ц', translit: 'Ts', soundHint: '"Ts" tek ses gibi', phoneticRule: 'T ve S sesleri birleşik tek bir sesmiş gibi okunur; her zaman serttir.', example: { ru: 'Отец', reading: 'Atéts', tr: 'Baba', context: 'Aile' }, pronunciationDetails: 'T ve S sesleri birleşik tek bir sesmiş gibi hızlıca okunur. Her zaman serttir.', moreExamples: [{ ru: 'Центр', reading: 'Tséntr', tr: 'Merkez', context: 'Yerleşim' }, { ru: 'Цвет', reading: 'Tsvét', tr: 'Renk', context: 'Görsel' }, { ru: 'Цена', reading: 'Tséná', tr: 'Fiyat', context: 'Ekonomi' }, { ru: 'Царь', reading: 'Tsar\'', tr: 'Çar', context: 'Tarih' }], commonMistakes: 'Bazen "s" ile karıştırılır, ancak "ts" tek bir ses birimidir.', practiceTips: 'T ve S arasındaki geçişi hızlı ve tek bir ses olarak hisset.' },
-      { id: 'ch', upper: 'Ч', lower: 'ч', translit: 'Ç (Ch)', soundHint: 'Yumuşak Ç', phoneticRule: 'Her zaman yumuşak bir "Ç" sesi verir, asla sertleşmez.', example: { ru: 'Чай', reading: 'Chay', tr: 'Çay', context: 'Günlük İçecek' }, pronunciationDetails: 'Dil önü damakta yumuşakça kapanır, yumuşak bir "ç" sesi çıkar. Asla sertleşmez.', moreExamples: [{ ru: 'Человек', reading: 'Chelovék', tr: 'İnsan', context: 'Toplum' }, { ru: 'Час', reading: 'Chas', tr: 'Saat', context: 'Zaman' }, { ru: 'Чтение', reading: 'Chténiye', tr: 'Okuma', context: 'Eğitim' }, { ru: 'Чашка', reading: 'Cháshka', tr: 'Fincan', context: 'Ev Eşyası' }], commonMistakes: 'Bazen sert "ç" okunur, ancak her zaman yumuşak olmalıdır.', practiceTips: 'Dil önü damakta yumuşakça kapanarak yumuşak sesi hisset.' }
+      { id: 'zh', upper: 'Ж', lower: 'ж', translit: "J (Zh)", soundHint: "Fransızca J gibi vızıltı", phoneticRule: "Her zaman sert vızıltılı J; sonda Ş sesine döner: муж → mush.", examples: [{ ru: "ЖЕНА", reading: "Zhená", tr: "Eş (kadın)" }, { ru: "ЖУРНАЛ", reading: "Zhurnál", tr: "Dergi" }] },
+      { id: 'z', upper: 'З', lower: 'з', translit: "Z / S", soundHint: "Vızıltılı Z sesi", phoneticRule: "Kelime sonunda S sesine döner: глаз → glas.", examples: [{ ru: "ЗИМА", reading: "Zimá", tr: "Kış" }, { ru: "ЗАВТРА", reading: "Záfta", tr: "Yarın" }] },
+      { id: 'ts', upper: 'Ц', lower: 'ц', translit: "Ts", soundHint: "T+S tek ses gibi", phoneticRule: "T ve S sesleri birleşik tek sesmiş gibi okunur; her zaman serttir.", examples: [{ ru: "ОТЕЦ", reading: "Atéts", tr: "Baba" }, { ru: "ЦЕНА", reading: "Tséná", tr: "Fiyat" }] },
+      { id: 'ch', upper: 'Ч', lower: 'ч', translit: "Ç (Ch)", soundHint: "Yumuşak Ç sesi", phoneticRule: "Her zaman yumuşak Ç okunur, asla sertleşmez.", examples: [{ ru: "ЧАЙ", reading: "Chay", tr: "Çay" }, { ru: "ЧАС", reading: "Chas", tr: "Saat" }] },
     ],
     readingDrills: [
       { word: 'чай', correct: 'Chay', distractors: ['Tsay', 'Shay', 'Kay'], tr: 'Çay' },
@@ -151,13 +145,13 @@ export const ALPHABET_LESSONS: { id: string; title: string; subtitle: string; le
   },
   {
     id: 'alpha_6',
-    title: 'Ünite 6: Islık Sesleri & Yarı Ünsüzler',
-    subtitle: 'Ш, Щ, Й, И harfleri ve sertlik-yumuşaklık ayrımı',
+    title: 'Islık Sesleri',
+    subtitle: 'Ш, Щ, Й, И + sertlik-yumuşaklık ayrımı',
     letters: [
-      { id: 'sh', upper: 'Ш', lower: 'ш', translit: 'Ş (Sh)', soundHint: 'Her zaman sert Ş', phoneticRule: 'Ardından İ gelse bile "E" gibi okunur (Шить -> Shyt\').', example: { ru: 'Школа', reading: 'Shkóla', tr: 'Okul', context: 'Eğitim' }, pronunciationDetails: 'Dilin önü damakta kapanır, sert bir "ş" sesi çıkar. Ardından İ gelse bile yumuşamaz.', moreExamples: [{ ru: 'Шум', reading: 'Shum', tr: 'Gürültü', context: 'Ses' }, { ru: 'Шесть', reading: 'Shest\'', tr: 'Altı', context: 'Sayı' }, { ru: 'Шоколад', reading: 'Shakalád', tr: 'Çikolata', context: 'Yiyecek' }, { ru: 'Шапка', reading: 'Shápka', tr: 'Şapka', context: 'Kıyafet' }], commonMistakes: 'Bazen "şç" ile karıştırılır, ancak "ş" her zaman serttir.', practiceTips: 'Dil önü damakta sert bir şekilde kapanarak sesi hisset.' },
-      { id: 'shch', upper: 'Щ', lower: 'щ', translit: 'Şç (Shch)', soundHint: 'Her zaman yumuşak ve uzun', phoneticRule: 'Ш ile karıştırılmamalı; daima yumuşak ve uzatılarak "şç" şeklinde okunur.', example: { ru: 'Борщ', reading: 'Borshch', tr: 'Borş (Çorba)', context: 'Yemek' }, pronunciationDetails: 'Dilin önü damakta yumuşakça kapanır, uzun bir "şç" sesi çıkar. Ш ile karıştırılmamalıdır.', moreExamples: [{ ru: 'Щука', reading: 'Shchúka', tr: 'Sazan', context: 'Balık' }, { ru: 'Щётка', reading: 'Shchyótka', tr: 'Fırça', context: 'Eşya' }, { ru: 'Щедрый', reading: 'Shchédry', tr: 'Cömert', context: 'Karakter' }, { ru: 'Ящик', reading: 'Yáshchik', tr: 'Kutu', context: 'Eşya' }], commonMistakes: 'Ş ile karıştırılır, ancak "şç" her zaman yumuşak ve uzundur.', practiceTips: 'Yumuşak ve uzun sesi hisset, Ş sert sesinden ayırt.' },
-      { id: 'y', upper: 'Й', lower: 'й', translit: 'Y (kısa İ)', soundHint: 'Ünlüden sonra kısa Y', phoneticRule: 'Ünlülerden sonra gelip kısa bir "y" sesi ekler (Мой -> Moy).', example: { ru: 'Музей', reading: 'Muzéy', tr: 'Müze', context: 'Gezi' }, pronunciationDetails: 'Ünlülerden sonra gelip kısa bir "y" sesi ekler. Türkçedeki "y" gibi ama daha kısa.', moreExamples: [{ ru: 'Мой', reading: 'Moy', tr: 'Benim (eril)', context: 'İyelik' }, { ru: 'Твой', reading: 'Tvoy', tr: 'Senin', context: 'İyelik' }, { ru: 'День', reading: 'Dyen\'', tr: 'Gün', context: 'Zaman' }, { ru: 'Май', reading: 'May', tr: 'Mayıs', context: 'Zaman' }], commonMistakes: 'Bazen uzun "i" ile karıştırılır, ancak kısa bir sesidir.', practiceTips: 'Kısa bir "y" sesi olarak hisset, ünlüden hemen sonra gelmesi gerekir.' },
-      { id: 'i', upper: 'И', lower: 'и', translit: 'İ', soundHint: 'Net İ, yumuşatan harf', phoneticRule: 'Net bir "İ" sesi verir ve önündeki ünsüzü daima yumuşatır.', example: { ru: 'Иван', reading: 'Ivan', tr: 'İvan (isim)', context: 'İsimler' }, pronunciationDetails: 'Net bir "İ" sesi verir ve önündeki ünsüzü daima yumuşatır. Türkçedeki "i" ile benzer.', moreExamples: [{ ru: 'История', reading: 'Istóriya', tr: 'Tarih', context: 'Eğitim' }, { ru: 'Игра', reading: 'Igrá', tr: 'Oyun', context: 'Eğlence' }, { ru: 'Иметь', reading: 'Imét\'', tr: 'Sahip olmak', context: 'Fiil' }, { ru: 'Институт', reading: 'Institút', tr: 'Enstitü', context: 'Eğitim' }], commonMistakes: 'Bazen "ı" ile karıştırılır, ancak net bir "i" sesidir.', practiceTips: 'Net bir "i" sesi olarak hisset, önündeki ünsüzü yumuşatmayı unutma.' }
+      { id: 'sh', upper: 'Ш', lower: 'ш', translit: "Ş (Sh)", soundHint: "Her zaman sert Ş", phoneticRule: "Sert Ş okunur; yanına İ gelse bile yumuşamaz.", examples: [{ ru: "ШКОЛА", reading: "Shkóla", tr: "Okul" }, { ru: "ШЕСТЬ", reading: "Shest'", tr: "Altı" }] },
+      { id: 'shch', upper: 'Щ', lower: 'щ', translit: "ŞÇ (Shch)", soundHint: "Uzun yumuşak ŞÇ", phoneticRule: "Yumuşak ve uzatılmış ŞÇ okunur; Ш ile karıştırma.", examples: [{ ru: "БОРЩ", reading: "Borshch", tr: "Borş çorbası" }, { ru: "ЩЁТКА", reading: "Shchyótka", tr: "Fırça" }] },
+      { id: 'y', upper: 'Й', lower: 'й', translit: "Y", soundHint: "Kısa Y sesi", phoneticRule: "Ünlüden sonra kısa bir Y sesi ekler: мой → moy.", examples: [{ ru: "МОЙ", reading: "Moy", tr: "Benim" }, { ru: "МУЗЕЙ", reading: "Muzéy", tr: "Müze" }] },
+      { id: 'i', upper: 'И', lower: 'и', translit: "İ", soundHint: "Net İ sesi", phoneticRule: "Net İ okunur; önündeki ünsüzü yumuşatır.", examples: [{ ru: "ИГРА", reading: "Igrá", tr: "Oyun" }, { ru: "ИВАН", reading: "Ivan", tr: "İvan" }] },
     ],
     readingDrills: [
       { word: 'школа', correct: 'Shkóla', distractors: ['Skola', 'Shkolá', 'Chkola'], tr: 'Okul' },
@@ -169,12 +163,12 @@ export const ALPHABET_LESSONS: { id: string; title: string; subtitle: string; le
   },
   {
     id: 'alpha_7',
-    title: 'Ünite 7: İyotlu Harfler & Yumuşatma Kuralı',
-    subtitle: 'Ё, Ю, Я harfleri — kendinden önceki ünsüzü yumuşatan sesler',
+    title: 'İyotlu Harfler',
+    subtitle: 'Ё, Ю, Я — önceki ünsüzü yumuşatan sesler',
     letters: [
-      { id: 'yo', upper: 'Ё', lower: 'ё', translit: 'Yo', soundHint: 'Her zaman vurgulu', phoneticRule: 'Rusçada her zaman vurguludur ve hiçbir zaman değişmez, hep "Yo" okunur.', example: { ru: 'Ёлка', reading: 'Yólka', tr: 'Yılbaşı Ağacı', context: 'Kutlama' }, pronunciationDetails: 'Her zaman vurguludur ve hiçbir zaman değişmez, hep "yo" okunur. Diğer harflerden farklı olarak vurgusu bellidir.', moreExamples: [{ ru: 'Ёжик', reading: 'Yózhik', tr: 'Kirpi', context: 'Hayvan' }, { ru: 'Пётр', reading: 'Pyotr', tr: 'Petro (isim)', context: 'İsimler' }, { ru: 'Вёсла', reading: 'Vyósla', tr: ' kürek', context: 'Denizcilik' }, { ru: 'Актёр', reading: 'Aktyór', tr: 'Aktör', context: 'Meslek' }], commonMistakes: 'Bazen "e" ile karıştırılır, ancak her zaman vurgulu "yo" okunur.', practiceTips: 'Her zaman vurgulu olduğunu hatırla, vurgusu bellidir.' },
-      { id: 'yu', upper: 'Ю', lower: 'ю', translit: 'Yu', soundHint: 'Önündeki harfi yumuşatır', phoneticRule: '"Yu" sesi verir ve kendinden önceki ünsüzü yumuşatır.', example: { ru: 'Юбка', reading: 'Yúpka', tr: 'Etek', context: 'Kıyafet' }, pronunciationDetails: '"Yu" sesi verir ve kendinden önceki ünsüzü yumuşatır. Türkçedeki "yu" ile benzer.', moreExamples: [{ ru: 'Юг', reading: 'Yug', tr: 'Güney', context: 'Coğrafya' }, { ru: 'Юность', reading: 'Yúnost\'', tr: 'Gençlik', context: 'Yaşam' }, { ru: 'Юра', reading: 'Yúra', tr: 'Yura (isim)', context: 'İsimler' }, { ru: 'Юрист', reading: 'Yuríst', tr: 'Avukat', context: 'Meslek' }], commonMistakes: 'Bazen "u" ile karıştırılır, ancak "yu" ikili bir ses birimidir.', practiceTips: 'Önündeki ünsüzü yumuşatmayı hisset.' },
-      { id: 'ya', upper: 'Я', lower: 'я', translit: 'Ya', soundHint: 'Vurgusuzken İʼye yaklaşır', phoneticRule: '"Ya" sesi verir; vurgusuzsa konuşma dilinde "İ"ye yaklaşabilir (Пятница -> Pyátnitsa).', example: { ru: 'Я', reading: 'Ya', tr: 'Ben', context: 'Zamir' }, pronunciationDetails: '"Ya" sesi verir; vurgusuzsa konuşma dilinde "i"ye yaklaşabilir. Türkçedeki "ya" ile benzer.', moreExamples: [{ ru: 'Язык', reading: 'Yazyk', tr: 'Dil', context: 'İletişim' }, { ru: 'Япония', reading: 'Yapóniya', tr: 'Japonya', context: 'Coğrafya' }, { ru: 'Ярко', reading: 'Yárka', tr: 'Parlak', context: 'Sıfat' }, { ru: 'Пятно', reading: 'Pyatnó', tr: 'Leke', context: 'Ev' }], commonMistakes: 'Vurgusuz pozisyonlarda "i" sesine yaklaşır, ancak kök olarak "ya" olarak okunur.', practiceTips: 'Vurgu pozisyonuna dikkat et, vurgusuzken "i"ye yaklaşabilir.' }
+      { id: 'yo', upper: 'Ё', lower: 'ё', translit: "Yo", soundHint: "Her zaman vurgulu Yo", phoneticRule: "Hep Yo okunur ve daima vurguludur.", examples: [{ ru: "ЁЛКА", reading: "Yólka", tr: "Yılbaşı ağacı" }, { ru: "АКТЁР", reading: "Aktyór", tr: "Aktör" }] },
+      { id: 'yu', upper: 'Ю', lower: 'ю', translit: "Yu", soundHint: "Yu sesi", phoneticRule: "Yu okunur; önündeki ünsüzü yumuşatır.", examples: [{ ru: "ЮБКА", reading: "Yúpka", tr: "Etek" }, { ru: "ЮГ", reading: "Yug", tr: "Güney" }] },
+      { id: 'ya', upper: 'Я', lower: 'я', translit: "Ya", soundHint: "Ya sesi", phoneticRule: "Ya okunur; önündeki ünsüzü yumuşatır (я = ben).", examples: [{ ru: "Я", reading: "Ya", tr: "Ben" }, { ru: "ЯБЛОКО", reading: "Yáblaka", tr: "Elma" }] },
     ],
     readingDrills: [
       { word: 'ёлка', correct: 'Yólka', distractors: ['Yelka', 'Iolka', 'Olka'], tr: 'Yılbaşı Ağacı' },
@@ -186,13 +180,13 @@ export const ALPHABET_LESSONS: { id: string; title: string; subtitle: string; le
   },
   {
     id: 'alpha_8',
-    title: 'Ünite 8: Sessiz İşaretler & Özel Harfler',
-    subtitle: 'Ъ, Ы, Ь, Э — Rusçaya özgü, Latin alfabesinde karşılığı olmayan harfler',
+    title: 'Sessiz İşaretler',
+    subtitle: 'Ъ, Ы, Ь, Э — Rusçaya özgü harfler',
     letters: [
-      { id: 'hard', upper: 'Ъ', lower: 'ъ', translit: '(Sert İşaret)', soundHint: 'Sesi yoktur', phoneticRule: "Kendi başına sesi yoktur; kendinden sonraki iyotlu harfin (Е,Ё,Ю,Я) ayrı hecede okunmasını sağlar.", example: { ru: 'Объект', reading: 'Ab-yékt', tr: 'Nesne / Obje', context: 'Resmi Dil' }, pronunciationDetails: 'Kendi başına sesi yoktur; kendinden sonraki iyotlu harfin ayrı hecede okunmasını sağlar. Türkçede karşılığı yoktur.', moreExamples: [{ ru: 'Подъезд', reading: 'Pad-yézd', tr: 'Apartman girişi', context: 'Konut' }, { ru: 'Съезд', reading: 'S\'yezd', tr: 'Kongre', context: 'Toplantı' }, { ru: 'Объяснить', reading: 'Ab-yasnít\'', tr: 'Açıklamak', context: 'Fiil' }, { ru: 'Разъезд', reading: 'Raz-yézd', tr: 'Kavşak / ayrılma', context: 'Ulaşım' }], commonMistakes: 'Sesi olmadığı için bazen atlanır, ancak işlevi önemlidir.', practiceTips: 'İyotlu harfleri ayırmak için kullanıldığını hatırla.' },
-      { id: 'y2', upper: 'Ы', lower: 'ы', translit: 'I (kalın)', soundHint: 'Türkçedeki kalın I', phoneticRule: 'Türkçedeki kalın "I" sesine en yakın harftir, dilin arkasından çıkar.', example: { ru: 'Ты', reading: 'Ty', tr: 'Sen', context: 'Zamir' }, pronunciationDetails: 'Türkçedeki kalın "I" sesine en yakın harftir, dilin arkasından çıkar. Sert ve kalın bir ses.', moreExamples: [{ ru: 'Мы', reading: 'My', tr: 'Biz', context: 'Zamir' }, { ru: 'Вы', reading: 'Vy', tr: 'Siz', context: 'Zamir' }, { ru: 'Сын', reading: 'Syn', tr: 'Oğul', context: 'Aile' }, { ru: 'Рыба', reading: 'Rýba', tr: 'Balık', context: 'Yiyecek' }], commonMistakes: 'Bazen "i" ile karıştırılır, ancak kalın bir "ı" sesidir.', practiceTips: 'Dilin arkasından kalın bir ses çıkararak hisset.' },
-      { id: 'soft', upper: 'Ь', lower: 'ь', translit: '(Yumuşatma İşareti)', soundHint: 'Sesi yoktur', phoneticRule: 'Kendi başına sesi yoktur; kendinden önceki ünsüzü yumuşatır.', example: { ru: 'День', reading: "Dyen'", tr: 'Gün', context: 'Zaman' }, pronunciationDetails: 'Kendi başına sesi yoktur; kendinden önceki ünsüzü yumuşatır. Türkçede karşılığı yoktur.', moreExamples: [{ ru: 'Мать', reading: 'Mat\'', tr: 'Anne', context: 'Aile' }, { ru: 'Дочь', reading: 'Doch\'', tr: 'Kız', context: 'Aile' }, { ru: 'Сыр', reading: 'Syr', tr: 'Peynir', context: 'Yiyecek' }, { ru: 'Пить', reading: 'Pit\'', tr: 'İçmek', context: 'Fiil' }], commonMistakes: 'Sesi olmadığı için bazen atlanır, ancak yumuşatma işlevi önemlidir.', practiceTips: 'Önündeki ünsüzü yumuşattığını hisset.' },
-      { id: 'e2', upper: 'Э', lower: 'э', translit: 'E (açık)', soundHint: 'Kalın ve net E', phoneticRule: 'Е harfinden farklı olarak önündeki ünsüzü yumuşatmaz, kalın ve net okunur.', example: { ru: 'Это', reading: 'Éta', tr: 'Bu', context: 'Temel Kelime' }, pronunciationDetails: 'Е harfinden farklı olarak önündeki ünsüzü yumuşatmaz, kalın ve net okunur. Sadece kelimelerin başında kullanılır.', moreExamples: [{ ru: 'Экономика', reading: 'Ekonómika', tr: 'Ekonomi', context: 'Ekonomi' }, { ru: 'Энергия', reading: 'Energíya', tr: 'Enerji', context: 'Fizik' }, { ru: 'Экзамен', reading: 'Ekzámén', tr: 'Sınav', context: 'Eğitim' }, { ru: 'Этаж', reading: 'Etázh', tr: 'Kat (bina)', context: 'Ev' }], commonMistakes: 'Bazen "е" ile karıştırılır, ancak önündeki ünsüzü yumuşatmaz.', practiceTips: 'Önündeki ünsüzü yumuşatmaz, kalın ve net sesi hisset.' }
+      { id: 'hard', upper: 'Ъ', lower: 'ъ', translit: "(Sert İşaret)", soundHint: "Sesi yoktur", phoneticRule: "Ses vermez; sonraki Е/Ё/Ю/Я harfi ayrı hecede okunur.", examples: [{ ru: "ОБЪЕКТ", reading: "Ab-yékt", tr: "Nesne" }, { ru: "ПОДЪЕЗД", reading: "Pad-yézd", tr: "Apartman girişi" }] },
+      { id: 'y2', upper: 'Ы', lower: 'ы', translit: "I", soundHint: "Kalın I sesi", phoneticRule: "Boğazdan gelen kalın I sesidir (Türkçedeki kalın ı gibi).", examples: [{ ru: "ТЫ", reading: "Ty", tr: "Sen" }, { ru: "МЫ", reading: "My", tr: "Biz" }] },
+      { id: 'soft', upper: 'Ь', lower: 'ь', translit: "(Yumuşak İşaret)", soundHint: "Sesi yoktur", phoneticRule: "Ses vermez; önündeki ünsüzü yumuşatır: день → dyen'.", examples: [{ ru: "ДЕНЬ", reading: "Dyen'", tr: "Gün" }, { ru: "МАТЬ", reading: "Mat'", tr: "Anne" }] },
+      { id: 'e2', upper: 'Э', lower: 'э', translit: "E", soundHint: "Kalın, net E", phoneticRule: "Önündeki ünsüzü yumuşatmaz; kalın ve net E okunur.", examples: [{ ru: "ЭТО", reading: "Éta", tr: "Bu" }, { ru: "ЭТАЖ", reading: "Etázh", tr: "Kat (bina)" }] },
     ],
     readingDrills: [
       { word: 'это', correct: 'Éta', distractors: ['Eto', 'Yeto', 'Ita'], tr: 'Bu' },
@@ -266,6 +260,51 @@ const SceneBanner: React.FC<{ icon: string; color: string; label: string }> = ({
 );
 
 const ALPHA_BANNER_COLORS = ['#3b82f6', '#10b981', '#f59e0b', '#8b5cf6', '#ec4899', '#14b8a6', '#f97316', '#64748b'];
+
+// ==========================================
+// TEK MÜFREDAT YOLU (SINGLE PATH)
+// "Aşama 1 / Aşama 2 / Aşama 3" gruplandırması YOK: alfabe + dinleme konuları +
+// müfredat üniteleri tek bir sıralı çizgi üzerinde "Ünite 1, Ünite 2, ..."
+// olarak akar ve her kart bir önceki tamamlanınca açılır.
+//   1-  8 : Alfabe üniteleri (33 harf)
+//   9- 49 : Harf + fonetik dinleme konuları (41 konu)
+//  50-180 : Her müfredat ünitesi, (varsa) hemen öncesinde dinleme ön-hazırlığıyla
+// ==========================================
+export type PathStep =
+  | { kind: 'alpha'; lessonIdx: number }
+  | { kind: 'topic'; topicIdx: number }
+  | { kind: 'unit'; unitIdx: number };
+
+export const PATH: PathStep[] = (() => {
+  const steps: PathStep[] = [];
+  for (let i = 0; i < ALPHABET_LESSONS.length; i++) steps.push({ kind: 'alpha', lessonIdx: i });
+  TOPICS_100.forEach((t, idx) => { if (t.cat !== 'mufredat') steps.push({ kind: 'topic', topicIdx: idx }); });
+  const previewByUnit = new Map<string, number>();
+  TOPICS_100.forEach((t, idx) => { if (t.cat === 'mufredat' && t.unitId && !previewByUnit.has(t.unitId)) previewByUnit.set(t.unitId, idx); });
+  UNITS_DATA.forEach((u, uIdx) => {
+    const pIdx = previewByUnit.get(u.id);
+    if (pIdx !== undefined) steps.push({ kind: 'topic', topicIdx: pIdx });
+    steps.push({ kind: 'unit', unitIdx: uIdx });
+  });
+  return steps;
+})();
+
+// Yoldaki her adımın global "ÜNİTE N" numarası (kart etiketleri + ekran içi referanslar ortak sayacı kullanır)
+export const UNIT_PATH_POS: number[] = UNITS_DATA.map((_, i) => PATH.findIndex(s => s.kind === 'unit' && s.unitIdx === i) + 1);
+export const TOPIC_PATH_POS: number[] = TOPICS_100.map((_, i) => PATH.findIndex(s => s.kind === 'topic' && s.topicIdx === i) + 1);
+
+// Bu adımın seviye etiketi (kart çipi + seviye renkleri için)
+const stepLevel = (s: PathStep): CefrTag =>
+  s.kind === 'unit' ? UNITS_DATA[s.unitIdx].levelGroup
+  : s.kind === 'topic' ? (TOPICS_100[s.topicIdx].levelGroup || 'A1')
+  : 'A1';
+
+// Her seviyenin yoldaki İLK adımı — seviye çiplerine tıklayınca oraya kaydırılır
+const LEVEL_ANCHORS: Record<CefrTag, number> = (() => {
+  const a = {} as Record<CefrTag, number>;
+  for (const lv of LEVELS) a[lv] = PATH.findIndex(s => stepLevel(s) === lv);
+  return a;
+})();
 
 export default function App() {
   const [activeTab, setActiveTab] = useState<'MAP' | 'PROFILE' | 'MISTAKES' | 'METHODS'>('MAP');
@@ -454,27 +493,25 @@ export default function App() {
     setScreen('MAP');
   };
 
-  // İLERLEME HESAPLAMA (Alfabe 8 ders + 100 Konu + 72 müfredat ünitesi A1→C1/C2)
-  const totalTasks = ALPHABET_LESSONS.length + TOPICS_100_TOTAL + UNITS_DATA.length;
+  // İLERLEME HESAPLAMA (tek yol: Alfabe 8 ders + 100 dinleme konusu + 72 müfredat ünitesi)
+  const totalTasks = PATH.length; // 180 = 8 + 100 + 72
   const completedCount = completedAlpha.length + completedTopics.length + completedUnits.length;
   const progressPercent = Math.round((completedCount / totalTasks) * 100);
 
-  // KİLİT MANTIKLARI
-  const isAlphaUnlocked = (idx: number) => idx === 0 || completedAlpha.includes(ALPHABET_LESSONS[idx - 1].id);
-  const isAllAlphaDone = () => completedAlpha.length === ALPHABET_LESSONS.length;
-  const isUnitUnlocked = (idx: number) => {
-    if (!isAllAlphaDone()) return false;
-    if (idx === 0) return true;
-    return completedUnits.includes(UNITS_DATA[idx - 1].id);
-  };
+  // TEK YOL KİLİT MANTIĞI: her kart, yolda kendinden önceki kart bitince açılır.
+  const isStepDone = (s: PathStep): boolean =>
+    s.kind === 'alpha' ? completedAlpha.includes(ALPHABET_LESSONS[s.lessonIdx].id)
+    : s.kind === 'topic' ? completedTopics.includes(TOPICS_100[s.topicIdx].id)
+    : completedUnits.includes(UNITS_DATA[s.unitIdx].id);
+  const isStepUnlocked = (pos: number) => pos === 0 || isStepDone(PATH[pos - 1]);
 
-  // SEVİYE KİLİT MANTIĞI (sıralı A1→A2→B1→B2→C1/C2): bir seviye açılır
-  // bir önceki seviyenin TÜM üniteleri tamamlanınca.
-  const isLevelComplete = (lv: CefrTag) => {
-    const units = UNITS_DATA.filter(u => u.levelGroup === lv);
-    return units.length > 0 && units.every(u => completedUnits.includes(u.id));
+  // Yoldaki bir adımı (alfabe / konu / ünite) içeriğiyle aç
+  const openStep = (s: PathStep) => {
+    setFeedback(null);
+    if (s.kind === 'alpha') { setAlphaIdx(s.lessonIdx); setLetterIdx(0); setScreen('ALPHA'); }
+    else if (s.kind === 'topic') { setTopicIdx(s.topicIdx); setScreen('TOPIC'); }
+    else { setUnitIdx(s.unitIdx); setCardIdx(0); setIsFlipped(false); setScreen('STORY'); }
   };
-  const isLevelUnlocked = (lvIdx: number) => lvIdx === 0 || isLevelComplete(LEVELS[lvIdx - 1]);
 
   // AKIŞ KONTROLLERİ
 
@@ -1008,220 +1045,89 @@ export default function App() {
               )}
             </div>
 
-            {/* AŞAMA 1: HARFLER & FONETİK */}
-            <div style={{ marginBottom: '32px' }}>
-              <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '12px' }}>
-                <span style={{ background: '#3b82f6', color: '#fff', fontSize: '11px', fontWeight: 900, padding: '3px 8px', borderRadius: '6px' }}>AŞAMA 1</span>
-                <h3 style={{ margin: 0, fontSize: '18px' }}>Kiril Alfabesi ve Fonetik Kuralları (33 Harf)</h3>
-              </div>
-
-              <div style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}>
-                {ALPHABET_LESSONS.map((les, idx) => {
-                  const unl = isAlphaUnlocked(idx);
-                  const done = completedAlpha.includes(les.id);
-                  return (
-                    <div key={les.id} onClick={() => { if (unl) { setAlphaIdx(idx); setLetterIdx(0); setScreen('ALPHA'); } }} style={{
-                      ...cardBox, padding: '16px 20px', cursor: unl ? 'pointer' : 'not-allowed', opacity: unl ? 1 : 0.5,
-                      borderLeft: `6px solid ${done ? '#10b981' : unl ? '#3b82f6' : '#475569'}`, display: 'flex', justifyContent: 'space-between', alignItems: 'center'
-                    }}>
-                      <div>
-                        <div style={{ fontWeight: 800, fontSize: '16px', color: '#f8fafc' }}>{les.title}</div>
-                        <div style={{ fontSize: '13px', color: '#94a3b8', marginTop: '4px' }}>{les.subtitle}</div>
-                      </div>
-                      <span style={{ fontSize: '24px' }}>{done ? '✅' : unl ? '🔓' : '🔒'}</span>
-                    </div>
-                  );
-                })}
-              </div>
-            </div>
-
-            {/* AŞAMA 2: KULAĞI ALIŞTIR — 100 KONU (sesli dinleme + "dinle & seç" testleri) */}
-            <div style={{ marginBottom: '32px' }}>
-              <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '12px', flexWrap: 'wrap' }}>
-                <span style={{ background: '#14b8a6', color: '#fff', fontSize: '11px', fontWeight: 900, padding: '3px 8px', borderRadius: '6px' }}>AŞAMA 2</span>
-                <h3 style={{ margin: 0, fontSize: '18px' }}>🎧 Kulağı Alıştır: Alfabe & Dinleme — 100 Konu</h3>
-              </div>
-
-              <div style={{ ...cardBox, padding: '14px 18px', marginBottom: '16px' }}>
-                <div style={{ display: 'flex', justifyContent: 'space-between', gap: '10px', fontSize: '12px', color: '#94a3b8', marginBottom: '8px', flexWrap: 'wrap' }}>
-                  <span>Her konuyu <b style={{ color: '#14b8a6' }}>sesli</b> dinle (normal + yavaş tempo), sonra 5 soruluk "dinle & seç" testinden geç. Örnekler doğrudan A2-C1/C2 müfredat ünitelerinden geldiği için bu bölüm aynı zamanda üst seviyeye sesli ön-hazırlıktır.</span>
-                  <span style={{ fontWeight: 900, color: '#14b8a6', whiteSpace: 'nowrap' }}>{completedTopics.length}/{TOPICS_100_TOTAL} konu tamam</span>
+            {/* TEK MÜFREDAT YOLU — "Aşama 1/2/3" gruplandırması YOK: Ünite 1 → {PATH.length} ard arda tek sıra.
+                Tüm kartlar aynı renkli ünite kartı tasarımını kullanır; seviye etiketleri LEVEL_COLORS ile renklendirilir. */}
+            <div>
+              <div style={{ ...cardBox, padding: '14px 18px', marginBottom: '14px' }}>
+                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', gap: '10px', flexWrap: 'wrap' }}>
+                  <div>
+                    <div style={{ fontSize: '18px', fontWeight: 900 }}>🗺️ Öğrenme Yolu</div>
+                    <div style={{ fontSize: '12px', color: '#94a3b8', marginTop: '3px' }}>Ünite 1'den {PATH.length}'e kadar tek sıra — her kart, bir önceki bitince açılır.</div>
+                  </div>
+                  <div style={{ fontSize: '11px', color: '#94a3b8', fontWeight: 700 }}>
+                    🔤 {completedAlpha.length}/{ALPHABET_LESSONS.length} alfabe • 🎧 {completedTopics.length}/{TOPICS_100_TOTAL} dinleme • 📚 {completedUnits.length}/{UNITS_DATA.length} ünite
+                  </div>
                 </div>
-                <div style={{ height: '8px', background: '#0f172a', borderRadius: '4px', overflow: 'hidden' }}>
-                  <div style={{ height: '100%', width: `${Math.round((completedTopics.length / TOPICS_100_TOTAL) * 100)}%`, background: '#14b8a6', transition: 'width 0.4s' }} />
-                </div>
-                <div style={{ display: 'flex', gap: '10px', marginTop: '12px', flexWrap: 'wrap', alignItems: 'center' }}>
-                  {(() => {
-                    const next = TOPICS_100.find(t => !completedTopics.includes(t.id));
-                    return next ? (
-                      <button onClick={() => { setTopicIdx(TOPICS_100.indexOf(next)); setFeedback(null); setScreen('TOPIC'); }} style={{ background: '#14b8a6', border: 'none', color: '#0f172a', padding: '10px 16px', borderRadius: '10px', fontWeight: 900, cursor: 'pointer', fontSize: '13px' }}>
-                        ▶️ Sıradaki Konu: {next.num}. {next.titleTr}
-                      </button>
-                    ) : (
-                      <span style={{ color: '#10b981', fontWeight: 900, fontSize: '13px' }}>🏆 Tüm 100 konu tamamlandı!</span>
-                    );
-                  })()}
-                  <button onClick={() => { setSoundTest('idle'); speak('Алло! Здравствуйте! Это голос теста. Хорошего дня!', 0.85, () => setSoundTest('ok'), () => setSoundTest('error')); }} style={{ background: '#334155', border: '1px solid #475569', color: '#e2e8f0', padding: '10px 16px', borderRadius: '10px', fontWeight: 800, cursor: 'pointer', fontSize: '13px' }}>
+                {/* Seviye sıçrama çipleri + ses testi */}
+                <div style={{ display: 'flex', gap: '6px', marginTop: '12px', flexWrap: 'wrap', alignItems: 'center' }}>
+                  {LEVELS.map(lv => (
+                    <button key={lv} onClick={() => levelRefs.current[lv]?.scrollIntoView({ behavior: 'smooth', block: 'start' })} style={{
+                      background: '#0f172a', border: `1px solid ${LEVEL_COLORS[lv]}55`, borderRadius: '8px', padding: '5px 10px',
+                      cursor: 'pointer', color: LEVEL_COLORS[lv], fontWeight: 900, fontSize: '11px'
+                    }}>{lv}</button>
+                  ))}
+                  <span style={{ flex: 1 }} />
+                  <button onClick={() => { setSoundTest('idle'); speak('Алло! Здравствуйте! Это голос теста. Хорошего дня!', 0.85, () => setSoundTest('ok'), () => setSoundTest('error')); }} style={{ background: '#0f172a', border: '1px solid #475569', color: '#e2e8f0', padding: '5px 10px', borderRadius: '8px', fontWeight: 800, cursor: 'pointer', fontSize: '11px' }}>
                     🔊 Ses Testi
                   </button>
-                  {soundTest === 'ok' && <span style={{ fontSize: '12px', color: '#10b981', fontWeight: 800 }}>✅ Ses çalışıyor</span>}
-                  {soundTest === 'error' && <span style={{ fontSize: '12px', color: '#ef4444', fontWeight: 800 }}>❌ Ses çalınamadı — cihaz sesini kontrol et</span>}
+                  {soundTest === 'ok' && <span style={{ fontSize: '11px', color: '#10b981', fontWeight: 800 }}>✅ Ses çalışıyor</span>}
+                  {soundTest === 'error' && <span style={{ fontSize: '11px', color: '#ef4444', fontWeight: 800 }}>❌ Ses yok</span>}
                 </div>
               </div>
 
-              {TOPIC_100_CATS.map(cat => {
-                const list = TOPICS_100.filter(t => t.cat === cat.id);
-                const doneCount = list.filter(t => completedTopics.includes(t.id)).length;
-                // Müfredat ön-hazırlık kategorisi seviyelere ayrılır (A2 → C1/C2)
-                const groups = cat.id === 'mufredat'
-                  ? LEVELS.filter(lv => list.some(t => t.levelGroup === lv)).map(lv => ({ label: `${lv} • ${LEVEL_META[lv].title.split(' — ')[0]}`, color: LEVEL_COLORS[lv], items: list.filter(t => t.levelGroup === lv) }))
-                  : [{ label: '', color: cat.color, items: list }];
-                const renderCard = (t: Topic100) => {
-                  const done = completedTopics.includes(t.id);
-                  const src = t.unitId ? sourceUnitInfo(t.unitId) : null;
+              {/* Yol kartları */}
+              <div style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}>
+                {PATH.map((step, pos) => {
+                  const done = isStepDone(step);
+                  const unl = isStepUnlocked(pos);
+                  const lv = stepLevel(step);
+                  let color: string, icon: string, title: string, desc: string, kindTag: string;
+                  if (step.kind === 'alpha') {
+                    const les = ALPHABET_LESSONS[step.lessonIdx];
+                    color = ALPHA_BANNER_COLORS[step.lessonIdx % ALPHA_BANNER_COLORS.length];
+                    icon = les.letters[0].upper;
+                    title = les.title;
+                    desc = les.subtitle;
+                    kindTag = '🔤 ALFABE';
+                  } else if (step.kind === 'topic') {
+                    const t = TOPICS_100[step.topicIdx];
+                    const cat = topicCatInfo(t.cat);
+                    color = t.cat === 'mufredat' && t.levelGroup ? LEVEL_COLORS[t.levelGroup] : cat.color;
+                    icon = t.icon;
+                    title = t.titleTr;
+                    desc = t.cat === 'mufredat' ? 'Ünitenin kelimelerine dinleyerek ön hazırlık' : t.descTr;
+                    kindTag = t.cat === 'harf' ? '🎧 HARF DİNLEME' : t.cat === 'fonetik' ? '🎧 FONETİK DİNLEME' : '🎧 ÖN HAZIRLIK';
+                  } else {
+                    const mod = UNITS_DATA[step.unitIdx];
+                    color = mod.color;
+                    icon = mod.icon;
+                    title = mod.title;
+                    desc = mod.description;
+                    kindTag = '📚 MÜFREDAT';
+                  }
                   return (
-                    <div key={t.id} onClick={() => { setTopicIdx(TOPICS_100.indexOf(t)); setFeedback(null); setScreen('TOPIC'); }} style={{
-                      ...cardBox, padding: '10px 8px', cursor: 'pointer', textAlign: 'center',
-                      border: `1px solid ${done ? cat.color : '#334155'}`, background: done ? `${cat.color}1a` : '#1e293b'
+                    <div key={pos} ref={el => { if (pos === LEVEL_ANCHORS[lv]) levelRefs.current[lv] = el; }} onClick={() => { if (unl) openStep(step); }} style={{
+                      ...cardBox, cursor: unl ? 'pointer' : 'not-allowed', opacity: unl ? 1 : 0.5,
+                      border: `1px solid ${done ? '#10b981' : unl ? color : '#334155'}`, position: 'relative', overflow: 'hidden', scrollMarginTop: '84px'
                     }}>
-                      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '2px' }}>
-                        <span style={{ fontSize: '9px', fontWeight: 900, color: '#64748b' }}>#{t.num}</span>
-                        <span style={{ fontSize: '12px' }}>{done ? '✅' : ''}</span>
-                      </div>
-                      <div style={{ fontSize: '20px', fontWeight: 900, color: done ? cat.color : '#f8fafc', lineHeight: 1.2 }}>{t.icon}</div>
-                      <div style={{ fontSize: '11px', fontWeight: 800, marginTop: '4px', color: '#f8fafc', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>{t.titleTr}</div>
-                      <div style={{ fontSize: '10px', color: t.levelGroup ? LEVEL_COLORS[t.levelGroup] : '#64748b', fontWeight: t.levelGroup ? 900 : 400, whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>
-                        {t.levelGroup ? `${t.levelGroup} • Ünite ${src ? src.num : ''}` : t.titleRu}
-                      </div>
-                    </div>
-                  );
-                };
-                return (
-                  <div key={cat.id} style={{ marginBottom: '16px' }}>
-                    <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '8px' }}>
-                      <span style={{ fontSize: '16px' }}>{cat.icon}</span>
-                      <span style={{ fontSize: '13px', fontWeight: 900, color: cat.color }}>{cat.label}</span>
-                      <span style={{ fontSize: '11px', color: '#64748b' }}>({doneCount}/{list.length})</span>
-                    </div>
-                    {groups.map((g, gi) => (
-                      <div key={gi} style={{ marginBottom: gi === groups.length - 1 ? 0 : '12px' }}>
-                        {g.label && (
-                          <div style={{ display: 'flex', alignItems: 'center', gap: '6px', marginBottom: '6px' }}>
-                            <span style={{ fontSize: '11px', fontWeight: 900, color: g.color }}>{g.label}</span>
-                            <span style={{ fontSize: '10px', color: '#64748b' }}>({g.items.filter(t => completedTopics.includes(t.id)).length}/{g.items.length})</span>
-                            <span style={{ flex: 1, height: '1px', background: '#334155' }} />
-                          </div>
-                        )}
-                        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(108px, 1fr))', gap: '8px' }}>
-                          {g.items.map(renderCard)}
+                      <div style={{ display: 'flex', gap: '16px', alignItems: 'center' }}>
+                        <div style={{ width: '56px', height: '56px', borderRadius: '14px', background: color, display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '26px', fontWeight: 900, flexShrink: 0 }}>
+                          {done ? '✅' : unl ? icon : '🔒'}
                         </div>
-                      </div>
-                    ))}
-                  </div>
-                );
-              })}
-            </div>
-
-            {/* AŞAMA 3: MÜFREDAT ÜNİTELERİ (A1→C1/C2, seviye seviye) */}
-            <div>
-              <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '12px', flexWrap: 'wrap' }}>
-                <span style={{ background: '#f59e0b', color: '#fff', fontSize: '11px', fontWeight: 900, padding: '3px 8px', borderRadius: '6px' }}>AŞAMA 3</span>
-                <h3 style={{ margin: 0, fontSize: '18px' }}>Müfredat Üniteleri ({UNITS_DATA.length} Ünite — A1'den C1/C2'ye)</h3>
-              </div>
-
-              {!isAllAlphaDone() && (
-                <div style={{ padding: '12px', borderRadius: '10px', background: 'rgba(245,158,11,0.1)', border: '1px solid #f59e0b', color: '#f59e0b', fontSize: '13px', marginBottom: '14px', fontWeight: 600 }}>
-                  🔒 Ünite modüllerine geçebilmek için lütfen önce Alfabe derslerini tamamlayın.
-                </div>
-              )}
-
-              {/* SEVİYE SEÇİCİ — tıkla, seviye başına atla */}
-              <div style={{ display: 'flex', gap: '8px', overflowX: 'auto', paddingBottom: '6px', marginBottom: '16px' }}>
-                {LEVELS.map((lv, li) => {
-                  const units = UNITS_DATA.filter(m => m.levelGroup === lv);
-                  const done = units.filter(m => completedUnits.includes(m.id)).length;
-                  const pct = units.length ? Math.round((done / units.length) * 100) : 0;
-                  const unlocked = isLevelUnlocked(li);
-                  return (
-                    <button key={lv} onClick={() => levelRefs.current[lv]?.scrollIntoView({ behavior: 'smooth', block: 'start' })} style={{
-                      flexShrink: 0, display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '3px',
-                      background: unlocked ? '#1e293b' : '#172033', border: `1px solid ${unlocked ? LEVEL_COLORS[lv] : '#334155'}`,
-                      borderRadius: '10px', padding: '8px 14px', cursor: 'pointer', opacity: unlocked ? 1 : 0.55, minWidth: '84px'
-                    }}>
-                      <span style={{ fontSize: '13px', fontWeight: 900, color: unlocked ? LEVEL_COLORS[lv] : '#64748b' }}>{unlocked ? '' : '🔒 '}{lv} <span style={{ fontSize: '10px', color: '#64748b' }}>%{pct}</span></span>
-                      <span style={{ width: '100%', height: '4px', background: '#0f172a', borderRadius: '2px', overflow: 'hidden' }}>
-                        <span style={{ display: 'block', height: '100%', width: `${pct}%`, background: LEVEL_COLORS[lv] }} />
-                      </span>
-                    </button>
-                  );
-                })}
-              </div>
-
-              <div style={{ display: 'flex', flexDirection: 'column', gap: '26px' }}>
-                {LEVELS.map((lv, li) => {
-                  const units = UNITS_DATA.filter(m => m.levelGroup === lv);
-                  const done = units.filter(m => completedUnits.includes(m.id)).length;
-                  const unlocked = isLevelUnlocked(li);
-                  const meta = LEVEL_META[lv];
-                  return (
-                    <div key={lv} ref={el => { levelRefs.current[lv] = el; }} style={{ scrollMarginTop: '84px' }}>
-                      {/* SEVİYE BAŞLIĞI */}
-                      <div style={{
-                        ...cardBox, padding: '14px 18px', marginBottom: '14px',
-                        background: `linear-gradient(135deg, ${LEVEL_COLORS[lv]}18, #1e293b)`,
-                        border: `1px solid ${unlocked ? `${LEVEL_COLORS[lv]}88` : '#334155'}`,
-                        display: 'flex', justifyContent: 'space-between', alignItems: 'center', gap: '12px', flexWrap: 'wrap'
-                      }}>
-                        <div>
-                          <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
-                            <span style={{ fontSize: '11px', fontWeight: 900, background: LEVEL_COLORS[lv], color: '#0f172a', padding: '3px 8px', borderRadius: '6px' }}>{lv}</span>
-                            <span style={{ fontSize: '16px', fontWeight: 900, color: LEVEL_COLORS[lv] }}>{meta.title}</span>
-                            {!unlocked && <span style={{ fontSize: '14px' }}>🔒</span>}
+                        <div style={{ flex: 1, minWidth: 0 }}>
+                          <div style={{ display: 'flex', gap: '6px', alignItems: 'center', marginBottom: '4px', flexWrap: 'wrap' }}>
+                            <span style={{ fontSize: '10px', fontWeight: 900, background: '#0f172a', color: LEVEL_COLORS[lv], padding: '2px 6px', borderRadius: '4px' }}>{lv} - ÜNİTE {pos + 1}</span>
+                            <span style={{ fontSize: '10px', fontWeight: 800, color: '#64748b' }}>{kindTag}</span>
                           </div>
-                          <div style={{ fontSize: '12px', color: '#94a3b8', marginTop: '4px' }}>{meta.desc}</div>
+                          <div style={{ fontWeight: 800, fontSize: '17px' }}>{title}</div>
+                          <div style={{ fontSize: '13px', color: '#cbd5e1', marginTop: '2px' }}>{desc}</div>
                         </div>
-                        <div style={{ textAlign: 'right' }}>
-                          <div style={{ fontSize: '18px', fontWeight: 900, color: done === units.length ? '#10b981' : '#f8fafc' }}>{done}/{units.length} ünite</div>
-                          <div style={{ fontSize: '11px', color: '#64748b' }}>
-                            {done === units.length ? 'Seviye tamamlandı 🏆' : unlocked ? 'Önceki seviyeyi bitirince açılır — üniteler sırayla açılır' : 'Önceki seviyenin tüm üniteleri gerekli'}
-                          </div>
-                        </div>
-                      </div>
-
-                      {/* SEVİYE ÜNİTE KARTLARI */}
-                      <div style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}>
-                        {units.map(mod => {
-                          const idx = UNITS_DATA.indexOf(mod);
-                          const unl = isUnitUnlocked(idx);
-                          const done = completedUnits.includes(mod.id);
-                          return (
-                            <div key={mod.id} onClick={() => { if (unl) { setUnitIdx(idx); setCardIdx(0); setIsFlipped(false); setScreen('STORY'); } }} style={{
-                              ...cardBox, cursor: unl ? 'pointer' : 'not-allowed', opacity: unl ? 1 : 0.5,
-                              border: `1px solid ${done ? '#10b981' : unl ? mod.color : '#334155'}`, position: 'relative', overflow: 'hidden'
-                            }}>
-                              <div style={{ display: 'flex', gap: '16px', alignItems: 'center' }}>
-                                <div style={{ width: '56px', height: '56px', borderRadius: '14px', background: mod.color, display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '28px', flexShrink: 0 }}>
-                                  {done ? '✅' : mod.icon}
-                                </div>
-                                <div style={{ flex: 1 }}>
-                                  <div style={{ display: 'flex', gap: '8px', alignItems: 'center', marginBottom: '4px' }}>
-                                    <span style={{ fontSize: '10px', fontWeight: 900, background: '#0f172a', color: mod.color, padding: '2px 6px', borderRadius: '4px' }}>{mod.levelGroup} - ÜNİTE {mod.unitNumber}</span>
-                                    <span style={{ fontSize: '11px', color: '#94a3b8' }}>• {mod.category}</span>
-                                  </div>
-                                  <div style={{ fontWeight: 800, fontSize: '17px' }}>{mod.title}</div>
-                                  <div style={{ fontSize: '13px', color: '#cbd5e1', marginTop: '2px' }}>{mod.description}</div>
-                                </div>
-                              </div>
-                            </div>
-                          );
-                        })}
                       </div>
                     </div>
                   );
                 })}
               </div>
             </div>
-
           </div>
         )}
 
@@ -1247,7 +1153,7 @@ export default function App() {
                 { icon: '🐰', title: '8. Anlaşılır Girdi (Comprehensible Input) — Смешарики (Smeshariki) Yöntemi', text: 'Dil edinimindeki en güçlü yöntemlerden biri, seviyenin biraz altındaki ama tamamen anlaşılır içeriği bol bol dinlemektir (Krashen\'in "i+1" hipotezi). Смешарики gerçek Rus çocuklarının bile ilk izlediği çizgi dizidir: kısa cümleler, yavaş tempo, net telaffuz. Her A1/A2 ünitesinin sonunda çıkan "🐰 Смешарики Sahnesi" bu yüzden var: önce basit bir örnek diyalogla ısın, sonra "Gerçek Bölümü Aç" butonuyla YouTube\'da o karakterlerin GERÇEK bölümünü izle. Anlamadığın kelimeler olsa bile durma, akışı takip et — beyin devam ede ede örüntüleri kendi kendine çözer.' },
                 { icon: '🔁', title: '9. Aynı İçeriği Tekrar İzleme (Repeated Viewing)', text: 'Bir Смешарики bölümünü bir kez izlemek yetmez. Aynı bölümü 2-3 gün arayla tekrar izlediğinde, ilk seferde kaçırdığın kelimeleri fark edersin — çünkü artık o kelimeler uygulamada öğrendiğin kelimeler haline geldi. Bu, pasif izlemeyi aktif bir "tanıma tatmini"ne çevirir ve kalıcılığı ciddi şekilde artırır.' },
                 { icon: '😴', title: '10. Uyku ve Hafıza Pekiştirmesi', text: 'Kısa süreli hafızadaki bilginin uzun süreli hafızaya "kaydedilmesi" büyük ölçüde UYKU sırasında gerçekleşir. Yeni bir üniteyi akşam bitirip hemen ardından uyumak, o bilgiyi sabaha kalıcılaştırma ihtimalini belirgin şekilde artırır.' },
-                { icon: '🎧', title: '11. Kulağı Alıştırma — 100 Konu (AŞAMA 2)', text: 'Gözden önce KULAK öğrenir: Rusçaya maruz kalmak (exposure) beynin ses örüntülerini tanımasını sağlar. Haritadaki "🎧 Kulağı Alıştır: 100 Konu" bölümü tam da bunu yapar — 33 harf konusu (örnek kelimeler, cümleler ve diyaloglar doğrudan A2-C1/C2 müfredat ünitelerinden seçilir, yani alfabeyi çalışırken üst seviyeye sesli ön-hazırlık yaparsın), 8 fonetik konusu (heceler + akanje, ikanje, sonda sedasızlaşma gibi ses kuralları) ve 59 müfredat ön-hazırlık konusu (A2, B1, B2 ve C1/C2 ünitelerinin sesli halinden). Her konunun formatı günlük ünitelerle BİREBİR aynıdır: kelimeler + cümleler + diyalog/sahne. Her konuda: kelimeleri tek tek 🔊 dinle, "Konuyu Dinle" ve "Yavaşça Dinle" ile Rusça akışa bat, sonra 5 soruluk "dinle & seç" testinde kulağının gerçekten ayırt edip edemediğini kanıtla (testin son sorusu başka bir konudan gelir — konular birbirinden bağımsız değildir). Günde 3-5 konu dinlemek, 2-3 hafta içinde doğal konuşma hızını kavraman için yeterli maruz kalma sağlar.' }
+                { icon: '🎧', title: '11. Kulağı Alıştırma — 100 Dinleme Konusu (yolun içinde)', text: 'Gözden önce KULAK öğrenir: Rusçaya maruz kalmak (exposure) beynin ses örüntülerini tanımasını sağlar. Öğrenme yolundaki 🎧 rozetli kartlar bunu yapar — 33 harf + 8 fonetik konusu (alfabe ünitelerinin hemen ardından gelir) ve 59 ön-hazırlık konusu (ilgili ünitenin hemen öncesinde, yani konuyu duyduktan saniyeler sonra ünitesine girersin). Her konu kelime kartları odaklıdır: tek tek 🔊 dinle, "Konuyu Dinle" / "Yavaşça Dinle" ile akışa bat, sonra 5 soruluk "dinle & seç" testiyle kanıtla. Günde 3-5 konu dinlemek, 2-3 hafta içinde doğal konuşma hızını kavraman için yeterlidir.' }
               ].map((m, i) => (
                 <div key={i} style={{ background: '#0f172a', border: '1px solid #334155', borderRadius: '12px', padding: '16px', display: 'flex', gap: '14px' }}>
                   <div style={{ fontSize: '28px', flexShrink: 0 }}>{m.icon}</div>
@@ -1302,12 +1208,16 @@ export default function App() {
               const cat = topicCatInfo(currentTopic.cat);
               const relatedUnit = currentTopic.unitId ? UNITS_DATA.find(u => u.id === currentTopic.unitId) : undefined;
               const relatedIdx = relatedUnit ? UNITS_DATA.indexOf(relatedUnit) : -1;
-              const relatedUnlocked = relatedIdx >= 0 && isUnitUnlocked(relatedIdx);
+              const relatedStepPos = relatedIdx >= 0 ? UNIT_PATH_POS[relatedIdx] - 1 : -1;
+              const relatedUnlocked = relatedStepPos >= 0 && isStepUnlocked(relatedStepPos);
               const srcUnits = topicSourceUnits(currentTopic).slice(0, 4);
               const isSyllable = currentTopic.cat === 'fonetik' && currentTopic.items.every(i => i.ru.length <= 4);
+              const pathPos = TOPIC_PATH_POS[topicIdx]; // yoldaki global "ÜNİTE N" numarası
+              const prevStep = pathPos > 1 ? PATH[pathPos - 2] : null;
+              const nextStep = pathPos < PATH.length ? PATH[pathPos] : null;
               return (
                 <div>
-                  <SceneBanner icon={cat.icon} color={cat.color} label={`${currentTopic.num}. Konu — ${cat.label.split(' (')[0]}`} />
+                  <SceneBanner icon={cat.icon} color={cat.color} label={`Ünite ${pathPos} • Dinleme Konusu — ${cat.label.split(' (')[0]}`} />
                   <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', gap: '12px', flexWrap: 'wrap' }}>
                     <div>
                       <div style={{ display: 'flex', gap: '8px', alignItems: 'center', marginBottom: '6px', flexWrap: 'wrap' }}>
@@ -1323,9 +1233,10 @@ export default function App() {
                           {srcUnits.map(vid => {
                             const ui = sourceUnitInfo(vid);
                             if (!ui) return null;
+                            const uIdx = UNITS_DATA.findIndex(u => u.id === vid);
                             return (
                               <span key={vid} style={{ fontSize: '10px', fontWeight: 800, color: '#94a3b8', background: '#0f172a', border: '1px solid #334155', padding: '2px 7px', borderRadius: '6px' }}>
-                                {ui.icon} Ünite {ui.num} · {ui.level}
+                                {ui.icon} Ünite {uIdx >= 0 ? UNIT_PATH_POS[uIdx] : ui.num} · {ui.level}
                               </span>
                             );
                           })}
@@ -1414,12 +1325,12 @@ export default function App() {
                       <div>
                         <div style={{ fontSize: '11px', fontWeight: 800, color: '#94a3b8' }}>🔗 BU KONUNUN MÜFREDAT ÜNİTESİ</div>
                         <div style={{ fontWeight: 800, fontSize: '15px', marginTop: '4px' }}>
-                          {relatedUnit.icon} Ünite {relatedUnit.unitNumber}: {relatedUnit.title}{' '}
+                          {relatedUnit.icon} Ünite {relatedStepPos + 1}: {relatedUnit.title}{' '}
                           <span style={{ color: LEVEL_COLORS[relatedUnit.levelGroup], fontSize: '11px', fontWeight: 900 }}>({relatedUnit.levelGroup})</span>
                         </div>
                       </div>
                       <button
-                        onClick={() => { if (relatedUnlocked) { setUnitIdx(relatedIdx); setCardIdx(0); setIsFlipped(false); setScreen('STORY'); } }}
+                        onClick={() => { if (relatedUnlocked) openStep(PATH[relatedStepPos]); }}
                         disabled={!relatedUnlocked}
                         style={{ background: relatedUnlocked ? LEVEL_COLORS[relatedUnit.levelGroup] : '#334155', color: relatedUnlocked ? '#0f172a' : '#64748b', border: 'none', padding: '10px 16px', borderRadius: '10px', fontWeight: 900, cursor: relatedUnlocked ? 'pointer' : 'not-allowed', fontSize: '13px' }}
                       >
@@ -1432,16 +1343,16 @@ export default function App() {
                     ▶️ Teste Başla (5 Soruluk "Dinle & Seç") →
                   </button>
 
-                  {/* ÖNCEKİ / SONRAKİ KONU — bölüm içinde hızlı gezinme */}
+                  {/* ÖNCEKİ / SONRAKİ ADIM — tek yol üzerinde gezinme (sonraki adım, bu konu bitince açılır) */}
                   <div style={{ display: 'flex', gap: '10px', marginTop: '14px' }}>
-                    {topicIdx > 0 && (
-                      <button onClick={() => { setTopicIdx(topicIdx - 1); setFeedback(null); }} style={{ flex: 1, padding: '12px', borderRadius: '12px', background: '#334155', border: 'none', color: '#cbd5e1', fontWeight: 800, cursor: 'pointer', fontSize: '13px' }}>
-                        ← {TOPICS_100[topicIdx - 1].num}. Konu
+                    {prevStep && (
+                      <button onClick={() => openStep(prevStep)} style={{ flex: 1, padding: '12px', borderRadius: '12px', background: '#334155', border: 'none', color: '#cbd5e1', fontWeight: 800, cursor: 'pointer', fontSize: '13px' }}>
+                        ← Ünite {pathPos - 1}
                       </button>
                     )}
-                    {topicIdx < TOPICS_100.length - 1 && (
-                      <button onClick={() => { setTopicIdx(topicIdx + 1); setFeedback(null); }} style={{ flex: 1, padding: '12px', borderRadius: '12px', background: '#334155', border: 'none', color: '#cbd5e1', fontWeight: 800, cursor: 'pointer', fontSize: '13px' }}>
-                        {TOPICS_100[topicIdx + 1].num}. Konu →
+                    {nextStep && (
+                      <button onClick={() => { if (isStepUnlocked(pathPos)) openStep(nextStep); }} disabled={!isStepUnlocked(pathPos)} style={{ flex: 1, padding: '12px', borderRadius: '12px', background: isStepUnlocked(pathPos) ? '#334155' : '#1e293b', border: 'none', color: isStepUnlocked(pathPos) ? '#cbd5e1' : '#475569', fontWeight: 800, cursor: isStepUnlocked(pathPos) ? 'pointer' : 'not-allowed', fontSize: '13px' }}>
+                        {isStepUnlocked(pathPos) ? `Ünite ${pathPos + 1} →` : `🔒 Ünite ${pathPos + 1}`}
                       </button>
                     )}
                   </div>
@@ -1458,7 +1369,7 @@ export default function App() {
                 const passed = percent >= 75;
                 return (
                   <div style={{ textAlign: 'center' }}>
-                    <SceneBanner icon={passed ? '🏆' : '🎧'} color={passed ? '#10b981' : '#f59e0b'} label={`Konu ${currentTopic.num} Test Sonucu`} />
+                    <SceneBanner icon={passed ? '🏆' : '🎧'} color={passed ? '#10b981' : '#f59e0b'} label={`Ünite ${TOPIC_PATH_POS[topicIdx]} — Test Sonucu`} />
                     <div style={{ fontSize: '52px', fontWeight: 900, color: passed ? '#10b981' : '#f59e0b', margin: '24px 0 8px' }}>%{percent}</div>
                     <p style={{ color: '#cbd5e1', fontSize: '14px' }}>{topicQs.length} sorudan {topicQCorrect} tanesini doğru yanıtladın. Geçmek için en az %75 (4/5) gerekiyor.</p>
                     {passed && (
@@ -1467,7 +1378,18 @@ export default function App() {
                     {passed ? (
                       <>
                         <p style={{ color: '#10b981', fontWeight: 800, fontSize: '15px' }}>✅ Konu tamamlandı! +20 XP ve +12 elmas kazandın. Kulağın bu konuya alıştı.</p>
-                        <button onClick={() => setScreen('MAP')} style={{ ...primaryBtn, background: '#10b981', boxShadow: '0 4px 14px rgba(16,185,129,0.4)', marginTop: '16px' }}>Haritaya Dön →</button>
+                        {(() => {
+                          const pathPos = TOPIC_PATH_POS[topicIdx];
+                          const nextStep = pathPos < PATH.length ? PATH[pathPos] : null;
+                          return (
+                            <div style={{ display: 'flex', gap: '10px', marginTop: '16px', flexWrap: 'wrap' }}>
+                              {nextStep && (
+                                <button onClick={() => openStep(nextStep)} style={{ ...primaryBtn, flex: 1, width: 'auto', background: '#10b981', boxShadow: '0 4px 14px rgba(16,185,129,0.4)' }}>▶ Ünite {pathPos + 1}'e Devam Et →</button>
+                              )}
+                              <button onClick={() => setScreen('MAP')} style={{ background: '#334155', border: 'none', color: '#cbd5e1', padding: '16px 20px', borderRadius: '12px', fontWeight: 800, cursor: 'pointer', fontSize: '16px' }}>Haritaya Dön</button>
+                            </div>
+                          );
+                        })()}
                       </>
                     ) : (
                       <>
@@ -1499,26 +1421,48 @@ export default function App() {
               );
             })()}
 
-            {/* HARF EKRANI */}
+            {/* HARF EKRANI — Sade yapı: HARF → SES İPUCU → NET KURAL → 1-2 ÖRNEK KELİME */}
             {screen === 'ALPHA' && (
               <div>
                 {(() => {
                   const l = ALPHABET_LESSONS[alphaIdx].letters[letterIdx];
+                  const lesColor = ALPHA_BANNER_COLORS[alphaIdx % ALPHA_BANNER_COLORS.length];
                   return (
                     <div>
-                      <SceneBanner icon={`${ALPHABET_LESSONS[alphaIdx].letters[0].upper}${ALPHABET_LESSONS[alphaIdx].letters[0].lower}`} color={ALPHA_BANNER_COLORS[alphaIdx % ALPHA_BANNER_COLORS.length]} label={ALPHABET_LESSONS[alphaIdx].title} />
+                      <SceneBanner icon={`${ALPHABET_LESSONS[alphaIdx].letters[0].upper}${ALPHABET_LESSONS[alphaIdx].letters[0].lower}`} color={lesColor} label={ALPHABET_LESSONS[alphaIdx].title} />
                       <div style={{ fontSize: '12px', color: '#38bdf8', fontWeight: 800 }}>HARF {letterIdx + 1} / {ALPHABET_LESSONS[alphaIdx].letters.length}</div>
-                      <div style={{ background: '#0f172a', padding: '30px', borderRadius: '16px', border: '1px solid #334155', textAlign: 'center', margin: '16px 0' }}>
-                        <div style={{ fontSize: '72px', fontWeight: 900, color: '#3b82f6' }}>{l.upper} {l.lower}</div>
-                        <div style={{ fontSize: '20px', fontWeight: 800, marginTop: '8px' }}>/{l.translit}/ — {l.soundHint}</div>
-                        <p style={{ color: '#cbd5e1', fontSize: '14px', marginTop: '12px', lineHeight: '1.5' }}>{l.phoneticRule}</p>
-                        <button onClick={() => speak(l.upper)} style={{ padding: '8px 18px', borderRadius: '8px', background: '#3b82f6', border: 'none', color: '#fff', cursor: 'pointer', fontWeight: 800, marginTop: '12px' }}>🔊 Harfi Dinle</button>
+
+                      {/* 1) HARF */}
+                      <div style={{ background: '#0f172a', padding: '26px', borderRadius: '16px', border: '1px solid #334155', textAlign: 'center', margin: '16px 0 12px' }}>
+                        <div style={{ fontSize: '84px', fontWeight: 900, color: '#3b82f6', lineHeight: 1.1 }}>{l.upper} {l.lower}</div>
+                        <button onClick={() => speak(l.upper)} style={{ padding: '8px 18px', borderRadius: '8px', background: '#3b82f6', border: 'none', color: '#fff', cursor: 'pointer', fontWeight: 800, marginTop: '14px' }}>🔊 Harfi Dinle</button>
                       </div>
 
-                      <div style={{ background: '#0f172a', padding: '16px', borderRadius: '12px', border: '1px solid #334155', marginBottom: '20px' }}>
-                        <div style={{ fontSize: '12px', color: '#94a3b8', fontWeight: 700 }}>ÖRNEK KULLANIM:</div>
-                        <div style={{ fontWeight: 900, fontSize: '22px', color: '#10b981', marginTop: '4px' }}>{l.example.ru} ({l.example.reading})</div>
-                        <div style={{ fontSize: '14px', color: '#cbd5e1', marginTop: '2px' }}>Türkçesi: {l.example.tr}</div>
+                      {/* 2) SES İPUCU */}
+                      <div style={{ background: '#0f172a', padding: '14px 16px', borderRadius: '12px', border: '1px solid #334155', marginBottom: '10px', display: 'flex', alignItems: 'center', gap: '12px' }}>
+                        <span style={{ fontSize: '10px', fontWeight: 900, color: '#38bdf8', background: '#1e293b', border: '1px solid #38bdf855', padding: '3px 8px', borderRadius: '6px', whiteSpace: 'nowrap' }}>SES İPUCU</span>
+                        <span style={{ fontWeight: 800, fontSize: '16px' }}>/{l.translit}/ — {l.soundHint}</span>
+                      </div>
+
+                      {/* 3) NET FONETİK KURAL */}
+                      <div style={{ background: '#0f172a', padding: '14px 16px', borderRadius: '12px', border: '1px solid #334155', marginBottom: '10px', display: 'flex', alignItems: 'center', gap: '12px' }}>
+                        <span style={{ fontSize: '10px', fontWeight: 900, color: '#f59e0b', background: '#1e293b', border: '1px solid #f59e0b55', padding: '3px 8px', borderRadius: '6px', whiteSpace: 'nowrap' }}>KURAL</span>
+                        <span style={{ fontSize: '14px', color: '#e2e8f0', lineHeight: '1.5' }}>{l.phoneticRule}</span>
+                      </div>
+
+                      {/* 4) 1-2 TEMEL ÖRNEK KELİME */}
+                      <div style={{ fontSize: '12px', color: '#94a3b8', fontWeight: 700, margin: '8px 0 8px' }}>ÖRNEK KELİMELER</div>
+                      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(180px, 1fr))', gap: '10px', marginBottom: '18px' }}>
+                        {l.examples.map((ex, i) => (
+                          <div key={i} style={{ background: '#0f172a', border: '1px solid #334155', borderRadius: '12px', padding: '12px 14px' }}>
+                            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', gap: '8px' }}>
+                              <span style={{ fontWeight: 900, fontSize: '18px', color: '#10b981' }}>{ex.ru}</span>
+                              <button onClick={() => speak(ex.ru, 0.8)} style={{ background: '#1d4ed8', border: 'none', color: '#fff', padding: '6px 9px', borderRadius: '8px', cursor: 'pointer', fontSize: '13px', flexShrink: 0 }}>🔊</button>
+                            </div>
+                            <div style={{ fontSize: '12px', color: '#38bdf8', marginTop: '2px' }}>/{ex.reading}/</div>
+                            <div style={{ fontSize: '12px', color: '#94a3b8', marginTop: '2px' }}>{ex.tr}</div>
+                          </div>
+                        ))}
                       </div>
 
                       <button onClick={startAlphaCheck} style={primaryBtn}>Devam Et →</button>
@@ -1585,7 +1529,7 @@ export default function App() {
                   return (
                     <div>
                       <SceneBanner icon={mod.icon} color={mod.color} label={`${mod.levelGroup} • ${mod.category}`} />
-                      <span style={{ fontSize: '11px', fontWeight: 900, background: '#0f172a', color: mod.color, padding: '2px 8px', borderRadius: '4px' }}>ÜNİTE {mod.unitNumber} GRAMER & İPUÇLARI</span>
+                      <span style={{ fontSize: '11px', fontWeight: 900, background: '#0f172a', color: mod.color, padding: '2px 8px', borderRadius: '4px' }}>ÜNİTE {UNIT_PATH_POS[unitIdx]} GRAMER & İPUÇLARI</span>
                       <h2 style={{ marginTop: '8px', fontSize: '22px' }}>{mod.title}</h2>
 
                       <div style={{ background: '#0f172a', padding: '18px', borderRadius: '12px', border: '1px solid #334155', margin: '16px 0', fontSize: '14px', lineHeight: '1.6', whiteSpace: 'pre-line' }}>

@@ -179,7 +179,9 @@ function pickWordsForLetter(glyph: string, max = 10): Topic100Item[] {
   return out;
 }
 
-function pickSentencesForLetter(glyph: string, max = 3): Topic100Sentence[] {
+// NOT: Kelime kartları + pratik odaklı akış için konu başına cümle/diyalog
+// sayısı bilinçli olarak düşük tutulur (each ≈ 2); uzun listeler yorar.
+function pickSentencesForLetter(glyph: string, max = 2): Topic100Sentence[] {
   const low = glyph.toLowerCase();
   const pool = FLAT_SENTENCES.filter((s) => s.ru.toLowerCase().includes(low));
   pool.sort((a, b) => LEVEL_SCORE[b.level as CefrTag] - LEVEL_SCORE[a.level as CefrTag] || a.unitNum - b.unitNum);
@@ -194,7 +196,7 @@ function pickSentencesForLetter(glyph: string, max = 3): Topic100Sentence[] {
   return out;
 }
 
-function pickLinesForLetter(glyph: string, max = 4): Topic100Line[] {
+function pickLinesForLetter(glyph: string, max = 2): Topic100Line[] {
   const low = glyph.toLowerCase();
   const pool = FLAT_LINES.filter((l) => l.ru.toLowerCase().includes(low));
   pool.sort((a, b) => LEVEL_SCORE[b.level as CefrTag] - LEVEL_SCORE[a.level as CefrTag] || a.unitNum - b.unitNum);
@@ -254,8 +256,8 @@ export function buildLetterTopic(glyph: string, num: number): Topic100 {
   const items = pickWordsForLetter(glyph);
   let sentences = pickSentencesForLetter(glyph);
   let dialogue = pickLinesForLetter(glyph);
-  if (sentences.length < 2) sentences = [...sentences, ...synthesizeSentences(items)];
-  if (dialogue.length < 3) dialogue = [...dialogue, ...synthesizeLines(items)];
+  if (sentences.length < 1) sentences = [...sentences, ...synthesizeSentences(items)];
+  if (dialogue.length < 2) dialogue = [...dialogue, ...synthesizeLines(items)];
   return {
     id: `t100_harf_${glyph.toLowerCase()}`,
     num,
@@ -266,8 +268,8 @@ export function buildLetterTopic(glyph: string, num: number): Topic100 {
     descTr: info?.note || '',
     letterGlyph: glyph,
     items,
-    sentences: sentences.slice(0, 3),
-    dialogue: dialogue.slice(0, 4),
+    sentences: sentences.slice(0, 2),
+    dialogue: dialogue.slice(0, 2),
   };
 }
 
@@ -382,8 +384,8 @@ export function buildRuleTopic(rule: PhoneticRule, num: number): Topic100 {
     return out;
   };
 
-  const sents = take(sentences, 3).map((s) => ({ ru: s.ru, tr: s.tr, unitId: s.unitId, level: s.level }));
-  const dlg = take(lines, 4).map((l) => ({
+  const sents = take(sentences, 2).map((s) => ({ ru: s.ru, tr: s.tr, unitId: s.unitId, level: s.level }));
+  const dlg = take(lines, 2).map((l) => ({
     speaker: l.speaker,
     ru: l.ru,
     reading: l.reading,
@@ -418,12 +420,10 @@ export function buildSyllableTopic(s: (typeof SYLLABLE_TOPICS)[number], num: num
     sentences: [
       { ru: 'А, о, е, и, ы, у. Смотри, как меняется звук.', tr: '"a, o, e, i, ı, u" hecelerini sırayla dinle.' },
       { ru: 'Говори медленно вместе со мной.', tr: 'Benimle birlikte yavaşça tekrar et.' },
-      { ru: 'Каждый слог — отдельный удар.', tr: 'Her hece ayrı bir vuruş gibi okunur.' },
     ],
     dialogue: [
       { speaker: 'Аня', ru: 'Ма-ма! Па-па! Так легко!', reading: 'Ma-ma! Pa-pa! Tak lyéyga!', tr: 'Ma-ma! Pa-pa! Çok kolay!' },
       { speaker: 'Макс', ru: 'Ра-ра-ра, как радио!', reading: 'Ra-ra-ra, kak radió!', tr: 'Ra-ra-ra, radyo gibi!' },
-      { speaker: 'Аня', ru: 'Отлично! Ты слышишь каждый звук.', reading: 'Atlíchna! Ty slýshish kajdyi zvúk.', tr: 'Harika! Her sesi duyuyorsun.' },
     ],
   };
 }
@@ -449,8 +449,9 @@ export function buildPreviewTopic(u: UnitModule, num: number): Topic100 {
     unitId: u.id,
     level: w.level,
   }));
+  // Cümle yoğunluğu düşük: en fazla 2 örnek cümle + en fazla 3 diyalog satırı.
   const dialogue: Topic100Line[] = (u.dialogue ?? [])
-    .slice(0, 4)
+    .slice(0, 3)
     .map((l: DialogueLine) => ({
       speaker: l.speaker,
       ru: l.ru,
@@ -459,10 +460,10 @@ export function buildPreviewTopic(u: UnitModule, num: number): Topic100 {
       unitId: u.id,
       level: u.levelGroup,
     }));
-  // Ünite diyalogu 3 satırdan kısaysa ünitenin kendi kelimeleriyle
+  // Ünite diyalogu 2 satırdan kısaysa ünitenin kendi kelimeleriyle
   // pratik bir satır ekle (format her konuda eşit kalsın).
-  if (dialogue.length < 3) {
-    dialogue.push(...synthesizeLines(items).slice(0, 4 - dialogue.length));
+  if (dialogue.length < 2) {
+    dialogue.push(...synthesizeLines(items).slice(0, 3 - dialogue.length));
   }
   return {
     id: `t100_mufredat_${u.id}`,
@@ -474,7 +475,7 @@ export function buildPreviewTopic(u: UnitModule, num: number): Topic100 {
     unitId: u.id,
     levelGroup: u.levelGroup,
     items,
-    sentences: u.sentences.slice(0, 3).map((s) => ({
+    sentences: u.sentences.slice(0, 2).map((s) => ({
       ru: s.ru,
       tr: s.tr,
       unitId: u.id,
