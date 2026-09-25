@@ -32,14 +32,17 @@ Uygulama, tip güvenliği ve sürdürülebilirlik gözetilerek **React** ve **Ty
 * `ALPHABET_LESSONS`: 8 ana fonetik üniteden oluşur. Vurgu kuralları (O->A, E->İ), patlamalı ünsüzler, vızıltılı/ıslıklı sesler, iyotlu harfler (Ё, Ю, Я) ve özel yumuşatma/sertleştirme işaretleri (Ь, Ъ, Ы, Э) detaylıca kategorize edilmiştir.
 * `ALL_ALPHA_LETTERS`: Tüm alfabe harflerini tek bir düz listede toplayarak hızlı erişim sağlar.
 * `UNITS_DATA`: Gündelik yaşam senaryolarına dayalı üniteleri barındırır. Kelimeler, cümle kurma bulmacaları, diyaloglar ve test soruları bu dizi içinde organize edilmiştir.
+* `UNITS_DATA` artık `src/curriculumData.ts` içindeki **tek kaynak**dır (72 ünite, A1→C1/C2). Hem ana uygulama hem "100 Konu" modülü bu dosyayı kullanır — seviyeler arası hiçbir format farkı yoktur, yalnızca zorluk artar.
+* `TOPICS_100` (`src/topics100/`): "Kulağı Alıştır" bölümünün veri modülü. Tüm 100 konu **`UNITS_DATA`'dan türetilir** (`derive.ts`): 33 harf konusu (harfi içeren B1-C2 öncelikli kelimeler + ünite cümleleri + diyalog satırları; ince harfler için `letterNotes.ts` içindeki tamamlayıcı kelime tablosu), 8 fonetik konusu (2 hece pratiği + akanje, ikanje, sonda sedasızlaşma, yumuşatma, iyotlaşma, vurgu kuralları) ve 59 müfredat ön-hazırlık konusu (5 A2 + 22 B1 + 17 B2 + 15 C1/C2 ünitesinin kelimeleri/cümleleri/diyaloğu birebir). Her konu; `items` (kelime kartları), `sentences` (cümleler) ve `dialogue` (sahne/diyalog) bloklarını — yani ünitelerle BİREBİR aynı veri formatını — içerir ve `unitId`/`level` alanlarıyla örneklerin geldiği ünitelere gerçek bağlantı taşır. Test soruları `buildTopicDrills` ile deterministik üretilir (5 soru: kelime dinleme + harf konularında harf sesi + başka bir konudan gelen karışık tekrar sorusu).
 
 ---
 
 ## 📱 Uygulama Nasıl Kullanılır?
 
 1. **Kiril Alfabesi Sekmesi:** Harf kartlarına tıklayarak okunuş ipuçlarını, telaffuz kurallarını ve örnek kelimeleri inceleyin. Bölüm sonlarındaki *Reading Drills (Okuma Tatbikatları)* ile okuma pratiği yapın.
-2. **Ünite Müfredatı:** Sol menüden veya ünite kartlarından A1-A2 seviyelerindeki konuları seçin. Kelime kartlarını çalışın, dilbilgisi açıklamalarını okuyun ve kelime sıralama / cümle kurma alıştırmalarını tamamlayın.
-3. **Smeshariki İnteraktif Dinleme Modülü:** Çizgi dizi diyaloglarını takip edin, sahne anlama sorularını yanıtlayın ve entegre arama sorguları üzerinden gerçek ses dinlemeleri gerçekleştirin.
+2. **🎧 Kulağı Alıştır: 100 Konu (AŞAMA 2):** 100 konuluk sesli dinleme bölümü — 33 harf (örnekler doğrudan müfredat ünitelerinden), 8 fonetik (hece + ses kuralları) ve 59 müfredat ön-hazırlık konusu (A2→C1/C2 ünitelerinin sesli hali). Her konuda: kelimeler tek tek 🔊 (seviye etiketli), cümleler ve diyalog/sahne blokları (ünitelerle aynı format), "Konuyu Dinle" (normal tempo) ve "Yavaşça Dinle" (yavaş tempo) Rusça TTS dinlemeleri, ardından 5 soruluk **"dinle & seç"** kulağı sınavı (son soru başka bir konudan gelir; geçersen konunun kelimeleri otomatik Aralıklı Tekrar havuzuna eklenir). Müfredat ön-hazırlık konularından doğrudan ilgili üniteye sıçrayabilirsiniz. Haritadaki **"🔊 Ses Testi"** butonu TTS sesinin çalıştığını anında doğrular.
+3. **Ünite Müfredatı (72 ünite, A1→C1/C2):** Üniteler seviyeye göre gruplanır (A1, A2, B1, B2, C1/C2) ve sırayla açılır: bir seviye, bir önceki seviyenin tüm üniteleri bitince açılır. Üstteki seviye sekmelerine tıklayarak ilgili seviyeye atlayabilirsiniz. Kelime kartlarını çalışın, dilbilgisi açıklamalarını okuyun ve kelime sıralama / cümle kurma alıştırmalarını tamamlayın.
+4. **Smeshariki İnteraktif Dinleme Modülü:** Çizgi dizi diyaloglarını takip edin, sahne anlama sorularını yanıtlayın ve entegre arama sorguları üzerinden gerçek ses dinlemeleri gerçekleştirin.
 
 ---
 
