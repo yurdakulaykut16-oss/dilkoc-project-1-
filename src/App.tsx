@@ -18,6 +18,7 @@ const LEVEL_COLORS: Record<CefrTag, string> = {
 };
 
 import { UNITS_DATA, ALL_WORDS, ALL_SENTENCES } from './curriculumData';
+import { GRAMMAR_FOUNDATION_UNITS } from './grammarFoundationData';
 import type { WordDetail, DialogueLine, SmesharikiQuestion, SmesharikiScene, UnitModule } from './curriculumData';
 // Dışarıdan bu isimleri App'ten alan kodlar için geriye uyum re-export'ları:
 export { UNITS_DATA, ALL_WORDS, ALL_SENTENCES };
@@ -222,6 +223,7 @@ interface SaveState {
   streak: number;
   gems: number;
   completedAlpha: string[];
+  completedGrammar: string[];
   completedUnits: string[];
   completedTopics: string[];
   completedStories: string[]; // tamamlanan hikaye modülü kontrol noktaları (story_cp1...)
@@ -273,17 +275,20 @@ const ALPHA_BANNER_COLORS = ['#3b82f6', '#10b981', '#f59e0b', '#8b5cf6', '#ec489
 // müfredat üniteleri tek bir sıralı çizgi üzerinde "Ünite 1, Ünite 2, ..."
 // olarak akar ve her kart bir önceki tamamlanınca açılır.
 //   1-  8 : Alfabe üniteleri (33 harf)
-//   9- 49 : Harf + fonetik dinleme konuları (41 konu)
-//  50-180 : Her müfredat ünitesi, (varsa) hemen öncesinde dinleme ön-hazırlığıyla
+//   9- 13 : Cümle temelleri (özne, yüklem, edat, yüklemin değişimi)
+//  14- 54 : Harf + fonetik dinleme konuları (41 konu)
+//  55+    : Her müfredat ünitesi, (varsa) hemen öncesinde dinleme ön-hazırlığıyla
 // ==========================================
 export type PathStep =
   | { kind: 'alpha'; lessonIdx: number }
+  | { kind: 'grammar'; grammarIdx: number }
   | { kind: 'topic'; topicIdx: number }
   | { kind: 'unit'; unitIdx: number };
 
 export const PATH: PathStep[] = (() => {
   const steps: PathStep[] = [];
   for (let i = 0; i < ALPHABET_LESSONS.length; i++) steps.push({ kind: 'alpha', lessonIdx: i });
+  for (let i = 0; i < GRAMMAR_FOUNDATION_UNITS.length; i++) steps.push({ kind: 'grammar', grammarIdx: i });
   TOPICS_100.forEach((t, idx) => { if (t.cat !== 'mufredat') steps.push({ kind: 'topic', topicIdx: idx }); });
   const previewByUnit = new Map<string, number>();
   TOPICS_100.forEach((t, idx) => { if (t.cat === 'mufredat' && t.unitId && !previewByUnit.has(t.unitId)) previewByUnit.set(t.unitId, idx); });
@@ -302,6 +307,7 @@ export const TOPIC_PATH_POS: number[] = TOPICS_100.map((_, i) => PATH.findIndex(
 // Bu adımın seviye etiketi (kart çipi + seviye renkleri için)
 const stepLevel = (s: PathStep): CefrTag =>
   s.kind === 'unit' ? UNITS_DATA[s.unitIdx].levelGroup
+  : s.kind === 'grammar' ? GRAMMAR_FOUNDATION_UNITS[s.grammarIdx].levelGroup
   : s.kind === 'topic' ? (TOPICS_100[s.topicIdx].levelGroup || 'A1')
   : 'A1';
 
@@ -314,9 +320,9 @@ const LEVEL_ANCHORS: Record<CefrTag, number> = (() => {
 
 export default function App() {
   const [activeTab, setActiveTab] = useState<'MAP' | 'PROFILE' | 'MISTAKES' | 'METHODS'>('MAP');
-  const [screen, setScreen] = useState<'MAP' | 'ALPHA' | 'ALPHA_CHECK' | 'ALPHA_READING' | 'TOPIC' | 'TOPIC_TEST' | 'STORY' | 'DIALOG' | 'SMESHARIKI' | 'FLASHCARD' | 'MATCH' | 'TYPING' | 'SENTENCE' | 'QUIZ' | 'UNIT_STORY' | 'STORY_TEST' | 'STORY_RESULT' | 'CHECKPOINT_STORY'>('MAP');
+  const [screen, setScreen] = useState<'MAP' | 'ALPHA' | 'ALPHA_CHECK' | 'ALPHA_READING' | 'GRAMMAR' | 'TOPIC' | 'TOPIC_TEST' | 'STORY' | 'DIALOG' | 'SMESHARIKI' | 'FLASHCARD' | 'MATCH' | 'TYPING' | 'SENTENCE' | 'QUIZ' | 'UNIT_STORY' | 'STORY_TEST' | 'STORY_RESULT' | 'CHECKPOINT_STORY'>('MAP');
   // Sınav/test motorunun hangi bağlamda çalıştığını belirtir: her biri bittiğinde farklı bir sonraki adıma geçer
-  const [quizContext, setQuizContext] = useState<'ALPHA_FINAL' | 'LISTENING' | 'UNIT_FINAL' | 'REVIEW' | 'SRS_REVIEW'>('UNIT_FINAL');
+  const [quizContext, setQuizContext] = useState<'ALPHA_FINAL' | 'GRAMMAR_FOUNDATION' | 'LISTENING' | 'UNIT_FINAL' | 'REVIEW' | 'SRS_REVIEW'>('UNIT_FINAL');
   // Harf bazlı anlık tanıma testi
   const [alphaCheckQ, setAlphaCheckQ] = useState<{ type: 'reading' | 'listen'; prompt: string; correct: string; options: string[] } | null>(null);
   // Okuma testi (kelime okuma alıştırması) durumu
@@ -328,6 +334,7 @@ export default function App() {
   const [streak, setStreak] = useState(1);
   const [gems, setGems] = useState(250);
   const [completedAlpha, setCompletedAlpha] = useState<string[]>([]);
+  const [completedGrammar, setCompletedGrammar] = useState<string[]>([]);
   const [completedUnits, setCompletedUnits] = useState<string[]>([]);
   const [completedTopics, setCompletedTopics] = useState<string[]>([]);
   const [completedStories, setCompletedStories] = useState<string[]>([]);
@@ -348,6 +355,7 @@ export default function App() {
   // İndeksler
   const [alphaIdx, setAlphaIdx] = useState(0);
   const [letterIdx, setLetterIdx] = useState(0);
+  const [grammarIdx, setGrammarIdx] = useState(0);
 
   const [unitIdx, setUnitIdx] = useState(0);
   const [cardIdx, setCardIdx] = useState(0);
@@ -407,7 +415,9 @@ export default function App() {
         setStreak(d.streak || 1);
         setGems(d.gems || 250);
         setCompletedAlpha(d.completedAlpha || []);
+        setCompletedGrammar(d.completedGrammar || []);
         setCompletedUnits(d.completedUnits || []);
+        setCompletedTopics(d.completedTopics || []);
         setCompletedStories(d.completedStories || []);
         setMistakes(d.mistakes || []);
         setSrsBank(d.srsBank || []);
@@ -419,9 +429,9 @@ export default function App() {
 
   // OTOMATİK KAYIT
   useEffect(() => {
-    const d: SaveState = { xp, streak, gems, completedAlpha, completedUnits, completedTopics, completedStories, mistakes, srsBank };
+    const d: SaveState = { xp, streak, gems, completedAlpha, completedGrammar, completedUnits, completedTopics, completedStories, mistakes, srsBank };
     localStorage.setItem(SAVE_KEY, JSON.stringify(d));
-  }, [xp, streak, gems, completedAlpha, completedUnits, completedTopics, completedStories, mistakes, srsBank]);
+  }, [xp, streak, gems, completedAlpha, completedGrammar, completedUnits, completedTopics, completedStories, mistakes, srsBank]);
 
   // SESLENDİRME — rate parametresiyle yavaş (0.55) veya normal (0.85) tempoda okuma.
   // SES SAĞLAMLILIĞI: uzun metin cümle sınırlarından kısa parçalara bölünür ve
@@ -497,6 +507,7 @@ export default function App() {
     setStreak(1);
     setGems(250);
     setCompletedAlpha([]);
+    setCompletedGrammar([]);
     setCompletedUnits([]);
     setCompletedTopics([]);
     setCompletedStories([]);
@@ -504,6 +515,7 @@ export default function App() {
     setSrsBank([]);
     setAlphaIdx(0);
     setLetterIdx(0);
+    setGrammarIdx(0);
     setUnitIdx(0);
     setCardIdx(0);
     setIsFlipped(false);
@@ -515,12 +527,13 @@ export default function App() {
   // İLERLEME HESAPLAMA (tek yol: alfabe dersleri + dinleme konuları + müfredat üniteleri;
   // sayılar UNITS_DATA'dan otomatik türetilir — hikaye kontrol noktaları hariç)
   const totalTasks = PATH.length;
-  const completedCount = completedAlpha.length + completedTopics.length + completedUnits.length;
+  const completedCount = completedAlpha.length + completedGrammar.length + completedTopics.length + completedUnits.length;
   const progressPercent = Math.round((completedCount / totalTasks) * 100);
 
   // TEK YOL KİLİT MANTIĞI: her kart, yolda kendinden önceki kart bitince açılır.
   const isStepDone = (s: PathStep): boolean =>
     s.kind === 'alpha' ? completedAlpha.includes(ALPHABET_LESSONS[s.lessonIdx].id)
+    : s.kind === 'grammar' ? completedGrammar.includes(GRAMMAR_FOUNDATION_UNITS[s.grammarIdx].id)
     : s.kind === 'topic' ? completedTopics.includes(TOPICS_100[s.topicIdx].id)
     : completedUnits.includes(UNITS_DATA[s.unitIdx].id);
   // BÖLÜM FİNALİ KAPISI: bir adım, kendisinden önce biten bölüm finali hikayesi
@@ -528,6 +541,7 @@ export default function App() {
   // bölümün final hikayesi (özet %100 + seviye sınavı) bitince açılır.
   const unitNumberOfStep = (s: PathStep): number => {
     if (s.kind === 'unit') return UNITS_DATA[s.unitIdx].unitNumber;
+    if (s.kind === 'grammar') return 0; // cümle temelleri tüm müfredat kapılarından önce gelir
     if (s.kind === 'topic') {
       const t = TOPICS_100[s.topicIdx];
       if (t.cat === 'mufredat' && t.unitId) {
@@ -550,6 +564,7 @@ export default function App() {
   const openStep = (s: PathStep) => {
     setFeedback(null);
     if (s.kind === 'alpha') { setAlphaIdx(s.lessonIdx); setLetterIdx(0); setScreen('ALPHA'); }
+    else if (s.kind === 'grammar') { setGrammarIdx(s.grammarIdx); setScreen('GRAMMAR'); }
     else if (s.kind === 'topic') { setTopicIdx(s.topicIdx); setScreen('TOPIC'); }
     else { setUnitIdx(s.unitIdx); setCardIdx(0); setIsFlipped(false); setScreen('STORY'); }
   };
@@ -602,6 +617,24 @@ export default function App() {
     setQuizContext('ALPHA_FINAL');
     setQuizQuestions(shuffle(q));
     setQuizIdx(0);
+    setScreen('QUIZ');
+  };
+
+  // CÜMLE TEMELLERİ — özne/yüklem/edat mini üniteleri için 4 soruluk hızlı kontrol.
+  const startGrammarQuiz = () => {
+    const unit = GRAMMAR_FOUNDATION_UNITS[grammarIdx];
+    if (!unit) return;
+    const q = unit.quiz.map(item => ({
+      prompt: item.prompt,
+      correct: item.correct,
+      options: shuffle(item.options),
+      ru: item.prompt,
+      tr: item.correct
+    }));
+    setQuizContext('GRAMMAR_FOUNDATION');
+    setQuizQuestions(q);
+    setQuizIdx(0);
+    setFeedback(null);
     setScreen('QUIZ');
   };
 
@@ -1033,7 +1066,7 @@ export default function App() {
   const startGlobalReview = () => {
     if (mistakes.length === 0) return;
     const q = shuffle(mistakes).map(m => ({
-      prompt: `"${m.ru}" ne anlama gelir?`,
+      prompt: m.reason === 'Cümle Temeli Hatası' ? m.ru : `"${m.ru}" ne anlama gelir?`,
       correct: m.tr,
       options: shuffle([m.tr, ...shuffle(ALL_WORDS.filter(x => x.tr !== m.tr)).slice(0, 3).map(x => x.tr)]),
       ru: m.ru, tr: m.tr
@@ -1091,6 +1124,12 @@ export default function App() {
           ALPHABET_LESSONS[alphaIdx].readingDrills.forEach(d => addToSRS(d.word, d.correct, 'word'));
           setGems(g => g + 50);
           setScreen('MAP');
+        } else if (quizContext === 'GRAMMAR_FOUNDATION') {
+          const unit = GRAMMAR_FOUNDATION_UNITS[grammarIdx];
+          if (unit && !completedGrammar.includes(unit.id)) setCompletedGrammar(p => [...p, unit.id]);
+          setXp(x => x + 30);
+          setGems(g => g + 25);
+          setScreen('MAP');
         } else if (quizContext === 'LISTENING') {
           setMatchPairs(shuffle(UNITS_DATA[unitIdx].words).map(x => ({ ru: x.ru, tr: x.tr })));
           setDonePairs([]);
@@ -1120,7 +1159,7 @@ export default function App() {
         }
       }
     } else {
-      const reason = quizContext === 'LISTENING' ? 'Dinleme Hatası' : quizContext === 'REVIEW' ? 'Tekrar Testinde Yine Yanlış' : quizContext === 'ALPHA_FINAL' ? 'Alfabe Sınavı Hatası' : quizContext === 'SRS_REVIEW' ? 'Aralıklı Tekrarda Unutuldu' : 'Sınav Hatası';
+      const reason = quizContext === 'LISTENING' ? 'Dinleme Hatası' : quizContext === 'REVIEW' ? 'Tekrar Testinde Yine Yanlış' : quizContext === 'ALPHA_FINAL' ? 'Alfabe Sınavı Hatası' : quizContext === 'GRAMMAR_FOUNDATION' ? 'Cümle Temeli Hatası' : quizContext === 'SRS_REVIEW' ? 'Aralıklı Tekrarda Unutuldu' : 'Sınav Hatası';
       addMistake(q.ru, q.tr, reason);
       if (quizContext === 'SRS_REVIEW') {
         // Unutulan kelime kutu 1'e geri düşer: yarın tekrar sorulacak (kalıcı hafıza mantığının kalbi)
@@ -1240,7 +1279,7 @@ export default function App() {
                     <div style={{ fontSize: '12px', color: '#94a3b8', marginTop: '3px' }}>Ünite 1'den {PATH.length}'e kadar tek sıra — her kart, bir önceki bitince açılır.</div>
                   </div>
                   <div style={{ fontSize: '11px', color: '#94a3b8', fontWeight: 700 }}>
-                    🔤 {completedAlpha.length}/{ALPHABET_LESSONS.length} alfabe • 🎧 {completedTopics.length}/{TOPICS_100_TOTAL} dinleme • 📚 {completedUnits.length}/{UNITS_DATA.length} ünite • 📖 {completedStories.length}/{STORIES.length} hikaye
+                    🔤 {completedAlpha.length}/{ALPHABET_LESSONS.length} alfabe • 🧩 {completedGrammar.length}/{GRAMMAR_FOUNDATION_UNITS.length} cümle temeli • 🎧 {completedTopics.length}/{TOPICS_100_TOTAL} dinleme • 📚 {completedUnits.length}/{UNITS_DATA.length} ünite • 📖 {completedStories.length}/{STORIES.length} hikaye
                   </div>
                 </div>
                 {/* Seviye sıçrama çipleri + ses testi */}
@@ -1275,6 +1314,13 @@ export default function App() {
                     title = les.title;
                     desc = les.subtitle;
                     kindTag = '🔤 ALFABE';
+                  } else if (step.kind === 'grammar') {
+                    const g = GRAMMAR_FOUNDATION_UNITS[step.grammarIdx];
+                    color = g.color;
+                    icon = g.icon;
+                    title = g.title;
+                    desc = g.description;
+                    kindTag = '🧩 CÜMLE TEMELİ';
                   } else if (step.kind === 'topic') {
                     const t = TOPICS_100[step.topicIdx];
                     const cat = topicCatInfo(t.cat);
@@ -1384,7 +1430,7 @@ export default function App() {
                 { icon: '🐰', title: '8. Anlaşılır Girdi (Comprehensible Input) — Смешарики (Smeshariki) Yöntemi', text: 'Dil edinimindeki en güçlü yöntemlerden biri, seviyenin biraz altındaki ama tamamen anlaşılır içeriği bol bol dinlemektir (Krashen\'in "i+1" hipotezi). Смешарики gerçek Rus çocuklarının bile ilk izlediği çizgi dizidir: kısa cümleler, yavaş tempo, net telaffuz. Her A1/A2 ünitesinin sonunda çıkan "🐰 Смешарики Sahnesi" bu yüzden var: önce basit bir örnek diyalogla ısın, sonra "Gerçek Bölümü Aç" butonuyla YouTube\'da o karakterlerin GERÇEK bölümünü izle. Anlamadığın kelimeler olsa bile durma, akışı takip et — beyin devam ede ede örüntüleri kendi kendine çözer.' },
                 { icon: '🔁', title: '9. Aynı İçeriği Tekrar İzleme (Repeated Viewing)', text: 'Bir Смешарики bölümünü bir kez izlemek yetmez. Aynı bölümü 2-3 gün arayla tekrar izlediğinde, ilk seferde kaçırdığın kelimeleri fark edersin — çünkü artık o kelimeler uygulamada öğrendiğin kelimeler haline geldi. Bu, pasif izlemeyi aktif bir "tanıma tatmini"ne çevirir ve kalıcılığı ciddi şekilde artırır.' },
                 { icon: '😴', title: '10. Uyku ve Hafıza Pekiştirmesi', text: 'Kısa süreli hafızadaki bilginin uzun süreli hafızaya "kaydedilmesi" büyük ölçüde UYKU sırasında gerçekleşir. Yeni bir üniteyi akşam bitirip hemen ardından uyumak, o bilgiyi sabaha kalıcılaştırma ihtimalini belirgin şekilde artırır.' },
-                { icon: '🎧', title: `11. Kulağı Alıştırma — ${TOPICS_100_TOTAL} Dinleme Konusu (yolun içinde)`, text: `Gözden önce KULAK öğrenir: Rusçaya maruz kalmak (exposure) beynin ses örüntülerini tanımasını sağlar. Öğrenme yolundaki 🎧 rozetli kartlar bunu yapar — 33 harf + 8 fonetik konusu (alfabe ünitelerinin hemen ardından gelir) ve müfredat ön-hazırlık konuları (ilgili ünitenin hemen öncesinde, yani konuyu duyduktan saniyeler sonra ünitesine girersin). Toplam ${TOPICS_100_TOTAL} konunun her biri kelime kartları odaklıdır: tek tek 🔊 dinle, "Konuyu Dinle" / "Yavaşça Dinle" ile akışa bat, sonra 5 soruluk "dinle & seç" testiyle kanıtla. Günde 3-5 konu dinlemek, 2-3 hafta içinde doğal konuşma hızını kavraman için yeterlidir.` },
+                { icon: '🎧', title: `11. Kulağı Alıştırma — ${TOPICS_100_TOTAL} Dinleme Konusu (yolun içinde)`, text: `Gözden önce KULAK öğrenir: Rusçaya maruz kalmak (exposure) beynin ses örüntülerini tanımasını sağlar. Öğrenme yolundaki önce 🧩 cümle temeli kartları (özne-yüklem-edat), sonra 🎧 rozetli kartlar bunu yapar — 33 harf + 8 fonetik konusu ve müfredat ön-hazırlık konuları (ilgili ünitenin hemen öncesinde, yani konuyu duyduktan saniyeler sonra ünitesine girersin). Toplam ${TOPICS_100_TOTAL} konunun her biri kelime kartları odaklıdır: tek tek 🔊 dinle, "Konuyu Dinle" / "Yavaşça Dinle" ile akışa bat, sonra 5 soruluk "dinle & seç" testiyle kanıtla. Günde 3-5 konu dinlemek, 2-3 hafta içinde doğal konuşma hızını kavraman için yeterlidir.` },
                 { icon: '📖', title: '12. Hikaye & Özet — Okuma Anlama + Üretici Çıktı (10\'lu kontrol noktaları + bölüm finalleri)', text: 'İki tür hikaye var: (1) Her 10 müfredat ünitesinin sonunda bir HİKAYE KONTROL NOKTASI açılır: o 10 ünitede öğrendiğin kelimelerle yazılmış, içinde en fazla 5-6 yeni kelime olan bir sit-com hikayesi. (2) Her bölümün (A1, A2, B1, B2, C1/C2) sonunda bir BÖLÜM FİNALİ açılır — bunlar KAPILIDIR: özetin TAMAMEN doğru yazılması ve Seviye Tekrar Sınavı\'ndan en az 7/10 alınması şarttır; geçmeden sonraki bölüm açılmaz! Hikayeler iki tarzda: Dima\'nın 2035\'te çocuklarına anlattığı HIMYM tadında bölümler VE «Кухня» dizisinden esinlenen mutfak komedileri (Şef Pyotr, garson Lyosha, Nina, Semyon — «Ван Гог» restoranı). Okurken istediğin satırın çevirisini açabilir, yeni kelimeleri sözlük kartlarından, ESKİ kelimeleri "Eski Kelimeler" bölümünden tekrar edersin — çünkü B\'deyken A kelimeleri unutulmasın diye finallere bilerek serpiştirildiler (kalıcı öğrenme!). Ardından en önemli adım: ÖZETİNİ TÜRKÇE YAZ — okuduğunu kendi cümlelerinle yeniden kurmak "üretici çıktı"dır ve pasif tanımadan çok daha güçlü kalıcılaşır. Analiz motoru özetini ana fikirlerle karşılaştırır: kaç doğru nokta yakaladığını, neyi kaçırdığını ve neleri yanlış anladığını söyler. Bölüm finallerinde ayrıca 10 soruluk seviye sınavı vardır: 6 soru bitirilen bölümden, 4 soru önceki bölümlerden. Düşük skor alırsan hikayeyi tekrar oku — ikinci okuma, tıpkı bir sitcom\'u tekrar izlemek gibi, her zaman daha kolaydır.' }
               ].map((m, i) => (
                 <div key={i} style={{ background: '#0f172a', border: '1px solid #334155', borderRadius: '12px', padding: '16px', display: 'flex', gap: '14px' }}>
@@ -1433,6 +1479,108 @@ export default function App() {
                 {feedback.message}
               </div>
             )}
+
+            {/* CÜMLE TEMELLERİ — alfabeden sonra gelen özne/yüklem/edat mini üniteleri */}
+            {screen === 'GRAMMAR' && (() => {
+              const g = GRAMMAR_FOUNDATION_UNITS[grammarIdx];
+              if (!g) return null;
+              const done = completedGrammar.includes(g.id);
+              const pathPos = PATH.findIndex(s => s.kind === 'grammar' && s.grammarIdx === grammarIdx) + 1;
+              const prevStep = pathPos > 1 ? PATH[pathPos - 2] : null;
+              const nextStep = pathPos < PATH.length ? PATH[pathPos] : null;
+              return (
+                <div>
+                  <SceneBanner icon={g.icon} color={g.color} label={`Ünite ${pathPos} • Cümle Temeli`} />
+                  <div style={{ display: 'flex', justifyContent: 'space-between', gap: '12px', alignItems: 'flex-start', flexWrap: 'wrap' }}>
+                    <div>
+                      <span style={{ fontSize: '11px', fontWeight: 900, background: '#0f172a', color: g.color, padding: '2px 8px', borderRadius: '4px' }}>{g.levelGroup} • ALFABEDEN SONRA GRAMER</span>
+                      <h2 style={{ marginTop: '8px', marginBottom: '4px', fontSize: '22px' }}>{g.title}</h2>
+                      <p style={{ color: '#cbd5e1', fontSize: '13px', marginTop: 0, lineHeight: 1.6 }}>{g.description}</p>
+                    </div>
+                    {done && <span style={{ background: 'rgba(16,185,129,0.15)', border: '1px solid #10b981', color: '#10b981', padding: '6px 12px', borderRadius: '10px', fontWeight: 900, fontSize: '12px' }}>✅ Tamamlandı</span>}
+                  </div>
+
+                  <div style={{ background: '#0f172a', padding: '18px', borderRadius: '12px', border: `1px solid ${g.color}66`, margin: '16px 0', fontSize: '14px', lineHeight: '1.7' }}>
+                    <div style={{ fontSize: '12px', color: g.color, fontWeight: 900, marginBottom: '6px' }}>ANA FİKİR</div>
+                    {g.coreConcept}
+                  </div>
+
+                  <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(230px, 1fr))', gap: '10px', marginBottom: '18px' }}>
+                    {g.keyPoints.map((point, i) => (
+                      <div key={i} style={{ background: '#0f172a', border: '1px solid #334155', borderRadius: '12px', padding: '12px 14px', lineHeight: 1.55 }}>
+                        <div style={{ fontSize: '11px', color: g.color, fontWeight: 900, marginBottom: '4px' }}>KURAL {i + 1}</div>
+                        <div style={{ fontSize: '13px', color: '#e2e8f0' }}>{point}</div>
+                      </div>
+                    ))}
+                  </div>
+
+                  {g.changeRules && g.changeRules.length > 0 && (
+                    <div style={{ background: 'rgba(245,158,11,0.08)', border: '1px solid rgba(245,158,11,0.35)', borderRadius: '14px', padding: '16px', marginBottom: '18px' }}>
+                      <div style={{ fontSize: '12px', color: '#fbbf24', fontWeight: 900, marginBottom: '8px' }}>🔁 NEYE GÖRE DEĞİŞİR?</div>
+                      <div style={{ display: 'flex', flexDirection: 'column', gap: '10px' }}>
+                        {g.changeRules.map((rule, i) => (
+                          <div key={i} style={{ background: '#0f172a', border: '1px solid #334155', borderRadius: '12px', padding: '12px' }}>
+                            <div style={{ fontWeight: 900, color: '#fbbf24', marginBottom: '4px' }}>{rule.label}</div>
+                            <div style={{ fontSize: '13px', color: '#cbd5e1', lineHeight: 1.55 }}>{rule.explanation}</div>
+                            <div style={{ display: 'flex', flexWrap: 'wrap', gap: '6px', marginTop: '8px' }}>
+                              {rule.examples.map((ex, j) => (
+                                <span key={j} style={{ fontSize: '12px', color: '#e2e8f0', background: '#1e293b', border: '1px solid #334155', borderRadius: '999px', padding: '4px 9px' }}>{ex}</span>
+                              ))}
+                            </div>
+                          </div>
+                        ))}
+                      </div>
+                    </div>
+                  )}
+
+                  <div style={{ fontSize: '12px', color: '#94a3b8', fontWeight: 800, marginBottom: '8px' }}>ÖRNEK CÜMLELER — özne / yüklem / edat parçalarına ayrılmış:</div>
+                  <div style={{ display: 'flex', flexDirection: 'column', gap: '10px', marginBottom: '18px' }}>
+                    {g.examples.map((ex, i) => (
+                      <div key={i} style={{ background: '#0f172a', border: '1px solid #334155', borderRadius: '12px', padding: '14px' }}>
+                        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', gap: '10px' }}>
+                          <div>
+                            <div style={{ fontSize: '18px', fontWeight: 900 }}>{ex.ru}</div>
+                            <div style={{ fontSize: '12px', color: '#38bdf8', marginTop: '2px' }}>/{ex.reading}/</div>
+                            <div style={{ fontSize: '13px', color: '#cbd5e1', marginTop: '3px' }}>{ex.tr}</div>
+                          </div>
+                          <button onClick={() => speak(ex.ru, 0.8)} style={{ background: '#1d4ed8', border: 'none', color: '#fff', padding: '8px 10px', borderRadius: '8px', cursor: 'pointer', fontSize: '14px', flexShrink: 0 }} title="Cümleyi dinle">🔊</button>
+                        </div>
+                        <div style={{ display: 'flex', flexWrap: 'wrap', gap: '6px', marginTop: '10px' }}>
+                          {ex.subject && <span style={{ fontSize: '11px', fontWeight: 800, color: '#93c5fd', background: 'rgba(59,130,246,0.15)', border: '1px solid rgba(59,130,246,0.45)', padding: '4px 8px', borderRadius: '8px' }}>Özne: {ex.subject}</span>}
+                          {ex.predicate && <span style={{ fontSize: '11px', fontWeight: 800, color: '#fcd34d', background: 'rgba(245,158,11,0.15)', border: '1px solid rgba(245,158,11,0.45)', padding: '4px 8px', borderRadius: '8px' }}>Yüklem: {ex.predicate}</span>}
+                          {ex.preposition && <span style={{ fontSize: '11px', fontWeight: 800, color: '#c4b5fd', background: 'rgba(139,92,246,0.15)', border: '1px solid rgba(139,92,246,0.45)', padding: '4px 8px', borderRadius: '8px' }}>Edat: {ex.preposition}</span>}
+                        </div>
+                        <div style={{ fontSize: '12px', color: '#94a3b8', marginTop: '8px', lineHeight: 1.5 }}>💡 {ex.note}</div>
+                      </div>
+                    ))}
+                  </div>
+
+                  <div style={{ background: 'rgba(34,197,94,0.08)', border: '1px solid rgba(34,197,94,0.35)', borderRadius: '12px', padding: '14px', marginBottom: '18px' }}>
+                    <div style={{ fontSize: '12px', color: '#86efac', fontWeight: 900, marginBottom: '8px' }}>✅ HIZLI KONTROL LİSTESİ</div>
+                    <ol style={{ margin: 0, paddingLeft: '18px', color: '#d1fae5', fontSize: '13px', lineHeight: 1.7 }}>
+                      {g.miniChecklist.map((item, i) => <li key={i}>{item}</li>)}
+                    </ol>
+                  </div>
+
+                  <button onClick={startGrammarQuiz} style={{ ...primaryBtn, background: g.color, boxShadow: `0 4px 14px ${g.color}55`, color: '#0f172a' }}>
+                    🧠 4 Soruluk Kontrol Testine Geç →
+                  </button>
+
+                  <div style={{ display: 'flex', gap: '10px', marginTop: '14px' }}>
+                    {prevStep && (
+                      <button onClick={() => openStep(prevStep)} style={{ flex: 1, padding: '12px', borderRadius: '12px', background: '#334155', border: 'none', color: '#cbd5e1', fontWeight: 800, cursor: 'pointer', fontSize: '13px' }}>
+                        ← Ünite {pathPos - 1}
+                      </button>
+                    )}
+                    {nextStep && (
+                      <button onClick={() => { if (isStepUnlocked(pathPos)) openStep(nextStep); }} disabled={!isStepUnlocked(pathPos)} style={{ flex: 1, padding: '12px', borderRadius: '12px', background: isStepUnlocked(pathPos) ? '#334155' : '#1e293b', border: 'none', color: isStepUnlocked(pathPos) ? '#cbd5e1' : '#475569', fontWeight: 800, cursor: isStepUnlocked(pathPos) ? 'pointer' : 'not-allowed', fontSize: '13px' }}>
+                        {isStepUnlocked(pathPos) ? `Ünite ${pathPos + 1} →` : `🔒 Ünite ${pathPos + 1}`}
+                      </button>
+                    )}
+                  </div>
+                </div>
+              );
+            })()}
 
             {/* 100 KONU — KONU DETAYI (sesli dinleme + test) */}
             {/* Format BİREBİR ünitelerle aynı: KELİMELER + CÜMLELER + SAHNE/DİYALOG. */}
@@ -1990,11 +2138,13 @@ export default function App() {
             {screen === 'QUIZ' && quizQuestions[quizIdx] && (
               <div>
                 {quizContext === 'ALPHA_FINAL' && <SceneBanner icon={`${ALPHABET_LESSONS[alphaIdx].letters[0].upper}${ALPHABET_LESSONS[alphaIdx].letters[0].lower}`} color={ALPHA_BANNER_COLORS[alphaIdx % ALPHA_BANNER_COLORS.length]} label="Alfabe Bitiş Sınavı" />}
+                {quizContext === 'GRAMMAR_FOUNDATION' && <SceneBanner icon={GRAMMAR_FOUNDATION_UNITS[grammarIdx].icon} color={GRAMMAR_FOUNDATION_UNITS[grammarIdx].color} label={GRAMMAR_FOUNDATION_UNITS[grammarIdx].title} />}
                 {(quizContext === 'LISTENING' || quizContext === 'UNIT_FINAL') && <SceneBanner icon={UNITS_DATA[unitIdx].icon} color={UNITS_DATA[unitIdx].color} label={UNITS_DATA[unitIdx].title} />}
                 {quizContext === 'REVIEW' && <SceneBanner icon="🔁" color="#ef4444" label="Genel Tekrar Testi" />}
                 {quizContext === 'SRS_REVIEW' && <SceneBanner icon="📅" color="#f59e0b" label="Aralıklı Tekrar (Spaced Repetition)" />}
                 <div style={{ fontSize: '12px', color: quizContext === 'REVIEW' || quizContext === 'SRS_REVIEW' ? '#f59e0b' : '#38bdf8', fontWeight: 800 }}>
                   {quizContext === 'ALPHA_FINAL' && `🔤 ALFABE BİTİŞ SINAVI — SORU ${quizIdx + 1} / ${quizQuestions.length}`}
+                  {quizContext === 'GRAMMAR_FOUNDATION' && `🧩 CÜMLE TEMELLERİ KONTROLÜ — SORU ${quizIdx + 1} / ${quizQuestions.length}`}
                   {quizContext === 'LISTENING' && `🎧 DİNLEME TESTİ — SORU ${quizIdx + 1} / ${quizQuestions.length}`}
                   {quizContext === 'UNIT_FINAL' && `✅ ÜNİTE BİTİŞ SINAVI — SORU ${quizIdx + 1} / ${quizQuestions.length}`}
                   {quizContext === 'REVIEW' && `🔁 GENEL TEKRAR (Doğru cevaplayana kadar sorulur!) — ${quizIdx + 1} / ${quizQuestions.length}`}
