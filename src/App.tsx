@@ -3,6 +3,11 @@ import React, { useState, useEffect, useRef } from 'react';
 import { TOPICS_100, TOPICS_100_TOTAL, topicCatInfo, buildTopicDrills, topicFullText, LEVELS, topicSourceUnits, sourceUnitInfo } from './topics100';
 import type { Topic100, Topic100Question, CefrTag } from './topics100';
 
+// HİKAYE MODÜLÜ (Story & Summary): her 10 ünitede bir açılan kontrol noktası hikayeleri
+// + Türkçe özet analiz motoru. Tüm mantık src/storyModule içinde modüler tutulur.
+import { STORIES, STORY_CAST, checkpointForUnitNumber, isStoryUnlocked, nextPendingStory, evaluateTurkishSummary } from './storyModule';
+import type { CheckpointStory, SummaryEvaluation } from './storyModule';
+
 // Seviye renkleri (tek yol kartlarındaki seviye etiketlerinde ortak kullanılır)
 const LEVEL_COLORS: Record<CefrTag, string> = {
   A1: '#10b981',
@@ -219,6 +224,7 @@ interface SaveState {
   completedAlpha: string[];
   completedUnits: string[];
   completedTopics: string[];
+  completedStories: string[]; // tamamlanan hikaye modülü kontrol noktaları (story_cp1...)
   mistakes: { id: string; ru: string; tr: string; reason: string }[];
   srsBank: SRSItem[];
 }
@@ -308,7 +314,7 @@ const LEVEL_ANCHORS: Record<CefrTag, number> = (() => {
 
 export default function App() {
   const [activeTab, setActiveTab] = useState<'MAP' | 'PROFILE' | 'MISTAKES' | 'METHODS'>('MAP');
-  const [screen, setScreen] = useState<'MAP' | 'ALPHA' | 'ALPHA_CHECK' | 'ALPHA_READING' | 'TOPIC' | 'TOPIC_TEST' | 'STORY' | 'DIALOG' | 'SMESHARIKI' | 'FLASHCARD' | 'MATCH' | 'TYPING' | 'SENTENCE' | 'QUIZ' | 'UNIT_STORY' | 'STORY_TEST' | 'STORY_RESULT'>('MAP');
+  const [screen, setScreen] = useState<'MAP' | 'ALPHA' | 'ALPHA_CHECK' | 'ALPHA_READING' | 'TOPIC' | 'TOPIC_TEST' | 'STORY' | 'DIALOG' | 'SMESHARIKI' | 'FLASHCARD' | 'MATCH' | 'TYPING' | 'SENTENCE' | 'QUIZ' | 'UNIT_STORY' | 'STORY_TEST' | 'STORY_RESULT' | 'CHECKPOINT_STORY'>('MAP');
   // Sınav/test motorunun hangi bağlamda çalıştığını belirtir: her biri bittiğinde farklı bir sonraki adıma geçer
   const [quizContext, setQuizContext] = useState<'ALPHA_FINAL' | 'LISTENING' | 'UNIT_FINAL' | 'REVIEW' | 'SRS_REVIEW'>('UNIT_FINAL');
   // Harf bazlı anlık tanıma testi
@@ -324,6 +330,7 @@ export default function App() {
   const [completedAlpha, setCompletedAlpha] = useState<string[]>([]);
   const [completedUnits, setCompletedUnits] = useState<string[]>([]);
   const [completedTopics, setCompletedTopics] = useState<string[]>([]);
+  const [completedStories, setCompletedStories] = useState<string[]>([]);
   const [mistakes, setMistakes] = useState<{ id: string; ru: string; tr: string; reason: string }[]>([]);
   const [srsBank, setSrsBank] = useState<SRSItem[]>([]);
 
@@ -380,6 +387,14 @@ export default function App() {
   const [storyChosenAnswer, setStoryChosenAnswer] = useState<string | null>(null);
   const [storyResult, setStoryResult] = useState<{ passed: boolean; percent: number; correctCount: number; total: number } | null>(null);
 
+  // HİKAYE MODÜLÜ (Story & Summary) DURUMU — her 10 ünitede bir açılan kontrol noktası hikayesi:
+  // Rusça hikaye okunur (Türkçesi satır satır gizli), altındaki sözlük kartlarından yeni
+  // kelimeler öğrenilir, ardından kullanıcının yazdığı TÜRKÇE ÖZET analiz edilir.
+  const [storyCheckpointIdx, setStoryCheckpointIdx] = useState(0);        // STORIES indeksi
+  const [storyRevealed, setStoryRevealed] = useState<number[]>([]);        // çevirisi açılmış satırlar
+  const [storySummaryText, setStorySummaryText] = useState('');            // kullanıcının Türkçe özeti
+  const [storyEvalResult, setStoryEvalResult] = useState<SummaryEvaluation | null>(null); // analiz sonucu
+
   // KAYIT YÜKLE
   useEffect(() => {
     const raw = localStorage.getItem(SAVE_KEY);
@@ -391,6 +406,7 @@ export default function App() {
         setGems(d.gems || 250);
         setCompletedAlpha(d.completedAlpha || []);
         setCompletedUnits(d.completedUnits || []);
+        setCompletedStories(d.completedStories || []);
         setMistakes(d.mistakes || []);
         setSrsBank(d.srsBank || []);
       } catch (e) {
@@ -401,9 +417,9 @@ export default function App() {
 
   // OTOMATİK KAYIT
   useEffect(() => {
-    const d: SaveState = { xp, streak, gems, completedAlpha, completedUnits, completedTopics, mistakes, srsBank };
+    const d: SaveState = { xp, streak, gems, completedAlpha, completedUnits, completedTopics, completedStories, mistakes, srsBank };
     localStorage.setItem(SAVE_KEY, JSON.stringify(d));
-  }, [xp, streak, gems, completedAlpha, completedUnits, completedTopics, mistakes, srsBank]);
+  }, [xp, streak, gems, completedAlpha, completedUnits, completedTopics, completedStories, mistakes, srsBank]);
 
   // SESLENDİRME — rate parametresiyle yavaş (0.55) veya normal (0.85) tempoda okuma.
   // SES SAĞLAMLILIĞI: uzun metin cümle sınırlarından kısa parçalara bölünür ve
@@ -481,6 +497,7 @@ export default function App() {
     setCompletedAlpha([]);
     setCompletedUnits([]);
     setCompletedTopics([]);
+    setCompletedStories([]);
     setMistakes([]);
     setSrsBank([]);
     setAlphaIdx(0);
@@ -493,8 +510,9 @@ export default function App() {
     setScreen('MAP');
   };
 
-  // İLERLEME HESAPLAMA (tek yol: Alfabe 8 ders + 100 dinleme konusu + 72 müfredat ünitesi)
-  const totalTasks = PATH.length; // 180 = 8 + 100 + 72
+  // İLERLEME HESAPLAMA (tek yol: alfabe dersleri + dinleme konuları + müfredat üniteleri;
+  // sayılar UNITS_DATA'dan otomatik türetilir — hikaye kontrol noktaları hariç)
+  const totalTasks = PATH.length;
   const completedCount = completedAlpha.length + completedTopics.length + completedUnits.length;
   const progressPercent = Math.round((completedCount / totalTasks) * 100);
 
@@ -664,7 +682,7 @@ export default function App() {
         }
       }
     } else {
-      addMistake(q.answer, 'Kulağa alışma testi (100 Konu)', 'Dinleme Hatası');
+      addMistake(q.answer, 'Kulağa alışma testi (Dinleme Konusu)', 'Dinleme Hatası');
       setFeedback({ isError: true, message: `❌ Tekrar dinle ve dene! Doğrusu: "${q.answer}"` });
       speak(q.audio, 0.8);
     }
@@ -868,6 +886,63 @@ export default function App() {
     setScreen('FLASHCARD');
   };
 
+  // ==========================================
+  // HİKAYE MODÜLÜ (Story & Summary) — HER 10 ÜNİTEDE BİR OTOMATİK AÇILIR
+  // Kullanıcı 10 müfredat ünitesini (kelime/cümle içerikli) tamamlayınca sistem,
+  // o 10 ünitenin kelimeleriyle yazılmış HIMYM tarzı bir hikaye modülü açar.
+  // Hikayede en fazla 5-6 yeni kelime vardır; anlamları sözlük kartı olarak gösterilir.
+  // Kullanıcı Rusça metni okur → Türkçe özetini yazar → analiz motoru
+  // "X doğru nokta / Y eksik-yanlış" şeklinde yapıcı geri bildirim üretir.
+  // ==========================================
+
+  // Tamamlanan müfredat ünitesi sayısı (yol doğrusal olduğu için bu, ilk N ünitenin
+  // tamamlandığı anlamına gelir → N=10,20,30... anlarında kontrol noktası hikayesi açılır).
+  const completedUnitsCount = completedUnits.length;
+  const storyDone = (s: CheckpointStory) => completedStories.includes(s.id);
+
+  // Haritada "okunmayı bekleyen" ilk hikaye (varsa üstte uyarı kartı çizer)
+  const pendingCheckpointStory = nextPendingStory(completedUnitsCount, completedStories);
+
+  // Bir kontrol noktası hikayesini ekranla: satır çevirileri kapanır, özet alanı sıfırlanır.
+  const openCheckpointStory = (s: CheckpointStory) => {
+    setStoryCheckpointIdx(STORIES.findIndex(x => x.id === s.id));
+    setStoryRevealed([]);
+    setStorySummaryText('');
+    setStoryEvalResult(null);
+    setFeedback(null);
+    setScreen('CHECKPOINT_STORY');
+  };
+
+  // Özeti analiz et: "X doğru nokta / Y eksik-yanlış anlaşılan yer" geri bildirimini üretir.
+  const analyzeStorySummary = () => {
+    const story = STORIES[storyCheckpointIdx];
+    if (!story) return;
+    const result = evaluateTurkishSummary(story, storySummaryText);
+    setStoryEvalResult(result);
+  };
+
+  // Hikaye modülünü tamamla: ödül + yeni kelimeler Aralıklı Tekrar (SRS) havuzuna eklenir.
+  const completeCheckpointStory = () => {
+    const story = STORIES[storyCheckpointIdx];
+    if (!story) { setScreen('MAP'); return; }
+    if (!completedStories.includes(story.id)) {
+      setCompletedStories(p => [...p, story.id]);
+      setXp(x => x + 100 + (storyEvalResult ? storyEvalResult.scorePercent : 0));
+      setGems(g => g + 60);
+      story.newWords.forEach(w => addToSRS(w.ru, w.tr, 'word'));
+    }
+    setScreen('MAP');
+    setActiveTab('MAP');
+  };
+
+  // Haritaya dönüş: BEKLEYEN bir hikaye kontrol noktası varsa onu OTOMATİK AÇ
+  // ("her 10 ünite tamamlanınca sistem otomatik hikaye modülü açsın" kuralı burada çalışır).
+  const returnToMapOrStory = () => {
+    const pending = nextPendingStory(completedUnits.length, completedStories);
+    if (pending) openCheckpointStory(pending);
+    else { setScreen('MAP'); setActiveTab('MAP'); }
+  };
+
   // GENEL TEKRAR MOTORU: "Unutulanlar" kütüğündeki HER şey doğru cevaplanana kadar tekrar tekrar sorulur.
   // Doğru cevaplanan kelime kütükten tamamen silinir (ustalaşıldı sayılır); yanlış cevaplanan kalır ve aynı soru yeniden sorulur.
   const startGlobalReview = () => {
@@ -942,6 +1017,12 @@ export default function App() {
             // A1 seviyesinde hikaye/Türkçeleştirme sınavı yok — ünite doğrudan tamamlanır.
             if (!completedUnits.includes(mod.id)) setCompletedUnits(p => [...p, mod.id]);
             mod.words.forEach(w => addToSRS(w.ru, w.tr, 'word'));
+            // 10. ünite gibi bir kontrol noktası tam tamamlandıysa hikaye modülü OTOMATİK açılır.
+            const cp = checkpointForUnitNumber(mod.unitNumber);
+            if (cp) {
+              const s = STORIES.find(x => x.checkpoint === cp);
+              if (s && !completedStories.includes(s.id)) { openCheckpointStory(s); return; }
+            }
             setScreen('MAP');
           } else {
             // A1 dışındaki her ünitede: ünite, kelimelerle bağlantılı bir hikaye + Türkçeleştirme sınavıyla biter.
@@ -1017,6 +1098,25 @@ export default function App() {
               </div>
             )}
 
+            {/* HİKAYE MODÜLÜ UYARISI — 10 ünitelik kontrol noktası tamamlandıysa ve hikaye henüz
+                okunmadıysa üstte göz alıcı bir kartla hatırlatılır (otomatik açılış kaçırılsa bile). */}
+            {pendingCheckpointStory && (
+              <div style={{ ...cardBox, marginBottom: '24px', border: '1px solid #f59e0b', background: 'linear-gradient(135deg, rgba(245,158,11,0.18), rgba(217,70,239,0.10))' }}>
+                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: '12px' }}>
+                  <div>
+                    <div style={{ fontSize: '12px', color: '#f59e0b', fontWeight: 800 }}>📖 HİKAYE MODÜLÜ AÇILDI — {pendingCheckpointStory.unitFrom}-{pendingCheckpointStory.unitTo}. ÜNİTELER TAMAMLANDI!</div>
+                    <div style={{ fontSize: '19px', fontWeight: 900, marginTop: '2px' }}>{pendingCheckpointStory.icon} {pendingCheckpointStory.titleTr}</div>
+                    <div style={{ fontSize: '12px', color: '#cbd5e1', marginTop: '4px' }}>
+                      Son 10 ünitede öğrendiğin kelimelerle yazılmış hikaye + 6 yeni kelime + Türkçe özet sınavı. Skorun kadar XP kazanılır!
+                    </div>
+                  </div>
+                  <button onClick={() => openCheckpointStory(pendingCheckpointStory)} style={{ background: '#f59e0b', border: 'none', color: '#0f172a', padding: '12px 18px', borderRadius: '10px', fontWeight: 900, cursor: 'pointer', fontSize: '14px' }}>
+                    ▶️ Hikayeyi Aç
+                  </button>
+                </div>
+              </div>
+            )}
+
             {/* İLERLEME ÖZET KARTI */}
             <div style={{ ...cardBox, marginBottom: '24px', background: 'linear-gradient(135deg, #1e293b, #0f172a)', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
               <div>
@@ -1055,7 +1155,7 @@ export default function App() {
                     <div style={{ fontSize: '12px', color: '#94a3b8', marginTop: '3px' }}>Ünite 1'den {PATH.length}'e kadar tek sıra — her kart, bir önceki bitince açılır.</div>
                   </div>
                   <div style={{ fontSize: '11px', color: '#94a3b8', fontWeight: 700 }}>
-                    🔤 {completedAlpha.length}/{ALPHABET_LESSONS.length} alfabe • 🎧 {completedTopics.length}/{TOPICS_100_TOTAL} dinleme • 📚 {completedUnits.length}/{UNITS_DATA.length} ünite
+                    🔤 {completedAlpha.length}/{ALPHABET_LESSONS.length} alfabe • 🎧 {completedTopics.length}/{TOPICS_100_TOTAL} dinleme • 📚 {completedUnits.length}/{UNITS_DATA.length} ünite • 📖 {completedStories.length}/{STORIES.length} hikaye
                   </div>
                 </div>
                 {/* Seviye sıçrama çipleri + ses testi */}
@@ -1075,7 +1175,8 @@ export default function App() {
                 </div>
               </div>
 
-              {/* Yol kartları */}
+              {/* Yol kartları — her 10. müfredat ünitesinin hemen ardından bir HİKAYE KONTROL
+                  NOKTASI kartı gelir (kilitli/açık/tamamlanlı durumlarıyla). */}
               <div style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}>
                 {PATH.map((step, pos) => {
                   const done = isStepDone(step);
@@ -1105,8 +1206,12 @@ export default function App() {
                     desc = mod.description;
                     kindTag = '📚 MÜFREDAT';
                   }
+                  // Bu ünite bir "10 ünite" kontrol noktasının sonuncusuysa hikaye kartı da çiz.
+                  const cp = step.kind === 'unit' ? checkpointForUnitNumber(UNITS_DATA[step.unitIdx].unitNumber) : null;
+                  const cpStory = cp ? STORIES.find(s => s.checkpoint === cp) : undefined;
                   return (
-                    <div key={pos} ref={el => { if (pos === LEVEL_ANCHORS[lv]) levelRefs.current[lv] = el; }} onClick={() => { if (unl) openStep(step); }} style={{
+                    <React.Fragment key={pos}>
+                    <div ref={el => { if (pos === LEVEL_ANCHORS[lv]) levelRefs.current[lv] = el; }} onClick={() => { if (unl) openStep(step); }} style={{
                       ...cardBox, cursor: unl ? 'pointer' : 'not-allowed', opacity: unl ? 1 : 0.5,
                       border: `1px solid ${done ? '#10b981' : unl ? color : '#334155'}`, position: 'relative', overflow: 'hidden', scrollMarginTop: '84px'
                     }}>
@@ -1124,6 +1229,38 @@ export default function App() {
                         </div>
                       </div>
                     </div>
+                    {cpStory && (() => {
+                      const sDone = storyDone(cpStory);
+                      const sUnl = isStoryUnlocked(cpStory, completedUnitsCount);
+                      const sProgress = Math.max(0, Math.min(10, completedUnitsCount - cpStory.unitFrom + 1));
+                      return (
+                        <div onClick={() => { if (sUnl) openCheckpointStory(cpStory); }} style={{
+                          ...cardBox, cursor: sUnl ? 'pointer' : 'not-allowed', opacity: sUnl ? 1 : 0.55,
+                          border: `1px solid ${sDone ? '#10b981' : sUnl ? '#f59e0b' : '#334155'}`,
+                          background: sUnl && !sDone ? 'linear-gradient(135deg, rgba(245,158,11,0.16), rgba(217,70,239,0.10))' : '#1e293b',
+                          position: 'relative', overflow: 'hidden'
+                        }}>
+                          <div style={{ display: 'flex', gap: '16px', alignItems: 'center' }}>
+                            <div style={{ width: '56px', height: '56px', borderRadius: '14px', background: sDone ? '#10b981' : sUnl ? 'linear-gradient(135deg, #f59e0b, #d946ef)' : '#334155', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '26px', flexShrink: 0 }}>
+                              {sDone ? '✅' : sUnl ? '📖' : '🔒'}
+                            </div>
+                            <div style={{ flex: 1, minWidth: 0 }}>
+                              <div style={{ display: 'flex', gap: '6px', alignItems: 'center', marginBottom: '4px', flexWrap: 'wrap' }}>
+                                <span style={{ fontSize: '10px', fontWeight: 900, background: '#0f172a', color: sDone ? '#10b981' : sUnl ? '#f59e0b' : '#64748b', padding: '2px 6px', borderRadius: '4px' }}>KONTROL NOKTASI {cpStory.checkpoint}</span>
+                                <span style={{ fontSize: '10px', fontWeight: 800, color: '#64748b' }}>📖 HİKAYE & ÖZET</span>
+                              </div>
+                              <div style={{ fontWeight: 800, fontSize: '17px' }}>{cpStory.titleTr} <span style={{ color: '#94a3b8', fontSize: '13px', fontWeight: 700 }}>— {cpStory.titleRu}</span></div>
+                              <div style={{ fontSize: '13px', color: '#cbd5e1', marginTop: '2px' }}>
+                                {sUnl
+                                  ? `Ünite ${cpStory.unitFrom}-${cpStory.unitTo} kelimeleriyle yazıldı • ${cpStory.newWords.length} yeni kelime • özet + analiz`
+                                  : `Ünite ${cpStory.unitFrom}-${cpStory.unitTo} tamamlandığında açılır (${sProgress}/10 ünite)`}
+                              </div>
+                            </div>
+                          </div>
+                        </div>
+                      );
+                    })()}
+                    </React.Fragment>
                   );
                 })}
               </div>
@@ -1153,7 +1290,8 @@ export default function App() {
                 { icon: '🐰', title: '8. Anlaşılır Girdi (Comprehensible Input) — Смешарики (Smeshariki) Yöntemi', text: 'Dil edinimindeki en güçlü yöntemlerden biri, seviyenin biraz altındaki ama tamamen anlaşılır içeriği bol bol dinlemektir (Krashen\'in "i+1" hipotezi). Смешарики gerçek Rus çocuklarının bile ilk izlediği çizgi dizidir: kısa cümleler, yavaş tempo, net telaffuz. Her A1/A2 ünitesinin sonunda çıkan "🐰 Смешарики Sahnesi" bu yüzden var: önce basit bir örnek diyalogla ısın, sonra "Gerçek Bölümü Aç" butonuyla YouTube\'da o karakterlerin GERÇEK bölümünü izle. Anlamadığın kelimeler olsa bile durma, akışı takip et — beyin devam ede ede örüntüleri kendi kendine çözer.' },
                 { icon: '🔁', title: '9. Aynı İçeriği Tekrar İzleme (Repeated Viewing)', text: 'Bir Смешарики bölümünü bir kez izlemek yetmez. Aynı bölümü 2-3 gün arayla tekrar izlediğinde, ilk seferde kaçırdığın kelimeleri fark edersin — çünkü artık o kelimeler uygulamada öğrendiğin kelimeler haline geldi. Bu, pasif izlemeyi aktif bir "tanıma tatmini"ne çevirir ve kalıcılığı ciddi şekilde artırır.' },
                 { icon: '😴', title: '10. Uyku ve Hafıza Pekiştirmesi', text: 'Kısa süreli hafızadaki bilginin uzun süreli hafızaya "kaydedilmesi" büyük ölçüde UYKU sırasında gerçekleşir. Yeni bir üniteyi akşam bitirip hemen ardından uyumak, o bilgiyi sabaha kalıcılaştırma ihtimalini belirgin şekilde artırır.' },
-                { icon: '🎧', title: '11. Kulağı Alıştırma — 100 Dinleme Konusu (yolun içinde)', text: 'Gözden önce KULAK öğrenir: Rusçaya maruz kalmak (exposure) beynin ses örüntülerini tanımasını sağlar. Öğrenme yolundaki 🎧 rozetli kartlar bunu yapar — 33 harf + 8 fonetik konusu (alfabe ünitelerinin hemen ardından gelir) ve 59 ön-hazırlık konusu (ilgili ünitenin hemen öncesinde, yani konuyu duyduktan saniyeler sonra ünitesine girersin). Her konu kelime kartları odaklıdır: tek tek 🔊 dinle, "Konuyu Dinle" / "Yavaşça Dinle" ile akışa bat, sonra 5 soruluk "dinle & seç" testiyle kanıtla. Günde 3-5 konu dinlemek, 2-3 hafta içinde doğal konuşma hızını kavraman için yeterlidir.' }
+                { icon: '🎧', title: `11. Kulağı Alıştırma — ${TOPICS_100_TOTAL} Dinleme Konusu (yolun içinde)`, text: `Gözden önce KULAK öğrenir: Rusçaya maruz kalmak (exposure) beynin ses örüntülerini tanımasını sağlar. Öğrenme yolundaki 🎧 rozetli kartlar bunu yapar — 33 harf + 8 fonetik konusu (alfabe ünitelerinin hemen ardından gelir) ve müfredat ön-hazırlık konuları (ilgili ünitenin hemen öncesinde, yani konuyu duyduktan saniyeler sonra ünitesine girersin). Toplam ${TOPICS_100_TOTAL} konunun her biri kelime kartları odaklıdır: tek tek 🔊 dinle, "Konuyu Dinle" / "Yavaşça Dinle" ile akışa bat, sonra 5 soruluk "dinle & seç" testiyle kanıtla. Günde 3-5 konu dinlemek, 2-3 hafta içinde doğal konuşma hızını kavraman için yeterlidir.` },
+                { icon: '📖', title: '12. Hikaye & Özet — Okuma Anlama + Üretici Çıktı (her 10 ünitede bir)', text: 'Her 10 müfredat ünitesinin sonunda bir HİKAYE KONTROL NOKTASI açılır: o 10 ünitede öğrendiğin kelimelerle yazılmış, içinde en fazla 5-6 yeni kelime olan bir sit-com hikayesi (HIMYM tadında: 2035\'te Dima çocuklarına hikayeyi anlatıyor). Hikayeyi Rusça okur (istediğin satırın çevirisini açabilir), yeni kelimeleri sözlük kartlarından öğrenirsin. Ardından en önemli adım: ÖZETİNİ TÜRKÇE YAZ. Okuduğunu kendi cümlelerinle yeniden kurmak "üretici çıktı"dır — pasif tanımadan çok daha güçlü kalıcılaşır. Analiz motoru özetini ana fikirlerle karşılaştırır: kaç doğru nokta yakaladığını, neyi kaçırdığını ve neleri yanlış anladığını söyler. Düşük skor alırsan hikayeyi tekrar oku — ikinci okuma, tıpkı bir sitcom\'u tekrar izlemek gibi, her zaman daha kolaydır.' }
               ].map((m, i) => (
                 <div key={i} style={{ background: '#0f172a', border: '1px solid #334155', borderRadius: '12px', padding: '16px', display: 'flex', gap: '14px' }}>
                   <div style={{ fontSize: '28px', flexShrink: 0 }}>{m.icon}</div>
@@ -1877,7 +2015,9 @@ export default function App() {
                       {storyResult.passed ? (
                         <>
                           <p style={{ color: '#10b981', fontWeight: 800 }}>✅ Ünite tamamlandı! Kelimeler kalıcı hafıza (SRS) havuzuna eklendi ve +80 elmas kazandın.</p>
-                          <button onClick={() => setScreen('MAP')} style={primaryBtn}>Haritaya Dön →</button>
+                          <button onClick={returnToMapOrStory} style={primaryBtn}>
+                            {pendingCheckpointStory ? '📖 Hikaye Modülü Açıldı →' : 'Haritaya Dön →'}
+                          </button>
                         </>
                       ) : (
                         <>
@@ -1890,6 +2030,213 @@ export default function App() {
                 })()}
               </div>
             )}
+
+            {/* ============================================================
+                HİKAYE MODÜLÜ (STORY & SUMMARY) — HER 10 ÜNİTEDE BİR AÇILIR
+                1) Rusça hikaye (satır çevirileri tıklanınca açılır) + 🔊 dinleme
+                2) Sözlük kartları: hikayedeki en fazla 5-6 YENİ kelime
+                3) Türkçe özet alanı + analiz: "X doğru nokta / Y eksik-yanlış"
+                ============================================================ */}
+            {screen === 'CHECKPOINT_STORY' && (() => {
+              const story = STORIES[storyCheckpointIdx];
+              if (!story) return null;
+              const storyFullRu = story.paragraphs.map(p => p.ru).join(' ');
+              const summaryWordCount = storySummaryText.trim() ? storySummaryText.trim().split(/\s+/).length : 0;
+              const ev = storyEvalResult;
+              return (
+                <div>
+                  <SceneBanner icon={story.icon} color={story.color} label={`Hikaye Modülü — Kontrol Noktası ${story.checkpoint}`} />
+                  <span style={{ fontSize: '11px', fontWeight: 900, background: '#0f172a', color: story.color, padding: '2px 8px', borderRadius: '4px' }}>📖 ÜNİTE {story.unitFrom}-{story.unitTo} KELİMELERİYLE YAZILDI • HIMYM TARZI</span>
+                  <h2 style={{ marginTop: '8px', marginBottom: '2px', fontSize: '22px' }}>{story.titleTr} <span style={{ color: story.color, fontSize: '16px' }}>— {story.titleRu}</span></h2>
+                  <p style={{ color: '#cbd5e1', fontSize: '13px', marginTop: 0, lineHeight: '1.6', fontStyle: 'italic' }}>{story.framingTr}</p>
+
+                  {/* KADRO — tekrarlayan karakterler, sitcom dinamikleri */}
+                  <div style={{ background: '#0f172a', border: '1px solid #334155', borderRadius: '12px', padding: '12px 14px', marginBottom: '16px' }}>
+                    <div style={{ fontSize: '11px', fontWeight: 800, color: '#94a3b8', marginBottom: '8px' }}>🎭 KADRO</div>
+                    <div style={{ display: 'flex', gap: '8px', flexWrap: 'wrap' }}>
+                      {STORY_CAST.map(c => (
+                        <span key={c.name} title={c.desc} style={{ fontSize: '11px', fontWeight: 800, background: '#1e293b', border: '1px solid #334155', color: '#e2e8f0', padding: '4px 10px', borderRadius: '999px', cursor: 'help' }}>
+                          {c.emoji} {c.name}
+                        </span>
+                      ))}
+                    </div>
+                  </div>
+
+                  {/* SESLENDİRME */}
+                  <div style={{ display: 'flex', gap: '10px', flexWrap: 'wrap', margin: '0 0 16px' }}>
+                    <button onClick={() => speak(storyFullRu, 0.85)} style={{ flex: 1, minWidth: '150px', padding: '14px', borderRadius: '12px', background: '#3b82f6', border: 'none', color: '#fff', fontSize: '15px', fontWeight: 900, cursor: 'pointer' }}>🎧 Hikayeyi Dinle</button>
+                    <button onClick={() => speak(storyFullRu, 0.55)} style={{ flex: 1, minWidth: '150px', padding: '14px', borderRadius: '12px', background: '#8b5cf6', border: 'none', color: '#fff', fontSize: '15px', fontWeight: 900, cursor: 'pointer' }}>🐢 Yavaşça Dinle</button>
+                  </div>
+
+                  {/* HİKAYE METNİ — Türkçe çeviriler GİZLİ; satıra dokununca açılır */}
+                  <div style={{ fontSize: '12px', color: '#94a3b8', fontWeight: 700, marginBottom: '8px' }}>📖 HİKAYE — önce Rusça oku; takıldığın satıra dokunup çevirisini açabilirsin:</div>
+                  <div style={{ display: 'flex', flexDirection: 'column', gap: '10px', marginBottom: '22px' }}>
+                    {story.paragraphs.map((line, i) => {
+                      const revealed = storyRevealed.includes(i);
+                      return (
+                        <div key={i} style={{
+                          background: line.narrator ? 'rgba(245,158,11,0.06)' : '#0f172a',
+                          border: `1px solid ${line.narrator ? 'rgba(245,158,11,0.35)' : '#334155'}`,
+                          borderLeft: line.narrator ? '3px solid #f59e0b' : '3px solid #334155',
+                          borderRadius: '12px', padding: '12px 14px'
+                        }}>
+                          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', gap: '10px' }}>
+                            <span style={{ fontSize: '10px', fontWeight: 900, color: line.narrator ? '#f59e0b' : story.color, background: '#1e293b', padding: '2px 8px', borderRadius: '6px' }}>{line.speaker}</span>
+                            <div style={{ display: 'flex', gap: '6px' }}>
+                              <button onClick={() => setStoryRevealed(prev => revealed ? prev.filter(x => x !== i) : [...prev, i])} style={{ background: revealed ? '#334155' : 'transparent', border: '1px solid #475569', color: revealed ? '#94a3b8' : '#38bdf8', padding: '3px 8px', borderRadius: '6px', cursor: 'pointer', fontSize: '11px', fontWeight: 800 }}>
+                                {revealed ? 'çeviriyi gizle' : '🇹🇷 çeviriyi göster'}
+                              </button>
+                              <button onClick={() => speak(line.ru, 0.8)} title="Satırı dinle" style={{ background: '#1d4ed8', border: 'none', color: '#fff', padding: '3px 9px', borderRadius: '6px', cursor: 'pointer', fontSize: '13px' }}>🔊</button>
+                            </div>
+                          </div>
+                          <div style={{ fontSize: '16px', fontWeight: line.narrator ? 600 : 800, marginTop: '6px', lineHeight: '1.55' }}>{line.ru}</div>
+                          <div style={{ fontSize: '12px', color: '#64748b', marginTop: '2px' }}>/{line.reading}/</div>
+                          {revealed && <div style={{ fontSize: '13px', color: '#38bdf8', marginTop: '6px', borderTop: '1px dashed #334155', paddingTop: '6px' }}>{line.tr}</div>}
+                        </div>
+                      );
+                    })}
+                  </div>
+
+                  {/* SÖZLÜK KARTLARI — hikayedeki yeni kelimeler (maks. 5-6) */}
+                  <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', gap: '10px', marginBottom: '8px', flexWrap: 'wrap' }}>
+                    <div style={{ fontSize: '12px', color: '#f59e0b', fontWeight: 800 }}>🃏 SÖZLÜK KARTLARI — bu hikayedeki <u>{story.newWords.length} yeni kelime</u>:</div>
+                  </div>
+                  <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(230px, 1fr))', gap: '10px', marginBottom: '24px' }}>
+                    {story.newWords.map((w, i) => (
+                      <div key={i} style={{ background: 'linear-gradient(135deg, rgba(245,158,11,0.10), #0f172a)', border: '1px solid rgba(245,158,11,0.4)', borderRadius: '12px', padding: '12px' }}>
+                        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', gap: '8px' }}>
+                          <div style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
+                            <span style={{ fontWeight: 900, fontSize: '16px' }}>{w.ru}</span>
+                            <span style={{ fontSize: '9px', fontWeight: 900, color: '#0f172a', background: '#f59e0b', padding: '1px 6px', borderRadius: '4px' }}>YENİ</span>
+                          </div>
+                          <button onClick={() => speak(w.ru, 0.8)} style={{ background: '#1d4ed8', border: 'none', color: '#fff', padding: '6px 9px', borderRadius: '8px', cursor: 'pointer', fontSize: '13px', flexShrink: 0 }}>🔊</button>
+                        </div>
+                        <div style={{ fontSize: '12px', color: '#38bdf8', marginTop: '2px' }}>/{w.reading}/</div>
+                        <div style={{ fontSize: '13px', color: '#f8fafc', fontWeight: 700, marginTop: '2px' }}>{w.tr}</div>
+                        <div style={{ fontSize: '11px', color: '#94a3b8', marginTop: '4px', lineHeight: 1.5 }}>💡 {w.note}</div>
+                      </div>
+                    ))}
+                  </div>
+
+                  {/* TÜRKÇE ÖZET ALANI */}
+                  <div style={{ background: '#0f172a', border: '1px solid #f59e0b55', borderRadius: '14px', padding: '16px' }}>
+                    <div style={{ fontSize: '12px', color: '#f59e0b', fontWeight: 800, marginBottom: '6px' }}>📝 TÜRKÇE ÖZETİNİ YAZ — hikayeyi kendi cümlelerinle özetle:</div>
+                    <p style={{ color: '#94a3b8', fontSize: '12px', marginTop: 0, marginBottom: '10px' }}>
+                      Kim, nerede, ne oldu, nasıl bitti? Analiz motoru özetini hikayenin ana noktalarıyla karşılaştırıp
+                      <strong style={{ color: '#f8fafc' }}> kaç doğru nokta</strong> yakaladığını ve <strong style={{ color: '#f8fafc' }}>kaç eksik/yanlış anlaşılan yer</strong> olduğunu söyleyecek.
+                    </p>
+                    <textarea
+                      value={storySummaryText}
+                      onChange={e => { setStorySummaryText(e.target.value); if (storyEvalResult) setStoryEvalResult(null); }}
+                      placeholder="Örn: Bu hikayede Dima, çocuklarına anneleriyle nasıl tanıştığını anlatıyor. Yağmurlu bir akşam..."
+                      rows={6}
+                      style={{ width: '100%', boxSizing: 'border-box', background: '#1e293b', border: '1px solid #334155', borderRadius: '10px', color: '#f8fafc', fontSize: '14px', padding: '12px', fontFamily: 'inherit', lineHeight: 1.6, resize: 'vertical' }}
+                    />
+                    <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginTop: '8px', gap: '10px', flexWrap: 'wrap' }}>
+                      <span style={{ fontSize: '11px', color: '#64748b' }}>{summaryWordCount} kelime • en az 10 kelime önerilir</span>
+                      <button
+                        onClick={analyzeStorySummary}
+                        disabled={storySummaryText.trim().length < 15}
+                        style={{ background: storySummaryText.trim().length < 15 ? '#334155' : '#f59e0b', border: 'none', color: storySummaryText.trim().length < 15 ? '#64748b' : '#0f172a', padding: '12px 20px', borderRadius: '10px', fontWeight: 900, cursor: storySummaryText.trim().length < 15 ? 'not-allowed' : 'pointer', fontSize: '14px' }}
+                      >
+                        🤖 Özetimi Analiz Et
+                      </button>
+                    </div>
+                  </div>
+
+                  {/* ANALİZ SONUCU — X doğru / Y eksik-yanlış + yapıcı geri bildirim */}
+                  {ev && (
+                    <div style={{ background: 'linear-gradient(135deg, rgba(245,158,11,0.10), #0f172a)', border: `1px solid ${ev.scorePercent >= 60 ? '#10b981' : ev.scorePercent >= 35 ? '#f59e0b' : '#ef4444'}`, borderRadius: '14px', padding: '18px', marginTop: '14px' }}>
+                      <div style={{ display: 'flex', gap: '16px', alignItems: 'center', flexWrap: 'wrap' }}>
+                        <div style={{ width: '84px', height: '84px', borderRadius: '50%', border: `6px solid ${ev.scorePercent >= 60 ? '#10b981' : ev.scorePercent >= 35 ? '#f59e0b' : '#ef4444'}`, display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '20px', fontWeight: 900, flexShrink: 0 }}>
+                          %{ev.scorePercent}
+                        </div>
+                        <div style={{ flex: 1, minWidth: '220px' }}>
+                          <div style={{ fontSize: '18px', fontWeight: 900 }}>{ev.title}</div>
+                          <div style={{ fontSize: '13px', color: '#cbd5e1', marginTop: '4px', lineHeight: 1.6 }}>{ev.message}</div>
+                        </div>
+                      </div>
+
+                      {/* Özet istatistikleri: X doğru / Y eksik-yanlış */}
+                      <div style={{ display: 'flex', gap: '10px', marginTop: '14px', flexWrap: 'wrap' }}>
+                        <div style={{ background: 'rgba(16,185,129,0.15)', border: '1px solid #10b981', borderRadius: '10px', padding: '10px 16px', flex: 1, minWidth: '150px', textAlign: 'center' }}>
+                          <div style={{ fontSize: '24px', fontWeight: 900, color: '#10b981' }}>{ev.correctCount}</div>
+                          <div style={{ fontSize: '11px', fontWeight: 800, color: '#10b981' }}>DOĞRU NOKTA</div>
+                        </div>
+                        <div style={{ background: 'rgba(239,68,68,0.12)', border: '1px solid #ef4444', borderRadius: '10px', padding: '10px 16px', flex: 1, minWidth: '150px', textAlign: 'center' }}>
+                          <div style={{ fontSize: '24px', fontWeight: 900, color: '#ef4444' }}>{ev.issueCount}</div>
+                          <div style={{ fontSize: '11px', fontWeight: 800, color: '#ef4444' }}>EKSİK / YANLIŞ ANLAŞILAN</div>
+                        </div>
+                        <div style={{ background: '#1e293b', border: '1px solid #334155', borderRadius: '10px', padding: '10px 16px', flex: 1, minWidth: '150px', textAlign: 'center' }}>
+                          <div style={{ fontSize: '24px', fontWeight: 900, color: '#38bdf8' }}>{ev.wordCount}</div>
+                          <div style={{ fontSize: '11px', fontWeight: 800, color: '#94a3b8' }}>KELİME</div>
+                        </div>
+                      </div>
+
+                      {/* Doğru yakalanan noktalar */}
+                      {ev.matched.length > 0 && (
+                        <div style={{ marginTop: '14px' }}>
+                          <div style={{ fontSize: '12px', fontWeight: 800, color: '#10b981', marginBottom: '6px' }}>✅ DOĞRU YAKALADIĞIN NOKTALAR ({ev.matched.length}):</div>
+                          {ev.matched.map(m => (
+                            <div key={m.id} style={{ fontSize: '12px', color: '#cbd5e1', padding: '6px 10px', background: 'rgba(16,185,129,0.08)', border: '1px solid rgba(16,185,129,0.25)', borderRadius: '8px', marginBottom: '4px' }}>✓ {m.textTr}</div>
+                          ))}
+                        </div>
+                      )}
+
+                      {/* Yanlış anlaşılan yerler */}
+                      {ev.misunderstood.length > 0 && (
+                        <div style={{ marginTop: '12px' }}>
+                          <div style={{ fontSize: '12px', fontWeight: 800, color: '#ef4444', marginBottom: '6px' }}>⚠️ YANLIŞ ANLAŞILAN YERLER ({ev.misunderstood.length}):</div>
+                          {ev.misunderstood.map((m, i) => (
+                            <div key={i} style={{ fontSize: '12px', color: '#fecaca', padding: '6px 10px', background: 'rgba(239,68,68,0.08)', border: '1px solid rgba(239,68,68,0.3)', borderRadius: '8px', marginBottom: '4px' }}>⚠ {m.noteTr}</div>
+                          ))}
+                        </div>
+                      )}
+
+                      {/* Eksik noktalar (ipuçlarıyla — cevabı ifşa etmez) */}
+                      {ev.missing.length > 0 && (
+                        <div style={{ marginTop: '12px' }}>
+                          <div style={{ fontSize: '12px', fontWeight: 800, color: '#f59e0b', marginBottom: '6px' }}>🧩 EKSİK NOKTALAR ({ev.missing.length}) — ipuçları:</div>
+                          {ev.missing.map(m => (
+                            <div key={m.id} style={{ fontSize: '12px', color: '#e2e8f0', padding: '6px 10px', background: 'rgba(245,158,11,0.08)', border: '1px solid rgba(245,158,11,0.3)', borderRadius: '8px', marginBottom: '4px' }}>→ {m.hintTr}</div>
+                          ))}
+                        </div>
+                      )}
+
+                      {/* Gelişim önerileri */}
+                      {ev.tips.length > 0 && (
+                        <div style={{ marginTop: '12px', fontSize: '12px', color: '#94a3b8', lineHeight: 1.7 }}>
+                          {ev.tips.map((t, i) => <div key={i}>💡 {t}</div>)}
+                        </div>
+                      )}
+
+                      {/* Aksiyon butonları */}
+                      <div style={{ display: 'flex', gap: '10px', marginTop: '16px', flexWrap: 'wrap' }}>
+                        <button
+                          onClick={() => setStoryEvalResult(null)}
+                          style={{ flex: 1, minWidth: '160px', padding: '14px', borderRadius: '12px', background: '#334155', border: 'none', color: '#e2e8f0', fontWeight: 800, cursor: 'pointer', fontSize: '14px' }}
+                        >
+                          🔁 Özetimi Düzenle
+                        </button>
+                        <button
+                          onClick={completeCheckpointStory}
+                          style={{ flex: 1, minWidth: '160px', padding: '14px', borderRadius: '12px', background: 'linear-gradient(135deg, #f59e0b, #d946ef)', border: 'none', color: '#0f172a', fontWeight: 900, cursor: 'pointer', fontSize: '14px' }}
+                        >
+                          ✅ Tamamla (+{100 + ev.scorePercent} XP)
+                        </button>
+                      </div>
+                    </div>
+                  )}
+
+                  {/* Analiz edilmeden tamamlama (isteğe bağlı geç) */}
+                  {!ev && (
+                    <button onClick={completeCheckpointStory} style={{ ...primaryBtn, background: 'transparent', border: '1px solid #475569', color: '#94a3b8', marginTop: '12px' }}>
+                      Hikayeyi sonra tekrar okuyacağım — haritaya dön
+                    </button>
+                  )}
+                </div>
+              );
+            })()}
 
           </div>
         )}
