@@ -39,11 +39,12 @@ export interface SmesharikiQuestion {
 export interface SmesharikiScene {
   episodeRu: string;         // Örnek bölüm/temanın Rusça başlığı
   episodeTr: string;         // Türkçe karşılığı
-  characters: string[];      // Sahnede geçen karakterler (Крош, Ёжик, Нюша, Копатыч, Бараш, Совунья, Кар-Карыч, Лосяш, Пин, Смешарик...)
+  characters: string[];      // Sahnede geçen karakterler (Смешарики ya da «Ван Гог» ekibi)
   searchQuery: string;       // Gerçek bölümü YouTube'da aramak için kullanılacak sorgu (uydurma video ID yok, gerçek arama linki)
   contextTr: string;         // Sahnenin Türkçe bağlam açıklaması
   miniDialogue: DialogueLine[]; // Basit, yavaş tempolu pekiştirme diyaloğu
   questions: SmesharikiQuestion[]; // Sahne/diyalog anlama soruları (RU soruluyor, RU/TR seçenekli)
+  source?: 'kukhnya';        // 'kukhnya' → sahne «Кухня» dizisi esinli (arayüz markalaması değişir)
 }
 
 export interface UnitModule {
@@ -1266,7 +1267,29 @@ Bir metinde her kelimeyi bilmesen bile, cümleleri birbirine bağlayan kelimeler
       { speaker: 'Tyoma', ru: 'Скажи: «Ты сегодня очень красивая!»', reading: 'Skazhí: «Ty sivódnya óchen\' krasívaya!»', tr: 'De ki: "Bugün çok güzelsin!"' },
       { speaker: 'Dima', ru: 'Ты сегодня очень... Ой! Я уронил букет в суп!', reading: 'Ty sivódnya óchen\'... Oy! Ya uroníl bukét f sup!', tr: 'Bugün çok... Ay! Buketi çorbaya düşürdüm!' },
       { speaker: 'Marina', ru: 'Не волнуйся. Это самый неловкий и самый смешной ужин в моей жизни. Я влюбляюсь.', reading: 'Ne valnúysya. Éta sámyy nilófkiy i sámyy smeshnóy úzhin v mayó zhýzni. Ya vlyublyáyus\'.', tr: 'Endişelenme. Bu hayatımdaki en utandırıcı ve en komik akşam yemeği. Âşık oluyorum.' }
-    ]
+    ],
+    smeshariki: {
+      source: 'kukhnya',
+      episodeRu: 'Первое свидание в «Ван Гоге»',
+      episodeTr: '"Van Gogh"ta İlk Randevu',
+      characters: ['Лёша', 'Нина', 'Шеф Пётр', 'Гость'],
+      searchQuery: 'Кухня сериал свидание в ресторане смешная сцена',
+      contextTr: '«Кухня» dizisinin ruhuna yazılmış bir sahne: «Ван Гог» restoranında bir ilk randevu. Garson Lyosha, mumlar ve buket hazır — geriye yalnızca hiçbir şeyi düşürmemek kalıyor. Elbette bir şeyler düşecek.',
+      miniDialogue: [
+        { speaker: 'Лёша', ru: 'Добрый вечер! Столик на двоих? Свечи — есть, меню — есть. Романтика!', reading: 'Dóbry vécher! Stólik na dvóikh? Svyéchi — yest\', menyú — yest\'. Ramántika!', tr: 'İyi akşamlar! İki kişilik masa? Mumlar — var, menü — var. Romantizm!' },
+        { speaker: 'Гость', ru: 'Спасибо! Мы на первом свидании. Всё должно быть идеально.', reading: 'Spasíba! Mы na pyérvam sidániyi. Fsyó dólzhna byt\' idiyál\'na.', tr: 'Teşekkürler! İlk randevumuzdayız. Her şey mükemmel olmalı.' },
+        { speaker: 'Нина', ru: 'Лёша, не перепутай столики! В прошлый раз ты поздравил не ту пару.', reading: 'Lyósha, ni piryputyáy stóliki! F próshly ras ty pazdravíl ne tú páru.', tr: 'Lyosha, masaları karıştırma! Geçen sefer yanlış çifti tebrik ettin.' },
+        { speaker: 'Лёша', ru: '(приносит два блюда) Для вас... и для вас! М-м... кажется, это не тот столик.', reading: '(prinósit dva blyúda) Dlya vas... i dlya vas! M-m... kázhetsya, éta ne tot stólik.', tr: '(iki tabak getirir) Sizin için... ve sizin için! Mmm... galiba bu doğru masa değil.' },
+        { speaker: 'Шеф Пётр', ru: '(из кухни) ЛЁША! Это блюдо — для столика номер девять! Быстро! Замена!', reading: '(iz kúkhni) LYÓSHA! Éta blyúda — dlya stólika nómir dyévyat\'! Býstra! Zamyéna!', tr: '(mutfaktan) LYOSHA! O yemek — dokuz numaralı masa için! Çabuk! Değiştir!' },
+        { speaker: 'Гость', ru: 'Ничего страшного! Наше первое свидание уже легендарно.', reading: 'Nichivó stráshnava! Náshe pyérvaye sidániye uzhe lyegándarna.', tr: 'Önemli değil! İlk randevumuz çoktan efsane oldu.' }
+      ],
+      questions: [
+        { prompt: 'Мisafirler masada neyi kutluyor?', correct: 'Первое свидание', options: shuffle(['Первое свидание', 'День рождения', 'Помолвку', 'Годовщину']) },
+        { prompt: 'Nina, Lyosha\'yı neye karşı uyarır?', correct: 'Не перепутай столики', options: shuffle(['Не перепутай столики', 'Не разбей стакан', 'Не опоздай', 'Не забудь счёт']) },
+        { prompt: 'Şef Пётр ne diye bağırır?', correct: 'Замена!', options: shuffle(['Замена!', 'Пожар!', 'Ура!', 'Помогите!']) },
+        { prompt: 'Misafir sahnenin sonunda ne der?', correct: 'Уже легендарно', options: shuffle(['Уже легендарно', 'Очень плохо', 'Мы уходим', 'Никогда больше']) }
+      ]
+    }
   },
   {
     id: 'mod_b1_fl3',
@@ -2036,7 +2059,30 @@ Bir metinde her kelimeyi bilmesen bile, cümleleri birbirine bağlayan kelimeler
       { speaker: 'Dima', ru: 'Без голубя! Мои руки дрожат от волнения...', reading: 'Byez gólubya! Maí rúki drazhát at valnéniya...', tr: 'Güvercinsiz! Ellerim heyecandan titriyor...' },
       { speaker: 'Marina', ru: 'Дима... да! Я согласна! Это самый незабываемый вечер в моей жизни.', reading: 'Díma... da! Ya saglásna! Éta sámyy nezabyváyemıy vécher v mayó zhýzni.', tr: 'Dima... evet! Kabul ediyorum! Bu hayatımdaki en unutulmaz akşam.' },
       { speaker: 'Anlatıcı', ru: 'Голубь всё-таки прилетел. Кольцо уцелело. Легендарно.', reading: 'Gólub\' fsyo-táki prilyetél. Kal\'tsó atseléla. Lyendárna.', tr: 'Güvercin yine de geldi. Yüzük sağ kaldı. Efsanevi.' }
-    ]
+    ],
+    smeshariki: {
+      source: 'kukhnya',
+      episodeRu: 'Предложение в ресторане',
+      episodeTr: 'Restoranda Evlilik Teklifi',
+      characters: ['Гость', 'Семён', 'Лёша', 'Нина', 'Марта'],
+      searchQuery: 'Кухня сериал предложение руки и сердца сцена',
+      contextTr: '«Кухня» tarzı bir klasik: bir misafir tatlıya yüzük saklayarak evlilik teklifi yapacak. Plan mükemmel — tek sorun tatlıyı Lyosha\'nın hazırlaması.',
+      miniDialogue: [
+        { speaker: 'Гость', ru: 'Сегодня вечером я предлагаю руку и сердце. Кольцо — в десерте. План идеальный!', reading: 'Sivódnya vyécharam ya pridlagáyu rúku i sérdtse. Kal\'tsó — f dyesértye. Plan idiál\'ny!', tr: 'Bu akşam evlilik teklifi ediyorum. Yüzük — tatlıda. Plan mükemmel!' },
+        { speaker: 'Семён', ru: 'Отличный план, сударь. Одна проблема: десерт сегодня готовит Лёша.', reading: 'Atlíchny plan, sudár\'. Adná práblima: dyesért sivódnya gótavit Lyósha.', tr: 'Mükemmel plan efendim. Tek sorun: bugün tatlıyı Lyosha hazırlıyor.' },
+        { speaker: 'Лёша', ru: 'Я всё понял! Кольцо — в десерт, десерт — на столик. Легко!', reading: 'Ya fsyó panyál! Kal\'tsó — f dyesért, dyesért — na stólik. Légka!', tr: 'Her şeyi anladım! Yüzük — tatlıya, tatlı — masaya. Kolay!' },
+        { speaker: 'Нина', ru: 'Лёша. Не съешь кольцо. Пожалуйста.', reading: 'Lyósha. Ni syésh kal\'tsó. Pazhálusta.', tr: 'Lyosha. Yüzüğü yeme. Lütfen.' },
+        { speaker: 'Лёша', ru: '(приносит десерт) Ваш десерт! И... небольшое волнение в соусе.', reading: '(prinósit dyesért) Vash dyesért! I... nyebal\'shóye valnyéniye f saúsye.', tr: '(tatlıyı getirir) Tatlıınız! Ve... sostaki küçük heyecan.' },
+        { speaker: 'Гость', ru: '(встаёт на колени) Марта! Ты выйдешь за меня?', reading: '(fstayót na kólni) Márta! Ty výydyesh za minyá?', tr: '(diz çöker) Marta! Benimle evlenir misin?' },
+        { speaker: 'Марта', ru: '(находит кольцо в клубнике) Я согласна! Незабываемо!', reading: '(nakhódit kal\'tsó f klubníkye) Ya saglásna! Nezabyváyima!', tr: '(yüzüğü çilekte bulur) Evet! Unutulmaz!' }
+      ],
+      questions: [
+        { prompt: 'Misafir yüzüğü nereye saklar?', correct: 'В десерте', options: shuffle(['В десерте', 'В цветах', 'В кармане', 'В шампанском']) },
+        { prompt: 'Semyon\'un tek sorunu nedir?', correct: 'Десерт готовит Лёша', options: shuffle(['Десерт готовит Лёша', 'Ресторан закрыт', 'Кольцо потерялось', 'Марта опоздала']) },
+        { prompt: 'Adam ne zaman diz çöker?', correct: 'После десерта', options: shuffle(['После десерта', 'До ужина', 'На кухне', 'У входа']) },
+        { prompt: 'Marta ne cevap verir?', correct: 'Я согласна', options: shuffle(['Я согласна', 'Нет, спасибо', 'Я подумаю', 'Забей']) }
+      ]
+    }
   },
   {
     id: 'mod_b2_fl10',
@@ -2774,7 +2820,30 @@ Bir metinde her kelimeyi bilmesen bile, cümleleri birbirine bağlayan kelimeler
       { speaker: 'Marina', ru: 'Самая трогательная и самая нелепая речь. Спасибо, Тёма.', reading: 'Samáya tragátel\'naya i samáya nilépaya rech\'. Spasíba, Tyóma.', tr: 'En duygulandırıcı ve en saçma konuşma. Teşekkürler, Töma.' },
       { speaker: 'Тамада', ru: 'Горько! Горько! Шампанское для всех!', reading: 'Gór\'ka! Gór\'ka! Shampánskaye dlya fsyekh!', tr: 'Acı! Acı! Herkese şampanya!' },
       { speaker: 'Anlatıcı', ru: 'Клятву они дали тихо. А поцеловались пять минут. Легендарно.', reading: 'Klyátvu oni dáli tíkha. A patsyalavális\' pyat\' minút. Lyendárna.', tr: 'Yemini sessizce ettiler. Öpüşmeleri ise beş dakika sürdü. Efsanevi.' }
-    ]
+    ],
+    smeshariki: {
+      source: 'kukhnya',
+      episodeRu: 'Свадьба в «Ван Гоге»',
+      episodeTr: '"Van Gogh"ta Düğün',
+      characters: ['Семён', 'Шафер', 'Тамада', 'Шеф Пётр', 'Лёша'],
+      searchQuery: 'Кухня сериал свадьба тост сцена',
+      contextTr: '«Ван Гог» bir düğüne ev sahipliği yapıyor: tamada, ağlayan sağdıç, şefin pastası ve tabii ki Lyosha\'nın tepsiyi düşürme anı. Klasik bir Rus düğün komedisi sahnesi.',
+      miniDialogue: [
+        { speaker: 'Семён', ru: 'Добрый вечер! Свадьба на сорок гостей. Тамада — вот там, шафер — волнуется.', reading: 'Dóbry vécher! Svádb\'a na sórak góstey. Tamadá — vot tam, shafér — valnúyetsya.', tr: 'İyi akşamlar! Kırk kişilik düğün. Sunucu — şurada, sağdıç — heyecanlı.' },
+        { speaker: 'Шафер', ru: 'Моя речь готова. Я репетировал двенадцать раз. Никто не будет плакать. Никто!', reading: 'Mayá rech\' gótava. Ya ripyetíral dvyénadtsat\' ras. Niktó nye búdit plákat\'. Niktó!', tr: 'Konuşmam hazır. On iki kez prova yaptım. Kimse ağlamayacak. KİMSE!' },
+        { speaker: 'Тамада', ru: 'Поднимем бокалы! Слово — шаферу!', reading: 'Padnímim bákaly! Slóva — shaféru!', tr: 'Kadehleri kaldıralım! Söz — sağdıçta!' },
+        { speaker: 'Шафер', ru: '(дрожит) Дорогие новобрачные! Вы... вы... (плачет) Простите.', reading: '(drazhýt) Daragíye novabráchныe! Vy... vy... (pláchit) Prastítye.', tr: '(titrer) Sevgili gelin ve damat! Siz... siz... (ağlar) Affedersiniz.' },
+        { speaker: 'Шеф Пётр', ru: '(выходит с тортом) Так! Клятву дали, торт на месте, шампанское холодное. Продолжаем!', reading: '(vыkhódit s tórtam) Tak! Klyátvu dáli, tort na myéstye, shampánskaye khalódnaye. Pradálzhayem!', tr: '(pastayla çıkar) Tamam! Yemini ettiler, pasta yerinde, şampanya soğuk. Devam!' },
+        { speaker: 'Тамада', ru: 'Трогательная речь! А теперь — горько!', reading: 'Tragátyel\'naya rech\'! A tyéper\' — gór\'ka!', tr: 'Dokunaklı bir konuşma! Ve şimdi — acı!' },
+        { speaker: 'Лёша', ru: '(роняет поднос) Почти идеально...', reading: '(ránayet padnós) Póchti idiál\'na...', tr: '(tepsiyi düşürür) Neredeyse mükemmel...' }
+      ],
+      questions: [
+        { prompt: 'Sağdçın konuşması nasıl gider?', correct: 'Он плачет', options: shuffle(['Он плачет', 'Он поёт', 'Он молчит', 'Он уходит']) },
+        { prompt: 'Şef Пётр mutfağından neyle çıkar?', correct: 'С тортом', options: shuffle(['С тортом', 'Со счётом', 'С гитарой', 'С кольцом']) },
+        { prompt: 'Tamada sonunda ne ister?', correct: 'Горько!', options: shuffle(['Горько!', 'Тише!', 'Пожар!', 'Ура!']) },
+        { prompt: 'Lyosha sahnenin sonunda ne yapar?', correct: 'Роняет поднос', options: shuffle(['Роняет поднос', 'Поёт песню', 'Танцует вальс', 'Читает речь']) }
+      ]
+    }
   },
   {
     id: 'mod_c1_7',
