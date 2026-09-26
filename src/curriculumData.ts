@@ -39,11 +39,12 @@ export interface SmesharikiQuestion {
 export interface SmesharikiScene {
   episodeRu: string;         // Örnek bölüm/temanın Rusça başlığı
   episodeTr: string;         // Türkçe karşılığı
-  characters: string[];      // Sahnede geçen karakterler (Крош, Ёжик, Нюша, Копатыч, Бараш, Совунья, Кар-Карыч, Лосяш, Пин, Смешарик...)
+  characters: string[];      // Sahnede geçen karakterler (Смешарики ya da «Ван Гог» ekibi)
   searchQuery: string;       // Gerçek bölümü YouTube'da aramak için kullanılacak sorgu (uydurma video ID yok, gerçek arama linki)
   contextTr: string;         // Sahnenin Türkçe bağlam açıklaması
   miniDialogue: DialogueLine[]; // Basit, yavaş tempolu pekiştirme diyaloğu
   questions: SmesharikiQuestion[]; // Sahne/diyalog anlama soruları (RU soruluyor, RU/TR seçenekli)
+  source?: 'kukhnya';        // 'kukhnya' → sahne «Кухня» dizisi esinli (arayüz markalaması değişir)
 }
 
 export interface UnitModule {
@@ -1227,8 +1228,146 @@ Bir metinde her kelimeyi bilmesen bile, cümleleri birbirine bağlayan kelimeler
     ]
   },
   {
-    id: 'mod_b1_12',
+    // =========================================================================
+    // İLİŞKİLER & FLÖRT — GENİŞLETİLMİŞ MÜFREDAT (2x)
+    // HIMYM (How I Met Your Mother) tarzı sit-com mizahı: tekrarlayan karakter
+    // kadrosu (Dima, Töma, Marina, Jenya, Lena) + absürt durum komedileri.
+    // =========================================================================
+    id: 'mod_b1_fl2',
     unitNumber: 30,
+    levelGroup: 'B1',
+    title: 'İlk Buluşma & Restoran Faciası',
+    description: 'Masa ayırtma, mum, buket ve her şeyin ters gittiği ilk buluşma — sit-com tarzı',
+    category: 'İlişkiler & Flört',
+    color: '#fb7185',
+    icon: '🌹',
+    grammarExplain: `📌 İLK BULUŞMA KALIPLARI:
+1. "Я забронировал столик" (Ya zabraníraval stólik) -> "Masa ayırttım" (kadın söz ederse: забронировала).
+2. "специально для тебя" (spetsiál'na dlya tibyá) -> "özellikle senin için" — romantik jest vurgusu. Zıttı: "случайно" (yanlışlıkla).`,
+    words: [
+      { id: 'w_fd1', ru: 'Влюбиться', reading: "Vlyubít'sya", tr: 'Aşık olmak', level: 'B1', usageNote: '"В кого" ile kullanılır: влюбиться в тебя (sana âşık olmak).' },
+      { id: 'w_fd2', ru: 'Букет', reading: 'Bukét', tr: 'Buket', level: 'B1', usageNote: 'Eril bir kelimedir.' },
+      { id: 'w_fd3', ru: 'Свеча', reading: 'Svechá', tr: 'Mum', level: 'B1', usageNote: 'Dişil; çoğulu: свечи.' },
+      { id: 'w_fd4', ru: 'Романтика', reading: 'Romántika', tr: 'Romantizm', level: 'B1', usageNote: 'Dişil bir kelimedir.' },
+      { id: 'w_fd5', ru: 'Неловкий', reading: 'Nilófkiy', tr: 'Utandırıcı / Sıkıntılı (durum)', level: 'B1', usageNote: 'Eril; dişil: неловкая.' },
+      { id: 'w_fd6', ru: 'Оказаться', reading: "Aazát'sya", tr: 'Ortaya çıkmak (bir durumda)', level: 'B1', usageNote: '"Я оказался в неловкой ситуации" — utandırıcı bir duruma düştüm.' },
+      { id: 'w_fd7', ru: 'Угощать', reading: "Ugashchát'", tr: 'İkram etmek / Ismarlamak', level: 'B1', usageNote: '"Угощаю!" — "Ben ısmarlıyorum!" kalıbı.' },
+      { id: 'w_fd8', ru: 'Специально', reading: "Spetsiál'na", tr: 'Özellikle (kasten)', level: 'B1', usageNote: 'Zarftır; "случайно"nın zıttıdır.' }
+    ],
+    sentences: [
+      { ru: 'Я забронировал столик на двоих.', tr: 'İki kişilik bir masa ayırttım.', scrambled: ['на двоих.', 'столик', 'забронировал', 'Я'], correct: ['Я', 'забронировал', 'столик', 'на двоих.'] },
+      { ru: 'Я уронил букет в суп!', tr: 'Buketi çorbaya düşürdüm!', scrambled: ['в суп!', 'букет', 'уронил', 'Я'], correct: ['Я', 'уронил', 'букет', 'в суп!'] }
+    ],
+    sceneTitle: 'Kulaklıktaki Manitacı',
+    sceneContext: 'Dima\'nın ilk buluşmasında Töma kulaklıkla komut veriyor — her şey ters giden klasik bir sit-com gecesi.',
+    dialogue: [
+      { speaker: 'Tyoma', ru: 'Дима, слушай внимательно. Открой ей дверь. Это романтика!', reading: 'Díma, slúshay vnimátel\'na. Atkróy yey dvér. Éta romántika!', tr: 'Dima, dikkatle dinle. Ona kapıyı aç. Bu romantizm!' },
+      { speaker: 'Dima', ru: 'Марина, вот наш столик. Свечи, цветы — всё специально для тебя.', reading: 'Marína, vot nash stólik. Svechí, tsvetý — fsyo spetsiál\'na dlya tibyá.', tr: 'Marina, işte masamız. Mumlar, çiçekler — hepsi özellikle senin için.' },
+      { speaker: 'Marina', ru: 'Красиво... А кто этот мужчина, который кричит из наушника?', reading: 'Krasíva... A kta état múzhchina, katóryy krichít iz naúshnika?', tr: 'Güzel... Peki bu kulaklıktan bağıran adam kim?' },
+      { speaker: 'Tyoma', ru: 'Скажи: «Ты сегодня очень красивая!»', reading: 'Skazhí: «Ty sivódnya óchen\' krasívaya!»', tr: 'De ki: "Bugün çok güzelsin!"' },
+      { speaker: 'Dima', ru: 'Ты сегодня очень... Ой! Я уронил букет в суп!', reading: 'Ty sivódnya óchen\'... Oy! Ya uroníl bukét f sup!', tr: 'Bugün çok... Ay! Buketi çorbaya düşürdüm!' },
+      { speaker: 'Marina', ru: 'Не волнуйся. Это самый неловкий и самый смешной ужин в моей жизни. Я влюбляюсь.', reading: 'Ne valnúysya. Éta sámyy nilófkiy i sámyy smeshnóy úzhin v mayó zhýzni. Ya vlyublyáyus\'.', tr: 'Endişelenme. Bu hayatımdaki en utandırıcı ve en komik akşam yemeği. Âşık oluyorum.' }
+    ],
+    smeshariki: {
+      source: 'kukhnya',
+      episodeRu: 'Первое свидание в «Ван Гоге»',
+      episodeTr: '"Van Gogh"ta İlk Randevu',
+      characters: ['Лёша', 'Нина', 'Шеф Пётр', 'Гость'],
+      searchQuery: 'Кухня сериал свидание в ресторане смешная сцена',
+      contextTr: '«Кухня» dizisinin ruhuna yazılmış bir sahne: «Ван Гог» restoranında bir ilk randevu. Garson Lyosha, mumlar ve buket hazır — geriye yalnızca hiçbir şeyi düşürmemek kalıyor. Elbette bir şeyler düşecek.',
+      miniDialogue: [
+        { speaker: 'Лёша', ru: 'Добрый вечер! Столик на двоих? Свечи — есть, меню — есть. Романтика!', reading: 'Dóbry vécher! Stólik na dvóikh? Svyéchi — yest\', menyú — yest\'. Ramántika!', tr: 'İyi akşamlar! İki kişilik masa? Mumlar — var, menü — var. Romantizm!' },
+        { speaker: 'Гость', ru: 'Спасибо! Мы на первом свидании. Всё должно быть идеально.', reading: 'Spasíba! Mы na pyérvam sidániyi. Fsyó dólzhna byt\' idiyál\'na.', tr: 'Teşekkürler! İlk randevumuzdayız. Her şey mükemmel olmalı.' },
+        { speaker: 'Нина', ru: 'Лёша, не перепутай столики! В прошлый раз ты поздравил не ту пару.', reading: 'Lyósha, ni piryputyáy stóliki! F próshly ras ty pazdravíl ne tú páru.', tr: 'Lyosha, masaları karıştırma! Geçen sefer yanlış çifti tebrik ettin.' },
+        { speaker: 'Лёша', ru: '(приносит два блюда) Для вас... и для вас! М-м... кажется, это не тот столик.', reading: '(prinósit dva blyúda) Dlya vas... i dlya vas! M-m... kázhetsya, éta ne tot stólik.', tr: '(iki tabak getirir) Sizin için... ve sizin için! Mmm... galiba bu doğru masa değil.' },
+        { speaker: 'Шеф Пётр', ru: '(из кухни) ЛЁША! Это блюдо — для столика номер девять! Быстро! Замена!', reading: '(iz kúkhni) LYÓSHA! Éta blyúda — dlya stólika nómir dyévyat\'! Býstra! Zamyéna!', tr: '(mutfaktan) LYOSHA! O yemek — dokuz numaralı masa için! Çabuk! Değiştir!' },
+        { speaker: 'Гость', ru: 'Ничего страшного! Наше первое свидание уже легендарно.', reading: 'Nichivó stráshnava! Náshe pyérvaye sidániye uzhe lyegándarna.', tr: 'Önemli değil! İlk randevumuz çoktan efsane oldu.' }
+      ],
+      questions: [
+        { prompt: 'Мisafirler masada neyi kutluyor?', correct: 'Первое свидание', options: shuffle(['Первое свидание', 'День рождения', 'Помолвку', 'Годовщину']) },
+        { prompt: 'Nina, Lyosha\'yı neye karşı uyarır?', correct: 'Не перепутай столики', options: shuffle(['Не перепутай столики', 'Не разбей стакан', 'Не опоздай', 'Не забудь счёт']) },
+        { prompt: 'Şef Пётр ne diye bağırır?', correct: 'Замена!', options: shuffle(['Замена!', 'Пожар!', 'Ура!', 'Помогите!']) },
+        { prompt: 'Misafir sahnenin sonunda ne der?', correct: 'Уже легендарно', options: shuffle(['Уже легендарно', 'Очень плохо', 'Мы уходим', 'Никогда больше']) }
+      ]
+    }
+  },
+  {
+    id: 'mod_b1_fl3',
+    unitNumber: 31,
+    levelGroup: 'B1',
+    title: 'Sevgi Sözcükleri & Sevimli Hitaplar',
+    description: 'Solnyşko, zayka, kotenok — sevimli hitaplar ve günlük samimi çift diyalogları',
+    category: 'İlişkiler & Flört',
+    color: '#fb923c',
+    icon: '🥰',
+    grammarExplain: `📌 SEVGİ SÖZCÜKLERİ:
+1. Küçültme ekleri sevgi katar: солнце -> солнышко (güneşim), заяц -> зайка (tavşanım).
+2. "скучать по + datif" kalıbı: Я скучаю по тебе (skucháyu pa tibyé) -> "Seni özlüyorum". Bu kalıp ezberlenir.`,
+    words: [
+      { id: 'w_pv1', ru: 'Любимый', reading: 'Lyubímyy', tr: 'Sevgili / En sevdiğim (eril)', level: 'B1', usageNote: '"Мой любимый" — sevgilim; dişil: любимая.' },
+      { id: 'w_pv2', ru: 'Солнышко', reading: 'Sólnyshka', tr: 'Güneşim (sevimli hitap)', level: 'B1', usageNote: 'Küçültme ekiyle sevgi katar.' },
+      { id: 'w_pv3', ru: 'Зайка', reading: 'Záyka', tr: 'Tavşanım (hitap)', level: 'B1', usageNote: 'Sevgililer arası klasik hitap.' },
+      { id: 'w_pv4', ru: 'Котёнок', reading: 'Katyónak', tr: 'Kedicik (hitap)', level: 'B1', usageNote: 'Eril; hitap olarak "canım" hissi verir.' },
+      { id: 'w_pv5', ru: 'Дорогой', reading: 'Daragóy', tr: 'Canım (eril hitap)', level: 'B1', usageNote: 'Dişil: дорогая; mektup hitabında da kullanılır.' },
+      { id: 'w_pv6', ru: 'Целовать', reading: "Tsilavat'", tr: 'Öpmek', level: 'B1', usageNote: 'Mastar halidir.' },
+      { id: 'w_pv7', ru: 'Нежность', reading: "Nézhnast'", tr: 'Şefkat / Tatlılık', level: 'B1', usageNote: 'Dişil, soyut bir isimdir.' },
+      { id: 'w_pv8', ru: 'Скучаю по тебе', reading: 'Skucháyu pa tibyé', tr: 'Seni özlüyorum', level: 'B1', usageNote: 'Sabit kalıp; "по" eki datif ister.' }
+    ],
+    sentences: [
+      { ru: 'Доброе утро, солнышко!', tr: 'Günaydın, güneşim!', scrambled: ['солнышко!', 'утро,', 'Доброе'], correct: ['Доброе', 'утро,', 'солнышко!'] },
+      { ru: 'Я скучаю по тебе, зайка.', tr: 'Seni özlüyorum, tavşanım.', scrambled: ['зайка.', 'по тебе', 'скучаю', 'Я'], correct: ['Я', 'скучаю', 'по тебе', 'зайка.'] }
+    ],
+    sceneTitle: 'İki Güvercin Krizi',
+    sceneContext: 'Evli çift Jenya ve Lena\'nın şekerlemeleri, Töma\'nın ise sabrı taşar — klasik kafe sahnesi.',
+    dialogue: [
+      { speaker: 'Zhenya', ru: 'Лена, солнышко моё, доброе утро! Кофе уже готов.', reading: 'Lyéna, sólnyshka mayó, dóbraye útra! Kófe uzhe gótav.', tr: 'Lena, güneşim, günaydın! Kahve hazır.' },
+      { speaker: 'Lena', ru: 'Спасибо, котёнок. Ты самый лучший!', reading: 'Spasíba, katyónak. Ty sámyy lúchshiy!', tr: 'Sağ ol kedicik. Sen en iyisisin!' },
+      { speaker: 'Tyoma', ru: 'Фу! Вы опять как голубки! Мне больно на это смотреть!', reading: 'Fu! Vy apyát\' kak galúbki! Mne ból\'na na éta smatrét\'!', tr: 'İğrenç! Yine iki güvercin gibi oldunuz! Bunu izlemek canımı acıtıyor!' },
+      { speaker: 'Zhenya', ru: 'Однажды ты тоже влюбишься — и будешь говорить «зайка».', reading: 'Adnazhdý ty tózhe vlyúbish\'sya — i búdyeš gavarít\' «záyka».', tr: 'Bir gün sen de âşık olacaksın — ve "tavşanım" diyeceksin.' },
+      { speaker: 'Tyoma', ru: 'Никогда! Я? «Зайка»? Невозможно!', reading: 'Nikagdá! Ya? «Záyka»? Nyevazmózhna!', tr: 'Asla! Ben mi? "Tavşanım"? İmkânsız!' },
+      { speaker: 'Marina', ru: 'Он вчера назвал «зайкой» свой костюм.', reading: 'On vcherá nazvál «záykay» svóy kastyúm.', tr: 'Dün akşam takım elbisesine "tavşanım" dedi.' }
+    ]
+  },
+  {
+    id: 'mod_b1_fl4',
+    unitNumber: 32,
+    levelGroup: 'B1',
+    title: 'Tanıştırmak & "Biz Bir Çiftiz"',
+    description: 'Partneri tanıştırma, ilişki statüsü, "çıkalı ne kadar oldu" konuşmaları',
+    category: 'İlişkiler & Flört',
+    color: '#f472b6',
+    icon: '👫',
+    grammarExplain: `📌 TANIŞTIRMA & STATÜ:
+1. "Познакомьтесь" (Paznakómtyes') -> "Tanışın" — çoğul/nezaket emridir; "Познакомь меня с ней" -> "Onunla beni tanıştır".
+2. "ухаживать за + araç hali" -> "birine kur yapmak": Он ухаживает за ней (Ona kur yapıyor).`,
+    words: [
+      { id: 'w_cp1', ru: 'Пара', reading: 'Pára', tr: 'Çift', level: 'B1', usageNote: 'Dişil; "мы пара" — biz bir çiftiz.' },
+      { id: 'w_cp2', ru: 'Парень', reading: "Páren'", tr: 'Erkek arkadaş / Delikanlı', level: 'B1', usageNote: 'Eril bir kelimedir.' },
+      { id: 'w_cp3', ru: 'Девушка', reading: 'Dévushka', tr: 'Kız arkadaş / Genç kadın', level: 'B1', usageNote: 'Dişil; hitap olarak da kullanılır.' },
+      { id: 'w_cp4', ru: 'Познакомить', reading: "Paznakómit'", tr: 'Tanıştırmak', level: 'B1', usageNote: '"Познакомь меня с ней" — onunla beni tanıştır.' },
+      { id: 'w_cp5', ru: 'Отношения', reading: 'Anashéniya', tr: 'İlişki', level: 'B1', usageNote: 'Her zaman çoğul kullanılır.' },
+      { id: 'w_cp6', ru: 'Ревнивый', reading: 'Rivnívyy', tr: 'Kıskanç', level: 'B1', usageNote: 'Eril; dişil: ревнивая.' },
+      { id: 'w_cp7', ru: 'Ухаживать', reading: 'Ukházhivat\'', tr: 'Kur yapmak / İlgisini göstermek', level: 'B1', usageNote: '"За + araç hali" ister: ухаживать за ней.' },
+      { id: 'w_cp8', ru: 'Сердце', reading: 'Sértse', tr: 'Kalp', level: 'B1', usageNote: 'Eril; deyimlerde sık geçer.' }
+    ],
+    sentences: [
+      { ru: 'Мы теперь пара.', tr: 'Artık bir çiftiz.', scrambled: ['пара.', 'теперь', 'Мы'], correct: ['Мы', 'теперь', 'пара.'] },
+      { ru: 'Он красиво ухаживает за ней.', tr: 'Ona güzelce kur yapıyor.', scrambled: ['за ней', 'красиво', 'ухаживает', 'Он'], correct: ['Он', 'красиво', 'ухаживает', 'за ней'] }
+    ],
+    sceneTitle: 'Çift İlan Ediyoruz',
+    sceneContext: 'Dima, Marina\'yı arkadaş grubuna "kız arkadaşım" olarak tanıtırken Töma\'nın tek kelimelik komedi bombası patlar.',
+    dialogue: [
+      { speaker: 'Dima', ru: 'Ребята, познакомьтесь! Это Марина. Мы... короче, мы пара.', reading: 'Rebyáta, paznakómtyes\'! Éta Marína. My... kórachye, my para.', tr: 'Çocuklar, tanışın! Bu Marina. Biz... kısacası biz bir çiftiz.' },
+      { speaker: 'Tyoma', ru: 'Пара?! Вы встречаетесь три дня!', reading: 'Para?! Vy vstrycháyetes\' tri dnya!', tr: 'Çift mi?! Üç gündür çıkıyorsunuz!' },
+      { speaker: 'Marina', ru: 'Четыре дня. И он не ревнивый — это большой плюс.', reading: 'Chetýre dnya. I on ne rivnívyy — éta bal\'shóy plyus.', tr: 'Dört gün. Ve o kıskanç değil — bu büyük artı.' },
+      { speaker: 'Zhenya', ru: 'Поздравляю! Моё сердце радуется за вас.', reading: 'Pazdravlyáyú! Mayó sértse ráduyetsya za vas.', tr: 'Tebrikler! Kalbim sizin için seviniyor.' },
+      { speaker: 'Tyoma', ru: 'Я тоже хочу отношения... минут на двадцать.', reading: 'Ya tózhe khachú anashéniya... minút na dvátsat\'.', tr: 'Ben de ilişki istiyorum... yirmi dakikalığına.' },
+      { speaker: 'Lena', ru: 'Тёма!!!', reading: 'Tyóma!!!', tr: 'Töma!!!' }
+    ]
+  },
+  {
+    id: 'mod_b1_12',
+    unitNumber: 33,
     levelGroup: 'B1',
     title: 'Film & Dizi Konuşması',
     description: 'Spoiler, bölüm, oyuncu, \'izliyor musun\' — diziler hakkında sohbet',
@@ -1263,7 +1402,7 @@ Bir metinde her kelimeyi bilmesen bile, cümleleri birbirine bağlayan kelimeler
   },
   {
     id: 'mod_b1_13',
-    unitNumber: 31,
+    unitNumber: 34,
     levelGroup: 'B1',
     title: 'Sinemada Bilet & Patlamış Mısır',
     description: 'Gişe, koltuk, altyazı, 3D — sinema gişesinde konuşma',
@@ -1298,7 +1437,7 @@ Bir metinde her kelimeyi bilmesen bile, cümleleri birbirine bağlayan kelimeler
   },
   {
     id: 'mod_b1_14',
-    unitNumber: 32,
+    unitNumber: 35,
     levelGroup: 'B1',
     title: 'İş Yerinde Küçük Sohbet',
     description: 'Kahve makinesi muhabbeti, hafta sonu, \'nasıl gidiyor\' — ofis small talk',
@@ -1333,7 +1472,7 @@ Bir metinde her kelimeyi bilmesen bile, cümleleri birbirine bağlayan kelimeler
   },
   {
     id: 'mod_b1_15',
-    unitNumber: 33,
+    unitNumber: 36,
     levelGroup: 'B1',
     title: 'Toplantı Erteleme & İzin',
     description: 'Hasta raporu, izin, toplantıyı kaydırma — işte pratik resmi dil',
@@ -1368,7 +1507,7 @@ Bir metinde her kelimeyi bilmesen bile, cümleleri birbirine bağlayan kelimeler
   },
   {
     id: 'mod_b1_16',
-    unitNumber: 34,
+    unitNumber: 37,
     levelGroup: 'B1',
     title: 'Usta Çağırma: Tesisatçı & Tamir',
     description: 'Musluk, elektrik, kapı — ev arızası ve usta randevusu',
@@ -1403,7 +1542,7 @@ Bir metinde her kelimeyi bilmesen bile, cümleleri birbirine bağlayan kelimeler
   },
   {
     id: 'mod_b1_17',
-    unitNumber: 35,
+    unitNumber: 38,
     levelGroup: 'B1',
     title: 'Kuaför & Berber Randevusu',
     description: 'Saç kestirme, randevu, \'çok kısa olmasın\' — salon dili',
@@ -1438,7 +1577,7 @@ Bir metinde her kelimeyi bilmesen bile, cümleleri birbirine bağlayan kelimeler
   },
   {
     id: 'mod_b1_18',
-    unitNumber: 36,
+    unitNumber: 39,
     levelGroup: 'B1',
     title: 'Belgeler, Pasaport & Göçmenlik Penceresi',
     description: 'Kuyruk, fotokopi, başvuru — resmi dairede kaybolmamak',
@@ -1473,7 +1612,7 @@ Bir metinde her kelimeyi bilmesen bile, cümleleri birbirine bağlayan kelimeler
   },
   {
     id: 'mod_b1_19',
-    unitNumber: 37,
+    unitNumber: 40,
     levelGroup: 'B1',
     title: 'Komşuyla Gürültü & Rica',
     description: 'Kapı çalma, gürültü şikâyeti, nazik ama net sınır koyma',
@@ -1508,7 +1647,7 @@ Bir metinde her kelimeyi bilmesen bile, cümleleri birbirine bağlayan kelimeler
   },
   {
     id: 'mod_b1_20',
-    unitNumber: 38,
+    unitNumber: 41,
     levelGroup: 'B1',
     title: 'Spor Salonu & Antrenör',
     description: 'Üyelik, alet sorma, \'bu koltuk dolu mu\' — spor salonu sohbeti',
@@ -1543,7 +1682,7 @@ Bir metinde her kelimeyi bilmesen bile, cümleleri birbirine bağlayan kelimeler
   },
   {
     id: 'mod_b1_21',
-    unitNumber: 39,
+    unitNumber: 42,
     levelGroup: 'B1',
     title: 'Restoranda Şikâyet & Hesap',
     description: 'Yemek soğuk, sipariş yanlış, hesap ayırma — kibar şikâyet',
@@ -1578,7 +1717,7 @@ Bir metinde her kelimeyi bilmesen bile, cümleleri birbirine bağlayan kelimeler
   },
   {
     id: 'mod_b1_22',
-    unitNumber: 40,
+    unitNumber: 43,
     levelGroup: 'B1',
     title: 'Ulaşım Kartı, Ceza & Kontrol',
     description: 'Troleybüs, kart basma, bilet kontrolü — şehir içi hayatta kalma',
@@ -1613,7 +1752,7 @@ Bir metinde her kelimeyi bilmesen bile, cümleleri birbirine bağlayan kelimeler
   },
   {
     id: 'mod_b2_1',
-    unitNumber: 41,
+    unitNumber: 44,
     levelGroup: 'B2',
     title: 'Kıskançlık ve İhanet Sahnesi',
     description: 'Yüzleşme cümleleri ve geçmiş zaman itham kalıpları',
@@ -1645,7 +1784,7 @@ Bir metinde her kelimeyi bilmesen bile, cümleleri birbirine bağlayan kelimeler
   },
   {
     id: 'mod_b2_2',
-    unitNumber: 42,
+    unitNumber: 45,
     levelGroup: 'B2',
     title: 'Polis Sorgusu',
     description: 'Suç dizilerinde geçen sorgu ve ifade kalıpları',
@@ -1677,7 +1816,7 @@ Bir metinde her kelimeyi bilmesen bile, cümleleri birbirine bağlayan kelimeler
   },
   {
     id: 'mod_b2_3',
-    unitNumber: 43,
+    unitNumber: 46,
     levelGroup: 'B2',
     title: 'Düğün & Kutlama',
     description: 'Kutlama kalıpları ve Rus düğün gelenekleri',
@@ -1708,7 +1847,7 @@ Bir metinde her kelimeyi bilmesen bile, cümleleri birbirine bağlayan kelimeler
   },
   {
     id: 'mod_b2_4',
-    unitNumber: 44,
+    unitNumber: 47,
     levelGroup: 'B2',
     title: 'Miras Kavgası',
     description: 'Vasiyet okuma ve aile içi anlaşmazlık kalıpları',
@@ -1740,7 +1879,7 @@ Bir metinde her kelimeyi bilmesen bile, cümleleri birbirine bağlayan kelimeler
   },
   {
     id: 'mod_b2_5',
-    unitNumber: 45,
+    unitNumber: 48,
     levelGroup: 'B2',
     title: 'İleri Flört, Kompliman & Reddetme',
     description: 'İlgiyi netleştirme, nazik red, \'sadece arkadaş kalalım\' — yetişkin sohbet',
@@ -1775,7 +1914,7 @@ Bir metinde her kelimeyi bilmesen bile, cümleleri birbirine bağlayan kelimeler
   },
   {
     id: 'mod_b2_6',
-    unitNumber: 46,
+    unitNumber: 49,
     levelGroup: 'B2',
     title: 'Tartışmayı Yönetmek & Barışmak',
     description: 'Suçlamadan konuşma, \'ben dili\', özür ve sınır — ilişki yetişkinliği',
@@ -1809,8 +1948,182 @@ Bir metinde her kelimeyi bilmesen bile, cümleleri birbirine bağlayan kelimeler
     ]
   },
   {
+    // =========================================================================
+    // İLİŞKİLER & FLÖRT — GENİŞLETİLMİŞ MÜFREDAT (2x) / B2 bloğu
+    // =========================================================================
+    id: 'mod_b2_fl7',
+    unitNumber: 50,
+    levelGroup: 'B2',
+    title: 'Sevgililer Günü & Hediye Panigi',
+    description: '14 Şubat, sürpriz, valentinka ve unutulan hediye krizi — absürt komedi',
+    category: 'İlişkiler & Flört',
+    color: '#f43f5e',
+    icon: '💝',
+    grammarExplain: `📌 SEVGİLİLER GÜNÜ DİLİ:
+1. "порадовать кого-то чем-то" -> "birini bir şeyle sevindirmek": Я хочу тебя порадовать сюрпризом.
+2. "признание в любви" (priznániye v lyubví) -> "aşk itirafı" — "в + yerelik hali" ile kurulan sabit kalıp.`,
+    words: [
+      { id: 'w_vd1', ru: 'Валентинка', reading: 'Valentínka', tr: 'Sevgililer Günü kartı', level: 'B2', usageNote: 'Dişil; 14 Şubat klasiğidir.' },
+      { id: 'w_vd2', ru: 'Сюрприз', reading: 'Syurpríz', tr: 'Sürpriz', level: 'B2', usageNote: 'Eril bir kelimedir.' },
+      { id: 'w_vd3', ru: 'Порадовать', reading: 'Paradóvat\'', tr: 'Sevindirmek', level: 'B2', usageNote: 'Mastar; "кого-то чем-то" ister.' },
+      { id: 'w_vd4', ru: 'Угодить', reading: "Ugadít'", tr: '(Hediyeyle) İsabet ettirmek', level: 'B2', usageNote: '"С подарком угодил" — hedive isabet ettin.' },
+      { id: 'w_vd5', ru: 'Воздушный шарик', reading: 'Vózduşnyy sharík', tr: 'Balon', level: 'B2', usageNote: 'Eril; sit-com dekorunun vazgeçilmezi.' },
+      { id: 'w_vd6', ru: 'Открытка', reading: 'Atkrýtka', tr: 'Kart / Açık kart', level: 'B2', usageNote: 'Dişil bir kelimedir.' },
+      { id: 'w_vd7', ru: 'Признание в любви', reading: 'Priznániye v lyubví', tr: 'Aşk itirafı', level: 'B2', usageNote: 'Sabit kalıptır.' },
+      { id: 'w_vd8', ru: 'Разочарование', reading: 'Razacharániye', tr: 'Hayal kırıklığı', level: 'B2', usageNote: 'Orta cinsiyet, soyut isim.' }
+    ],
+    sentences: [
+      { ru: 'Я хочу тебя порадовать сюрпризом.', tr: 'Seni bir sürprizle sevindirmek istiyorum.', scrambled: ['сюрпризом.', 'порадовать', 'тебя', 'хочу', 'Я'], correct: ['Я', 'хочу', 'тебя', 'порадовать', 'сюрпризом.'] },
+      { ru: 'Это признание в любви, а не просто открытка.', tr: 'Bu bir aşk itirafı, sıradan bir kart değil.', scrambled: ['открытка.', 'просто', 'не', 'а', 'в любви,', 'признание', 'Это'], correct: ['Это', 'признание', 'в любви,', 'а', 'не', 'просто', 'открытка.'] }
+    ],
+    sceneTitle: 'Efsanevi Yedek Plan',
+    sceneContext: 'Jenya Sevgililer Günü\'nü unutur; Töma devreye "efsanevi" yedek planıyla girer.',
+    dialogue: [
+      { speaker: 'Zhenya', ru: 'Сегодня четырнадцатое февраля?! Я забыл подарок!', reading: 'Sivódnya chetýrnadtsataye fyevrálya?! Ya zabýl padárak!', tr: 'Bugün 14 Şubat mı?! Hediyeyi unuttum!' },
+      { speaker: 'Tyoma', ru: 'Спокойно. У меня запасной план. Один звонок — и через час у вас дома сто воздушных шариков.', reading: 'Spakóyna. U minyá zapasnóy plan. Adín zvának — i cherez chás u vas dóma sta vózduşnykh sharíkav.', tr: 'Sakin ol. Yedek planım var. Tek telefon — bir saat sonra evinizde yüz balon.' },
+      { speaker: 'Lena', ru: 'Сто шариков? Романтично... Но у меня аллергия, Тёма.', reading: 'Sta sharíkav? Ramántichna... No u minyá allergíya, Tyóma.', tr: 'Yüz balon mu? Romantik... Ama benim alerjim var, Töma.' },
+      { speaker: 'Zhenya', ru: 'Лена, прости. Моё признание в любви: ты важнее всех праздников.', reading: 'Lyéna, prastí. Mayó priznániye v lyubví: ty vázhneye fsyekh praznikav.', tr: 'Lena, affet. Aşk itirafım şu: sen tüm bayramlardan daha önemlisin.' },
+      { speaker: 'Lena', ru: 'Вот это — лучший сюрприз. Ты меня порадовал.', reading: 'Vot éta — lúchshiy syurpríz. Ty minyá paradóval.', tr: 'İşte bu en iyi sürpriz. Beni sevindirdin.' },
+      { speaker: 'Tyoma', ru: 'А шарики я всё-таки закажу. Для драмы!', reading: 'A sharíki ya fsyo-táki zakazhú. Dlya drámy!', tr: 'Balonları yine de söyleyeceğim. Dramatik olsun diye!' }
+    ]
+  },
+  {
+    id: 'mod_b2_fl8',
+    unitNumber: 51,
+    levelGroup: 'B2',
+    title: 'Birlikte Yaşamak: Ev, Alışkanlıklar & Sınırlar',
+    description: 'Ortak ev düzeni, alışkanlıklar, görev bölüşümü ve buzdolabındaki çoraplar',
+    category: 'İlişkiler & Flört',
+    color: '#ec4899',
+    icon: '🏠',
+    grammarExplain: `📌 BİRLİKTE YAŞAMAK:
+1. "жить вместе" (zhit' vméstye) -> "birlikte yaşamak": Мы живём вместе (Birlikte yaşıyoruz).
+2. "общий / общая / общие" -> "ortak": общий быт (ortak ev düzeni), общие планы (ortak planlar).`,
+    words: [
+      { id: 'w_cl1', ru: 'Жить вместе', reading: "Zhit' vméstye", tr: 'Birlikte yaşamak', level: 'B2', usageNote: 'Sabit kalıp; "мы живём вместе".' },
+      { id: 'w_cl2', ru: 'Общий', reading: 'Obshchiy', tr: 'Ortak', level: 'B2', usageNote: 'Eril; dişil: общая, çoğul: общие.' },
+      { id: 'w_cl3', ru: 'Быт', reading: 'Byt', tr: 'Ev düzeni / Günlük hayat', level: 'B2', usageNote: 'Eril; Rusçanın meşhur "быт" kavramı.' },
+      { id: 'w_cl4', ru: 'Привычка', reading: 'Privýchka', tr: 'Alışkanlık', level: 'B2', usageNote: 'Dişil; çoğul: привычки.' },
+      { id: 'w_cl5', ru: 'Разделить', reading: "Razdylít'", tr: 'Bölmek / Paylaşmak', level: 'B2', usageNote: '"Разделим обязанности" — görevleri bölelim.' },
+      { id: 'w_cl6', ru: 'Готовить', reading: "Gatavít'", tr: 'Yemek yapmak', level: 'B2', usageNote: 'Mastar halidir.' },
+      { id: 'w_cl7', ru: 'Носки', reading: 'Nóski', tr: 'Çoraplar', level: 'B2', usageNote: 'Çoğul; sit-com kavgalarının klasiği.' },
+      { id: 'w_cl8', ru: 'Порядок', reading: 'Paryádak', tr: 'Düzen', level: 'B2', usageNote: 'Eril; zıddı: беспорядок.' }
+    ],
+    sentences: [
+      { ru: 'Мы решили жить вместе.', tr: 'Birlikte yaşamaya karar verdik.', scrambled: ['вместе.', 'жить', 'решили', 'Мы'], correct: ['Мы', 'решили', 'жить', 'вместе.'] },
+      { ru: 'У нас разные привычки, но общий быт.', tr: 'Alışkanlıklarımız farklı ama ev düzenimiz ortak.', scrambled: ['быт.', 'общий', 'но', 'привычки,', 'разные', 'У нас'], correct: ['У нас', 'разные', 'привычки,', 'но', 'общий', 'быт.'] }
+    ],
+    sceneTitle: 'Buzdolabındaki Çoraplar',
+    sceneContext: 'Jenya ve Lena birlikte yaşamaya başlar; Töma ise "özgürlük" nutukları çekmektedir.',
+    dialogue: [
+      { speaker: 'Zhenya', ru: 'Лена, мы теперь живём вместе! Общая квартира, общий быт...', reading: 'Lyéna, my tipér\' zhivyóm vméstye! Obshchaya kvartíra, obshchiy byt...', tr: 'Lena, artık birlikte yaşıyoruz! Ortak daire, ortak ev düzeni...' },
+      { speaker: 'Lena', ru: 'Носки не общие! Я нашла твои носки в холодильнике. Это беспорядок!', reading: 'Nóski ne obshchiye! Ya nashlá tvai nóski f chaladíl\'nike. Éta bisparyádak!', tr: 'Çoraplar ortak değil! Senin çoraplarını buzdolabında buldum. Bu dağınıklık!' },
+      { speaker: 'Zhenya', ru: 'Прости, привычка. Давай разделим: я готовлю, ты следишь за порядком.', reading: 'Prastí, privýchka. Daváy razdylím: ya gatávlyu, ty sledísh\' za paryádkam.', tr: 'Affet, alışkanlık. Bölelim: ben yemek yapayım, sen düzene dikkat et.' },
+      { speaker: 'Lena', ru: 'Договорились. Но если я снова найду носки в холодильнике...', reading: 'Dagavarílisy. No yésli ya snóva naydú nóski f chaladíl\'nike...', tr: 'Anlaştık. Ama buzdolabında yine çorap bulursam...' },
+      { speaker: 'Tyoma', ru: 'Вы обсуждаете носки, а я говорю о свободе! Жить вместе? Никогда!', reading: 'Vy absuzhdayete nóski, a ya gavaryú o svabódye! Zhit\' vméstye? Nikagdá!', tr: 'Siz çorapları tartışıyorsunuz, ben özgürlükten bahsediyorum! Birlikte yaşamak mı? Asla!' },
+      { speaker: 'Marina', ru: 'Он говорит это уже пять лет.', reading: 'On gavarít éta uzhe pyat\' lyet.', tr: 'Bunu söyleyeli beş yıl oldu.' }
+    ]
+  },
+  {
+    id: 'mod_b2_fl9',
+    unitNumber: 52,
+    levelGroup: 'B2',
+    title: 'Evlilik Teklifi & Nişan',
+    description: 'Yüzük, diz çökme, "benimle evlenir misin" ve efsanevi (geri tepen) planlar',
+    category: 'İlişkiler & Flört',
+    color: '#d946ef',
+    icon: '💍',
+    grammarExplain: `📌 EVLİLİK TEKLİFİ:
+1. "Ты выйдешь за меня замуж?" (kadına sorulur) -> "Benimle evlenir misin?"; erkeğe sorulursa: "Ты женишься на мне?"
+2. "предложить руку и сердце" — mecaz deyim: "elini ve kalbini sunmak" = evlenme teklifi etmek.`,
+    words: [
+      { id: 'w_pr1', ru: 'Предложить руку и сердце', reading: "Pradlazhít' rúku i sértse", tr: 'Evlilik teklifi etmek', level: 'B2', usageNote: 'Deyim: "elini ve kalbini sunmak".' },
+      { id: 'w_pr2', ru: 'Помолвка', reading: 'Pamólvka', tr: 'Nişan(lanma)', level: 'B2', usageNote: 'Dişil bir kelimedir.' },
+      { id: 'w_pr3', ru: 'Кольцо', reading: 'Kal\'tsó', tr: 'Yüzük', level: 'B2', usageNote: 'Orta cinsiyet; обручальное кольцо — alyans.' },
+      { id: 'w_pr4', ru: 'Встать на колени', reading: 'Vstat\' na kályeni', tr: 'Diz çökmek', level: 'B2', usageNote: 'Sabit kalıptır.' },
+      { id: 'w_pr5', ru: 'Я согласна', reading: 'Ya saglásna', tr: '"Kabul ediyorum" (kadın)', level: 'B2', usageNote: 'Erkek için: я согласен.' },
+      { id: 'w_pr6', ru: 'Незабываемый', reading: 'Nezabyváyemıy', tr: 'Unutulmaz', level: 'B2', usageNote: 'Eril; dişil: незабываемая.' },
+      { id: 'w_pr7', ru: 'Дрожать', reading: 'Drazhát\'', tr: 'Titremek', level: 'B2', usageNote: '"от волнения" — heyecandan titremek.' },
+      { id: 'w_pr8', ru: 'Волнение', reading: 'Valnéniye', tr: 'Heyecan', level: 'B2', usageNote: 'Orta cinsiyet, soyut isim.' }
+    ],
+    sentences: [
+      { ru: 'Он предложил ей руку и сердце.', tr: 'Ona evlenme teklifi etti.', scrambled: ['и сердце.', 'руку', 'предложил', 'ей', 'Он'], correct: ['Он', 'предложил', 'ей', 'руку', 'и сердце.'] },
+      { ru: 'Она тихо ответила: «Я согласна».', tr: 'O sessizce cevap verdi: "Kabul ediyorum".', scrambled: ['«Я согласна».', 'ответила:', 'тихо', 'Она'], correct: ['Она', 'тихо', 'ответила:', '«Я согласна».'] }
+    ],
+    sceneTitle: 'Güvercinli Teklif',
+    sceneContext: 'Töma, Dima\'nın evlilik teklifini "efsanevi" bir prodüksiyona çevirmeye çalışır; sonuç klasik bir sit-com anıdır.',
+    dialogue: [
+      { speaker: 'Tyoma', ru: 'План: ресторан, оркестр, сто роз и голубь с кольцом. Это будет легендарно!', reading: 'Plan: ristarán, arkéstr, sta róz i gólub\' s kal\'tsóm. Éta búdit lyendárna!', tr: 'Plan: restoran, orkestra, yüz gül ve yüzüklü güvercin. Bu efsanevi olacak!' },
+      { speaker: 'Dima', ru: 'Тёма, это слишком. Я просто встану на колени и скажу: «Ты выйдешь за меня?»', reading: 'Tyóma, éta slíshkam. Ya prósta vstánu na kályeni i skazhú: «Ty výydeş\' za minyá?»', tr: 'Töma, bu fazla. Ben sadece diz çökeceğim ve diyeceğim ki: "Benimle evlenir misin?"' },
+      { speaker: 'Tyoma', ru: 'А голубя можно оставить?', reading: 'A gólubya mózhna astávit\'?', tr: 'Peki güvercin kalsın mı?' },
+      { speaker: 'Dima', ru: 'Без голубя! Мои руки дрожат от волнения...', reading: 'Byez gólubya! Maí rúki drazhát at valnéniya...', tr: 'Güvercinsiz! Ellerim heyecandan titriyor...' },
+      { speaker: 'Marina', ru: 'Дима... да! Я согласна! Это самый незабываемый вечер в моей жизни.', reading: 'Díma... da! Ya saglásna! Éta sámyy nezabyváyemıy vécher v mayó zhýzni.', tr: 'Dima... evet! Kabul ediyorum! Bu hayatımdaki en unutulmaz akşam.' },
+      { speaker: 'Anlatıcı', ru: 'Голубь всё-таки прилетел. Кольцо уцелело. Легендарно.', reading: 'Gólub\' fsyo-táki prilyetél. Kal\'tsó atseléla. Lyendárna.', tr: 'Güvercin yine de geldi. Yüzük sağ kaldı. Efsanevi.' }
+    ],
+    smeshariki: {
+      source: 'kukhnya',
+      episodeRu: 'Предложение в ресторане',
+      episodeTr: 'Restoranda Evlilik Teklifi',
+      characters: ['Гость', 'Семён', 'Лёша', 'Нина', 'Марта'],
+      searchQuery: 'Кухня сериал предложение руки и сердца сцена',
+      contextTr: '«Кухня» tarzı bir klasik: bir misafir tatlıya yüzük saklayarak evlilik teklifi yapacak. Plan mükemmel — tek sorun tatlıyı Lyosha\'nın hazırlaması.',
+      miniDialogue: [
+        { speaker: 'Гость', ru: 'Сегодня вечером я предлагаю руку и сердце. Кольцо — в десерте. План идеальный!', reading: 'Sivódnya vyécharam ya pridlagáyu rúku i sérdtse. Kal\'tsó — f dyesértye. Plan idiál\'ny!', tr: 'Bu akşam evlilik teklifi ediyorum. Yüzük — tatlıda. Plan mükemmel!' },
+        { speaker: 'Семён', ru: 'Отличный план, сударь. Одна проблема: десерт сегодня готовит Лёша.', reading: 'Atlíchny plan, sudár\'. Adná práblima: dyesért sivódnya gótavit Lyósha.', tr: 'Mükemmel plan efendim. Tek sorun: bugün tatlıyı Lyosha hazırlıyor.' },
+        { speaker: 'Лёша', ru: 'Я всё понял! Кольцо — в десерт, десерт — на столик. Легко!', reading: 'Ya fsyó panyál! Kal\'tsó — f dyesért, dyesért — na stólik. Légka!', tr: 'Her şeyi anladım! Yüzük — tatlıya, tatlı — masaya. Kolay!' },
+        { speaker: 'Нина', ru: 'Лёша. Не съешь кольцо. Пожалуйста.', reading: 'Lyósha. Ni syésh kal\'tsó. Pazhálusta.', tr: 'Lyosha. Yüzüğü yeme. Lütfen.' },
+        { speaker: 'Лёша', ru: '(приносит десерт) Ваш десерт! И... небольшое волнение в соусе.', reading: '(prinósit dyesért) Vash dyesért! I... nyebal\'shóye valnyéniye f saúsye.', tr: '(tatlıyı getirir) Tatlıınız! Ve... sostaki küçük heyecan.' },
+        { speaker: 'Гость', ru: '(встаёт на колени) Марта! Ты выйдешь за меня?', reading: '(fstayót na kólni) Márta! Ty výydyesh za minyá?', tr: '(diz çöker) Marta! Benimle evlenir misin?' },
+        { speaker: 'Марта', ru: '(находит кольцо в клубнике) Я согласна! Незабываемо!', reading: '(nakhódit kal\'tsó f klubníkye) Ya saglásna! Nezabyváyima!', tr: '(yüzüğü çilekte bulur) Evet! Unutulmaz!' }
+      ],
+      questions: [
+        { prompt: 'Misafir yüzüğü nereye saklar?', correct: 'В десерте', options: shuffle(['В десерте', 'В цветах', 'В кармане', 'В шампанском']) },
+        { prompt: 'Semyon\'un tek sorunu nedir?', correct: 'Десерт готовит Лёша', options: shuffle(['Десерт готовит Лёша', 'Ресторан закрыт', 'Кольцо потерялось', 'Марта опоздала']) },
+        { prompt: 'Adam ne zaman diz çöker?', correct: 'После десерта', options: shuffle(['После десерта', 'До ужина', 'На кухне', 'У входа']) },
+        { prompt: 'Marta ne cevap verir?', correct: 'Я согласна', options: shuffle(['Я согласна', 'Нет, спасибо', 'Я подумаю', 'Забей']) }
+      ]
+    }
+  },
+  {
+    id: 'mod_b2_fl10',
+    unitNumber: 53,
+    levelGroup: 'B2',
+    title: 'Uzun Mesafe İlişkisi & Video Çağrı Dramı',
+    description: 'Saat dilimleri, "seni özledim" mesajları ve gece yarısı video çağrıları',
+    category: 'İlişkiler & Flört',
+    color: '#a855f7',
+    icon: '📱',
+    grammarExplain: `📌 UZUN MESEFE İLİŞKİSİ:
+1. "соскучиться по + datif" -> "özlemek": Я соскучился по тебе (erkek) / Я соскучилась (kadın) -> "Seni özledim".
+2. "на расстоянии" (na rastayánii) -> "uzakta/mesafe uzağında": любовь на расстоянии (uzaktan aşk).`,
+    words: [
+      { id: 'w_ld1', ru: 'На расстоянии', reading: 'Na rastayánii', tr: 'Uzaktan / Mesafe uzağında', level: 'B2', usageNote: '"любовь на расстоянии" — uzaktan aşk.' },
+      { id: 'w_ld2', ru: 'Часовой пояс', reading: 'Chasavóy poyás', tr: 'Saat dilimi', level: 'B2', usageNote: 'Eril bir kelimedir.' },
+      { id: 'w_ld3', ru: 'Соскучиться', reading: "Saskuchít'sya", tr: 'Özlemek (bir an)', level: 'B2', usageNote: 'Dönüşlü; "по тебе" ile kullanılır.' },
+      { id: 'w_ld4', ru: 'Соединение', reading: 'Saydinyéniye', tr: 'Bağlantı', level: 'B2', usageNote: 'Orta cinsiyet; internet bağlamında.' },
+      { id: 'w_ld5', ru: 'Влюблённые', reading: 'Vlyublyónnıye', tr: 'Âşıklar', level: 'B2', usageNote: 'Çoğul kullanılır.' },
+      { id: 'w_ld6', ru: 'Проверка', reading: 'Pravérka', tr: 'Sınav / Test', level: 'B2', usageNote: 'Dişil; mecazi anlamda.' },
+      { id: 'w_ld7', ru: 'Верность', reading: "Vérnast'", tr: 'Sadakat', level: 'B2', usageNote: 'Dişil, soyut isim.' },
+      { id: 'w_ld8', ru: 'Терпеливо', reading: 'Tyrpyelíva', tr: 'Sabırla', level: 'B2', usageNote: 'Zarftır.' }
+    ],
+    sentences: [
+      { ru: 'Я очень соскучился по тебе.', tr: 'Seni çok özledim.', scrambled: ['по тебе.', 'соскучился', 'очень', 'Я'], correct: ['Я', 'очень', 'соскучился', 'по тебе.'] },
+      { ru: 'Верность важнее расстояния.', tr: 'Sadakat, mesafeden daha önemlidir.', scrambled: ['расстояния.', 'важнее', 'Верность'], correct: ['Верность', 'важнее', 'расстояния.'] }
+    ],
+    sceneTitle: 'Gece Yarısı Video Çağrısı',
+    sceneContext: 'Marina iş için başka şehirdedir; Dima ise saat dilimlerini hesaplamayı hâlâ öğrenmektedir.',
+    dialogue: [
+      { speaker: 'Dima', ru: 'Марина! Соединение отличное! Я так соскучился.', reading: 'Marína! Saydinyéniye atlíchwaye! Ya tak saskuchílsa.', tr: 'Marina! Bağlantı harika! Çok özledim.' },
+      { speaker: 'Marina', ru: 'Дима, у меня три часа ночи. Ты звонишь в третий раз.', reading: 'Díma, u minyá tri chasá nóchi. Ty zvónish\' f trétiy ras.', tr: 'Dima, bende gece üç. Üçüncü kez arıyorsun.' },
+      { speaker: 'Dima', ru: 'Любовь на расстоянии — это проверка. Я верю в нашу верность.', reading: 'Lyubóf\' na rastayánii — éta pravérka. Ya vyerú f náshu vérnast\'.', tr: 'Uzaktan aşk bir sınavdır. Sadakatimize inanıyorum.' },
+      { speaker: 'Marina', ru: 'Я тоже. Но влюблённым нужен сон. Терпеливо жди утра.', reading: 'Ya tózhe. No vlyublyónnym núzhen son. Tyrpyelíva zhdí útra.', tr: 'Ben de. Ama âşıklara uyku gerekir. Sabaha sabırla bekle.' },
+      { speaker: 'Dima', ru: 'Хорошо... Один вопрос: ты по мне скучаешь?', reading: 'Haraşó... Adín vápras: ty pa mné skucháyesh\'?', tr: 'Tamam... Bir soru: Beni özlüyor musun?' },
+      { speaker: 'Marina', ru: 'Дима!!! Спокойной ночи!', reading: 'Díma!!! Spakóynay nóchi!', tr: 'Dima!!! İyi geceler!' }
+    ]
+  },
+  {
     id: 'mod_b2_7',
-    unitNumber: 47,
+    unitNumber: 54,
     levelGroup: 'B2',
     title: 'Maaş Pazarlığı & Zam İsteme',
     description: 'Değerini anlatma, rakam konuşma, \'düşünelim\' cevabını okuma',
@@ -1845,7 +2158,7 @@ Bir metinde her kelimeyi bilmesen bile, cümleleri birbirine bağlayan kelimeler
   },
   {
     id: 'mod_b2_8',
-    unitNumber: 48,
+    unitNumber: 55,
     levelGroup: 'B2',
     title: 'Patronla Çatışma & Geri Bildirim',
     description: 'Haksız eleştiri, savunma, \'yazılı teyit\' isteme',
@@ -1880,7 +2193,7 @@ Bir metinde her kelimeyi bilmesen bile, cümleleri birbirine bağlayan kelimeler
   },
   {
     id: 'mod_b2_9',
-    unitNumber: 49,
+    unitNumber: 56,
     levelGroup: 'B2',
     title: 'Film Eleştirisi & Spoiler Kavgası',
     description: 'Konu, oyunculuk, final — film hakkında yetişkin tartışma',
@@ -1915,7 +2228,7 @@ Bir metinde her kelimeyi bilmesen bile, cümleleri birbirine bağlayan kelimeler
   },
   {
     id: 'mod_b2_10',
-    unitNumber: 50,
+    unitNumber: 57,
     levelGroup: 'B2',
     title: 'Dizi Karakteri & Teori Üretme',
     description: 'Fan teorisi, karakter gelişimi, \'o aslında...\' sohbetleri',
@@ -1950,7 +2263,7 @@ Bir metinde her kelimeyi bilmesen bile, cümleleri birbirine bağlayan kelimeler
   },
   {
     id: 'mod_b2_11',
-    unitNumber: 51,
+    unitNumber: 58,
     levelGroup: 'B2',
     title: 'Otel, Rezervasyon & Şikâyet',
     description: 'Check-in, gürültülü oda, iade — seyahatte hak arama',
@@ -1985,7 +2298,7 @@ Bir metinde her kelimeyi bilmesen bile, cümleleri birbirine bağlayan kelimeler
   },
   {
     id: 'mod_b2_12',
-    unitNumber: 52,
+    unitNumber: 59,
     levelGroup: 'B2',
     title: 'Kaza, Sigorta & İfade',
     description: 'Trafik kazası, polis, sigorta şirketi — panik etmeden kalıplar',
@@ -2020,7 +2333,7 @@ Bir metinde her kelimeyi bilmesen bile, cümleleri birbirine bağlayan kelimeler
   },
   {
     id: 'mod_b2_13',
-    unitNumber: 53,
+    unitNumber: 60,
     levelGroup: 'B2',
     title: 'İş Arkadaşı Dedikodusu & Sınır',
     description: 'Ofiste sır, \'müdüre gitme\', profesyonel mesafe',
@@ -2055,7 +2368,7 @@ Bir metinde her kelimeyi bilmesen bile, cümleleri birbirine bağlayan kelimeler
   },
   {
     id: 'mod_b2_14',
-    unitNumber: 54,
+    unitNumber: 61,
     levelGroup: 'B2',
     title: 'Çocuk, Okul & Veli Konuşması',
     description: 'Öğretmenle konuşma, ödev, toplantı — aile hayatı dili',
@@ -2090,7 +2403,7 @@ Bir metinde her kelimeyi bilmesen bile, cümleleri birbirine bağlayan kelimeler
   },
   {
     id: 'mod_b2_15',
-    unitNumber: 55,
+    unitNumber: 62,
     levelGroup: 'B2',
     title: 'Tanışma Uygulaması Sohbeti',
     description: 'İlk mesaj, espri, buluşma teklifi, ghosting\'e cevap',
@@ -2125,7 +2438,7 @@ Bir metinde her kelimeyi bilmesen bile, cümleleri birbirine bağlayan kelimeler
   },
   {
     id: 'mod_b2_16',
-    unitNumber: 56,
+    unitNumber: 63,
     levelGroup: 'B2',
     title: 'Haber, Söylenti & \'Duydun mu\'',
     description: 'Şehirde olan biten, kaynak sorma, abartıyı kesme',
@@ -2160,7 +2473,7 @@ Bir metinde her kelimeyi bilmesen bile, cümleleri birbirine bağlayan kelimeler
   },
   {
     id: 'mod_b2_17',
-    unitNumber: 57,
+    unitNumber: 64,
     levelGroup: 'B2',
     title: 'Konser, Bilet & Kapı Önü',
     description: 'Bilet satışı, kuyruk, \'içeri alırlar mı\' — eğlence hayatı',
@@ -2195,7 +2508,7 @@ Bir metinde her kelimeyi bilmesen bile, cümleleri birbirine bağlayan kelimeler
   },
   {
     id: 'mod_c1_1',
-    unitNumber: 58,
+    unitNumber: 65,
     levelGroup: 'C1/C2',
     title: 'Deyimler ve Argo',
     description: 'Dizilerde ve günlük hayatta duyulan deyimler, argo ifadeler',
@@ -2227,7 +2540,7 @@ Bir metinde her kelimeyi bilmesen bile, cümleleri birbirine bağlayan kelimeler
   },
   {
     id: 'mod_c1_2',
-    unitNumber: 59,
+    unitNumber: 66,
     levelGroup: 'C1/C2',
     title: 'Ayrılık Sahnesi',
     description: 'İleri düzey duygu ifadeleri ve şart kipi kullanımı',
@@ -2259,7 +2572,7 @@ Bir metinde her kelimeyi bilmesen bile, cümleleri birbirine bağlayan kelimeler
   },
   {
     id: 'mod_c1_3',
-    unitNumber: 60,
+    unitNumber: 67,
     levelGroup: 'C1/C2',
     title: 'Mahkeme Sahnesi',
     description: 'Resmi hukuk dili ve duruşma salonu kalıpları',
@@ -2291,7 +2604,7 @@ Bir metinde her kelimeyi bilmesen bile, cümleleri birbirine bağlayan kelimeler
   },
   {
     id: 'mod_c1_4',
-    unitNumber: 61,
+    unitNumber: 68,
     levelGroup: 'C1/C2',
     title: 'İroni, Kinaye & Alt Metin',
     description: 'Söylenenle kastedileni ayırma — dizilerde ve gerçek hayatta ileri dinleme',
@@ -2326,7 +2639,7 @@ Bir metinde her kelimeyi bilmesen bile, cümleleri birbirine bağlayan kelimeler
   },
   {
     id: 'mod_c1_5',
-    unitNumber: 62,
+    unitNumber: 69,
     levelGroup: 'C1/C2',
     title: 'Sunum, İtiraz & Toplantı Dominansı',
     description: 'Sunum dili, itiraz, \'bu riskli\' — işte ileri resmi konuşma',
@@ -2361,7 +2674,7 @@ Bir metinde her kelimeyi bilmesen bile, cümleleri birbirine bağlayan kelimeler
   },
   {
     id: 'mod_c1_6',
-    unitNumber: 63,
+    unitNumber: 70,
     levelGroup: 'C1/C2',
     title: 'İlişkide Ultimatom & Şart Kipi',
     description: 'Pişmanlık, şart, \'bundan sonra yok\' — dizi finali kalıpları',
@@ -2395,8 +2708,146 @@ Bir metinde her kelimeyi bilmesen bile, cümleleri birbirine bağlayan kelimeler
     ]
   },
   {
+    // =========================================================================
+    // İLİŞKİLER & FLÖRT — GENİŞLETİLMİŞ MÜFREDAT (2x) / C1-C2 bloğu
+    // =========================================================================
+    id: 'mod_c1_fl7',
+    unitNumber: 71,
+    levelGroup: 'C1/C2',
+    title: 'Evlilikte Kriz, Kayınvalide & İtiraf Gecesi',
+    description: 'Тёща, свекровь, biriken kırgınlıklar ve içini dökme gecesi — yetişkin ilişki dili',
+    category: 'İlişkiler & Flört',
+    color: '#8b5cf6',
+    icon: '🎭',
+    grammarExplain: `📌 AİLE KRİZİ DİLİ:
+1. "копиться / накопиться" (kanít'sya / nakapít'sya) -> "birikmek": Обиды накопились (Kırgınlıklar birikti).
+2. "пойти на уступки" -> "ödün vermek" — müzakere dilinin anahtar kalıbı ("на + çoğul araç hali").`,
+    words: [
+      { id: 'w_mk1', ru: 'Тёща', reading: 'Tyóshcha', tr: 'Kayınvalide (karının annesi)', level: 'C1/C2', usageNote: 'Dişil; erkeğin kayınvalidesi.' },
+      { id: 'w_mk2', ru: 'Свекровь', reading: "Svikróf'", tr: 'Kayınvalide (kocanın annesi)', level: 'C1/C2', usageNote: 'Dişil; kadının kayınvalidesi.' },
+      { id: 'w_mk3', ru: 'Кризис', reading: 'Krízis', tr: 'Kriz', level: 'C1/C2', usageNote: 'Eril; hem ekonomik hem duygusal.' },
+      { id: 'w_mk4', ru: 'Накопиться', reading: "Nakapít'sya", tr: 'Birikmek', level: 'C1/C2', usageNote: 'Dönüşlü fiildir.' },
+      { id: 'w_mk5', ru: 'Ссора', reading: 'Ssóra', tr: 'Kavga / Tartışma', level: 'C1/C2', usageNote: 'Dişil; ev içi kavgalar için.' },
+      { id: 'w_mk6', ru: 'Обида', reading: 'Abída', tr: 'Kırgınlık', level: 'C1/C2', usageNote: 'Dişil; "держать обиду" — kırgınlık beslemek.' },
+      { id: 'w_mk7', ru: 'Выговориться', reading: "Vıgavarít'sya", tr: 'İçini dökmek', level: 'C1/C2', usageNote: 'Dönüşlü fiildir.' },
+      { id: 'w_mk8', ru: 'Пойти на уступки', reading: 'Paytí na ustúpki', tr: 'Ödün vermek', level: 'C1/C2', usageNote: 'Sabit kalıp; müzakere dili.' }
+    ],
+    sentences: [
+      { ru: 'Обиды копились годами.', tr: 'Kırgınlıklar yıllarca birikti.', scrambled: ['годами.', 'копились', 'Обиды'], correct: ['Обиды', 'копились', 'годами.'] },
+      { ru: 'Иногда нужно просто выговориться.', tr: 'Bazen sadece içini dökmek gerekir.', scrambled: ['выговориться.', 'просто', 'нужно', 'Иногда'], correct: ['Иногда', 'нужно', 'просто', 'выговориться.'] }
+    ],
+    sceneTitle: 'Bir Aylık Ziyaret',
+    sceneContext: 'Anlatıcı gözüyle: Jenya ve Lena\'nın evliliğinde kriz — kayınvalide bir aylığına taşınmıştır.',
+    dialogue: [
+      { speaker: 'Anlatıcı', ru: 'У Жени и Лены начался кризис: тёща приехала на месяц.', reading: 'U Zhéni i Lyény nachálsya krízis: tyóshcha priyékhala na mésyats.', tr: 'Jenya ve Lena\'da kriz başladı: kayınvalide bir aylığına geldi.' },
+      { speaker: 'Zhenya', ru: 'У нас ссора каждый день. Обиды копились пять лет.', reading: 'U nas ssóra kázhdy den\'. Abýdy kapílis\' pyat\' lyet.', tr: 'Her gün kavgamız var. Kırgınlıklar beş yıldır birikiyor.' },
+      { speaker: 'Lena', ru: 'Мама хочет помочь, но проверяет мой холодильник и твой характер.', reading: 'Máma khóchit pamóch\', no pravyáryet moy chaladíl\'nik i tvóy kharáktar.', tr: 'Annem yardım etmek istiyor ama benim buzdolabımı ve senin karakterini denetliyor.' },
+      { speaker: 'Zhenya', ru: 'Нам нужно выговориться. Спокойно, без криков.', reading: 'Nam núzhna vıgavarít\'sya. Spakóyna, byez krikóf.', tr: 'İçimizi dökmeliyiz. Sakince, bağırış olmadan.' },
+      { speaker: 'Lena', ru: 'И пойти на уступки. Обе стороны.', reading: 'I paytí na ustúpki. Abyé staraný.', tr: 'Ve ödün vermeliyiz. İki taraf da.' },
+      { speaker: 'Anlatıcı', ru: 'Они проговорили до утра. Кризис закончился. Тёща осталась ещё на два месяца.', reading: 'Oni pragavaríli da útra. Krízis zakónchilsya. Tyóshcha astálas\' yeshchó na dva myesyatsa.', tr: 'Sabaha kadar konuştular. Kriz bitti. Kayınvalide iki ay daha kaldı.' }
+    ]
+  },
+  {
+    id: 'mod_c1_fl8',
+    unitNumber: 72,
+    levelGroup: 'C1/C2',
+    title: 'Boşanma & Yeni Bir Sayfa',
+    description: 'Boşanmayı atlatmak, ikinci şans ve kör randevu — hicivli bir "ikinci bahar" hikayesi',
+    category: 'İlişkiler & Flört',
+    color: '#0ea5e9',
+    icon: '🌅',
+    grammarExplain: `📌 YENİDEN BAŞLAMAK:
+1. "начать с чистого листа" (nachát' s chístava lísta) -> "temiz bir sayfa açmak" — Rusçanın en sevilen başlangıç deyimi.
+2. "свидание вслепую" (svidániye vslipyúyu) -> "kör randevu" — "вслепую" (kör körüne) zarfı mecaz anlamda da kullanılır.`,
+    words: [
+      { id: 'w_nr1', ru: 'Развод', reading: 'Razvót', tr: 'Boşanma', level: 'C1/C2', usageNote: 'Eril bir kelimedir.' },
+      { id: 'w_nr2', ru: 'Развестись', reading: "Razyestís'", tr: 'Boşanmak', level: 'C1/C2', usageNote: 'Dönüşlü fiil; "Они развелись".' },
+      { id: 'w_nr3', ru: 'Пережить', reading: 'Piryzhýt\'', tr: '(Zor bir şeyi) Atlatmak', level: 'C1/C2', usageNote: 'Mastar; duygusal geçiş süreçlerinde.' },
+      { id: 'w_nr4', ru: 'Начать с чистого листа', reading: "Nachát' s chístava lísta", tr: 'Yeni bir sayfa açmak', level: 'C1/C2', usageNote: 'Deyim olarak kullanılır.' },
+      { id: 'w_nr5', ru: 'Второй шанс', reading: 'Vtaróy shans', tr: 'İkinci şans', level: 'C1/C2', usageNote: 'Eril; kalıp ifade.' },
+      { id: 'w_nr6', ru: 'Оптимизм', reading: 'Aptimízm', tr: 'İyimserlik', level: 'C1/C2', usageNote: 'Eril bir kelimedir.' },
+      { id: 'w_nr7', ru: 'Уверенность', reading: "Uvyérennast'", tr: 'Özgüven / Eminlik', level: 'C1/C2', usageNote: 'Dişil, soyut isim.' },
+      { id: 'w_nr8', ru: 'Свидание вслепую', reading: 'Svidániye vslipyúyu', tr: 'Kör randevu', level: 'C1/C2', usageNote: 'Sabit kalıptır.' }
+    ],
+    sentences: [
+      { ru: 'После развода он начал с чистого листа.', tr: 'Boşanmadan sonra yeni bir sayfa açtı.', scrambled: ['листа.', 'с чистого', 'начал', 'развода', 'После', 'он'], correct: ['После', 'развода', 'он', 'начал', 'с чистого', 'листа.'] },
+      { ru: 'Каждый заслуживает второй шанс.', tr: 'Herkes ikinci bir şansı hak eder.', scrambled: ['шанс.', 'второй', 'заслуживает', 'Каждый'], correct: ['Каждый', 'заслуживает', 'второй', 'шанс.'] }
+    ],
+    sceneTitle: 'Vova Amcanın İkinci Şansı',
+    sceneContext: 'Elli yaşında, yeni boşanmış Vova Amca, gençlerden manitacılık dersi alır — sonuç beklenmedik olur.',
+    dialogue: [
+      { speaker: 'Anlatıcı', ru: 'Дяде Вове пятьдесят. После развода он решил начать с чистого листа.', reading: 'Dyáde Vóvye pídyesyat. Pósle razvóta on ryshíl nachát\' s chístava lísta.', tr: 'Vova Amca elli yaşında. Boşanmadan sonra yeni bir sayfa açmaya karar verdi.' },
+      { speaker: 'Tyoma', ru: 'Дядя Вова, у тебя второй шанс. Главное — уверенность. И костюм.', reading: 'Dyády Vóva, u tibyá vtaróy shans. Glávnaye — uvyérennast\'. I kastyúm.', tr: 'Vova Amca, ikinci şansın var. En önemlisi özgüven. Ve takım elbise.' },
+      { speaker: 'Vova', ru: 'Костюм есть. А оптимизма нет — я пережил развод, мне страшно.', reading: 'Kastyúm yest\'. A aptimízma nyet — ya piryzhýl razvót, mne stráshna.', tr: 'Takım elbise var. Ama iyimserlik yok — boşanmayı atlattım, korkuyorum.' },
+      { speaker: 'Tyoma', ru: 'В пятницу свидание вслепую. Она архитектор и любит пельмени.', reading: 'F pyátnitsu svidániye vslipyúyu. Aná arkhitéhtar i lyúbit pel\'méni.', tr: 'Cuma kör randevu. O bir mimar ve mantı seviyor.' },
+      { speaker: 'Vova', ru: 'Пельмени?! Тогда я согласен. Жизнь продолжается!', reading: 'Pel\'méni?! Tagdá ya saglásen. Zhýzn\' pradaldzháyetsya!', tr: 'Mantı mı?! O zaman razıyım. Hayat devam ediyor!' },
+      { speaker: 'Anlatıcı', ru: 'Спойлер: через год они поженились. Но это уже другая серия.', reading: 'Spóyler: cherez gód oni pazhyenílisy. No éta uzhe drugáya sériya.', tr: 'Spoiler: bir yıl sonra evlendiler. Ama o artık başka bir bölüm.' }
+    ]
+  },
+  {
+    id: 'mod_c1_fl9',
+    unitNumber: 73,
+    levelGroup: 'C1/C2',
+    title: 'Düğün Konuşması & Sağdıç Replikleri',
+    description: 'Тамада, шафер, kadeh konuşmaları, yemin ritüelleri — düğün sahnesi retoriği',
+    category: 'İlişkiler & Flört',
+    color: '#f59e0b',
+    icon: '🤵',
+    grammarExplain: `📌 DÜĞÜN KONUŞMASI:
+1. "Поднимем бокалы за + araç hali" -> "... için kadeh kaldıralım": за новобрачных (yeni evliler için), за любовь (aşk için).
+2. "речь была трогательной" — araç-esitlik (инструментал) durumlu sıfat-isim cümlesi: "konuşma duygulandırıcıydı".`,
+    words: [
+      { id: 'w_ws1', ru: 'Тамада', reading: 'Tamadá', tr: 'Düğün sunucusu', level: 'C1/C2', usageNote: 'Eril; Rus düğünlerinin vazgeçilmezi.' },
+      { id: 'w_ws2', ru: 'Шафер', reading: 'Shafér', tr: 'Sağdıç', level: 'C1/C2', usageNote: 'Eril bir kelimedir.' },
+      { id: 'w_ws3', ru: 'Речь', reading: "Rech'", tr: '(Tören) Konuşması', level: 'C1/C2', usageNote: 'Dişil; "сказать речь" — kadeh konuşması yapmak.' },
+      { id: 'w_ws4', ru: 'Трогательный', reading: 'Tragátel\'nyy', tr: 'Duygulandırıcı', level: 'C1/C2', usageNote: 'Eril; dişil: трогательная.' },
+      { id: 'w_ws5', ru: 'Поднимем бокалы', reading: 'Padnímim bákaly', tr: 'Kadehleri kaldıralım', level: 'C1/C2', usageNote: 'Düğün davet kalıbıdır.' },
+      { id: 'w_ws6', ru: 'Новобрачные', reading: 'Navabrachnıye', tr: 'Yeni evliler', level: 'C1/C2', usageNote: 'Çoğul kullanılır.' },
+      { id: 'w_ws7', ru: 'Клятва', reading: 'Klyátva', tr: 'Yemin', level: 'C1/C2', usageNote: 'Dişil; evlilik yemini için.' },
+      { id: 'w_ws8', ru: 'Шампанское', reading: 'Shampánskaye', tr: 'Şampanya', level: 'C1/C2', usageNote: 'Orta cinsiyet; doğal olarak tekil.' }
+    ],
+    sentences: [
+      { ru: 'Поднимем бокалы за новобрачных!', tr: 'Yeni evliler için kadehleri kaldıralım!', scrambled: ['новобрачных!', 'за', 'бокалы', 'Поднимем'], correct: ['Поднимем', 'бокалы', 'за', 'новобрачных!'] },
+      { ru: 'Его речь была очень трогательной.', tr: 'Onun konuşması çok duygulandırıcıydı.', scrambled: ['трогательной.', 'очень', 'была', 'речь', 'Его'], correct: ['Его', 'речь', 'была', 'очень', 'трогательной.'] }
+    ],
+    sceneTitle: 'Sağdıcın Konuşması',
+    sceneContext: 'Dima ve Marina\'nın düğünü: Töma sağdıçtır ve herkes konuşmasını hem bekliyor hem korkuyor.',
+    dialogue: [
+      { speaker: 'Anlatıcı', ru: 'Свадьба Димы и Марины. Тёма — шафер. Его речь ждали все. И боялись.', reading: 'Svádb\'a Dímy i Maríny. Tyóma — shafér. Yevó rech\' zhdalí fsye. I bayális\'.', tr: 'Dima ve Marina\'nın düğünü. Töma sağdıç. Konuşmasını herkes bekliyordu. Ve korkuyordu.' },
+      { speaker: 'Tyoma', ru: 'Дамы и господа! Поднимем бокалы! Я знаю Диму двадцать лет. Он влюблялся сорок семь раз.', reading: 'Dámy i gaspadá! Padnímim bákaly! Ya znáyú Dímu dvátsat\' lyet. On vlyublyálsya sórak syém ras.', tr: 'Hanımlar ve beyler! Kadehleri kaldıralım! Dima\'yı yirmi yıldır tanırım. Kırk yedi kez âşık oldu.' },
+      { speaker: 'Dima', ru: 'Тёма!', reading: 'Tyóma!', tr: 'Töma!' },
+      { speaker: 'Tyoma', ru: 'Но Марина — последняя. За новобрачных!', reading: 'No Marína — paslyédnyaya. Za navabrachnýkh!', tr: 'Ama Marina — sonuncusu. Yeni evlilere!' },
+      { speaker: 'Marina', ru: 'Самая трогательная и самая нелепая речь. Спасибо, Тёма.', reading: 'Samáya tragátel\'naya i samáya nilépaya rech\'. Spasíba, Tyóma.', tr: 'En duygulandırıcı ve en saçma konuşma. Teşekkürler, Töma.' },
+      { speaker: 'Тамада', ru: 'Горько! Горько! Шампанское для всех!', reading: 'Gór\'ka! Gór\'ka! Shampánskaye dlya fsyekh!', tr: 'Acı! Acı! Herkese şampanya!' },
+      { speaker: 'Anlatıcı', ru: 'Клятву они дали тихо. А поцеловались пять минут. Легендарно.', reading: 'Klyátvu oni dáli tíkha. A patsyalavális\' pyat\' minút. Lyendárna.', tr: 'Yemini sessizce ettiler. Öpüşmeleri ise beş dakika sürdü. Efsanevi.' }
+    ],
+    smeshariki: {
+      source: 'kukhnya',
+      episodeRu: 'Свадьба в «Ван Гоге»',
+      episodeTr: '"Van Gogh"ta Düğün',
+      characters: ['Семён', 'Шафер', 'Тамада', 'Шеф Пётр', 'Лёша'],
+      searchQuery: 'Кухня сериал свадьба тост сцена',
+      contextTr: '«Ван Гог» bir düğüne ev sahipliği yapıyor: tamada, ağlayan sağdıç, şefin pastası ve tabii ki Lyosha\'nın tepsiyi düşürme anı. Klasik bir Rus düğün komedisi sahnesi.',
+      miniDialogue: [
+        { speaker: 'Семён', ru: 'Добрый вечер! Свадьба на сорок гостей. Тамада — вот там, шафер — волнуется.', reading: 'Dóbry vécher! Svádb\'a na sórak góstey. Tamadá — vot tam, shafér — valnúyetsya.', tr: 'İyi akşamlar! Kırk kişilik düğün. Sunucu — şurada, sağdıç — heyecanlı.' },
+        { speaker: 'Шафер', ru: 'Моя речь готова. Я репетировал двенадцать раз. Никто не будет плакать. Никто!', reading: 'Mayá rech\' gótava. Ya ripyetíral dvyénadtsat\' ras. Niktó nye búdit plákat\'. Niktó!', tr: 'Konuşmam hazır. On iki kez prova yaptım. Kimse ağlamayacak. KİMSE!' },
+        { speaker: 'Тамада', ru: 'Поднимем бокалы! Слово — шаферу!', reading: 'Padnímim bákaly! Slóva — shaféru!', tr: 'Kadehleri kaldıralım! Söz — sağdıçta!' },
+        { speaker: 'Шафер', ru: '(дрожит) Дорогие новобрачные! Вы... вы... (плачет) Простите.', reading: '(drazhýt) Daragíye novabráchныe! Vy... vy... (pláchit) Prastítye.', tr: '(titrer) Sevgili gelin ve damat! Siz... siz... (ağlar) Affedersiniz.' },
+        { speaker: 'Шеф Пётр', ru: '(выходит с тортом) Так! Клятву дали, торт на месте, шампанское холодное. Продолжаем!', reading: '(vыkhódit s tórtam) Tak! Klyátvu dáli, tort na myéstye, shampánskaye khalódnaye. Pradálzhayem!', tr: '(pastayla çıkar) Tamam! Yemini ettiler, pasta yerinde, şampanya soğuk. Devam!' },
+        { speaker: 'Тамада', ru: 'Трогательная речь! А теперь — горько!', reading: 'Tragátyel\'naya rech\'! A tyéper\' — gór\'ka!', tr: 'Dokunaklı bir konuşma! Ve şimdi — acı!' },
+        { speaker: 'Лёша', ru: '(роняет поднос) Почти идеально...', reading: '(ránayet padnós) Póchti idiál\'na...', tr: '(tepsiyi düşürür) Neredeyse mükemmel...' }
+      ],
+      questions: [
+        { prompt: 'Sağdçın konuşması nasıl gider?', correct: 'Он плачет', options: shuffle(['Он плачет', 'Он поёт', 'Он молчит', 'Он уходит']) },
+        { prompt: 'Şef Пётр mutfağından neyle çıkar?', correct: 'С тортом', options: shuffle(['С тортом', 'Со счётом', 'С гитарой', 'С кольцом']) },
+        { prompt: 'Tamada sonunda ne ister?', correct: 'Горько!', options: shuffle(['Горько!', 'Тише!', 'Пожар!', 'Ура!']) },
+        { prompt: 'Lyosha sahnenin sonunda ne yapar?', correct: 'Роняет поднос', options: shuffle(['Роняет поднос', 'Поёт песню', 'Танцует вальс', 'Читает речь']) }
+      ]
+    }
+  },
+  {
     id: 'mod_c1_7',
-    unitNumber: 64,
+    unitNumber: 74,
     levelGroup: 'C1/C2',
     title: 'İstifa, Referans & Çıkış Görüşmesi',
     description: 'İstifa mektubu dili, \'neden gidiyorsun\', köprüleri yakmama',
@@ -2431,7 +2882,7 @@ Bir metinde her kelimeyi bilmesen bile, cümleleri birbirine bağlayan kelimeler
   },
   {
     id: 'mod_c1_8',
-    unitNumber: 65,
+    unitNumber: 75,
     levelGroup: 'C1/C2',
     title: 'Şikâyet Dilekçesi & Tüketici Hakları',
     description: 'İade, kusurlu ürün, \'tüketici olarak talep ediyorum\'',
@@ -2466,7 +2917,7 @@ Bir metinde her kelimeyi bilmesen bile, cümleleri birbirine bağlayan kelimeler
   },
   {
     id: 'mod_c1_9',
-    unitNumber: 66,
+    unitNumber: 76,
     levelGroup: 'C1/C2',
     title: 'Parti, Networking & Tanıtım Cümlesi',
     description: 'Kendini 20 saniyede anlatma, kartvizit, \'sonra yazalım\'',
@@ -2501,7 +2952,7 @@ Bir metinde her kelimeyi bilmesen bile, cümleleri birbirine bağlayan kelimeler
   },
   {
     id: 'mod_c1_10',
-    unitNumber: 67,
+    unitNumber: 77,
     levelGroup: 'C1/C2',
     title: 'Yabancı Olarak Yaşamak & Kimlik',
     description: 'Aksan, \'nerelisin\', aidiyet, \'burada kalıcı mısın\' soruları',
@@ -2536,7 +2987,7 @@ Bir metinde her kelimeyi bilmesen bile, cümleleri birbirine bağlayan kelimeler
   },
   {
     id: 'mod_c1_11',
-    unitNumber: 68,
+    unitNumber: 78,
     levelGroup: 'C1/C2',
     title: 'Şarkı, Replik & \'Bu Sahne Ne Anlatıyor\'',
     description: 'Mecaz, alt metin, \'yönetmen şunu demek istedi\' — kültürel sohbet',
@@ -2571,7 +3022,7 @@ Bir metinde her kelimeyi bilmesen bile, cümleleri birbirine bağlayan kelimeler
   },
   {
     id: 'mod_c1_12',
-    unitNumber: 69,
+    unitNumber: 79,
     levelGroup: 'C1/C2',
     title: 'Duygu Sözlüğü: Terapi & Sınır',
     description: 'Kaygı, tükenmişlik, \'hayır diyebilmek\' — yetişkin duygusal dil',
@@ -2606,7 +3057,7 @@ Bir metinde her kelimeyi bilmesen bile, cümleleri birbirine bağlayan kelimeler
   },
   {
     id: 'mod_c1_13',
-    unitNumber: 70,
+    unitNumber: 80,
     levelGroup: 'C1/C2',
     title: 'Pazarlık Ustası: Pazar & Hizmet',
     description: 'Fiyat kırma, toptan, \'başka yerde daha ucuz\' — ileri pazarlık',
@@ -2641,7 +3092,7 @@ Bir metinde her kelimeyi bilmesen bile, cümleleri birbirine bağlayan kelimeler
   },
   {
     id: 'mod_c1_14',
-    unitNumber: 71,
+    unitNumber: 81,
     levelGroup: 'C1/C2',
     title: 'Gençlik Jargonu & İnternet Dili',
     description: 'Chat, meme, \'кринж\', \'имба\' — dizilerde duyulan internet Rusçası',
@@ -2676,7 +3127,7 @@ Bir metinde her kelimeyi bilmesen bile, cümleleri birbirine bağlayan kelimeler
   },
   {
     id: 'mod_c1_15',
-    unitNumber: 72,
+    unitNumber: 82,
     levelGroup: 'C1/C2',
     title: 'Haber Analizi & Görüş Savunma',
     description: 'Kaynak, önyargı, \'bence abartılıyor\' — olgun tartışma',

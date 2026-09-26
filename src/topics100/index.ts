@@ -24,12 +24,13 @@ export type { Topic100, Topic100Question, Topic100Cat, CefrTag } from './types';
 export type { Topic100Item, Topic100Sentence, Topic100Line } from './types';
 
 // ---------------------------------------------------------------------------
-// Kategoriler
-// ---------------------------------------------------------------------------
-export const TOPIC_100_CATS: { id: Topic100Cat; label: string; icon: string; color: string }[] = [
-  { id: 'harf', label: 'Harfler — Müfredattan Örnekler (33 Konu)', icon: '🔤', color: '#3b82f6' },
-  { id: 'fonetik', label: 'Fonetik Kurallar (8 Konu)', icon: '🧪', color: '#f59e0b' },
-  { id: 'mufredat', label: 'Müfredat Ön Hazırlık (59 Konu)', icon: '🎧', color: '#ec4899' },
+// Kategoriler — konu sayıları UNITS_DATA'dan türetildiği için ETİKETLER de
+// dinamik hesaplanır (müfredat büyürse sayılar kendiliğinden güncellenir).
+// ---------------------------------------------------------------------------*/
+const TOPIC_100_CATS_BASE: { id: Topic100Cat; label: string; icon: string; color: string }[] = [
+  { id: 'harf', label: 'Harfler — Müfredattan Örnekler', icon: '🔤', color: '#3b82f6' },
+  { id: 'fonetik', label: 'Fonetik Kurallar', icon: '🧪', color: '#f59e0b' },
+  { id: 'mufredat', label: 'Müfredat Ön Hazırlık', icon: '🎧', color: '#ec4899' },
 ];
 
 export function topicCatInfo(id: Topic100Cat) {
@@ -39,7 +40,8 @@ export function topicCatInfo(id: Topic100Cat) {
 export const LEVELS: CefrTag[] = ['A1', 'A2', 'B1', 'B2', 'C1/C2'];
 
 // ---------------------------------------------------------------------------
-// 100 konunun tam dizilişi: 33 harf + 8 fonetik + 59 müfredat ön-hazırlık.
+// Dinleme konularının tam dizilişi: 33 harf + 8 fonetik + N müfredat ön-hazırlık.
+// (N, UNITS_DATA'daki B1/B2/C1 ünite sayısından otomatik türetilir.)
 // ---------------------------------------------------------------------------
 export const LETTER_GLYPHS: string[] = LETTER_INFO.map((l) => l.glyph);
 
@@ -54,7 +56,14 @@ export const TOPICS_100: Topic100[] = [
   ...RULE_TOPICS,
   ...PREVIEW_TOPICS,
 ];
-export const TOPICS_100_TOTAL = TOPICS_100.length; // === 100
+export const TOPICS_100_TOTAL = TOPICS_100.length; // alfabe + fonetik + tüm B1/B2/C1 üniteleri (dinamik)
+
+// Kategori etiketlerine güncel konu sayılarını işle (etiketler veriye bağlı kalır).
+export const TOPIC_100_CATS: { id: Topic100Cat; label: string; icon: string; color: string }[] =
+  TOPIC_100_CATS_BASE.map((c) => ({
+    ...c,
+    label: `${c.label} (${TOPICS_100.filter((t) => t.cat === c.id).length} Konu)`,
+  }));
 
 export function getTopicByNum(num: number): Topic100 | undefined {
   return TOPICS_100.find((t) => t.num === num);
