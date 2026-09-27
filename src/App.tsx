@@ -502,9 +502,12 @@ export type PathStep =
 
 export const PATH: PathStep[] = (() => {
   const steps: PathStep[] = [];
-  for (let i = 0; i < ALPHABET_LESSONS.length; i++) steps.push({ kind: 'alpha', lessonIdx: i });
-  for (let i = 0; i < GRAMMAR_FOUNDATION_UNITS.length; i++) steps.push({ kind: 'grammar', grammarIdx: i });
+  // 1) EN BAŞTA: 🎧 Harf Dinleme (33 harf) + 🎧 Fonetik Dinleme (8 konu) — Ünite 1'den itibaren
   TOPICS_100.forEach((t, idx) => { if (t.cat !== 'mufredat') steps.push({ kind: 'topic', topicIdx: idx }); });
+  // 2) Sonra: Alfabe dersleri (okuma)
+  for (let i = 0; i < ALPHABET_LESSONS.length; i++) steps.push({ kind: 'alpha', lessonIdx: i });
+  // 3) Sonra: Zamanlar + özne/yüklem/edat (cümle temelleri)
+  for (let i = 0; i < GRAMMAR_FOUNDATION_UNITS.length; i++) steps.push({ kind: 'grammar', grammarIdx: i });
   const previewByUnit = new Map<string, number>();
   TOPICS_100.forEach((t, idx) => { if (t.cat === 'mufredat' && t.unitId && !previewByUnit.has(t.unitId)) previewByUnit.set(t.unitId, idx); });
   UNITS_DATA.forEach((u, uIdx) => {
