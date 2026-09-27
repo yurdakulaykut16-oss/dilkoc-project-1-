@@ -1,4 +1,5 @@
 import type { CefrTag } from './topics100';
+import { TENSE_UNITS } from './tensesData';
 
 export interface GrammarFoundationExample {
   ru: string;
@@ -218,7 +219,9 @@ export const GRAMMAR_FOUNDATION_UNITS: GrammarFoundationUnit[] = [
       { prompt: '«У него нет времени.» cümlesindeki temel anlam nedir?', correct: 'Onun zamanı yok.', options: ['Onun zamanı yok.', 'O kafede.', 'Doktora gidiyoruz.', 'Ben okuyorum.'] },
       { prompt: 'Bir cümlede edat gördüğünde ilk yapman gereken ne?', correct: 'Hangi soruya cevap verdiğini sormak.', options: ['Hangi soruya cevap verdiğini sormak.', 'Her zaman silmek.', 'Yüklem sanmak.', 'Özneyle yer değiştirmek.'] }
     ]
-  }
+  },
+  // ZAMANLAR (TENSES) PAKETİ — 10 ünite: şimdiki, geçmiş, gelecek zaman + görünüş (вид)
+  ...TENSE_UNITS
 ];
 
 export const ALL_GRAMMAR_FOUNDATION_QUESTIONS = GRAMMAR_FOUNDATION_UNITS.flatMap((u) => u.quiz);
