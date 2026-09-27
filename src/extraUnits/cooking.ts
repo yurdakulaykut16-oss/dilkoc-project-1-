@@ -415,7 +415,7 @@ export const EXTRA_COOKING: UnitModule[] = [
   // ============================ B2 ============================
   {
     id: 'mod_b2_k1',
-    unitNumber: 165,
+    unitNumber: 172,
     levelGroup: 'B2',
     title: 'Et & Balık Teknikleri',
     description: 'Marine etmek, fırınlamak, pişirme derecesi — proteinin ustalık sınıfı',
@@ -451,7 +451,7 @@ export const EXTRA_COOKING: UnitModule[] = [
   },
   {
     id: 'mod_b2_k2',
-    unitNumber: 166,
+    unitNumber: 173,
     levelGroup: 'B2',
     title: 'Fırıncılık & Tatlılar',
     description: 'Medovik, krem, çırpmak, süslemek — tatlı departmanının incelikleri',
@@ -487,7 +487,7 @@ export const EXTRA_COOKING: UnitModule[] = [
   },
   {
     id: 'mod_b2_k3',
-    unitNumber: 167,
+    unitNumber: 174,
     levelGroup: 'B2',
     title: 'Turşu & Kışlık Konserve',
     description: 'Kavanoz, salamura, reçel — Rus balkonlarının altın stoku',
@@ -523,7 +523,7 @@ export const EXTRA_COOKING: UnitModule[] = [
   },
   {
     id: 'mod_b2_k4',
-    unitNumber: 168,
+    unitNumber: 175,
     levelGroup: 'B2',
     title: 'Misafir Sofrası & Menü Planlama',
     description: 'Servis düzeni, ikram etme, kadeh kalıpları — ev sahipliğinin mutfak tarafı',
@@ -559,7 +559,7 @@ export const EXTRA_COOKING: UnitModule[] = [
   },
   {
     id: 'mod_b2_k5',
-    unitNumber: 169,
+    unitNumber: 176,
     levelGroup: 'B2',
     title: 'Restoran Mutfağında Bir Gün',
     description: 'Sipariş, vardiya, servis paniği — profesyonel mutfağın nabzı',
@@ -597,7 +597,7 @@ export const EXTRA_COOKING: UnitModule[] = [
   // ============================ C1 ============================
   {
     id: 'mod_c1_k1',
-    unitNumber: 205,
+    unitNumber: 215,
     levelGroup: 'C1/C2',
     title: 'Şef Dili & Profesyonel Teknikler',
     description: 'Blanşe etmek, karamelize etmek, redüksiyon — yüksek mutfağın terminolojisi',
@@ -633,7 +633,7 @@ export const EXTRA_COOKING: UnitModule[] = [
   },
   {
     id: 'mod_c1_k2',
-    unitNumber: 206,
+    unitNumber: 216,
     levelGroup: 'C1/C2',
     title: 'Tabak Sunumu & Estetik',
     description: 'Kompozisyon, aksan, minimalizm — göz de yer',
@@ -669,7 +669,7 @@ export const EXTRA_COOKING: UnitModule[] = [
   },
   {
     id: 'mod_c1_k3',
-    unitNumber: 207,
+    unitNumber: 217,
     levelGroup: 'C1/C2',
     title: 'Degüstasyon & Yemek Eleştirisi',
     description: 'Ağızda kalan tat, uyum, nüans — yemeği kelimelerle anlatma sanatı',
@@ -705,7 +705,7 @@ export const EXTRA_COOKING: UnitModule[] = [
   },
   {
     id: 'mod_c1_k4',
-    unitNumber: 208,
+    unitNumber: 218,
     levelGroup: 'C1/C2',
     title: 'Kendi Restoranını Açmak',
     description: 'Konsept, maliyet, tedarikçi, açılış — mutfak hayalinin iş planı',

@@ -7,7 +7,7 @@ import type { UnitModule } from '../curriculumData';
 export const EXTRA_C1: UnitModule[] = [
   {
     id: 'mod_c1_x1',
-    unitNumber: 193,
+    unitNumber: 203,
     levelGroup: 'C1/C2',
     title: 'Yönetici Olmak & Ekip Yönetimi',
     description: 'Delege etme, geri bildirim verme, işe alma ve zam kararları',
@@ -47,7 +47,7 @@ export const EXTRA_C1: UnitModule[] = [
   },
   {
     id: 'mod_c1_x2',
-    unitNumber: 194,
+    unitNumber: 204,
     levelGroup: 'C1/C2',
     title: 'İş Ortaklığı & Hisse Pazarlığı',
     description: 'Ortaklık sözleşmesi, hisse dağılımı ve ayrılık maddeleri',
@@ -87,7 +87,7 @@ export const EXTRA_C1: UnitModule[] = [
   },
   {
     id: 'mod_c1_x3',
-    unitNumber: 195,
+    unitNumber: 205,
     levelGroup: 'C1/C2',
     title: 'İhale, Teklif & Kurumsal Satış',
     description: 'Tender başvurusu, ticari teklif ve kazanma stratejisi',
@@ -127,7 +127,7 @@ export const EXTRA_C1: UnitModule[] = [
   },
   {
     id: 'mod_c1_x4',
-    unitNumber: 196,
+    unitNumber: 206,
     levelGroup: 'C1/C2',
     title: 'Kriz Yönetimi & Zor Müşteri',
     description: 'Şikâyet karşılama, itibar koruma ve telafi teklif etme',
@@ -167,7 +167,7 @@ export const EXTRA_C1: UnitModule[] = [
   },
   {
     id: 'mod_c1_x5',
-    unitNumber: 197,
+    unitNumber: 207,
     levelGroup: 'C1/C2',
     title: 'Gayrimenkul Yatırımı & Değerleme',
     description: 'Getiri hesabı, sıfır/ikinci el konut ve amorti süresi analizi',
@@ -207,7 +207,7 @@ export const EXTRA_C1: UnitModule[] = [
   },
   {
     id: 'mod_c1_x6',
-    unitNumber: 198,
+    unitNumber: 208,
     levelGroup: 'C1/C2',
     title: 'Kredi Reddi & Bankayla Müzakere',
     description: 'Ret gerekçesi sorgulama, kredi geçmişi ve yeniden başvuru',
@@ -247,7 +247,7 @@ export const EXTRA_C1: UnitModule[] = [
   },
   {
     id: 'mod_c1_x7',
-    unitNumber: 199,
+    unitNumber: 209,
     levelGroup: 'C1/C2',
     title: 'Gümrük, İthalat & İhracat',
     description: 'Gümrük beyanı, vergi oranları, lojistik ve takılan yük dramı',
@@ -287,7 +287,7 @@ export const EXTRA_C1: UnitModule[] = [
   },
   {
     id: 'mod_c1_x8',
-    unitNumber: 200,
+    unitNumber: 210,
     levelGroup: 'C1/C2',
     title: 'Ekonomi Haberleri & Enflasyon Sohbeti',
     description: 'Fiyat artışları, kur, uzman tahminleri ve mutfak ekonomisi',
@@ -327,7 +327,7 @@ export const EXTRA_C1: UnitModule[] = [
   },
   {
     id: 'mod_c1_x9',
-    unitNumber: 201,
+    unitNumber: 211,
     levelGroup: 'C1/C2',
     title: 'Romantik Jestler & Sürpriz Organizasyonu',
     description: 'Yıldönümü planı, mum ışığında yemek ve unutulmaz anlar yaratma',
@@ -367,7 +367,7 @@ export const EXTRA_C1: UnitModule[] = [
   },
   {
     id: 'mod_c1_x10',
-    unitNumber: 202,
+    unitNumber: 212,
     levelGroup: 'C1/C2',
     title: 'Derin İlişki Konuşmaları & Gelecek Planı',
     description: 'Değerler, korkular, taşınma ve "biz nereye gidiyoruz" sohbeti',
@@ -407,7 +407,7 @@ export const EXTRA_C1: UnitModule[] = [
   },
   {
     id: 'mod_c1_x11',
-    unitNumber: 203,
+    unitNumber: 213,
     levelGroup: 'C1/C2',
     title: 'Ofis Politikaları & Diplomasi',
     description: 'Dedikodu yönetimi, tarafsızlık ve zarif imalar sanatı',
@@ -447,7 +447,7 @@ export const EXTRA_C1: UnitModule[] = [
   },
   {
     id: 'mod_c1_x12',
-    unitNumber: 204,
+    unitNumber: 214,
     levelGroup: 'C1/C2',
     title: 'Müzakere Sanatı & İkna Teknikleri',
     description: 'Pozisyon savunma, taviz takası ve kazan-kazan kapanışı',

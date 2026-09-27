@@ -133,7 +133,7 @@ export const EXTRA_FLIRT_B1: UnitModule[] = [
 export const EXTRA_FLIRT_B2: UnitModule[] = [
   {
     id: 'mod_b2_p1',
-    unitNumber: 162,
+    unitNumber: 169,
     levelGroup: 'B2',
     title: 'Barda Tanışma & İçki Ismarlama',
     description: '"Sizi bir şeyle ağırlayabilir miyim?" — bar sohbetinin kuralları',
@@ -173,7 +173,7 @@ export const EXTRA_FLIRT_B2: UnitModule[] = [
   },
   {
     id: 'mod_b2_p2',
-    unitNumber: 163,
+    unitNumber: 170,
     levelGroup: 'B2',
     title: 'Kulüpte & Partide: Dans Pisti Diplomasisi',
     description: '"Dans edelim mi?"den numara istemeye: gürültüde iletişim',
@@ -213,7 +213,7 @@ export const EXTRA_FLIRT_B2: UnitModule[] = [
   },
   {
     id: 'mod_b2_p3',
-    unitNumber: 164,
+    unitNumber: 171,
     levelGroup: 'B2',
     title: 'Uçakta & Trende Yol Sohbeti',
     description: 'Koltuk komşusuyla sohbet: "Nereye uçuyorsunuz?" sanatı',

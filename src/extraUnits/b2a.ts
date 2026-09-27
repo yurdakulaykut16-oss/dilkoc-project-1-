@@ -7,7 +7,7 @@ import type { UnitModule } from '../curriculumData';
 export const EXTRA_B2A: UnitModule[] = [
   {
     id: 'mod_b2_x1',
-    unitNumber: 148,
+    unitNumber: 155,
     levelGroup: 'B2',
     title: 'İş Toplantısı & Sunum Dili',
     description: 'Sunum yapma, grafik yorumlama ve toplantı yönetme kalıpları',
@@ -47,7 +47,7 @@ export const EXTRA_B2A: UnitModule[] = [
   },
   {
     id: 'mod_b2_x2',
-    unitNumber: 149,
+    unitNumber: 156,
     levelGroup: 'B2',
     title: 'Deadline Krizi & Önceliklendirme',
     description: '"Yetişmiyoruz!" paniği, mesai ve görev önceliği konuşmaları',
@@ -87,7 +87,7 @@ export const EXTRA_B2A: UnitModule[] = [
   },
   {
     id: 'mod_b2_x3',
-    unitNumber: 150,
+    unitNumber: 157,
     levelGroup: 'B2',
     title: 'Freelance & Müşteri Pazarlığı',
     description: 'Ücret belirleme, avans, revizyonlar ve iş teslimi',
@@ -127,7 +127,7 @@ export const EXTRA_B2A: UnitModule[] = [
   },
   {
     id: 'mod_b2_x4',
-    unitNumber: 151,
+    unitNumber: 158,
     levelGroup: 'B2',
     title: 'Kendi İşini Kurmak & Girişimcilik',
     description: 'İş fikri, sermaye, kâr-zarar ve rakip analizi sohbetleri',
@@ -167,7 +167,7 @@ export const EXTRA_B2A: UnitModule[] = [
   },
   {
     id: 'mod_b2_x5',
-    unitNumber: 152,
+    unitNumber: 159,
     levelGroup: 'B2',
     title: 'Toptan & Perakende Ticaret',
     description: 'Toptan fiyat, stok, kâr marjı ve talep konuşmaları',
@@ -207,7 +207,7 @@ export const EXTRA_B2A: UnitModule[] = [
   },
   {
     id: 'mod_b2_x6',
-    unitNumber: 153,
+    unitNumber: 160,
     levelGroup: 'B2',
     title: 'Tedarikçi Görüşmesi & Sipariş',
     description: 'Numune isteme, hacim indirimi ve teslim süresi pazarlığı',
@@ -247,7 +247,7 @@ export const EXTRA_B2A: UnitModule[] = [
   },
   {
     id: 'mod_b2_x7',
-    unitNumber: 154,
+    unitNumber: 161,
     levelGroup: 'B2',
     title: 'Ev Satın Alma & İpotek (Mortgage)',
     description: 'İpotek başvurusu, peşinat, noter ve tapu işlemleri',

@@ -28,6 +28,7 @@ import { EXTRA_COOKING2 } from './cooking2';
 import { EXTRA_DAILY2A } from './daily2a';
 import { EXTRA_GRAM_CASES } from './gramCases';
 import { EXTRA_DAILY2B } from './daily2b';
+import { EXTRA_DAILY2C_B2, EXTRA_DAILY2C_C1 } from './daily2c';
 
 export const EXTRA_UNITS: UnitModule[] = [
   ...EXTRA_A1_GRAM,  // Ünite 7-11 (A1 — cümle anahtarı)
@@ -35,6 +36,8 @@ export const EXTRA_UNITS: UnitModule[] = [
   ...EXTRA_A2,       // Ünite 24-31 (A2)
   ...EXTRA_DAILY2A,  // Ünite 32-41 (A2 — gündelik yaşam 2 kat, parti 1/3)
   ...EXTRA_DAILY2B,  // Ünite 62-71 (B1 — gündelik yaşam 2 kat, parti 2/3)
+  ...EXTRA_DAILY2C_B2, // Ünite 127-133 (B2 — gündelik yaşam 2 kat, parti 3/3)
+  ...EXTRA_DAILY2C_C1, // Ünite 182-184 (C1 — gündelik yaşam 2 kat, parti 3/3 FİNAL)
   ...EXTRA_B1A,      // Ünite 67-74 (B1)
   ...EXTRA_B1B,      // Ünite 75-82 (B1)
   ...EXTRA_FLIRT_B1, // Ünite 83-85 (B1 — tanışma)

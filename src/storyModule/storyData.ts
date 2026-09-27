@@ -680,7 +680,7 @@ const STORY_LF_B1: CheckpointStory = {
 };
 
 // ---------------------------------------------------------------------------
-// BÖLÜM FİNALİ 4 — Ünite 127-174 (B2 SONU) — Кухня tarzı: şefin teklifi
+// BÖLÜM FİNALİ 4 — Ünite 127-181 (B2 SONU) — Кухня tarzı: şefin teklifi
 // Kapılı final: özet %100 + Seviye Tekrar Sınavı geçilmeden C1 açılmaz.
 // ---------------------------------------------------------------------------
 const STORY_LF_B2: CheckpointStory = {
@@ -688,7 +688,7 @@ const STORY_LF_B2: CheckpointStory = {
   kind: 'levelFinal',
   checkpoint: null,
   unitFrom: 127,
-  unitTo: 174,
+  unitTo: 181,
   levelId: 'B2',
   nextLevelId: 'C1/C2',
   titleRu: 'Вечер шефа',
@@ -752,15 +752,15 @@ const STORY_LF_B2: CheckpointStory = {
 };
 
 // ---------------------------------------------------------------------------
-// BÖLÜM FİNALİ 5 — Ünite 175-213 (C1/C2 SONU) — DİZİ FİNALİ: gerçek hikaye
+// BÖLÜM FİNALİ 5 — Ünite 182-223 (C1/C2 SONU) — DİZİ FİNALİ: gerçek hikaye
 // Kapılı final: özet %100 + Seviye Tekrar Sınavı geçilmeden "mezuniyet" yok.
 // ---------------------------------------------------------------------------
 const STORY_LF_C1: CheckpointStory = {
   id: 'story_lf_c1',
   kind: 'levelFinal',
   checkpoint: null,
-  unitFrom: 175,
-  unitTo: 213,
+  unitFrom: 182,
+  unitTo: 223,
   levelId: 'C1/C2',
   nextLevelId: 'C1/C2',
   titleRu: 'Настоящая история',
