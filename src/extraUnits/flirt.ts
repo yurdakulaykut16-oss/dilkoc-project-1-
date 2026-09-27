@@ -10,7 +10,7 @@ import type { UnitModule } from '../curriculumData';
 export const EXTRA_FLIRT_B1: UnitModule[] = [
   {
     id: 'mod_b1_p1',
-    unitNumber: 93,
+    unitNumber: 103,
     levelGroup: 'B1',
     title: 'Sokakta Tanışma & İlk Adım',
     description: '"Девушка!" diye seslenmekten numara almaya: sokak tanışması',
@@ -50,7 +50,7 @@ export const EXTRA_FLIRT_B1: UnitModule[] = [
   },
   {
     id: 'mod_b1_p2',
-    unitNumber: 94,
+    unitNumber: 104,
     levelGroup: 'B1',
     title: 'Kafede & Kitapçıda Sohbet Açma',
     description: '"Burası boş mu?" bahanesiyle başlayan sohbetin incelikleri',
@@ -90,7 +90,7 @@ export const EXTRA_FLIRT_B1: UnitModule[] = [
   },
   {
     id: 'mod_b1_p3',
-    unitNumber: 95,
+    unitNumber: 105,
     levelGroup: 'B1',
     title: 'Spor Salonunda & Parkta Tanışma',
     description: 'Yardım teklifi, ortak antrenman ve sabah koşusu daveti',
@@ -133,7 +133,7 @@ export const EXTRA_FLIRT_B1: UnitModule[] = [
 export const EXTRA_FLIRT_B2: UnitModule[] = [
   {
     id: 'mod_b2_p1',
-    unitNumber: 142,
+    unitNumber: 152,
     levelGroup: 'B2',
     title: 'Barda Tanışma & İçki Ismarlama',
     description: '"Sizi bir şeyle ağırlayabilir miyim?" — bar sohbetinin kuralları',
@@ -173,7 +173,7 @@ export const EXTRA_FLIRT_B2: UnitModule[] = [
   },
   {
     id: 'mod_b2_p2',
-    unitNumber: 143,
+    unitNumber: 153,
     levelGroup: 'B2',
     title: 'Kulüpte & Partide: Dans Pisti Diplomasisi',
     description: '"Dans edelim mi?"den numara istemeye: gürültüde iletişim',
@@ -213,7 +213,7 @@ export const EXTRA_FLIRT_B2: UnitModule[] = [
   },
   {
     id: 'mod_b2_p3',
-    unitNumber: 144,
+    unitNumber: 154,
     levelGroup: 'B2',
     title: 'Uçakta & Trende Yol Sohbeti',
     description: 'Koltuk komşusuyla sohbet: "Nereye uçuyorsunuz?" sanatı',

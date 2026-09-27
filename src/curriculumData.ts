@@ -354,7 +354,7 @@ const BASE_UNITS: UnitModule[] = [
   },
   {
     id: 'mod_a2_1',
-    unitNumber: 12,
+    unitNumber: 22,
     levelGroup: 'A2',
     title: 'Alışveriş & Pazarlık',
     description: 'Fiyat sorma, pazarlık etme ve indirim isteme',
@@ -413,7 +413,7 @@ const BASE_UNITS: UnitModule[] = [
   },
   {
     id: 'mod_a2_2',
-    unitNumber: 13,
+    unitNumber: 23,
     levelGroup: 'A2',
     title: 'Telefon Görüşmesi & Rica',
     description: 'Telefonla konuşma kalıpları ve izin isteme',
@@ -451,7 +451,7 @@ const BASE_UNITS: UnitModule[] = [
   },
   {
     id: 'mod_a2_4',
-    unitNumber: 14,
+    unitNumber: 24,
     levelGroup: 'A2',
     title: 'Ev & Eşyalar',
     description: 'Ev, oda ve eşya isimleri, yer bildirme',
@@ -488,7 +488,7 @@ const BASE_UNITS: UnitModule[] = [
   },
   {
     id: 'mod_a2_5',
-    unitNumber: 15,
+    unitNumber: 25,
     levelGroup: 'A2',
     title: 'Randevu Alma & Zaman Planlama',
     description: 'Buluşma teklif etme ve zaman planlama kalıpları',
@@ -526,7 +526,7 @@ const BASE_UNITS: UnitModule[] = [
   },
   {
     id: 'mod_a2_3',
-    unitNumber: 16,
+    unitNumber: 26,
     levelGroup: 'A2',
     title: 'Mutfak Kaosu & Emir Kipleri',
     description: 'Restoran mutfağı jargonu ve hızlı komutlar',
@@ -565,7 +565,7 @@ const BASE_UNITS: UnitModule[] = [
   },
   {
     id: 'mod_a2_6',
-    unitNumber: 17,
+    unitNumber: 27,
     levelGroup: 'A2',
     title: 'Duygular & Ruh Hali',
     description: 'Temel duyguları ifade etme ve birine ne hissettiğini sorma',
@@ -618,7 +618,7 @@ const BASE_UNITS: UnitModule[] = [
   },
   {
     id: 'mod_a2_7',
-    unitNumber: 18,
+    unitNumber: 28,
     levelGroup: 'A2',
     title: 'Doktor & Sağlık',
     description: 'Hastalık belirtilerini anlatma ve doktordan randevu alma',
@@ -670,7 +670,7 @@ const BASE_UNITS: UnitModule[] = [
   },
   {
     id: 'mod_a2_8',
-    unitNumber: 19,
+    unitNumber: 29,
     levelGroup: 'A2',
     title: 'Hobiler & Boş Zaman',
     description: 'Hobilerden bahsetme ve boş zaman etkinlikleri teklif etme',
@@ -722,7 +722,7 @@ const BASE_UNITS: UnitModule[] = [
   },
   {
     id: 'mod_a2_9',
-    unitNumber: 20,
+    unitNumber: 30,
     levelGroup: 'A2',
     title: 'Komşuluk İlişkileri',
     description: 'Komşuyla tanışma, gürültü şikayeti, iyilik isteme ve site kuralları',
@@ -756,7 +756,7 @@ const BASE_UNITS: UnitModule[] = [
   },
   {
     id: 'mod_a2_10',
-    unitNumber: 21,
+    unitNumber: 31,
     levelGroup: 'A2',
     title: 'Özür, Teşekkür & Nezaket İfadeleri',
     description: 'Günlük hayatta sıkça kullanılan kibarlık ve nezaket kalıpları',
@@ -789,7 +789,7 @@ const BASE_UNITS: UnitModule[] = [
   },
   {
     id: 'mod_a2_11',
-    unitNumber: 22,
+    unitNumber: 32,
     levelGroup: 'A2',
     title: 'Okuma Anahtarı: Bağlaçlar & Dolgu Kelimeler',
     description: 'Bilmediğin kelimeleri anlamana yardımcı olan en sık kullanılan bağlaç ve dolgu kelimeleri',
@@ -824,7 +824,7 @@ Bir metinde her kelimeyi bilmesen bile, cümleleri birbirine bağlayan kelimeler
   },
   {
     id: 'mod_a2_12',
-    unitNumber: 23,
+    unitNumber: 33,
     levelGroup: 'A2',
     title: 'Davet, Misafirlik & Kutlama',
     description: 'Birini davet etme, misafir ağırlama ve kutlama tebrikleri',
@@ -858,7 +858,7 @@ Bir metinde her kelimeyi bilmesen bile, cümleleri birbirine bağlayan kelimeler
   },
   {
     id: 'mod_b1_1',
-    unitNumber: 52,
+    unitNumber: 62,
     levelGroup: 'B1',
     title: 'Duygusal Tartışma',
     description: 'Sevgili kavgası ve itham cümleleri — klasik dizi anları',
@@ -890,7 +890,7 @@ Bir metinde her kelimeyi bilmesen bile, cümleleri birbirine bağlayan kelimeler
   },
   {
     id: 'mod_b1_2',
-    unitNumber: 53,
+    unitNumber: 63,
     levelGroup: 'B1',
     title: 'Doktor & Hastane',
     description: 'Acil durum ve sağlık şikayeti kalıpları',
@@ -922,7 +922,7 @@ Bir metinde her kelimeyi bilmesen bile, cümleleri birbirine bağlayan kelimeler
   },
   {
     id: 'mod_b1_3',
-    unitNumber: 54,
+    unitNumber: 64,
     levelGroup: 'B1',
     title: 'İş Görüşmesi',
     description: 'Mülakat soruları ve resmi hitap şekilleri',
@@ -954,7 +954,7 @@ Bir metinde her kelimeyi bilmesen bile, cümleleri birbirine bağlayan kelimeler
   },
   {
     id: 'mod_b1_4',
-    unitNumber: 55,
+    unitNumber: 65,
     levelGroup: 'B1',
     title: 'Kafede Arkadaşlarla Dedikodu',
     description: 'Fısıldayarak dedikodu yapma ve sır paylaşma kalıpları',
@@ -986,7 +986,7 @@ Bir metinde her kelimeyi bilmesen bile, cümleleri birbirine bağlayan kelimeler
   },
   {
     id: 'mod_b1_5',
-    unitNumber: 56,
+    unitNumber: 66,
     levelGroup: 'B1',
     title: 'İş Yerinde & Resmi İletişim',
     description: 'Toplantı dili, e-posta kalıpları ve iş yerinde nazik talepler',
@@ -1020,7 +1020,7 @@ Bir metinde her kelimeyi bilmesen bile, cümleleri birbirine bağlayan kelimeler
   },
   {
     id: 'mod_b1_6',
-    unitNumber: 57,
+    unitNumber: 67,
     levelGroup: 'B1',
     title: 'Market & Süpermarket Konuşması',
     description: 'Reyon sorma, tartı, kasa kuyruğu ve günlük market diyalogları — orada yaşamak için şart',
@@ -1055,7 +1055,7 @@ Bir metinde her kelimeyi bilmesen bile, cümleleri birbirine bağlayan kelimeler
   },
   {
     id: 'mod_b1_7',
-    unitNumber: 58,
+    unitNumber: 68,
     levelGroup: 'B1',
     title: 'Ev Kiralama & Ev Sahibi',
     description: 'İlan bakma, depozito, fatura ve ev sahibiyle konuşma — taşınmak için zorunlu kalıplar',
@@ -1090,7 +1090,7 @@ Bir metinde her kelimeyi bilmesen bile, cümleleri birbirine bağlayan kelimeler
   },
   {
     id: 'mod_b1_8',
-    unitNumber: 59,
+    unitNumber: 69,
     levelGroup: 'B1',
     title: 'Banka, Kart & Para Çekme',
     description: 'Hesap açma, ATM, transfer ve banka şubesinde hayatta kalma dili',
@@ -1125,7 +1125,7 @@ Bir metinde her kelimeyi bilmesen bile, cümleleri birbirine bağlayan kelimeler
   },
   {
     id: 'mod_b1_9',
-    unitNumber: 60,
+    unitNumber: 70,
     levelGroup: 'B1',
     title: 'Eczane & Reçetesiz İlaç',
     description: 'Belirti anlatma, reçete, muadil ilaç — eczanede kaybolmamak',
@@ -1160,7 +1160,7 @@ Bir metinde her kelimeyi bilmesen bile, cümleleri birbirine bağlayan kelimeler
   },
   {
     id: 'mod_b1_10',
-    unitNumber: 61,
+    unitNumber: 71,
     levelGroup: 'B1',
     title: 'Flört & Tanışma (Manitacılık)',
     description: 'İlgi gösterme, kompliman, numara isteme — samimi ama doğal kalıplar',
@@ -1195,7 +1195,7 @@ Bir metinde her kelimeyi bilmesen bile, cümleleri birbirine bağlayan kelimeler
   },
   {
     id: 'mod_b1_11',
-    unitNumber: 62,
+    unitNumber: 72,
     levelGroup: 'B1',
     title: 'Randevu Teklifi & Plan Yapma',
     description: 'Kahve, sinema, yürüyüş teklifi ve \'müsait misin\' kalıpları',
@@ -1235,7 +1235,7 @@ Bir metinde her kelimeyi bilmesen bile, cümleleri birbirine bağlayan kelimeler
     // kadrosu (Dima, Töma, Marina, Jenya, Lena) + absürt durum komedileri.
     // =========================================================================
     id: 'mod_b1_fl2',
-    unitNumber: 63,
+    unitNumber: 73,
     levelGroup: 'B1',
     title: 'İlk Buluşma & Restoran Faciası',
     description: 'Masa ayırtma, mum, buket ve her şeyin ters gittiği ilk buluşma — sit-com tarzı',
@@ -1294,7 +1294,7 @@ Bir metinde her kelimeyi bilmesen bile, cümleleri birbirine bağlayan kelimeler
   },
   {
     id: 'mod_b1_fl3',
-    unitNumber: 64,
+    unitNumber: 74,
     levelGroup: 'B1',
     title: 'Sevgi Sözcükleri & Sevimli Hitaplar',
     description: 'Solnyşko, zayka, kotenok — sevimli hitaplar ve günlük samimi çift diyalogları',
@@ -1331,7 +1331,7 @@ Bir metinde her kelimeyi bilmesen bile, cümleleri birbirine bağlayan kelimeler
   },
   {
     id: 'mod_b1_fl4',
-    unitNumber: 65,
+    unitNumber: 75,
     levelGroup: 'B1',
     title: 'Tanıştırmak & "Biz Bir Çiftiz"',
     description: 'Partneri tanıştırma, ilişki statüsü, "çıkalı ne kadar oldu" konuşmaları',
@@ -1368,7 +1368,7 @@ Bir metinde her kelimeyi bilmesen bile, cümleleri birbirine bağlayan kelimeler
   },
   {
     id: 'mod_b1_12',
-    unitNumber: 66,
+    unitNumber: 76,
     levelGroup: 'B1',
     title: 'Film & Dizi Konuşması',
     description: 'Spoiler, bölüm, oyuncu, \'izliyor musun\' — diziler hakkında sohbet',
@@ -1403,7 +1403,7 @@ Bir metinde her kelimeyi bilmesen bile, cümleleri birbirine bağlayan kelimeler
   },
   {
     id: 'mod_b1_13',
-    unitNumber: 67,
+    unitNumber: 77,
     levelGroup: 'B1',
     title: 'Sinemada Bilet & Patlamış Mısır',
     description: 'Gişe, koltuk, altyazı, 3D — sinema gişesinde konuşma',
@@ -1438,7 +1438,7 @@ Bir metinde her kelimeyi bilmesen bile, cümleleri birbirine bağlayan kelimeler
   },
   {
     id: 'mod_b1_14',
-    unitNumber: 68,
+    unitNumber: 78,
     levelGroup: 'B1',
     title: 'İş Yerinde Küçük Sohbet',
     description: 'Kahve makinesi muhabbeti, hafta sonu, \'nasıl gidiyor\' — ofis small talk',
@@ -1473,7 +1473,7 @@ Bir metinde her kelimeyi bilmesen bile, cümleleri birbirine bağlayan kelimeler
   },
   {
     id: 'mod_b1_15',
-    unitNumber: 69,
+    unitNumber: 79,
     levelGroup: 'B1',
     title: 'Toplantı Erteleme & İzin',
     description: 'Hasta raporu, izin, toplantıyı kaydırma — işte pratik resmi dil',
@@ -1508,7 +1508,7 @@ Bir metinde her kelimeyi bilmesen bile, cümleleri birbirine bağlayan kelimeler
   },
   {
     id: 'mod_b1_16',
-    unitNumber: 70,
+    unitNumber: 80,
     levelGroup: 'B1',
     title: 'Usta Çağırma: Tesisatçı & Tamir',
     description: 'Musluk, elektrik, kapı — ev arızası ve usta randevusu',
@@ -1543,7 +1543,7 @@ Bir metinde her kelimeyi bilmesen bile, cümleleri birbirine bağlayan kelimeler
   },
   {
     id: 'mod_b1_17',
-    unitNumber: 71,
+    unitNumber: 81,
     levelGroup: 'B1',
     title: 'Kuaför & Berber Randevusu',
     description: 'Saç kestirme, randevu, \'çok kısa olmasın\' — salon dili',
@@ -1578,7 +1578,7 @@ Bir metinde her kelimeyi bilmesen bile, cümleleri birbirine bağlayan kelimeler
   },
   {
     id: 'mod_b1_18',
-    unitNumber: 72,
+    unitNumber: 82,
     levelGroup: 'B1',
     title: 'Belgeler, Pasaport & Göçmenlik Penceresi',
     description: 'Kuyruk, fotokopi, başvuru — resmi dairede kaybolmamak',
@@ -1613,7 +1613,7 @@ Bir metinde her kelimeyi bilmesen bile, cümleleri birbirine bağlayan kelimeler
   },
   {
     id: 'mod_b1_19',
-    unitNumber: 73,
+    unitNumber: 83,
     levelGroup: 'B1',
     title: 'Komşuyla Gürültü & Rica',
     description: 'Kapı çalma, gürültü şikâyeti, nazik ama net sınır koyma',
@@ -1648,7 +1648,7 @@ Bir metinde her kelimeyi bilmesen bile, cümleleri birbirine bağlayan kelimeler
   },
   {
     id: 'mod_b1_20',
-    unitNumber: 74,
+    unitNumber: 84,
     levelGroup: 'B1',
     title: 'Spor Salonu & Antrenör',
     description: 'Üyelik, alet sorma, \'bu koltuk dolu mu\' — spor salonu sohbeti',
@@ -1683,7 +1683,7 @@ Bir metinde her kelimeyi bilmesen bile, cümleleri birbirine bağlayan kelimeler
   },
   {
     id: 'mod_b1_21',
-    unitNumber: 75,
+    unitNumber: 85,
     levelGroup: 'B1',
     title: 'Restoranda Şikâyet & Hesap',
     description: 'Yemek soğuk, sipariş yanlış, hesap ayırma — kibar şikâyet',
@@ -1718,7 +1718,7 @@ Bir metinde her kelimeyi bilmesen bile, cümleleri birbirine bağlayan kelimeler
   },
   {
     id: 'mod_b1_22',
-    unitNumber: 76,
+    unitNumber: 86,
     levelGroup: 'B1',
     title: 'Ulaşım Kartı, Ceza & Kontrol',
     description: 'Troleybüs, kart basma, bilet kontrolü — şehir içi hayatta kalma',
@@ -1753,7 +1753,7 @@ Bir metinde her kelimeyi bilmesen bile, cümleleri birbirine bağlayan kelimeler
   },
   {
     id: 'mod_b2_1',
-    unitNumber: 107,
+    unitNumber: 117,
     levelGroup: 'B2',
     title: 'Kıskançlık ve İhanet Sahnesi',
     description: 'Yüzleşme cümleleri ve geçmiş zaman itham kalıpları',
@@ -1785,7 +1785,7 @@ Bir metinde her kelimeyi bilmesen bile, cümleleri birbirine bağlayan kelimeler
   },
   {
     id: 'mod_b2_2',
-    unitNumber: 108,
+    unitNumber: 118,
     levelGroup: 'B2',
     title: 'Polis Sorgusu',
     description: 'Suç dizilerinde geçen sorgu ve ifade kalıpları',
@@ -1817,7 +1817,7 @@ Bir metinde her kelimeyi bilmesen bile, cümleleri birbirine bağlayan kelimeler
   },
   {
     id: 'mod_b2_3',
-    unitNumber: 109,
+    unitNumber: 119,
     levelGroup: 'B2',
     title: 'Düğün & Kutlama',
     description: 'Kutlama kalıpları ve Rus düğün gelenekleri',
@@ -1848,7 +1848,7 @@ Bir metinde her kelimeyi bilmesen bile, cümleleri birbirine bağlayan kelimeler
   },
   {
     id: 'mod_b2_4',
-    unitNumber: 110,
+    unitNumber: 120,
     levelGroup: 'B2',
     title: 'Miras Kavgası',
     description: 'Vasiyet okuma ve aile içi anlaşmazlık kalıpları',
@@ -1880,7 +1880,7 @@ Bir metinde her kelimeyi bilmesen bile, cümleleri birbirine bağlayan kelimeler
   },
   {
     id: 'mod_b2_5',
-    unitNumber: 111,
+    unitNumber: 121,
     levelGroup: 'B2',
     title: 'İleri Flört, Kompliman & Reddetme',
     description: 'İlgiyi netleştirme, nazik red, \'sadece arkadaş kalalım\' — yetişkin sohbet',
@@ -1915,7 +1915,7 @@ Bir metinde her kelimeyi bilmesen bile, cümleleri birbirine bağlayan kelimeler
   },
   {
     id: 'mod_b2_6',
-    unitNumber: 112,
+    unitNumber: 122,
     levelGroup: 'B2',
     title: 'Tartışmayı Yönetmek & Barışmak',
     description: 'Suçlamadan konuşma, \'ben dili\', özür ve sınır — ilişki yetişkinliği',
@@ -1953,7 +1953,7 @@ Bir metinde her kelimeyi bilmesen bile, cümleleri birbirine bağlayan kelimeler
     // İLİŞKİLER & FLÖRT — GENİŞLETİLMİŞ MÜFREDAT (2x) / B2 bloğu
     // =========================================================================
     id: 'mod_b2_fl7',
-    unitNumber: 113,
+    unitNumber: 123,
     levelGroup: 'B2',
     title: 'Sevgililer Günü & Hediye Panigi',
     description: '14 Şubat, sürpriz, valentinka ve unutulan hediye krizi — absürt komedi',
@@ -1990,7 +1990,7 @@ Bir metinde her kelimeyi bilmesen bile, cümleleri birbirine bağlayan kelimeler
   },
   {
     id: 'mod_b2_fl8',
-    unitNumber: 114,
+    unitNumber: 124,
     levelGroup: 'B2',
     title: 'Birlikte Yaşamak: Ev, Alışkanlıklar & Sınırlar',
     description: 'Ortak ev düzeni, alışkanlıklar, görev bölüşümü ve buzdolabındaki çoraplar',
@@ -2027,7 +2027,7 @@ Bir metinde her kelimeyi bilmesen bile, cümleleri birbirine bağlayan kelimeler
   },
   {
     id: 'mod_b2_fl9',
-    unitNumber: 115,
+    unitNumber: 125,
     levelGroup: 'B2',
     title: 'Evlilik Teklifi & Nişan',
     description: 'Yüzük, diz çökme, "benimle evlenir misin" ve efsanevi (geri tepen) planlar',
@@ -2087,7 +2087,7 @@ Bir metinde her kelimeyi bilmesen bile, cümleleri birbirine bağlayan kelimeler
   },
   {
     id: 'mod_b2_fl10',
-    unitNumber: 116,
+    unitNumber: 126,
     levelGroup: 'B2',
     title: 'Uzun Mesafe İlişkisi & Video Çağrı Dramı',
     description: 'Saat dilimleri, "seni özledim" mesajları ve gece yarısı video çağrıları',
@@ -2124,7 +2124,7 @@ Bir metinde her kelimeyi bilmesen bile, cümleleri birbirine bağlayan kelimeler
   },
   {
     id: 'mod_b2_7',
-    unitNumber: 117,
+    unitNumber: 127,
     levelGroup: 'B2',
     title: 'Maaş Pazarlığı & Zam İsteme',
     description: 'Değerini anlatma, rakam konuşma, \'düşünelim\' cevabını okuma',
@@ -2159,7 +2159,7 @@ Bir metinde her kelimeyi bilmesen bile, cümleleri birbirine bağlayan kelimeler
   },
   {
     id: 'mod_b2_8',
-    unitNumber: 118,
+    unitNumber: 128,
     levelGroup: 'B2',
     title: 'Patronla Çatışma & Geri Bildirim',
     description: 'Haksız eleştiri, savunma, \'yazılı teyit\' isteme',
@@ -2194,7 +2194,7 @@ Bir metinde her kelimeyi bilmesen bile, cümleleri birbirine bağlayan kelimeler
   },
   {
     id: 'mod_b2_9',
-    unitNumber: 119,
+    unitNumber: 129,
     levelGroup: 'B2',
     title: 'Film Eleştirisi & Spoiler Kavgası',
     description: 'Konu, oyunculuk, final — film hakkında yetişkin tartışma',
@@ -2229,7 +2229,7 @@ Bir metinde her kelimeyi bilmesen bile, cümleleri birbirine bağlayan kelimeler
   },
   {
     id: 'mod_b2_10',
-    unitNumber: 120,
+    unitNumber: 130,
     levelGroup: 'B2',
     title: 'Dizi Karakteri & Teori Üretme',
     description: 'Fan teorisi, karakter gelişimi, \'o aslında...\' sohbetleri',
@@ -2264,7 +2264,7 @@ Bir metinde her kelimeyi bilmesen bile, cümleleri birbirine bağlayan kelimeler
   },
   {
     id: 'mod_b2_11',
-    unitNumber: 121,
+    unitNumber: 131,
     levelGroup: 'B2',
     title: 'Otel, Rezervasyon & Şikâyet',
     description: 'Check-in, gürültülü oda, iade — seyahatte hak arama',
@@ -2299,7 +2299,7 @@ Bir metinde her kelimeyi bilmesen bile, cümleleri birbirine bağlayan kelimeler
   },
   {
     id: 'mod_b2_12',
-    unitNumber: 122,
+    unitNumber: 132,
     levelGroup: 'B2',
     title: 'Kaza, Sigorta & İfade',
     description: 'Trafik kazası, polis, sigorta şirketi — panik etmeden kalıplar',
@@ -2334,7 +2334,7 @@ Bir metinde her kelimeyi bilmesen bile, cümleleri birbirine bağlayan kelimeler
   },
   {
     id: 'mod_b2_13',
-    unitNumber: 123,
+    unitNumber: 133,
     levelGroup: 'B2',
     title: 'İş Arkadaşı Dedikodusu & Sınır',
     description: 'Ofiste sır, \'müdüre gitme\', profesyonel mesafe',
@@ -2369,7 +2369,7 @@ Bir metinde her kelimeyi bilmesen bile, cümleleri birbirine bağlayan kelimeler
   },
   {
     id: 'mod_b2_14',
-    unitNumber: 124,
+    unitNumber: 134,
     levelGroup: 'B2',
     title: 'Çocuk, Okul & Veli Konuşması',
     description: 'Öğretmenle konuşma, ödev, toplantı — aile hayatı dili',
@@ -2404,7 +2404,7 @@ Bir metinde her kelimeyi bilmesen bile, cümleleri birbirine bağlayan kelimeler
   },
   {
     id: 'mod_b2_15',
-    unitNumber: 125,
+    unitNumber: 135,
     levelGroup: 'B2',
     title: 'Tanışma Uygulaması Sohbeti',
     description: 'İlk mesaj, espri, buluşma teklifi, ghosting\'e cevap',
@@ -2439,7 +2439,7 @@ Bir metinde her kelimeyi bilmesen bile, cümleleri birbirine bağlayan kelimeler
   },
   {
     id: 'mod_b2_16',
-    unitNumber: 126,
+    unitNumber: 136,
     levelGroup: 'B2',
     title: 'Haber, Söylenti & \'Duydun mu\'',
     description: 'Şehirde olan biten, kaynak sorma, abartıyı kesme',
@@ -2474,7 +2474,7 @@ Bir metinde her kelimeyi bilmesen bile, cümleleri birbirine bağlayan kelimeler
   },
   {
     id: 'mod_b2_17',
-    unitNumber: 127,
+    unitNumber: 137,
     levelGroup: 'B2',
     title: 'Konser, Bilet & Kapı Önü',
     description: 'Bilet satışı, kuyruk, \'içeri alırlar mı\' — eğlence hayatı',
@@ -2509,7 +2509,7 @@ Bir metinde her kelimeyi bilmesen bile, cümleleri birbirine bağlayan kelimeler
   },
   {
     id: 'mod_c1_1',
-    unitNumber: 155,
+    unitNumber: 165,
     levelGroup: 'C1/C2',
     title: 'Deyimler ve Argo',
     description: 'Dizilerde ve günlük hayatta duyulan deyimler, argo ifadeler',
@@ -2541,7 +2541,7 @@ Bir metinde her kelimeyi bilmesen bile, cümleleri birbirine bağlayan kelimeler
   },
   {
     id: 'mod_c1_2',
-    unitNumber: 156,
+    unitNumber: 166,
     levelGroup: 'C1/C2',
     title: 'Ayrılık Sahnesi',
     description: 'İleri düzey duygu ifadeleri ve şart kipi kullanımı',
@@ -2573,7 +2573,7 @@ Bir metinde her kelimeyi bilmesen bile, cümleleri birbirine bağlayan kelimeler
   },
   {
     id: 'mod_c1_3',
-    unitNumber: 157,
+    unitNumber: 167,
     levelGroup: 'C1/C2',
     title: 'Mahkeme Sahnesi',
     description: 'Resmi hukuk dili ve duruşma salonu kalıpları',
@@ -2605,7 +2605,7 @@ Bir metinde her kelimeyi bilmesen bile, cümleleri birbirine bağlayan kelimeler
   },
   {
     id: 'mod_c1_4',
-    unitNumber: 158,
+    unitNumber: 168,
     levelGroup: 'C1/C2',
     title: 'İroni, Kinaye & Alt Metin',
     description: 'Söylenenle kastedileni ayırma — dizilerde ve gerçek hayatta ileri dinleme',
@@ -2640,7 +2640,7 @@ Bir metinde her kelimeyi bilmesen bile, cümleleri birbirine bağlayan kelimeler
   },
   {
     id: 'mod_c1_5',
-    unitNumber: 159,
+    unitNumber: 169,
     levelGroup: 'C1/C2',
     title: 'Sunum, İtiraz & Toplantı Dominansı',
     description: 'Sunum dili, itiraz, \'bu riskli\' — işte ileri resmi konuşma',
@@ -2675,7 +2675,7 @@ Bir metinde her kelimeyi bilmesen bile, cümleleri birbirine bağlayan kelimeler
   },
   {
     id: 'mod_c1_6',
-    unitNumber: 160,
+    unitNumber: 170,
     levelGroup: 'C1/C2',
     title: 'İlişkide Ultimatom & Şart Kipi',
     description: 'Pişmanlık, şart, \'bundan sonra yok\' — dizi finali kalıpları',
@@ -2713,7 +2713,7 @@ Bir metinde her kelimeyi bilmesen bile, cümleleri birbirine bağlayan kelimeler
     // İLİŞKİLER & FLÖRT — GENİŞLETİLMİŞ MÜFREDAT (2x) / C1-C2 bloğu
     // =========================================================================
     id: 'mod_c1_fl7',
-    unitNumber: 161,
+    unitNumber: 171,
     levelGroup: 'C1/C2',
     title: 'Evlilikte Kriz, Kayınvalide & İtiraf Gecesi',
     description: 'Тёща, свекровь, biriken kırgınlıklar ve içini dökme gecesi — yetişkin ilişki dili',
@@ -2750,7 +2750,7 @@ Bir metinde her kelimeyi bilmesen bile, cümleleri birbirine bağlayan kelimeler
   },
   {
     id: 'mod_c1_fl8',
-    unitNumber: 162,
+    unitNumber: 172,
     levelGroup: 'C1/C2',
     title: 'Boşanma & Yeni Bir Sayfa',
     description: 'Boşanmayı atlatmak, ikinci şans ve kör randevu — hicivli bir "ikinci bahar" hikayesi',
@@ -2787,7 +2787,7 @@ Bir metinde her kelimeyi bilmesen bile, cümleleri birbirine bağlayan kelimeler
   },
   {
     id: 'mod_c1_fl9',
-    unitNumber: 163,
+    unitNumber: 173,
     levelGroup: 'C1/C2',
     title: 'Düğün Konuşması & Sağdıç Replikleri',
     description: 'Тамада, шафер, kadeh konuşmaları, yemin ritüelleri — düğün sahnesi retoriği',
@@ -2848,7 +2848,7 @@ Bir metinde her kelimeyi bilmesen bile, cümleleri birbirine bağlayan kelimeler
   },
   {
     id: 'mod_c1_7',
-    unitNumber: 164,
+    unitNumber: 174,
     levelGroup: 'C1/C2',
     title: 'İstifa, Referans & Çıkış Görüşmesi',
     description: 'İstifa mektubu dili, \'neden gidiyorsun\', köprüleri yakmama',
@@ -2883,7 +2883,7 @@ Bir metinde her kelimeyi bilmesen bile, cümleleri birbirine bağlayan kelimeler
   },
   {
     id: 'mod_c1_8',
-    unitNumber: 165,
+    unitNumber: 175,
     levelGroup: 'C1/C2',
     title: 'Şikâyet Dilekçesi & Tüketici Hakları',
     description: 'İade, kusurlu ürün, \'tüketici olarak talep ediyorum\'',
@@ -2918,7 +2918,7 @@ Bir metinde her kelimeyi bilmesen bile, cümleleri birbirine bağlayan kelimeler
   },
   {
     id: 'mod_c1_9',
-    unitNumber: 166,
+    unitNumber: 176,
     levelGroup: 'C1/C2',
     title: 'Parti, Networking & Tanıtım Cümlesi',
     description: 'Kendini 20 saniyede anlatma, kartvizit, \'sonra yazalım\'',
@@ -2953,7 +2953,7 @@ Bir metinde her kelimeyi bilmesen bile, cümleleri birbirine bağlayan kelimeler
   },
   {
     id: 'mod_c1_10',
-    unitNumber: 167,
+    unitNumber: 177,
     levelGroup: 'C1/C2',
     title: 'Yabancı Olarak Yaşamak & Kimlik',
     description: 'Aksan, \'nerelisin\', aidiyet, \'burada kalıcı mısın\' soruları',
@@ -2988,7 +2988,7 @@ Bir metinde her kelimeyi bilmesen bile, cümleleri birbirine bağlayan kelimeler
   },
   {
     id: 'mod_c1_11',
-    unitNumber: 168,
+    unitNumber: 178,
     levelGroup: 'C1/C2',
     title: 'Şarkı, Replik & \'Bu Sahne Ne Anlatıyor\'',
     description: 'Mecaz, alt metin, \'yönetmen şunu demek istedi\' — kültürel sohbet',
@@ -3023,7 +3023,7 @@ Bir metinde her kelimeyi bilmesen bile, cümleleri birbirine bağlayan kelimeler
   },
   {
     id: 'mod_c1_12',
-    unitNumber: 169,
+    unitNumber: 179,
     levelGroup: 'C1/C2',
     title: 'Duygu Sözlüğü: Terapi & Sınır',
     description: 'Kaygı, tükenmişlik, \'hayır diyebilmek\' — yetişkin duygusal dil',
@@ -3058,7 +3058,7 @@ Bir metinde her kelimeyi bilmesen bile, cümleleri birbirine bağlayan kelimeler
   },
   {
     id: 'mod_c1_13',
-    unitNumber: 170,
+    unitNumber: 180,
     levelGroup: 'C1/C2',
     title: 'Pazarlık Ustası: Pazar & Hizmet',
     description: 'Fiyat kırma, toptan, \'başka yerde daha ucuz\' — ileri pazarlık',
@@ -3093,7 +3093,7 @@ Bir metinde her kelimeyi bilmesen bile, cümleleri birbirine bağlayan kelimeler
   },
   {
     id: 'mod_c1_14',
-    unitNumber: 171,
+    unitNumber: 181,
     levelGroup: 'C1/C2',
     title: 'Gençlik Jargonu & İnternet Dili',
     description: 'Chat, meme, \'кринж\', \'имба\' — dizilerde duyulan internet Rusçası',
@@ -3128,7 +3128,7 @@ Bir metinde her kelimeyi bilmesen bile, cümleleri birbirine bağlayan kelimeler
   },
   {
     id: 'mod_c1_15',
-    unitNumber: 172,
+    unitNumber: 182,
     levelGroup: 'C1/C2',
     title: 'Haber Analizi & Görüş Savunma',
     description: 'Kaynak, önyargı, \'bence abartılıyor\' — olgun tartışma',

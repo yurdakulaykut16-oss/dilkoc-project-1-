@@ -13,7 +13,7 @@ export const EXTRA_COOKING2: UnitModule[] = [
   // ============================ A2 ============================
   {
     id: 'mod_a2_k6',
-    unitNumber: 47,
+    unitNumber: 57,
     levelGroup: 'A2',
     title: 'Küçük Mutfak Aletleri',
     description: 'Rende, süzgeç, çırpma teli, kepçe — şefin küçük ordusu',
@@ -49,7 +49,7 @@ export const EXTRA_COOKING2: UnitModule[] = [
   },
   {
     id: 'mod_a2_k7',
-    unitNumber: 48,
+    unitNumber: 58,
     levelGroup: 'A2',
     title: 'Süt Ürünleri & Kahvaltılıklar',
     description: 'Lor, peynir, kefir, sirniki — Rus buzdolabının beyaz rafı',
@@ -85,7 +85,7 @@ export const EXTRA_COOKING2: UnitModule[] = [
   },
   {
     id: 'mod_a2_k8',
-    unitNumber: 49,
+    unitNumber: 59,
     levelGroup: 'A2',
     title: 'Meyveler & Tatlı Hazırlığı',
     description: 'Elma, vişne, bal, ceviz — şarlotka güzellemesi',
@@ -121,7 +121,7 @@ export const EXTRA_COOKING2: UnitModule[] = [
   },
   {
     id: 'mod_a2_k9',
-    unitNumber: 50,
+    unitNumber: 60,
     levelGroup: 'A2',
     title: 'İçecekler & Çay Kültürü',
     description: 'Çay, kompot, mors, semaver — sofranın sıvı tarafı',
@@ -157,7 +157,7 @@ export const EXTRA_COOKING2: UnitModule[] = [
   },
   {
     id: 'mod_a2_k10',
-    unitNumber: 51,
+    unitNumber: 61,
     levelGroup: 'A2',
     title: 'Saklama & Tazelik',
     description: 'Taze mi, bozuk mu? SKT, dondurucu ve buzdolabı disiplini',
@@ -195,7 +195,7 @@ export const EXTRA_COOKING2: UnitModule[] = [
   // ============================ B1 ============================
   {
     id: 'mod_b1_k7',
-    unitNumber: 102,
+    unitNumber: 112,
     levelGroup: 'B1',
     title: 'Kaşalar & Garnitürler',
     description: 'Karabuğday, yulaf, püre — "tane tane mi, lapa mı?" meselesi',
@@ -231,7 +231,7 @@ export const EXTRA_COOKING2: UnitModule[] = [
   },
   {
     id: 'mod_b1_k8',
-    unitNumber: 103,
+    unitNumber: 113,
     levelGroup: 'B1',
     title: 'Pelmeni & Vareniki',
     description: 'Kıyma, kenar kapatma, "yüzeye çıktı mı hazır" kuralı',
@@ -267,7 +267,7 @@ export const EXTRA_COOKING2: UnitModule[] = [
   },
   {
     id: 'mod_b1_k9',
-    unitNumber: 104,
+    unitNumber: 114,
     levelGroup: 'B1',
     title: 'Balık Yemekleri',
     description: 'Somon, ringa, uha — kılçık ayıklama sanatı',
@@ -303,7 +303,7 @@ export const EXTRA_COOKING2: UnitModule[] = [
   },
   {
     id: 'mod_b1_k10',
-    unitNumber: 105,
+    unitNumber: 115,
     levelGroup: 'B1',
     title: 'Şaşlık & Mangal',
     description: 'Köz, şiş, marinat — ve "her Rus erkeği şaşlık uzmanıdır" teoremi',
@@ -339,7 +339,7 @@ export const EXTRA_COOKING2: UnitModule[] = [
   },
   {
     id: 'mod_b1_k11',
-    unitNumber: 106,
+    unitNumber: 116,
     levelGroup: 'B1',
     title: 'Baharat Dünyası',
     description: 'Sarımsak, hardal, hren, defne — Rus mutfağının vurucu ekibi',
@@ -391,7 +391,7 @@ export const EXTRA_COOKING2: UnitModule[] = [
   // ============================ B2 ============================
   {
     id: 'mod_b2_k6',
-    unitNumber: 150,
+    unitNumber: 160,
     levelGroup: 'B2',
     title: 'Bayram Kuşları — Ördek & Kaz',
     description: 'Doldurma, tepsi, çıtır kabuk — yılbaşı sofrasının baş rolü',
@@ -427,7 +427,7 @@ export const EXTRA_COOKING2: UnitModule[] = [
   },
   {
     id: 'mod_b2_k7',
-    unitNumber: 151,
+    unitNumber: 161,
     levelGroup: 'B2',
     title: 'Dünya Mutfağı Rus Usulü',
     description: 'Plov, hinkali, suşi — «Ван Гог» menüsü dünya turuna çıkıyor',
@@ -463,7 +463,7 @@ export const EXTRA_COOKING2: UnitModule[] = [
   },
   {
     id: 'mod_b2_k8',
-    unitNumber: 152,
+    unitNumber: 162,
     levelGroup: 'B2',
     title: 'Peynir & Şarküteri Tabağı',
     description: 'Füme, kurutulmuş, ince dilim — degüstasyon tabağı kurma sanatı',
@@ -499,7 +499,7 @@ export const EXTRA_COOKING2: UnitModule[] = [
   },
   {
     id: 'mod_b2_k9',
-    unitNumber: 153,
+    unitNumber: 163,
     levelGroup: 'B2',
     title: 'Yemek & İçecek Eşleşmesi',
     description: 'Aroma, buruk, köpüklü — "ete kırmızı, balığa beyaz" ve ötesi',
@@ -535,7 +535,7 @@ export const EXTRA_COOKING2: UnitModule[] = [
   },
   {
     id: 'mod_b2_k10',
-    unitNumber: 154,
+    unitNumber: 164,
     levelGroup: 'B2',
     title: 'Mutfak Yönetimi — Stok & Sipariş',
     description: 'Sayım, irsaliye, ön hazırlık — mutfağın görünmeyen matematiği',
@@ -573,7 +573,7 @@ export const EXTRA_COOKING2: UnitModule[] = [
   // ============================ C1 ============================
   {
     id: 'mod_c1_k5',
-    unitNumber: 189,
+    unitNumber: 199,
     levelGroup: 'C1/C2',
     title: 'Moleküler Gastronomi',
     description: 'Köpük, küre, sıvı azot — mutfakta bilim kurgu gecesi',
@@ -609,7 +609,7 @@ export const EXTRA_COOKING2: UnitModule[] = [
   },
   {
     id: 'mod_c1_k6',
-    unitNumber: 190,
+    unitNumber: 200,
     levelGroup: 'C1/C2',
     title: 'Tarladan Sofraya',
     description: 'Mevsimsellik, yerel üretici, menşe — yeni menü felsefesi',
@@ -645,7 +645,7 @@ export const EXTRA_COOKING2: UnitModule[] = [
   },
   {
     id: 'mod_c1_k7',
-    unitNumber: 191,
+    unitNumber: 201,
     levelGroup: 'C1/C2',
     title: 'Michelin Yıldızı Peşinde',
     description: 'Jüri, standart, kusursuzluk — «Ван Гог» büyük sınava hazırlanıyor',
@@ -681,7 +681,7 @@ export const EXTRA_COOKING2: UnitModule[] = [
   },
   {
     id: 'mod_c1_k8',
-    unitNumber: 192,
+    unitNumber: 202,
     levelGroup: 'C1/C2',
     title: 'Ekip Yönetimi & Mentorluk',
     description: 'Usta, stajyer, güven — Lyosha\'nın kendi çırağı var artık',
@@ -717,7 +717,7 @@ export const EXTRA_COOKING2: UnitModule[] = [
   },
   {
     id: 'mod_c1_k9',
-    unitNumber: 193,
+    unitNumber: 203,
     levelGroup: 'C1/C2',
     title: 'Yemek Medyası — Şov & Blog',
     description: 'Kamera, kurgu, izlenme — «Ван Гог» ekranlara çıkıyor',

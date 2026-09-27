@@ -10,7 +10,7 @@ import type { UnitModule } from '../curriculumData';
 export const EXTRA_DAILY2A: UnitModule[] = [
   {
     id: 'mod_a2_d1',
-    unitNumber: 32,
+    unitNumber: 42,
     levelGroup: 'A2',
     title: 'Metro & Şehir İçi Ulaşım Rutini',
     description: 'Her gün binilen metro/otobüs: kart basma, aktarma, inilecek durak',
@@ -48,7 +48,7 @@ export const EXTRA_DAILY2A: UnitModule[] = [
   },
   {
     id: 'mod_a2_d2',
-    unitNumber: 33,
+    unitNumber: 43,
     levelGroup: 'A2',
     title: 'Eczane & Küçük Şikayetler',
     description: 'Eczane tezgahında derdini anlatma: ağrı, soğuk algınlığı, ilaç sorma',
@@ -86,7 +86,7 @@ export const EXTRA_DAILY2A: UnitModule[] = [
   },
   {
     id: 'mod_a2_d3',
-    unitNumber: 34,
+    unitNumber: 44,
     levelGroup: 'A2',
     title: 'Kart, Nakit & ATM',
     description: 'Günlük ödemeler: kartla ödeme, para çekme, bozuk para ve para üstü',
@@ -124,7 +124,7 @@ export const EXTRA_DAILY2A: UnitModule[] = [
   },
   {
     id: 'mod_a2_d4',
-    unitNumber: 35,
+    unitNumber: 45,
     levelGroup: 'A2',
     title: 'Sabah Rutini & Günlük Program',
     description: 'Uyanmaktan uyumaya bir gün: rutin fiiller ve saat kalıpları',
@@ -162,7 +162,7 @@ export const EXTRA_DAILY2A: UnitModule[] = [
   },
   {
     id: 'mod_a2_d5',
-    unitNumber: 36,
+    unitNumber: 46,
     levelGroup: 'A2',
     title: 'Evcil Hayvan & Parkta Yürüyüş',
     description: 'Köpek gezdirme, mama, tasma ve veteriner temelleri',
@@ -200,7 +200,7 @@ export const EXTRA_DAILY2A: UnitModule[] = [
   },
   {
     id: 'mod_a2_d6',
-    unitNumber: 37,
+    unitNumber: 47,
     levelGroup: 'A2',
     title: 'Terzi & Kuru Temizleme',
     description: 'Leke çıkarma, paça kısaltma, fermuar değişimi ve teslim alma',
@@ -238,7 +238,7 @@ export const EXTRA_DAILY2A: UnitModule[] = [
   },
   {
     id: 'mod_a2_d7',
-    unitNumber: 38,
+    unitNumber: 48,
     levelGroup: 'A2',
     title: 'Usta Çağırma & Ev Arızaları',
     description: 'Damlayan musluk, atan sigorta: arıza bildirme ve usta ile konuşma',
@@ -276,7 +276,7 @@ export const EXTRA_DAILY2A: UnitModule[] = [
   },
   {
     id: 'mod_a2_d8',
-    unitNumber: 39,
+    unitNumber: 49,
     levelGroup: 'A2',
     title: 'Hediye Seçme & Tebrik',
     description: 'Doğum günü hediyesi seçme, paketleme ve tebrik kalıpları',
@@ -314,7 +314,7 @@ export const EXTRA_DAILY2A: UnitModule[] = [
   },
   {
     id: 'mod_a2_d9',
-    unitNumber: 40,
+    unitNumber: 50,
     levelGroup: 'A2',
     title: 'Mesajlaşma & Sosyal Medya Dili',
     description: 'Mesaj yazma, sesli mesaj, fotoğraf gönderme ve şarj dramı',
@@ -352,7 +352,7 @@ export const EXTRA_DAILY2A: UnitModule[] = [
   },
   {
     id: 'mod_a2_d10',
-    unitNumber: 41,
+    unitNumber: 51,
     levelGroup: 'A2',
     title: 'Kayıp Eşya & Emanet Bürosu',
     description: 'Cüzdan düşürme, kayıp bildirme ve emanet bürosunda eşya tarifi',

@@ -26,9 +26,11 @@ import { EXTRA_C1 } from './c1';
 import { EXTRA_COOKING } from './cooking';
 import { EXTRA_COOKING2 } from './cooking2';
 import { EXTRA_DAILY2A } from './daily2a';
+import { EXTRA_GRAM_CASES } from './gramCases';
 
 export const EXTRA_UNITS: UnitModule[] = [
   ...EXTRA_A1_GRAM,  // Ünite 7-11 (A1 — cümle anahtarı)
+  ...EXTRA_GRAM_CASES, // Ünite 12-21 (A2 — ismin 6 hali + vurgu okulu)
   ...EXTRA_A2,       // Ünite 24-31 (A2)
   ...EXTRA_DAILY2A,  // Ünite 32-41 (A2 — gündelik yaşam 2 kat, parti 1/3)
   ...EXTRA_B1A,      // Ünite 67-74 (B1)

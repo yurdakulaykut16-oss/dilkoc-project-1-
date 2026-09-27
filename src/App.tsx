@@ -17,6 +17,7 @@ const LEVEL_COLORS: Record<CefrTag, string> = {
   'C1/C2': '#a78bfa',
 };
 
+import { ALPHABET_LESSONS_EXTRA } from './alphabetExtra';
 import { UNITS_DATA, ALL_WORDS, ALL_SENTENCES } from './curriculumData';
 import { GRAMMAR_FOUNDATION_UNITS } from './grammarFoundationData';
 import type { WordDetail, DialogueLine, SmesharikiQuestion, SmesharikiScene, UnitModule } from './curriculumData';
@@ -372,7 +373,9 @@ export const ALPHABET_LESSONS: { id: string; title: string; subtitle: string; le
       { word: 'четверг', correct: 'Çitvyérk', distractors: ['Çetvérg', 'Çítverk', 'Çitvyérg'], tr: 'Perşembe' },
       { word: 'здоровье', correct: 'Zdaróvye', distractors: ['Zdórovye', 'Zdaravyé', 'Zıdorovye'], tr: 'Sağlık' }
     ]
-  }
+  },
+  // 30 EK OKUMA DERSİ (17-46): sayılar, günler, renkler, isimler, menüler, hız turları
+  ...ALPHABET_LESSONS_EXTRA
 ];
 
 export const ALL_ALPHA_LETTERS = ALPHABET_LESSONS.flatMap(x => x.letters);
@@ -400,6 +403,10 @@ interface SaveState {
   completedStories: string[]; // tamamlanan hikaye modülü kontrol noktaları (story_cp1...)
   mistakes: { id: string; ru: string; tr: string; reason: string }[];
   srsBank: SRSItem[];
+  // ZAYIF NOKTA İSTATİSTİĞİ: kelime bazında TOPLAM hata sayacı.
+  // "Unutulanlar" kütüğünden farkı: kelime doğru cevaplanıp kütükten silinse bile
+  // buradaki sayaç kalır — hangi kelimelerde KRONİK olarak zorlandığını gösterir.
+  errorStats?: Record<string, { count: number; tr: string; last: number }>;
 }
 
 export interface SRSItem {
@@ -527,7 +534,7 @@ export default function App() {
   const [activeTab, setActiveTab] = useState<'MAP' | 'PROFILE' | 'MISTAKES' | 'METHODS' | 'CONNECTIONS'>('MAP');
   const [screen, setScreen] = useState<'MAP' | 'ALPHA' | 'ALPHA_CHECK' | 'ALPHA_READING' | 'GRAMMAR' | 'TOPIC' | 'TOPIC_TEST' | 'STORY' | 'DIALOG' | 'SMESHARIKI' | 'FLASHCARD' | 'MATCH' | 'TYPING' | 'SENTENCE' | 'QUIZ' | 'UNIT_STORY' | 'STORY_TEST' | 'STORY_RESULT' | 'CHECKPOINT_STORY'>('MAP');
   // Sınav/test motorunun hangi bağlamda çalıştığını belirtir: her biri bittiğinde farklı bir sonraki adıma geçer
-  const [quizContext, setQuizContext] = useState<'ALPHA_FINAL' | 'GRAMMAR_FOUNDATION' | 'LISTENING' | 'UNIT_FINAL' | 'REVIEW' | 'SRS_REVIEW' | 'MARATHON'>('UNIT_FINAL');
+  const [quizContext, setQuizContext] = useState<'ALPHA_FINAL' | 'GRAMMAR_FOUNDATION' | 'LISTENING' | 'UNIT_FINAL' | 'REVIEW' | 'SRS_REVIEW' | 'MARATHON' | 'WEAKSPOT'>('UNIT_FINAL');
   // Harf bazlı anlık tanıma testi
   const [alphaCheckQ, setAlphaCheckQ] = useState<{ type: 'reading' | 'listen'; prompt: string; correct: string; options: string[] } | null>(null);
   // Okuma testi (kelime okuma alıştırması) durumu
@@ -545,6 +552,8 @@ export default function App() {
   const [completedStories, setCompletedStories] = useState<string[]>([]);
   const [mistakes, setMistakes] = useState<{ id: string; ru: string; tr: string; reason: string }[]>([]);
   const [srsBank, setSrsBank] = useState<SRSItem[]>([]);
+  // Kelime bazlı kronik hata sayaçları (Zayıf Noktalarım paneli bunu okur)
+  const [errorStats, setErrorStats] = useState<Record<string, { count: number; tr: string; last: number }>>({});
 
   // KULAĞI ALIŞTIR — 100 KONU (sesli dinleme + "dinle & seç" test) durumu
   const [topicIdx, setTopicIdx] = useState(0);              // seçili 100'lük konu (TOPICS_100 indeksi)
@@ -626,6 +635,7 @@ export default function App() {
         setCompletedStories(d.completedStories || []);
         setMistakes(d.mistakes || []);
         setSrsBank(d.srsBank || []);
+        setErrorStats(d.errorStats || {});
       } catch (e) {
         console.error(e);
       }
@@ -634,9 +644,9 @@ export default function App() {
 
   // OTOMATİK KAYIT
   useEffect(() => {
-    const d: SaveState = { xp, streak, gems, completedAlpha, completedGrammar, completedUnits, completedTopics, completedStories, mistakes, srsBank };
+    const d: SaveState = { xp, streak, gems, completedAlpha, completedGrammar, completedUnits, completedTopics, completedStories, mistakes, srsBank, errorStats };
     localStorage.setItem(SAVE_KEY, JSON.stringify(d));
-  }, [xp, streak, gems, completedAlpha, completedGrammar, completedUnits, completedTopics, completedStories, mistakes, srsBank]);
+  }, [xp, streak, gems, completedAlpha, completedGrammar, completedUnits, completedTopics, completedStories, mistakes, srsBank, errorStats]);
 
   // SESLENDİRME — rate parametresiyle yavaş (0.55) veya normal (0.85) tempoda okuma.
   // SES SAĞLAMLILIĞI: uzun metin cümle sınırlarından kısa parçalara bölünür ve
@@ -690,6 +700,12 @@ export default function App() {
   };
 
   const addMistake = (ru: string, tr: string, reason: string) => {
+    // Kronik hata sayacı: kütükte zaten olsa bile HER yanlışta +1 —
+    // böylece "en çok hangi kelimede takılıyorum?" sorusunun gerçek cevabı birikir.
+    setErrorStats(prev => {
+      const cur = prev[ru];
+      return { ...prev, [ru]: { count: (cur?.count || 0) + 1, tr, last: Date.now() } };
+    });
     setMistakes(prev => {
       if (prev.some(x => x.ru === ru)) return prev;
       return [...prev, { id: `${ru}-${Date.now()}`, ru, tr, reason }];
@@ -813,12 +829,29 @@ export default function App() {
 
   const startAlphaFinalQuiz = () => {
     const les = ALPHABET_LESSONS[alphaIdx];
-    const q = les.letters.map(l => ({
+    const q: any[] = les.letters.map(l => ({
       prompt: `"${l.upper} ${l.lower}" harfinin okunuş/fonetik kuralı nedir?`,
       correct: l.translit,
       options: shuffle([l.translit, ...shuffle(ALL_ALPHA_LETTERS.filter(x => x.translit !== l.translit)).slice(0, 3).map(x => x.translit)]),
       ru: `${l.upper} ${l.lower}`, tr: l.translit
     }));
+    // KALICI ÖĞRENME TÜM PROJEDE: bitiş sınavına ÖNCEKİ derslerden 2 harf + 2 okuma sorusu karışır —
+    // alfabe dersleri de asla "emekli" olmaz, eski harfler düzenli geri döner.
+    if (alphaIdx > 0) {
+      const prevLessons = ALPHABET_LESSONS.slice(0, alphaIdx);
+      shuffle(prevLessons.flatMap(x => x.letters)).slice(0, 2).forEach(l => q.push({
+        prompt: `🔁 KALICI TEKRAR (önceki ders) — "${l.upper} ${l.lower}" nasıl okunuyordu?`,
+        correct: l.translit,
+        options: shuffle([l.translit, ...shuffle(ALL_ALPHA_LETTERS.filter(x => x.translit !== l.translit)).slice(0, 3).map(x => x.translit)]),
+        ru: `${l.upper} ${l.lower}`, tr: l.translit
+      }));
+      shuffle(prevLessons.flatMap(x => x.readingDrills)).slice(0, 2).forEach(d => q.push({
+        prompt: `🔁 KALICI TEKRAR (önceki ders) — "${d.word}" kelimesinin doğru okunuşu hangisi?`,
+        correct: d.correct,
+        options: shuffle([d.correct, ...d.distractors]),
+        ru: d.word, tr: d.correct
+      }));
+    }
     setQuizContext('ALPHA_FINAL');
     setQuizQuestions(shuffle(q));
     setQuizIdx(0);
@@ -1021,15 +1054,18 @@ export default function App() {
 
   // Kelime kartlarını bitirince sesli dinleme testine geçilir (metin gizli, sadece ses)
   const startListening = () => {
-    const uWords = UNITS_DATA[unitIdx].words;
+    const mod = UNITS_DATA[unitIdx];
+    const uWords = mod.words;
     const q = shuffle(uWords).map(w => ({
       prompt: '',
       correct: w.tr,
       options: shuffle([w.tr, ...shuffle(ALL_WORDS.filter(x => x.tr !== w.tr)).slice(0, 3).map(x => x.tr)]),
       ru: w.ru, tr: w.tr, audioOnly: true
     }));
+    // KALICI ÖĞRENME TÜM PROJEDE: dinleme testine de eski ünitelerden 3 tekrar sorusu karışır.
+    const reviewQ = buildReviewInjection(mod, 3);
     setQuizContext('LISTENING');
-    setQuizQuestions(q);
+    setQuizQuestions(shuffle([...q, ...reviewQ]));
     setQuizIdx(0);
     setScreen('QUIZ');
   };
@@ -1328,6 +1364,51 @@ export default function App() {
     setScreen('QUIZ');
   };
 
+  // ==========================================
+  // ZAYIF NOKTA MOTORU — KİŞİSELLEŞTİRİLMİŞ EK TEST
+  // errorStats'taki kronik hata sayaçlarına göre EN ÇOK yanlış yapılan ~12 kelimeden
+  // kişiye özel bir sınav kurar. Sorular iki yönlü sorulur (tanıma + üretim) ve her
+  // kelime doğru cevaplandıkça sayaç 1 azalır — panel zamanla "iyileşmeyi" gösterir.
+  // ==========================================
+  const weakWords = Object.entries(errorStats)
+    .map(([ru, v]) => ({ ru, tr: v.tr, count: v.count, last: v.last }))
+    .filter(w => w.count > 0)
+    .sort((a, b) => b.count - a.count || b.last - a.last);
+
+  const startWeakspotQuiz = () => {
+    const target = weakWords.slice(0, 12);
+    if (target.length === 0) return;
+    const q = shuffle(target.flatMap(w => {
+      const rec = {
+        prompt: `🎯 ZAYIF NOKTA — "${w.ru}" ne anlama geliyor?`,
+        correct: w.tr,
+        options: shuffle([w.tr, ...shuffle(ALL_WORDS.filter(x => x.tr !== w.tr)).slice(0, 3).map(x => x.tr)]),
+        ru: w.ru, tr: w.tr
+      };
+      // Üretim etkisi: en kronik ilk 6 kelime TERS yönde de sorulur (TR → RU)
+      if (w.count >= 2 && ALL_WORDS.some(x => x.ru === w.ru)) {
+        return [rec, {
+          prompt: `🎯 ZAYIF NOKTA (üretim) — "${w.tr}" kelimesinin RUSÇASI hangisi?`,
+          correct: w.ru,
+          options: shuffle([w.ru, ...shuffle(ALL_WORDS.filter(x => x.ru !== w.ru)).slice(0, 3).map(x => x.ru)]),
+          ru: w.ru, tr: w.tr
+        }];
+      }
+      return [rec];
+    })).slice(0, 16);
+    setQuizContext('WEAKSPOT');
+    setQuizQuestions(q);
+    setQuizIdx(0);
+    setActiveTab('MAP');
+    setScreen('QUIZ');
+  };
+
+  // Zayıf kelimenin hangi ünite/kategoriden geldiğini bulur (panelde rozet olarak gösterilir)
+  const findWordHome = (ru: string) => {
+    const u = UNITS_DATA.find(x => x.words.some(w => w.ru === ru));
+    return u ? { title: u.title, category: u.category, icon: u.icon, color: u.color } : null;
+  };
+
   // ARALIKLI TEKRAR (SPACED REPETITION) OTURUMU: Sadece bugün "vadesi gelmiş" kelimeler sorulur.
   // Bu, kalıcı hafızanın bilimsel temelidir — beyin bir bilgiyi unutmaya en yakın olduğu anda tekrar hatırlarsa iz kalıcılaşır.
   const dueSRS = srsBank.filter(i => i.nextReview <= Date.now());
@@ -1385,6 +1466,16 @@ export default function App() {
     if (ans === q.correct) {
       setXp(x => x + (quizContext === 'REVIEW' ? 5 : quizContext === 'SRS_REVIEW' ? 8 : 20));
       setFeedback(null);
+      if (quizContext === 'WEAKSPOT') {
+        // İyileşme: zayıf nokta testinde doğru cevap sayacı 1 azaltır (0'a inince kelime panelden düşer)
+        setErrorStats(prev => {
+          const cur = prev[q.ru];
+          if (!cur) return prev;
+          const next = { ...prev };
+          if (cur.count <= 1) delete next[q.ru]; else next[q.ru] = { ...cur, count: cur.count - 1 };
+          return next;
+        });
+      }
       if (quizContext === 'REVIEW') {
         // Ustalaşılan kelimeyi Unutulanlar kütüğünden kaldır
         setMistakes(prev => prev.filter(m => !(m.ru === q.ru && m.tr === q.tr)));
@@ -1440,13 +1531,17 @@ export default function App() {
         } else if (quizContext === 'MARATHON') {
           setGems(g => g + 40);
           setScreen('MAP');
+        } else if (quizContext === 'WEAKSPOT') {
+          setGems(g => g + 35);
+          setScreen('MAP');
+          setActiveTab('MISTAKES');
         } else {
           setScreen('MAP');
           setActiveTab('MISTAKES');
         }
       }
     } else {
-      const reason = (q as any).review ? 'Kalıcı Tekrarda Unutuldu (eski ünite)' : quizContext === 'LISTENING' ? 'Dinleme Hatası' : quizContext === 'REVIEW' ? 'Tekrar Testinde Yine Yanlış' : quizContext === 'ALPHA_FINAL' ? 'Alfabe Sınavı Hatası' : quizContext === 'GRAMMAR_FOUNDATION' ? 'Cümle Temeli Hatası' : quizContext === 'SRS_REVIEW' ? 'Aralıklı Tekrarda Unutuldu' : quizContext === 'MARATHON' ? 'Karma Maratonda Unutuldu' : 'Sınav Hatası';
+      const reason = (q as any).review ? 'Kalıcı Tekrarda Unutuldu (eski ünite)' : quizContext === 'LISTENING' ? 'Dinleme Hatası' : quizContext === 'REVIEW' ? 'Tekrar Testinde Yine Yanlış' : quizContext === 'ALPHA_FINAL' ? 'Alfabe Sınavı Hatası' : quizContext === 'GRAMMAR_FOUNDATION' ? 'Cümle Temeli Hatası' : quizContext === 'SRS_REVIEW' ? 'Aralıklı Tekrarda Unutuldu' : quizContext === 'MARATHON' ? 'Karma Maratonda Unutuldu' : quizContext === 'WEAKSPOT' ? 'Zayıf Nokta Testinde Yine Yanlış' : 'Sınav Hatası';
       addMistake(q.ru, q.tr, reason);
       if (quizContext === 'SRS_REVIEW' || quizContext === 'MARATHON' || (q as any).review) {
         // Unutulan kelime kutu 1'e geri düşer: yarın tekrar sorulacak (kalıcı hafıza mantığının kalbi)
@@ -1822,6 +1917,42 @@ export default function App() {
         {activeTab === 'MISTAKES' && (
           <div style={cardBox}>
             <button onClick={() => setActiveTab('MAP')} style={{ background: 'transparent', border: 'none', color: '#94a3b8', fontWeight: 700, cursor: 'pointer', marginBottom: '12px' }}>← Haritaya Dön</button>
+            {/* 🎯 ZAYIF NOKTALARIM — kronik hata panosu + kişiye özel ek test */}
+            <div style={{ background: '#0f172a', borderRadius: '14px', padding: '18px', border: '1px solid #f97316', marginBottom: '22px' }}>
+              <h2 style={{ color: '#f97316', marginTop: 0, marginBottom: '6px' }}>🎯 Zayıf Noktalarım</h2>
+              <p style={{ color: '#cbd5e1', fontSize: '13px', marginTop: 0 }}>
+                Burası anlık hata listesi değil, <b>kronik</b> hata panosudur: bir kelimeyi her yanlışladığında sayaç artar,
+                zayıf nokta testinde doğru bildiğinde azalır. Sayaç sıfırlanınca kelime panodan düşer — gerçek iyileşme budur.
+              </p>
+              {weakWords.length === 0 ? (
+                <p style={{ color: '#10b981', fontWeight: 700, marginBottom: 0 }}>Kronik zayıf noktan yok — pano tertemiz! 💪</p>
+              ) : (
+                <>
+                  <button onClick={startWeakspotQuiz} style={{ ...primaryBtn, background: '#f97316', boxShadow: '0 4px 14px rgba(249,115,22,0.4)', marginBottom: '16px' }}>
+                    🎯 Bana Özel Zayıf Nokta Testi Başlat ({Math.min(weakWords.length, 12)} kelime)
+                  </button>
+                  {weakWords.slice(0, 15).map(w => {
+                    const home = findWordHome(w.ru);
+                    const maxCount = weakWords[0].count;
+                    const pct = Math.max(8, Math.round((w.count / maxCount) * 100));
+                    return (
+                      <div key={w.ru} style={{ marginBottom: '10px' }}>
+                        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', fontSize: '13px' }}>
+                          <span style={{ fontWeight: 800, color: '#f8fafc' }}>{w.ru} <span style={{ color: '#94a3b8', fontWeight: 600 }}>— {w.tr}</span></span>
+                          <span style={{ color: '#f97316', fontWeight: 900 }}>{w.count}× yanlış</span>
+                        </div>
+                        <div style={{ height: '7px', background: '#1e293b', borderRadius: '4px', marginTop: '4px', overflow: 'hidden' }}>
+                          <div style={{ width: `${pct}%`, height: '100%', background: w.count >= 4 ? '#ef4444' : w.count >= 2 ? '#f97316' : '#facc15', borderRadius: '4px' }} />
+                        </div>
+                        {home && <div style={{ fontSize: '11px', color: '#64748b', marginTop: '3px' }}>{home.icon} {home.title} • {home.category}</div>}
+                      </div>
+                    );
+                  })}
+                  {weakWords.length > 15 && <div style={{ fontSize: '12px', color: '#94a3b8' }}>… ve {weakWords.length - 15} kelime daha (test en kronik olanlardan başlar)</div>}
+                </>
+              )}
+            </div>
+
             <h2 style={{ color: '#ef4444', marginTop: 0 }}>🚨 Unutulan Kelimeler Kütüğü</h2>
             {mistakes.length === 0 ? <p style={{ color: '#10b981', fontWeight: 700 }}>Harika! Şu an hiç hatanız yok.</p> : (
               <>
@@ -2512,6 +2643,7 @@ export default function App() {
                 {quizContext === 'REVIEW' && <SceneBanner icon="🔁" color="#ef4444" label="Genel Tekrar Testi" />}
                 {quizContext === 'SRS_REVIEW' && <SceneBanner icon="📅" color="#f59e0b" label="Aralıklı Tekrar (Spaced Repetition)" />}
                 {quizContext === 'MARATHON' && <SceneBanner icon="🔀" color="#a78bfa" label="Karma Maraton — Tüm Geçmişten Rastgele" />}
+                {quizContext === 'WEAKSPOT' && <SceneBanner icon="🎯" color="#f97316" label="Zayıf Nokta Antrenmanı — Sana Özel Test" />}
                 <div style={{ fontSize: '12px', color: quizContext === 'REVIEW' || quizContext === 'SRS_REVIEW' ? '#f59e0b' : quizContext === 'MARATHON' ? '#a78bfa' : '#38bdf8', fontWeight: 800 }}>
                   {quizContext === 'ALPHA_FINAL' && `🔤 ALFABE BİTİŞ SINAVI — SORU ${quizIdx + 1} / ${quizQuestions.length}`}
                   {quizContext === 'GRAMMAR_FOUNDATION' && `🧩 CÜMLE TEMELLERİ KONTROLÜ — SORU ${quizIdx + 1} / ${quizQuestions.length}`}
@@ -2520,6 +2652,7 @@ export default function App() {
                   {quizContext === 'REVIEW' && `🔁 GENEL TEKRAR (Doğru cevaplayana kadar sorulur!) — ${quizIdx + 1} / ${quizQuestions.length}`}
                   {quizContext === 'SRS_REVIEW' && `📅 ARALIKLI TEKRAR — ${quizIdx + 1} / ${quizQuestions.length}`}
                   {quizContext === 'MARATHON' && `🔀 KARMA MARATON — ${quizIdx + 1} / ${quizQuestions.length}`}
+                  {quizContext === 'WEAKSPOT' && `🎯 ZAYIF NOKTA ANTRENMANI (kişiye özel) — ${quizIdx + 1} / ${quizQuestions.length}`}
                 </div>
 
                 {quizQuestions[quizIdx].audioOnly ? (
