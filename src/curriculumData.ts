@@ -7,6 +7,7 @@
 // Seviyeler (A1 -> C1/C2) arasında FORMAT farkı yoktur; yalnızca
 // zorluk (kelime düzeyi, cümle karmaşıklığı, gramer derinliği) artar.
 // ==========================================================
+import { EXTRA_UNITS } from './extraUnits';
 
 export interface WordDetail {
   id: string;
@@ -80,7 +81,7 @@ export function shuffle<T>(arr: T[]): T[] {
   return a;
 }
 
-export const UNITS_DATA: UnitModule[] = [
+const BASE_UNITS: UnitModule[] = [
   {
     id: 'mod_a1_1',
     unitNumber: 1,
@@ -206,7 +207,7 @@ export const UNITS_DATA: UnitModule[] = [
       { id: 'w3i', ru: 'Сладкое', reading: 'Sladkóye', tr: 'Tatlı', level: 'A1', usageNote: 'Tatlı yiyecekler için kullanılır.' }
     ],
     sentences: [
-      { ru: 'Мне кофе с собой, пожалуйста.', tr: 'Bana paket kahve lütfen.', scrambled: ['пожалуйста.', 'кофе', 'мне', 'с собой,'], correct: ['мне', 'кофе', 'с собой,', 'пожалуйста.'] },
+      { ru: 'Мне кофе с собой, пожалуйста.', tr: 'Bana paket kahve lütfen.', scrambled: ['пожалуйста.', 'кофе', 'Мне', 'с собой,'], correct: ['Мне', 'кофе', 'с собой,', 'пожалуйста.'] },
       { ru: 'Дайте мне счёт, пожалуйста.', tr: 'Bana hesabı verin lütfen.', scrambled: ['пожалуйста.', 'мне', 'счёт,', 'Дайте'], correct: ['Дайте', 'мне', 'счёт,', 'пожалуйста.'] }
     ],
     sceneTitle: 'Kafede Sipariş',
@@ -353,7 +354,7 @@ export const UNITS_DATA: UnitModule[] = [
   },
   {
     id: 'mod_a2_1',
-    unitNumber: 7,
+    unitNumber: 22,
     levelGroup: 'A2',
     title: 'Alışveriş & Pazarlık',
     description: 'Fiyat sorma, pazarlık etme ve indirim isteme',
@@ -412,7 +413,7 @@ export const UNITS_DATA: UnitModule[] = [
   },
   {
     id: 'mod_a2_2',
-    unitNumber: 8,
+    unitNumber: 23,
     levelGroup: 'A2',
     title: 'Telefon Görüşmesi & Rica',
     description: 'Telefonla konuşma kalıpları ve izin isteme',
@@ -450,7 +451,7 @@ export const UNITS_DATA: UnitModule[] = [
   },
   {
     id: 'mod_a2_4',
-    unitNumber: 9,
+    unitNumber: 24,
     levelGroup: 'A2',
     title: 'Ev & Eşyalar',
     description: 'Ev, oda ve eşya isimleri, yer bildirme',
@@ -487,7 +488,7 @@ export const UNITS_DATA: UnitModule[] = [
   },
   {
     id: 'mod_a2_5',
-    unitNumber: 10,
+    unitNumber: 25,
     levelGroup: 'A2',
     title: 'Randevu Alma & Zaman Planlama',
     description: 'Buluşma teklif etme ve zaman planlama kalıpları',
@@ -525,7 +526,7 @@ export const UNITS_DATA: UnitModule[] = [
   },
   {
     id: 'mod_a2_3',
-    unitNumber: 11,
+    unitNumber: 26,
     levelGroup: 'A2',
     title: 'Mutfak Kaosu & Emir Kipleri',
     description: 'Restoran mutfağı jargonu ve hızlı komutlar',
@@ -564,7 +565,7 @@ export const UNITS_DATA: UnitModule[] = [
   },
   {
     id: 'mod_a2_6',
-    unitNumber: 12,
+    unitNumber: 27,
     levelGroup: 'A2',
     title: 'Duygular & Ruh Hali',
     description: 'Temel duyguları ifade etme ve birine ne hissettiğini sorma',
@@ -617,7 +618,7 @@ export const UNITS_DATA: UnitModule[] = [
   },
   {
     id: 'mod_a2_7',
-    unitNumber: 13,
+    unitNumber: 28,
     levelGroup: 'A2',
     title: 'Doktor & Sağlık',
     description: 'Hastalık belirtilerini anlatma ve doktordan randevu alma',
@@ -669,7 +670,7 @@ export const UNITS_DATA: UnitModule[] = [
   },
   {
     id: 'mod_a2_8',
-    unitNumber: 14,
+    unitNumber: 29,
     levelGroup: 'A2',
     title: 'Hobiler & Boş Zaman',
     description: 'Hobilerden bahsetme ve boş zaman etkinlikleri teklif etme',
@@ -721,7 +722,7 @@ export const UNITS_DATA: UnitModule[] = [
   },
   {
     id: 'mod_a2_9',
-    unitNumber: 15,
+    unitNumber: 30,
     levelGroup: 'A2',
     title: 'Komşuluk İlişkileri',
     description: 'Komşuyla tanışma, gürültü şikayeti, iyilik isteme ve site kuralları',
@@ -755,7 +756,7 @@ export const UNITS_DATA: UnitModule[] = [
   },
   {
     id: 'mod_a2_10',
-    unitNumber: 16,
+    unitNumber: 31,
     levelGroup: 'A2',
     title: 'Özür, Teşekkür & Nezaket İfadeleri',
     description: 'Günlük hayatta sıkça kullanılan kibarlık ve nezaket kalıpları',
@@ -788,7 +789,7 @@ export const UNITS_DATA: UnitModule[] = [
   },
   {
     id: 'mod_a2_11',
-    unitNumber: 17,
+    unitNumber: 32,
     levelGroup: 'A2',
     title: 'Okuma Anahtarı: Bağlaçlar & Dolgu Kelimeler',
     description: 'Bilmediğin kelimeleri anlamana yardımcı olan en sık kullanılan bağlaç ve dolgu kelimeleri',
@@ -823,7 +824,7 @@ Bir metinde her kelimeyi bilmesen bile, cümleleri birbirine bağlayan kelimeler
   },
   {
     id: 'mod_a2_12',
-    unitNumber: 18,
+    unitNumber: 33,
     levelGroup: 'A2',
     title: 'Davet, Misafirlik & Kutlama',
     description: 'Birini davet etme, misafir ağırlama ve kutlama tebrikleri',
@@ -857,7 +858,7 @@ Bir metinde her kelimeyi bilmesen bile, cümleleri birbirine bağlayan kelimeler
   },
   {
     id: 'mod_b1_1',
-    unitNumber: 19,
+    unitNumber: 72,
     levelGroup: 'B1',
     title: 'Duygusal Tartışma',
     description: 'Sevgili kavgası ve itham cümleleri — klasik dizi anları',
@@ -868,12 +869,12 @@ Bir metinde her kelimeyi bilmesen bile, cümleleri birbirine bağlayan kelimeler
 1. Rusçada olumsuzluk "Не" (Nye) parçacığı ile fiilden önce yapılır: "Я не понимаю" (Anlamıyorum).
 2. "Почему ты...?" (Pachimú ty...?) -> "Neden sen...?" sorgulama kalıbı, tartışma sahnelerinde çok kullanılır.`,
     words: [
-      { id: 'w_d1', ru: 'Почему', reading: 'Pachimú', tr: 'Neden', level: 'B1', usageNote: 'Soru zarfıdır.' },
-      { id: 'w_d2', ru: 'Обманул', reading: 'Abmanúl', tr: 'Kandırdı / Yalan söyledi', level: 'B1', usageNote: 'Eril geçmiş zaman çekimidir.' },
-      { id: 'w_d3', ru: 'Доверие', reading: 'Davérie', tr: 'Güven', level: 'B1', usageNote: 'Soyut bir isimdir.' },
-      { id: 'w_d4', ru: 'Расстроен', reading: 'Rastróyen', tr: 'Üzgün (erkek)', level: 'B1', usageNote: 'Sıfatın eril halidir.' },
-      { id: 'w_d5', ru: 'Прости', reading: 'Prastí', tr: 'Affet', level: 'B1', usageNote: 'Samimi emir kipidir.' },
-      { id: 'w_d6', ru: 'Хватит', reading: 'Khvátit', tr: 'Yeter!', level: 'B1', usageNote: 'Kavga sahnelerinde sıkça bağırılan bir kelimedir.' }
+      { id: 'w_d1b', ru: 'Почему', reading: 'Pachimú', tr: 'Neden', level: 'B1', usageNote: 'Soru zarfıdır.' },
+      { id: 'w_d2b', ru: 'Обманул', reading: 'Abmanúl', tr: 'Kandırdı / Yalan söyledi', level: 'B1', usageNote: 'Eril geçmiş zaman çekimidir.' },
+      { id: 'w_d3b', ru: 'Доверие', reading: 'Davérie', tr: 'Güven', level: 'B1', usageNote: 'Soyut bir isimdir.' },
+      { id: 'w_d4b', ru: 'Расстроен', reading: 'Rastróyen', tr: 'Üzgün (erkek)', level: 'B1', usageNote: 'Sıfatın eril halidir.' },
+      { id: 'w_d5b', ru: 'Прости', reading: 'Prastí', tr: 'Affet', level: 'B1', usageNote: 'Samimi emir kipidir.' },
+      { id: 'w_d6b', ru: 'Хватит', reading: 'Khvátit', tr: 'Yeter!', level: 'B1', usageNote: 'Kavga sahnelerinde sıkça bağırılan bir kelimedir.' }
     ],
     sentences: [
       { ru: 'Почему ты мне не сказал правду?', tr: 'Neden bana gerçeği söylemedin?', scrambled: ['правду?', 'не', 'сказал', 'ты', 'мне', 'Почему'], correct: ['Почему', 'ты', 'мне', 'не', 'сказал', 'правду?'] },
@@ -889,7 +890,7 @@ Bir metinde her kelimeyi bilmesen bile, cümleleri birbirine bağlayan kelimeler
   },
   {
     id: 'mod_b1_2',
-    unitNumber: 20,
+    unitNumber: 73,
     levelGroup: 'B1',
     title: 'Doktor & Hastane',
     description: 'Acil durum ve sağlık şikayeti kalıpları',
@@ -900,12 +901,12 @@ Bir metinde her kelimeyi bilmesen bile, cümleleri birbirine bağlayan kelimeler
 1. "У меня болит..." (U minyá balít...) -> "Benim ... ağrıyor" kalıbı vücut kısımlarıyla birlikte kullanılır.
 2. Acil durumlarda "Вызовите скорую!" (Výzavite skóruyu!) -> "Ambulans çağırın!" hayat kurtaran bir kalıptır.`,
     words: [
-      { id: 'w_h1', ru: 'Больница', reading: "Bal'nítsa", tr: 'Hastane', level: 'B1', usageNote: 'Dişil bir kelimedir.' },
-      { id: 'w_h2', ru: 'Врач', reading: 'Vrach', tr: 'Doktor', level: 'B1', usageNote: 'Cinsiyetten bağımsız kullanılabilir.' },
-      { id: 'w_h3', ru: 'Болит', reading: 'Balít', tr: 'Ağrıyor', level: 'B1', usageNote: 'Şimdiki zaman üçüncü tekil şahıs çekimidir.' },
-      { id: 'w_h4', ru: 'Скорая', reading: 'Skóraya', tr: 'Ambulans', level: 'B1', usageNote: '"Скорая помощь" ifadesinin kısaltılmışıdır.' },
-      { id: 'w_h5', ru: 'Лекарство', reading: 'Likárstva', tr: 'İlaç', level: 'B1', usageNote: 'Orta cinsiyettedir.' },
-      { id: 'w_h6', ru: 'Помогите', reading: 'Pamagíte', tr: 'Yardım edin', level: 'B1', usageNote: 'Acil durum ünlemidir.' }
+      { id: 'w_h1b', ru: 'Больница', reading: "Bal'nítsa", tr: 'Hastane', level: 'B1', usageNote: 'Dişil bir kelimedir.' },
+      { id: 'w_h2b', ru: 'Врач', reading: 'Vrach', tr: 'Doktor', level: 'B1', usageNote: 'Cinsiyetten bağımsız kullanılabilir.' },
+      { id: 'w_h3b', ru: 'Болит', reading: 'Balít', tr: 'Ağrıyor', level: 'B1', usageNote: 'Şimdiki zaman üçüncü tekil şahıs çekimidir.' },
+      { id: 'w_h4b', ru: 'Скорая', reading: 'Skóraya', tr: 'Ambulans', level: 'B1', usageNote: '"Скорая помощь" ifadesinin kısaltılmışıdır.' },
+      { id: 'w_h5b', ru: 'Лекарство', reading: 'Likárstva', tr: 'İlaç', level: 'B1', usageNote: 'Orta cinsiyettedir.' },
+      { id: 'w_h6b', ru: 'Помогите', reading: 'Pamagíte', tr: 'Yardım edin', level: 'B1', usageNote: 'Acil durum ünlemidir.' }
     ],
     sentences: [
       { ru: 'У меня болит голова.', tr: 'Başım ağrıyor.', scrambled: ['голова.', 'болит', 'У меня'], correct: ['У меня', 'болит', 'голова.'] },
@@ -921,7 +922,7 @@ Bir metinde her kelimeyi bilmesen bile, cümleleri birbirine bağlayan kelimeler
   },
   {
     id: 'mod_b1_3',
-    unitNumber: 21,
+    unitNumber: 74,
     levelGroup: 'B1',
     title: 'İş Görüşmesi',
     description: 'Mülakat soruları ve resmi hitap şekilleri',
@@ -953,7 +954,7 @@ Bir metinde her kelimeyi bilmesen bile, cümleleri birbirine bağlayan kelimeler
   },
   {
     id: 'mod_b1_4',
-    unitNumber: 22,
+    unitNumber: 75,
     levelGroup: 'B1',
     title: 'Kafede Arkadaşlarla Dedikodu',
     description: 'Fısıldayarak dedikodu yapma ve sır paylaşma kalıpları',
@@ -985,7 +986,7 @@ Bir metinde her kelimeyi bilmesen bile, cümleleri birbirine bağlayan kelimeler
   },
   {
     id: 'mod_b1_5',
-    unitNumber: 23,
+    unitNumber: 76,
     levelGroup: 'B1',
     title: 'İş Yerinde & Resmi İletişim',
     description: 'Toplantı dili, e-posta kalıpları ve iş yerinde nazik talepler',
@@ -1019,7 +1020,7 @@ Bir metinde her kelimeyi bilmesen bile, cümleleri birbirine bağlayan kelimeler
   },
   {
     id: 'mod_b1_6',
-    unitNumber: 24,
+    unitNumber: 77,
     levelGroup: 'B1',
     title: 'Market & Süpermarket Konuşması',
     description: 'Reyon sorma, tartı, kasa kuyruğu ve günlük market diyalogları — orada yaşamak için şart',
@@ -1054,7 +1055,7 @@ Bir metinde her kelimeyi bilmesen bile, cümleleri birbirine bağlayan kelimeler
   },
   {
     id: 'mod_b1_7',
-    unitNumber: 25,
+    unitNumber: 78,
     levelGroup: 'B1',
     title: 'Ev Kiralama & Ev Sahibi',
     description: 'İlan bakma, depozito, fatura ve ev sahibiyle konuşma — taşınmak için zorunlu kalıplar',
@@ -1089,7 +1090,7 @@ Bir metinde her kelimeyi bilmesen bile, cümleleri birbirine bağlayan kelimeler
   },
   {
     id: 'mod_b1_8',
-    unitNumber: 26,
+    unitNumber: 79,
     levelGroup: 'B1',
     title: 'Banka, Kart & Para Çekme',
     description: 'Hesap açma, ATM, transfer ve banka şubesinde hayatta kalma dili',
@@ -1124,7 +1125,7 @@ Bir metinde her kelimeyi bilmesen bile, cümleleri birbirine bağlayan kelimeler
   },
   {
     id: 'mod_b1_9',
-    unitNumber: 27,
+    unitNumber: 80,
     levelGroup: 'B1',
     title: 'Eczane & Reçetesiz İlaç',
     description: 'Belirti anlatma, reçete, muadil ilaç — eczanede kaybolmamak',
@@ -1159,7 +1160,7 @@ Bir metinde her kelimeyi bilmesen bile, cümleleri birbirine bağlayan kelimeler
   },
   {
     id: 'mod_b1_10',
-    unitNumber: 28,
+    unitNumber: 81,
     levelGroup: 'B1',
     title: 'Flört & Tanışma (Manitacılık)',
     description: 'İlgi gösterme, kompliman, numara isteme — samimi ama doğal kalıplar',
@@ -1194,7 +1195,7 @@ Bir metinde her kelimeyi bilmesen bile, cümleleri birbirine bağlayan kelimeler
   },
   {
     id: 'mod_b1_11',
-    unitNumber: 29,
+    unitNumber: 82,
     levelGroup: 'B1',
     title: 'Randevu Teklifi & Plan Yapma',
     description: 'Kahve, sinema, yürüyüş teklifi ve \'müsait misin\' kalıpları',
@@ -1234,7 +1235,7 @@ Bir metinde her kelimeyi bilmesen bile, cümleleri birbirine bağlayan kelimeler
     // kadrosu (Dima, Töma, Marina, Jenya, Lena) + absürt durum komedileri.
     // =========================================================================
     id: 'mod_b1_fl2',
-    unitNumber: 30,
+    unitNumber: 83,
     levelGroup: 'B1',
     title: 'İlk Buluşma & Restoran Faciası',
     description: 'Masa ayırtma, mum, buket ve her şeyin ters gittiği ilk buluşma — sit-com tarzı',
@@ -1293,7 +1294,7 @@ Bir metinde her kelimeyi bilmesen bile, cümleleri birbirine bağlayan kelimeler
   },
   {
     id: 'mod_b1_fl3',
-    unitNumber: 31,
+    unitNumber: 84,
     levelGroup: 'B1',
     title: 'Sevgi Sözcükleri & Sevimli Hitaplar',
     description: 'Solnyşko, zayka, kotenok — sevimli hitaplar ve günlük samimi çift diyalogları',
@@ -1315,7 +1316,7 @@ Bir metinde her kelimeyi bilmesen bile, cümleleri birbirine bağlayan kelimeler
     ],
     sentences: [
       { ru: 'Доброе утро, солнышко!', tr: 'Günaydın, güneşim!', scrambled: ['солнышко!', 'утро,', 'Доброе'], correct: ['Доброе', 'утро,', 'солнышко!'] },
-      { ru: 'Я скучаю по тебе, зайка.', tr: 'Seni özlüyorum, tavşanım.', scrambled: ['зайка.', 'по тебе', 'скучаю', 'Я'], correct: ['Я', 'скучаю', 'по тебе', 'зайка.'] }
+      { ru: 'Я скучаю по тебе, зайка.', tr: 'Seni özlüyorum, tavşanım.', scrambled: ['зайка.', 'по тебе,', 'скучаю', 'Я'], correct: ['Я', 'скучаю', 'по тебе,', 'зайка.'] }
     ],
     sceneTitle: 'İki Güvercin Krizi',
     sceneContext: 'Evli çift Jenya ve Lena\'nın şekerlemeleri, Töma\'nın ise sabrı taşar — klasik kafe sahnesi.',
@@ -1330,7 +1331,7 @@ Bir metinde her kelimeyi bilmesen bile, cümleleri birbirine bağlayan kelimeler
   },
   {
     id: 'mod_b1_fl4',
-    unitNumber: 32,
+    unitNumber: 85,
     levelGroup: 'B1',
     title: 'Tanıştırmak & "Biz Bir Çiftiz"',
     description: 'Partneri tanıştırma, ilişki statüsü, "çıkalı ne kadar oldu" konuşmaları',
@@ -1352,7 +1353,7 @@ Bir metinde her kelimeyi bilmesen bile, cümleleri birbirine bağlayan kelimeler
     ],
     sentences: [
       { ru: 'Мы теперь пара.', tr: 'Artık bir çiftiz.', scrambled: ['пара.', 'теперь', 'Мы'], correct: ['Мы', 'теперь', 'пара.'] },
-      { ru: 'Он красиво ухаживает за ней.', tr: 'Ona güzelce kur yapıyor.', scrambled: ['за ней', 'красиво', 'ухаживает', 'Он'], correct: ['Он', 'красиво', 'ухаживает', 'за ней'] }
+      { ru: 'Он красиво ухаживает за ней.', tr: 'Ona güzelce kur yapıyor.', scrambled: ['за ней.', 'красиво', 'ухаживает', 'Он'], correct: ['Он', 'красиво', 'ухаживает', 'за ней.'] }
     ],
     sceneTitle: 'Çift İlan Ediyoruz',
     sceneContext: 'Dima, Marina\'yı arkadaş grubuna "kız arkadaşım" olarak tanıtırken Töma\'nın tek kelimelik komedi bombası patlar.',
@@ -1367,7 +1368,7 @@ Bir metinde her kelimeyi bilmesen bile, cümleleri birbirine bağlayan kelimeler
   },
   {
     id: 'mod_b1_12',
-    unitNumber: 33,
+    unitNumber: 86,
     levelGroup: 'B1',
     title: 'Film & Dizi Konuşması',
     description: 'Spoiler, bölüm, oyuncu, \'izliyor musun\' — diziler hakkında sohbet',
@@ -1402,7 +1403,7 @@ Bir metinde her kelimeyi bilmesen bile, cümleleri birbirine bağlayan kelimeler
   },
   {
     id: 'mod_b1_13',
-    unitNumber: 34,
+    unitNumber: 87,
     levelGroup: 'B1',
     title: 'Sinemada Bilet & Patlamış Mısır',
     description: 'Gişe, koltuk, altyazı, 3D — sinema gişesinde konuşma',
@@ -1437,7 +1438,7 @@ Bir metinde her kelimeyi bilmesen bile, cümleleri birbirine bağlayan kelimeler
   },
   {
     id: 'mod_b1_14',
-    unitNumber: 35,
+    unitNumber: 88,
     levelGroup: 'B1',
     title: 'İş Yerinde Küçük Sohbet',
     description: 'Kahve makinesi muhabbeti, hafta sonu, \'nasıl gidiyor\' — ofis small talk',
@@ -1472,7 +1473,7 @@ Bir metinde her kelimeyi bilmesen bile, cümleleri birbirine bağlayan kelimeler
   },
   {
     id: 'mod_b1_15',
-    unitNumber: 36,
+    unitNumber: 89,
     levelGroup: 'B1',
     title: 'Toplantı Erteleme & İzin',
     description: 'Hasta raporu, izin, toplantıyı kaydırma — işte pratik resmi dil',
@@ -1507,7 +1508,7 @@ Bir metinde her kelimeyi bilmesen bile, cümleleri birbirine bağlayan kelimeler
   },
   {
     id: 'mod_b1_16',
-    unitNumber: 37,
+    unitNumber: 90,
     levelGroup: 'B1',
     title: 'Usta Çağırma: Tesisatçı & Tamir',
     description: 'Musluk, elektrik, kapı — ev arızası ve usta randevusu',
@@ -1542,7 +1543,7 @@ Bir metinde her kelimeyi bilmesen bile, cümleleri birbirine bağlayan kelimeler
   },
   {
     id: 'mod_b1_17',
-    unitNumber: 38,
+    unitNumber: 91,
     levelGroup: 'B1',
     title: 'Kuaför & Berber Randevusu',
     description: 'Saç kestirme, randevu, \'çok kısa olmasın\' — salon dili',
@@ -1577,7 +1578,7 @@ Bir metinde her kelimeyi bilmesen bile, cümleleri birbirine bağlayan kelimeler
   },
   {
     id: 'mod_b1_18',
-    unitNumber: 39,
+    unitNumber: 92,
     levelGroup: 'B1',
     title: 'Belgeler, Pasaport & Göçmenlik Penceresi',
     description: 'Kuyruk, fotokopi, başvuru — resmi dairede kaybolmamak',
@@ -1612,7 +1613,7 @@ Bir metinde her kelimeyi bilmesen bile, cümleleri birbirine bağlayan kelimeler
   },
   {
     id: 'mod_b1_19',
-    unitNumber: 40,
+    unitNumber: 93,
     levelGroup: 'B1',
     title: 'Komşuyla Gürültü & Rica',
     description: 'Kapı çalma, gürültü şikâyeti, nazik ama net sınır koyma',
@@ -1647,7 +1648,7 @@ Bir metinde her kelimeyi bilmesen bile, cümleleri birbirine bağlayan kelimeler
   },
   {
     id: 'mod_b1_20',
-    unitNumber: 41,
+    unitNumber: 94,
     levelGroup: 'B1',
     title: 'Spor Salonu & Antrenör',
     description: 'Üyelik, alet sorma, \'bu koltuk dolu mu\' — spor salonu sohbeti',
@@ -1682,7 +1683,7 @@ Bir metinde her kelimeyi bilmesen bile, cümleleri birbirine bağlayan kelimeler
   },
   {
     id: 'mod_b1_21',
-    unitNumber: 42,
+    unitNumber: 95,
     levelGroup: 'B1',
     title: 'Restoranda Şikâyet & Hesap',
     description: 'Yemek soğuk, sipariş yanlış, hesap ayırma — kibar şikâyet',
@@ -1717,7 +1718,7 @@ Bir metinde her kelimeyi bilmesen bile, cümleleri birbirine bağlayan kelimeler
   },
   {
     id: 'mod_b1_22',
-    unitNumber: 43,
+    unitNumber: 96,
     levelGroup: 'B1',
     title: 'Ulaşım Kartı, Ceza & Kontrol',
     description: 'Troleybüs, kart basma, bilet kontrolü — şehir içi hayatta kalma',
@@ -1752,7 +1753,7 @@ Bir metinde her kelimeyi bilmesen bile, cümleleri birbirine bağlayan kelimeler
   },
   {
     id: 'mod_b2_1',
-    unitNumber: 44,
+    unitNumber: 134,
     levelGroup: 'B2',
     title: 'Kıskançlık ve İhanet Sahnesi',
     description: 'Yüzleşme cümleleri ve geçmiş zaman itham kalıpları',
@@ -1784,7 +1785,7 @@ Bir metinde her kelimeyi bilmesen bile, cümleleri birbirine bağlayan kelimeler
   },
   {
     id: 'mod_b2_2',
-    unitNumber: 45,
+    unitNumber: 135,
     levelGroup: 'B2',
     title: 'Polis Sorgusu',
     description: 'Suç dizilerinde geçen sorgu ve ifade kalıpları',
@@ -1816,7 +1817,7 @@ Bir metinde her kelimeyi bilmesen bile, cümleleri birbirine bağlayan kelimeler
   },
   {
     id: 'mod_b2_3',
-    unitNumber: 46,
+    unitNumber: 136,
     levelGroup: 'B2',
     title: 'Düğün & Kutlama',
     description: 'Kutlama kalıpları ve Rus düğün gelenekleri',
@@ -1847,7 +1848,7 @@ Bir metinde her kelimeyi bilmesen bile, cümleleri birbirine bağlayan kelimeler
   },
   {
     id: 'mod_b2_4',
-    unitNumber: 47,
+    unitNumber: 137,
     levelGroup: 'B2',
     title: 'Miras Kavgası',
     description: 'Vasiyet okuma ve aile içi anlaşmazlık kalıpları',
@@ -1879,7 +1880,7 @@ Bir metinde her kelimeyi bilmesen bile, cümleleri birbirine bağlayan kelimeler
   },
   {
     id: 'mod_b2_5',
-    unitNumber: 48,
+    unitNumber: 138,
     levelGroup: 'B2',
     title: 'İleri Flört, Kompliman & Reddetme',
     description: 'İlgiyi netleştirme, nazik red, \'sadece arkadaş kalalım\' — yetişkin sohbet',
@@ -1914,7 +1915,7 @@ Bir metinde her kelimeyi bilmesen bile, cümleleri birbirine bağlayan kelimeler
   },
   {
     id: 'mod_b2_6',
-    unitNumber: 49,
+    unitNumber: 139,
     levelGroup: 'B2',
     title: 'Tartışmayı Yönetmek & Barışmak',
     description: 'Suçlamadan konuşma, \'ben dili\', özür ve sınır — ilişki yetişkinliği',
@@ -1952,7 +1953,7 @@ Bir metinde her kelimeyi bilmesen bile, cümleleri birbirine bağlayan kelimeler
     // İLİŞKİLER & FLÖRT — GENİŞLETİLMİŞ MÜFREDAT (2x) / B2 bloğu
     // =========================================================================
     id: 'mod_b2_fl7',
-    unitNumber: 50,
+    unitNumber: 140,
     levelGroup: 'B2',
     title: 'Sevgililer Günü & Hediye Panigi',
     description: '14 Şubat, sürpriz, valentinka ve unutulan hediye krizi — absürt komedi',
@@ -1989,7 +1990,7 @@ Bir metinde her kelimeyi bilmesen bile, cümleleri birbirine bağlayan kelimeler
   },
   {
     id: 'mod_b2_fl8',
-    unitNumber: 51,
+    unitNumber: 141,
     levelGroup: 'B2',
     title: 'Birlikte Yaşamak: Ev, Alışkanlıklar & Sınırlar',
     description: 'Ortak ev düzeni, alışkanlıklar, görev bölüşümü ve buzdolabındaki çoraplar',
@@ -2026,7 +2027,7 @@ Bir metinde her kelimeyi bilmesen bile, cümleleri birbirine bağlayan kelimeler
   },
   {
     id: 'mod_b2_fl9',
-    unitNumber: 52,
+    unitNumber: 142,
     levelGroup: 'B2',
     title: 'Evlilik Teklifi & Nişan',
     description: 'Yüzük, diz çökme, "benimle evlenir misin" ve efsanevi (geri tepen) planlar',
@@ -2086,7 +2087,7 @@ Bir metinde her kelimeyi bilmesen bile, cümleleri birbirine bağlayan kelimeler
   },
   {
     id: 'mod_b2_fl10',
-    unitNumber: 53,
+    unitNumber: 143,
     levelGroup: 'B2',
     title: 'Uzun Mesafe İlişkisi & Video Çağrı Dramı',
     description: 'Saat dilimleri, "seni özledim" mesajları ve gece yarısı video çağrıları',
@@ -2123,7 +2124,7 @@ Bir metinde her kelimeyi bilmesen bile, cümleleri birbirine bağlayan kelimeler
   },
   {
     id: 'mod_b2_7',
-    unitNumber: 54,
+    unitNumber: 144,
     levelGroup: 'B2',
     title: 'Maaş Pazarlığı & Zam İsteme',
     description: 'Değerini anlatma, rakam konuşma, \'düşünelim\' cevabını okuma',
@@ -2158,7 +2159,7 @@ Bir metinde her kelimeyi bilmesen bile, cümleleri birbirine bağlayan kelimeler
   },
   {
     id: 'mod_b2_8',
-    unitNumber: 55,
+    unitNumber: 145,
     levelGroup: 'B2',
     title: 'Patronla Çatışma & Geri Bildirim',
     description: 'Haksız eleştiri, savunma, \'yazılı teyit\' isteme',
@@ -2193,7 +2194,7 @@ Bir metinde her kelimeyi bilmesen bile, cümleleri birbirine bağlayan kelimeler
   },
   {
     id: 'mod_b2_9',
-    unitNumber: 56,
+    unitNumber: 146,
     levelGroup: 'B2',
     title: 'Film Eleştirisi & Spoiler Kavgası',
     description: 'Konu, oyunculuk, final — film hakkında yetişkin tartışma',
@@ -2228,7 +2229,7 @@ Bir metinde her kelimeyi bilmesen bile, cümleleri birbirine bağlayan kelimeler
   },
   {
     id: 'mod_b2_10',
-    unitNumber: 57,
+    unitNumber: 147,
     levelGroup: 'B2',
     title: 'Dizi Karakteri & Teori Üretme',
     description: 'Fan teorisi, karakter gelişimi, \'o aslında...\' sohbetleri',
@@ -2263,7 +2264,7 @@ Bir metinde her kelimeyi bilmesen bile, cümleleri birbirine bağlayan kelimeler
   },
   {
     id: 'mod_b2_11',
-    unitNumber: 58,
+    unitNumber: 148,
     levelGroup: 'B2',
     title: 'Otel, Rezervasyon & Şikâyet',
     description: 'Check-in, gürültülü oda, iade — seyahatte hak arama',
@@ -2298,7 +2299,7 @@ Bir metinde her kelimeyi bilmesen bile, cümleleri birbirine bağlayan kelimeler
   },
   {
     id: 'mod_b2_12',
-    unitNumber: 59,
+    unitNumber: 149,
     levelGroup: 'B2',
     title: 'Kaza, Sigorta & İfade',
     description: 'Trafik kazası, polis, sigorta şirketi — panik etmeden kalıplar',
@@ -2333,7 +2334,7 @@ Bir metinde her kelimeyi bilmesen bile, cümleleri birbirine bağlayan kelimeler
   },
   {
     id: 'mod_b2_13',
-    unitNumber: 60,
+    unitNumber: 150,
     levelGroup: 'B2',
     title: 'İş Arkadaşı Dedikodusu & Sınır',
     description: 'Ofiste sır, \'müdüre gitme\', profesyonel mesafe',
@@ -2368,7 +2369,7 @@ Bir metinde her kelimeyi bilmesen bile, cümleleri birbirine bağlayan kelimeler
   },
   {
     id: 'mod_b2_14',
-    unitNumber: 61,
+    unitNumber: 151,
     levelGroup: 'B2',
     title: 'Çocuk, Okul & Veli Konuşması',
     description: 'Öğretmenle konuşma, ödev, toplantı — aile hayatı dili',
@@ -2403,7 +2404,7 @@ Bir metinde her kelimeyi bilmesen bile, cümleleri birbirine bağlayan kelimeler
   },
   {
     id: 'mod_b2_15',
-    unitNumber: 62,
+    unitNumber: 152,
     levelGroup: 'B2',
     title: 'Tanışma Uygulaması Sohbeti',
     description: 'İlk mesaj, espri, buluşma teklifi, ghosting\'e cevap',
@@ -2438,7 +2439,7 @@ Bir metinde her kelimeyi bilmesen bile, cümleleri birbirine bağlayan kelimeler
   },
   {
     id: 'mod_b2_16',
-    unitNumber: 63,
+    unitNumber: 153,
     levelGroup: 'B2',
     title: 'Haber, Söylenti & \'Duydun mu\'',
     description: 'Şehirde olan biten, kaynak sorma, abartıyı kesme',
@@ -2473,7 +2474,7 @@ Bir metinde her kelimeyi bilmesen bile, cümleleri birbirine bağlayan kelimeler
   },
   {
     id: 'mod_b2_17',
-    unitNumber: 64,
+    unitNumber: 154,
     levelGroup: 'B2',
     title: 'Konser, Bilet & Kapı Önü',
     description: 'Bilet satışı, kuyruk, \'içeri alırlar mı\' — eğlence hayatı',
@@ -2508,7 +2509,7 @@ Bir metinde her kelimeyi bilmesen bile, cümleleri birbirine bağlayan kelimeler
   },
   {
     id: 'mod_c1_1',
-    unitNumber: 65,
+    unitNumber: 185,
     levelGroup: 'C1/C2',
     title: 'Deyimler ve Argo',
     description: 'Dizilerde ve günlük hayatta duyulan deyimler, argo ifadeler',
@@ -2540,7 +2541,7 @@ Bir metinde her kelimeyi bilmesen bile, cümleleri birbirine bağlayan kelimeler
   },
   {
     id: 'mod_c1_2',
-    unitNumber: 66,
+    unitNumber: 186,
     levelGroup: 'C1/C2',
     title: 'Ayrılık Sahnesi',
     description: 'İleri düzey duygu ifadeleri ve şart kipi kullanımı',
@@ -2572,7 +2573,7 @@ Bir metinde her kelimeyi bilmesen bile, cümleleri birbirine bağlayan kelimeler
   },
   {
     id: 'mod_c1_3',
-    unitNumber: 67,
+    unitNumber: 187,
     levelGroup: 'C1/C2',
     title: 'Mahkeme Sahnesi',
     description: 'Resmi hukuk dili ve duruşma salonu kalıpları',
@@ -2604,7 +2605,7 @@ Bir metinde her kelimeyi bilmesen bile, cümleleri birbirine bağlayan kelimeler
   },
   {
     id: 'mod_c1_4',
-    unitNumber: 68,
+    unitNumber: 188,
     levelGroup: 'C1/C2',
     title: 'İroni, Kinaye & Alt Metin',
     description: 'Söylenenle kastedileni ayırma — dizilerde ve gerçek hayatta ileri dinleme',
@@ -2639,7 +2640,7 @@ Bir metinde her kelimeyi bilmesen bile, cümleleri birbirine bağlayan kelimeler
   },
   {
     id: 'mod_c1_5',
-    unitNumber: 69,
+    unitNumber: 189,
     levelGroup: 'C1/C2',
     title: 'Sunum, İtiraz & Toplantı Dominansı',
     description: 'Sunum dili, itiraz, \'bu riskli\' — işte ileri resmi konuşma',
@@ -2650,14 +2651,14 @@ Bir metinde her kelimeyi bilmesen bile, cümleleri birbirine bağlayan kelimeler
 1. "Позвольте уточнить" söz kesmeden müdahaledir.
 2. "С точки зрения рисков" itirazı rasyonelleştirir.`,
     words: [
-      { id: 'w_pr1', ru: 'Презентация', reading: 'Prezentátsiya', tr: 'Sunum', level: 'C1/C2', usageNote: 'Dişil.' },
-      { id: 'w_pr2', ru: 'Тезис', reading: 'Tézis', tr: 'Tez / Ana iddia', level: 'C1/C2', usageNote: 'Eril.' },
-      { id: 'w_pr3', ru: 'Риск', reading: 'Risk', tr: 'Risk', level: 'C1/C2', usageNote: 'Eril.' },
-      { id: 'w_pr4', ru: 'Позвольте', reading: 'Pazvól\'te', tr: 'İzin verin', level: 'C1/C2', usageNote: 'Kibar söz alma.' },
-      { id: 'w_pr5', ru: 'Возразить', reading: 'Vazrazít\'', tr: 'İtiraz etmek', level: 'C1/C2', usageNote: 'Mastar.' },
-      { id: 'w_pr6', ru: 'Данные', reading: 'Dánnye', tr: 'Veriler', level: 'C1/C2', usageNote: 'Çoğul.' },
-      { id: 'w_pr7', ru: 'Вывод', reading: 'Vývad', tr: 'Sonuç (çıkarım)', level: 'C1/C2', usageNote: 'Eril.' },
-      { id: 'w_pr8', ru: 'С точки зрения', reading: 'S tóchki zréniya', tr: '... açısından', level: 'C1/C2', usageNote: 'Kalıp.' }
+      { id: 'w_pr1b', ru: 'Презентация', reading: 'Prezentátsiya', tr: 'Sunum', level: 'C1/C2', usageNote: 'Dişil.' },
+      { id: 'w_pr2b', ru: 'Тезис', reading: 'Tézis', tr: 'Tez / Ana iddia', level: 'C1/C2', usageNote: 'Eril.' },
+      { id: 'w_pr3b', ru: 'Риск', reading: 'Risk', tr: 'Risk', level: 'C1/C2', usageNote: 'Eril.' },
+      { id: 'w_pr4b', ru: 'Позвольте', reading: 'Pazvól\'te', tr: 'İzin verin', level: 'C1/C2', usageNote: 'Kibar söz alma.' },
+      { id: 'w_pr5b', ru: 'Возразить', reading: 'Vazrazít\'', tr: 'İtiraz etmek', level: 'C1/C2', usageNote: 'Mastar.' },
+      { id: 'w_pr6b', ru: 'Данные', reading: 'Dánnye', tr: 'Veriler', level: 'C1/C2', usageNote: 'Çoğul.' },
+      { id: 'w_pr7b', ru: 'Вывод', reading: 'Vývad', tr: 'Sonuç (çıkarım)', level: 'C1/C2', usageNote: 'Eril.' },
+      { id: 'w_pr8b', ru: 'С точки зрения', reading: 'S tóchki zréniya', tr: '... açısından', level: 'C1/C2', usageNote: 'Kalıp.' }
     ],
     sentences: [
       { ru: 'Позвольте уточнить тезис по данным.', tr: 'Verilere göre tezi netleştirmeme izin verin.', scrambled: ['данным.', 'по', 'тезис', 'уточнить', 'Позвольте'], correct: ['Позвольте', 'уточнить', 'тезис', 'по', 'данным.'] },
@@ -2674,7 +2675,7 @@ Bir metinde her kelimeyi bilmesen bile, cümleleri birbirine bağlayan kelimeler
   },
   {
     id: 'mod_c1_6',
-    unitNumber: 70,
+    unitNumber: 190,
     levelGroup: 'C1/C2',
     title: 'İlişkide Ultimatom & Şart Kipi',
     description: 'Pişmanlık, şart, \'bundan sonra yok\' — dizi finali kalıpları',
@@ -2712,7 +2713,7 @@ Bir metinde her kelimeyi bilmesen bile, cümleleri birbirine bağlayan kelimeler
     // İLİŞKİLER & FLÖRT — GENİŞLETİLMİŞ MÜFREDAT (2x) / C1-C2 bloğu
     // =========================================================================
     id: 'mod_c1_fl7',
-    unitNumber: 71,
+    unitNumber: 191,
     levelGroup: 'C1/C2',
     title: 'Evlilikte Kriz, Kayınvalide & İtiraf Gecesi',
     description: 'Тёща, свекровь, biriken kırgınlıklar ve içini dökme gecesi — yetişkin ilişki dili',
@@ -2723,14 +2724,14 @@ Bir metinde her kelimeyi bilmesen bile, cümleleri birbirine bağlayan kelimeler
 1. "копиться / накопиться" (kanít'sya / nakapít'sya) -> "birikmek": Обиды накопились (Kırgınlıklar birikti).
 2. "пойти на уступки" -> "ödün vermek" — müzakere dilinin anahtar kalıbı ("на + çoğul araç hali").`,
     words: [
-      { id: 'w_mk1', ru: 'Тёща', reading: 'Tyóshcha', tr: 'Kayınvalide (karının annesi)', level: 'C1/C2', usageNote: 'Dişil; erkeğin kayınvalidesi.' },
-      { id: 'w_mk2', ru: 'Свекровь', reading: "Svikróf'", tr: 'Kayınvalide (kocanın annesi)', level: 'C1/C2', usageNote: 'Dişil; kadının kayınvalidesi.' },
-      { id: 'w_mk3', ru: 'Кризис', reading: 'Krízis', tr: 'Kriz', level: 'C1/C2', usageNote: 'Eril; hem ekonomik hem duygusal.' },
-      { id: 'w_mk4', ru: 'Накопиться', reading: "Nakapít'sya", tr: 'Birikmek', level: 'C1/C2', usageNote: 'Dönüşlü fiildir.' },
-      { id: 'w_mk5', ru: 'Ссора', reading: 'Ssóra', tr: 'Kavga / Tartışma', level: 'C1/C2', usageNote: 'Dişil; ev içi kavgalar için.' },
-      { id: 'w_mk6', ru: 'Обида', reading: 'Abída', tr: 'Kırgınlık', level: 'C1/C2', usageNote: 'Dişil; "держать обиду" — kırgınlık beslemek.' },
-      { id: 'w_mk7', ru: 'Выговориться', reading: "Vıgavarít'sya", tr: 'İçini dökmek', level: 'C1/C2', usageNote: 'Dönüşlü fiildir.' },
-      { id: 'w_mk8', ru: 'Пойти на уступки', reading: 'Paytí na ustúpki', tr: 'Ödün vermek', level: 'C1/C2', usageNote: 'Sabit kalıp; müzakere dili.' }
+      { id: 'w_mk1b', ru: 'Тёща', reading: 'Tyóshcha', tr: 'Kayınvalide (karının annesi)', level: 'C1/C2', usageNote: 'Dişil; erkeğin kayınvalidesi.' },
+      { id: 'w_mk2b', ru: 'Свекровь', reading: "Svikróf'", tr: 'Kayınvalide (kocanın annesi)', level: 'C1/C2', usageNote: 'Dişil; kadının kayınvalidesi.' },
+      { id: 'w_mk3b', ru: 'Кризис', reading: 'Krízis', tr: 'Kriz', level: 'C1/C2', usageNote: 'Eril; hem ekonomik hem duygusal.' },
+      { id: 'w_mk4b', ru: 'Накопиться', reading: "Nakapít'sya", tr: 'Birikmek', level: 'C1/C2', usageNote: 'Dönüşlü fiildir.' },
+      { id: 'w_mk5b', ru: 'Ссора', reading: 'Ssóra', tr: 'Kavga / Tartışma', level: 'C1/C2', usageNote: 'Dişil; ev içi kavgalar için.' },
+      { id: 'w_mk6b', ru: 'Обида', reading: 'Abída', tr: 'Kırgınlık', level: 'C1/C2', usageNote: 'Dişil; "держать обиду" — kırgınlık beslemek.' },
+      { id: 'w_mk7b', ru: 'Выговориться', reading: "Vıgavarít'sya", tr: 'İçini dökmek', level: 'C1/C2', usageNote: 'Dönüşlü fiildir.' },
+      { id: 'w_mk8b', ru: 'Пойти на уступки', reading: 'Paytí na ustúpki', tr: 'Ödün vermek', level: 'C1/C2', usageNote: 'Sabit kalıp; müzakere dili.' }
     ],
     sentences: [
       { ru: 'Обиды копились годами.', tr: 'Kırgınlıklar yıllarca birikti.', scrambled: ['годами.', 'копились', 'Обиды'], correct: ['Обиды', 'копились', 'годами.'] },
@@ -2749,7 +2750,7 @@ Bir metinde her kelimeyi bilmesen bile, cümleleri birbirine bağlayan kelimeler
   },
   {
     id: 'mod_c1_fl8',
-    unitNumber: 72,
+    unitNumber: 192,
     levelGroup: 'C1/C2',
     title: 'Boşanma & Yeni Bir Sayfa',
     description: 'Boşanmayı atlatmak, ikinci şans ve kör randevu — hicivli bir "ikinci bahar" hikayesi',
@@ -2786,7 +2787,7 @@ Bir metinde her kelimeyi bilmesen bile, cümleleri birbirine bağlayan kelimeler
   },
   {
     id: 'mod_c1_fl9',
-    unitNumber: 73,
+    unitNumber: 193,
     levelGroup: 'C1/C2',
     title: 'Düğün Konuşması & Sağdıç Replikleri',
     description: 'Тамада, шафер, kadeh konuşmaları, yemin ritüelleri — düğün sahnesi retoriği',
@@ -2847,7 +2848,7 @@ Bir metinde her kelimeyi bilmesen bile, cümleleri birbirine bağlayan kelimeler
   },
   {
     id: 'mod_c1_7',
-    unitNumber: 74,
+    unitNumber: 194,
     levelGroup: 'C1/C2',
     title: 'İstifa, Referans & Çıkış Görüşmesi',
     description: 'İstifa mektubu dili, \'neden gidiyorsun\', köprüleri yakmama',
@@ -2882,7 +2883,7 @@ Bir metinde her kelimeyi bilmesen bile, cümleleri birbirine bağlayan kelimeler
   },
   {
     id: 'mod_c1_8',
-    unitNumber: 75,
+    unitNumber: 195,
     levelGroup: 'C1/C2',
     title: 'Şikâyet Dilekçesi & Tüketici Hakları',
     description: 'İade, kusurlu ürün, \'tüketici olarak talep ediyorum\'',
@@ -2917,7 +2918,7 @@ Bir metinde her kelimeyi bilmesen bile, cümleleri birbirine bağlayan kelimeler
   },
   {
     id: 'mod_c1_9',
-    unitNumber: 76,
+    unitNumber: 196,
     levelGroup: 'C1/C2',
     title: 'Parti, Networking & Tanıtım Cümlesi',
     description: 'Kendini 20 saniyede anlatma, kartvizit, \'sonra yazalım\'',
@@ -2952,7 +2953,7 @@ Bir metinde her kelimeyi bilmesen bile, cümleleri birbirine bağlayan kelimeler
   },
   {
     id: 'mod_c1_10',
-    unitNumber: 77,
+    unitNumber: 197,
     levelGroup: 'C1/C2',
     title: 'Yabancı Olarak Yaşamak & Kimlik',
     description: 'Aksan, \'nerelisin\', aidiyet, \'burada kalıcı mısın\' soruları',
@@ -2987,7 +2988,7 @@ Bir metinde her kelimeyi bilmesen bile, cümleleri birbirine bağlayan kelimeler
   },
   {
     id: 'mod_c1_11',
-    unitNumber: 78,
+    unitNumber: 198,
     levelGroup: 'C1/C2',
     title: 'Şarkı, Replik & \'Bu Sahne Ne Anlatıyor\'',
     description: 'Mecaz, alt metin, \'yönetmen şunu demek istedi\' — kültürel sohbet',
@@ -2998,14 +2999,14 @@ Bir metinde her kelimeyi bilmesen bile, cümleleri birbirine bağlayan kelimeler
 1. "Это метафора" yüzey anlamı aşar.
 2. "Саундтрек усиливает сцену" analiz cümlesidir.`,
     words: [
-      { id: 'w_cl1', ru: 'Метафора', reading: 'Metáfora', tr: 'Mecaz', level: 'C1/C2', usageNote: 'Dişil.' },
-      { id: 'w_cl2', ru: 'Подтекст', reading: 'Padtékst', tr: 'Alt metin', level: 'C1/C2', usageNote: 'Eril.' },
-      { id: 'w_cl3', ru: 'Атмосфера', reading: 'Atmósfera', tr: 'Atmosfer', level: 'C1/C2', usageNote: 'Dişil.' },
-      { id: 'w_cl4', ru: 'Культовый', reading: 'Kul\'tóvyy', tr: 'Kült', level: 'C1/C2', usageNote: 'Sıfat.' },
-      { id: 'w_cl5', ru: 'Цитата', reading: 'Tsitáta', tr: 'Alıntı / Replik', level: 'C1/C2', usageNote: 'Dişil.' },
-      { id: 'w_cl6', ru: 'Усиливать', reading: 'Usílivat\'', tr: 'Güçlendirmek', level: 'C1/C2', usageNote: 'Mastar.' },
-      { id: 'w_cl7', ru: 'Трактовать', reading: 'Traktavát\'', tr: 'Yorumlamak', level: 'C1/C2', usageNote: 'Mastar.' },
-      { id: 'w_cl8', ru: 'Шедевр', reading: 'Shedevr', tr: 'Şaheser', level: 'C1/C2', usageNote: 'Eril.' }
+      { id: 'w_cl1b', ru: 'Метафора', reading: 'Metáfora', tr: 'Mecaz', level: 'C1/C2', usageNote: 'Dişil.' },
+      { id: 'w_cl2b', ru: 'Подтекст', reading: 'Padtékst', tr: 'Alt metin', level: 'C1/C2', usageNote: 'Eril.' },
+      { id: 'w_cl3b', ru: 'Атмосфера', reading: 'Atmósfera', tr: 'Atmosfer', level: 'C1/C2', usageNote: 'Dişil.' },
+      { id: 'w_cl4b', ru: 'Культовый', reading: 'Kul\'tóvyy', tr: 'Kült', level: 'C1/C2', usageNote: 'Sıfat.' },
+      { id: 'w_cl5b', ru: 'Цитата', reading: 'Tsitáta', tr: 'Alıntı / Replik', level: 'C1/C2', usageNote: 'Dişil.' },
+      { id: 'w_cl6b', ru: 'Усиливать', reading: 'Usílivat\'', tr: 'Güçlendirmek', level: 'C1/C2', usageNote: 'Mastar.' },
+      { id: 'w_cl7b', ru: 'Трактовать', reading: 'Traktavát\'', tr: 'Yorumlamak', level: 'C1/C2', usageNote: 'Mastar.' },
+      { id: 'w_cl8b', ru: 'Шедевр', reading: 'Shedevr', tr: 'Şaheser', level: 'C1/C2', usageNote: 'Eril.' }
     ],
     sentences: [
       { ru: 'Эта цитата — метафора, не буквальный смысл.', tr: 'Bu replik mecaz, yüzey anlam değil.', scrambled: ['смысл.', 'буквальный', 'не', 'метафора,', '—', 'цитата', 'Эта'], correct: ['Эта', 'цитата', '—', 'метафора,', 'не', 'буквальный', 'смысл.'] },
@@ -3022,7 +3023,7 @@ Bir metinde her kelimeyi bilmesen bile, cümleleri birbirine bağlayan kelimeler
   },
   {
     id: 'mod_c1_12',
-    unitNumber: 79,
+    unitNumber: 199,
     levelGroup: 'C1/C2',
     title: 'Duygu Sözlüğü: Terapi & Sınır',
     description: 'Kaygı, tükenmişlik, \'hayır diyebilmek\' — yetişkin duygusal dil',
@@ -3057,7 +3058,7 @@ Bir metinde her kelimeyi bilmesen bile, cümleleri birbirine bağlayan kelimeler
   },
   {
     id: 'mod_c1_13',
-    unitNumber: 80,
+    unitNumber: 200,
     levelGroup: 'C1/C2',
     title: 'Pazarlık Ustası: Pazar & Hizmet',
     description: 'Fiyat kırma, toptan, \'başka yerde daha ucuz\' — ileri pazarlık',
@@ -3092,7 +3093,7 @@ Bir metinde her kelimeyi bilmesen bile, cümleleri birbirine bağlayan kelimeler
   },
   {
     id: 'mod_c1_14',
-    unitNumber: 81,
+    unitNumber: 201,
     levelGroup: 'C1/C2',
     title: 'Gençlik Jargonu & İnternet Dili',
     description: 'Chat, meme, \'кринж\', \'имба\' — dizilerde duyulan internet Rusçası',
@@ -3127,7 +3128,7 @@ Bir metinde her kelimeyi bilmesen bile, cümleleri birbirine bağlayan kelimeler
   },
   {
     id: 'mod_c1_15',
-    unitNumber: 82,
+    unitNumber: 202,
     levelGroup: 'C1/C2',
     title: 'Haber Analizi & Görüş Savunma',
     description: 'Kaynak, önyargı, \'bence abartılıyor\' — olgun tartışma',
@@ -3161,6 +3162,16 @@ Bir metinde her kelimeyi bilmesen bile, cümleleri birbirine bağlayan kelimeler
     ]
   },
 ];
+
+// ==========================================================
+// GENİŞLEME PAKETİ BİRLEŞTİRME: src/extraUnits içindeki 50 yeni
+// ünite (A2 +8, B1 +16, B2 +14, C1/C2 +12) temel müfredatla
+// birleştirilir ve tüm yol unitNumber'a göre sıralanır.
+// Seviye blokları: A1 1-6, A2 7-26, B1 27-67, B2 68-102, C1/C2 103-132.
+// ==========================================================
+export const UNITS_DATA: UnitModule[] = [...BASE_UNITS, ...EXTRA_UNITS].sort(
+  (a, b) => a.unitNumber - b.unitNumber
+);
 
 export const ALL_WORDS = UNITS_DATA.flatMap(m => m.words);
 

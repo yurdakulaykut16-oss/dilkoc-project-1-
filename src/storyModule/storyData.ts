@@ -484,7 +484,7 @@ const STORY_LF_A1: CheckpointStory = {
   kind: 'levelFinal',
   checkpoint: null,
   unitFrom: 1,
-  unitTo: 6,
+  unitTo: 11,
   levelId: 'A1',
   nextLevelId: 'A2',
   titleRu: 'Жёлтый зонт',
@@ -536,15 +536,15 @@ const STORY_LF_A1: CheckpointStory = {
 };
 
 // ---------------------------------------------------------------------------
-// BÖLÜM FİNALİ 2 — Ünite 7-18 (A2 SONU) — Кухня tarzı: yeni garsonun ilk günü
+// BÖLÜM FİNALİ 2 — Ünite 12-61 (A2 SONU) — Кухня tarzı: yeni garsonun ilk günü
 // Kapılı final: özet %100 + Seviye Tekrar Sınavı geçilmeden B1 açılmaz.
 // ---------------------------------------------------------------------------
 const STORY_LF_A2: CheckpointStory = {
   id: 'story_lf_a2',
   kind: 'levelFinal',
   checkpoint: null,
-  unitFrom: 7,
-  unitTo: 18,
+  unitFrom: 12,
+  unitTo: 61,
   levelId: 'A2',
   nextLevelId: 'B1',
   titleRu: 'Новый официант',
@@ -595,27 +595,27 @@ const STORY_LF_A2: CheckpointStory = {
     { tokens: ['yıldız oldu', 'efsanevi garson', 'en iyi garson'], noteTr: 'Lyosha yıldız olmadı — sadece hayatta kaldı (bu bile ilk gün için büyük bir başarı).' },
   ],
   recycleWords: [
-    { ru: 'Шеф', tr: 'Şef', from: 'A2 · Ünite 11' },
-    { ru: 'Кухня', tr: 'Mutfak', from: 'A2 · Ünite 9/11' },
-    { ru: 'Соус', tr: 'Sos', from: 'A2 · Ünite 11' },
-    { ru: 'Вкусно', tr: 'Lezzetli', from: 'A2 · Ünite 11' },
-    { ru: 'Извините', tr: 'Özür dilerim', from: 'A2 · Ünite 16' },
-    { ru: 'Ничего страшного', tr: 'Önemli değil', from: 'A2 · Ünite 16' },
-    { ru: 'День рождения', tr: 'Doğum günü', from: 'A2 · Ünite 18' },
-    { ru: 'Праздник', tr: 'Şölen / kutlama', from: 'A2 · Ünite 18' },
+    { ru: 'Шеф', tr: 'Şef', from: 'A2 · Ünite 16' },
+    { ru: 'Кухня', tr: 'Mutfak', from: 'A2 · Ünite 14/11' },
+    { ru: 'Соус', tr: 'Sos', from: 'A2 · Ünite 16' },
+    { ru: 'Вкусно', tr: 'Lezzetli', from: 'A2 · Ünite 16' },
+    { ru: 'Извините', tr: 'Özür dilerim', from: 'A2 · Ünite 21' },
+    { ru: 'Ничего страшного', tr: 'Önemli değil', from: 'A2 · Ünite 21' },
+    { ru: 'День рождения', tr: 'Doğum günü', from: 'A2 · Ünite 23' },
+    { ru: 'Праздник', tr: 'Şölen / kutlama', from: 'A2 · Ünite 23' },
   ],
 };
 
 // ---------------------------------------------------------------------------
-// BÖLÜM FİNALİ 3 — Ünite 19-43 (B1 SONU) — Crossover: HIMYM kadrosu «Ван Гог»ta
+// BÖLÜM FİNALİ 3 — Ünite 62-126 (B1 SONU) — Crossover: HIMYM kadrosu «Ван Гог»ta
 // Kapılı final: özet %100 + Seviye Tekrar Sınavı geçilmeden B2 açılmaz.
 // ---------------------------------------------------------------------------
 const STORY_LF_B1: CheckpointStory = {
   id: 'story_lf_b1',
   kind: 'levelFinal',
   checkpoint: null,
-  unitFrom: 19,
-  unitTo: 43,
+  unitFrom: 62,
+  unitTo: 126,
   levelId: 'B1',
   nextLevelId: 'B2',
   titleRu: 'Ужин в «Ван Гоге»',
@@ -669,26 +669,26 @@ const STORY_LF_B1: CheckpointStory = {
   ],
   recycleWords: [
     { ru: 'Меню', tr: 'Menü', from: 'A1 · Ünite 3' },
-    { ru: 'Счёт', tr: 'Hesap', from: 'B1 · Ünite 42' },
-    { ru: 'Чаевые', tr: 'Bahşiş', from: 'B1 · Ünite 42' },
-    { ru: 'Извините', tr: 'Özür dilerim', from: 'A2 · Ünite 16' },
-    { ru: 'Встреча', tr: 'Karşılaşma / tesadüf', from: 'A2 · Ünite 10' },
-    { ru: 'Кухня', tr: 'Mutfak', from: 'A2 · Ünite 9/11' },
-    { ru: 'Соус', tr: 'Sos', from: 'A2 · Ünite 11' },
-    { ru: 'Свеча', tr: 'Mum', from: 'B1 · Ünite 30' },
+    { ru: 'Счёт', tr: 'Hesap', from: 'B1 · Ünite 65' },
+    { ru: 'Чаевые', tr: 'Bahşiş', from: 'B1 · Ünite 65' },
+    { ru: 'Извините', tr: 'Özür dilerim', from: 'A2 · Ünite 21' },
+    { ru: 'Встреча', tr: 'Karşılaşma / tesadüf', from: 'A2 · Ünite 15' },
+    { ru: 'Кухня', tr: 'Mutfak', from: 'A2 · Ünite 14/11' },
+    { ru: 'Соус', tr: 'Sos', from: 'A2 · Ünite 16' },
+    { ru: 'Свеча', tr: 'Mum', from: 'B1 · Ünite 53' },
   ],
 };
 
 // ---------------------------------------------------------------------------
-// BÖLÜM FİNALİ 4 — Ünite 44-64 (B2 SONU) — Кухня tarzı: şefin teklifi
+// BÖLÜM FİNALİ 4 — Ünite 127-181 (B2 SONU) — Кухня tarzı: şefin teklifi
 // Kapılı final: özet %100 + Seviye Tekrar Sınavı geçilmeden C1 açılmaz.
 // ---------------------------------------------------------------------------
 const STORY_LF_B2: CheckpointStory = {
   id: 'story_lf_b2',
   kind: 'levelFinal',
   checkpoint: null,
-  unitFrom: 44,
-  unitTo: 64,
+  unitFrom: 127,
+  unitTo: 181,
   levelId: 'B2',
   nextLevelId: 'C1/C2',
   titleRu: 'Вечер шефа',
@@ -740,27 +740,27 @@ const STORY_LF_B2: CheckpointStory = {
     { tokens: ['yüzük kayboldu', 'yüzük düştü', 'yüzüğü kaybetti'], noteTr: 'Yüzük kaybolmadı — sadece biraz titredi (Pyotr\'nun elleri yüzünden).' },
   ],
   recycleWords: [
-    { ru: 'Кухня', tr: 'Mutfak', from: 'A2 · Ünite 9/11' },
-    { ru: 'Свеча', tr: 'Mum', from: 'B1 · Ünite 30' },
-    { ru: 'Сюрприз', tr: 'Sürpriz', from: 'B2 · Ünite 50' },
-    { ru: 'Кольцо', tr: 'Yüzük', from: 'B2 · Ünite 52' },
-    { ru: 'Встать на колени', tr: 'Diz çökmek', from: 'B2 · Ünite 52' },
-    { ru: 'Я согласна', tr: 'Evet, kabul ediyorum (kadın)', from: 'B2 · Ünite 52' },
-    { ru: 'Помолвка', tr: 'Nişan', from: 'B2 · Ünite 52' },
-    { ru: 'Праздник', tr: 'Şölen / kutlama', from: 'A2 · Ünite 18' },
+    { ru: 'Кухня', tr: 'Mutfak', from: 'A2 · Ünite 14/11' },
+    { ru: 'Свеча', tr: 'Mum', from: 'B1 · Ünite 53' },
+    { ru: 'Сюрприз', tr: 'Sürpriz', from: 'B2 · Ünite 103' },
+    { ru: 'Кольцо', tr: 'Yüzük', from: 'B2 · Ünite 105' },
+    { ru: 'Встать на колени', tr: 'Diz çökmek', from: 'B2 · Ünite 105' },
+    { ru: 'Я согласна', tr: 'Evet, kabul ediyorum (kadın)', from: 'B2 · Ünite 105' },
+    { ru: 'Помолвка', tr: 'Nişan', from: 'B2 · Ünite 105' },
+    { ru: 'Праздник', tr: 'Şölen / kutlama', from: 'A2 · Ünite 23' },
   ],
 };
 
 // ---------------------------------------------------------------------------
-// BÖLÜM FİNALİ 5 — Ünite 65-82 (C1/C2 SONU) — DİZİ FİNALİ: gerçek hikaye
+// BÖLÜM FİNALİ 5 — Ünite 182-223 (C1/C2 SONU) — DİZİ FİNALİ: gerçek hikaye
 // Kapılı final: özet %100 + Seviye Tekrar Sınavı geçilmeden "mezuniyet" yok.
 // ---------------------------------------------------------------------------
 const STORY_LF_C1: CheckpointStory = {
   id: 'story_lf_c1',
   kind: 'levelFinal',
   checkpoint: null,
-  unitFrom: 65,
-  unitTo: 82,
+  unitFrom: 182,
+  unitTo: 223,
   levelId: 'C1/C2',
   nextLevelId: 'C1/C2',
   titleRu: 'Настоящая история',
@@ -815,14 +815,14 @@ const STORY_LF_C1: CheckpointStory = {
   ],
   recycleWords: [
     { ru: 'Зонт', tr: 'Şemsiye', from: 'A1 Finali «Жёлтый зонт»' },
-    { ru: 'Кринж', tr: 'Cringe (utanç verici komiklik)', from: 'C1/C2 · Ünite 81' },
-    { ru: 'Хайп', tr: 'Hype (gündem/yayılma)', from: 'C1/C2 · Ünite 81' },
-    { ru: 'Рофл', tr: 'Rofl (kahkaha)', from: 'C1/C2 · Ünite 81' },
-    { ru: 'Зашквар', tr: 'Rezalet, ayıp', from: 'C1/C2 · Ünite 81' },
-    { ru: 'Имба', tr: 'İmba (eşsiz şey)', from: 'C1/C2 · Ünite 81' },
-    { ru: 'Понял принял', tr: 'Anladım, kabul ettim', from: 'C1/C2 · Ünite 81' },
-    { ru: 'Забей', tr: 'Boşver', from: 'C1/C2 · Ünite 65' },
-    { ru: 'Контекст', tr: 'Bağlam', from: 'C1/C2 · Ünite 82' },
+    { ru: 'Кринж', tr: 'Cringe (utanç verici komiklik)', from: 'C1/C2 · Ünite 161' },
+    { ru: 'Хайп', tr: 'Hype (gündem/yayılma)', from: 'C1/C2 · Ünite 161' },
+    { ru: 'Рофл', tr: 'Rofl (kahkaha)', from: 'C1/C2 · Ünite 161' },
+    { ru: 'Зашквар', tr: 'Rezalet, ayıp', from: 'C1/C2 · Ünite 161' },
+    { ru: 'Имба', tr: 'İmba (eşsiz şey)', from: 'C1/C2 · Ünite 161' },
+    { ru: 'Понял принял', tr: 'Anladım, kabul ettim', from: 'C1/C2 · Ünite 161' },
+    { ru: 'Забей', tr: 'Boşver', from: 'C1/C2 · Ünite 145' },
+    { ru: 'Контекст', tr: 'Bağlam', from: 'C1/C2 · Ünite 162' },
   ],
 };
 
@@ -832,17 +832,17 @@ const STORY_LF_C1: CheckpointStory = {
 export const STORIES: CheckpointStory[] = [
   STORY_LF_A1,   // ünite 6  — A1 BÖLÜM FİNALİ (kapılı) — pilot: sarı şemsiye
   STORY_1,       // ünite 10 — kontrol noktası 1 (HIMYM: kafede tanışma)
-  STORY_LF_A2,   // ünite 18 — A2 BÖLÜM FİNALİ (kapılı, Кухня) — yeni garson
+  STORY_LF_A2,   // ünite 41 — A2 BÖLÜM FİNALİ (kapılı, Кухня) — yeni garson
   STORY_2,       // ünite 20 — kontrol noktası 2
   STORY_3,       // ünite 30 — kontrol noktası 3
   STORY_4,       // ünite 40 — kontrol noktası 4
-  STORY_LF_B1,   // ünite 43 — B1 BÖLÜM FİNALİ (kapılı, crossover)
+  STORY_LF_B1,   // ünite 96 — B1 BÖLÜM FİNALİ (kapılı, crossover)
   STORY_5,       // ünite 50 — kontrol noktası 5
   STORY_6,       // ünite 60 — kontrol noktası 6
-  STORY_LF_B2,   // ünite 64 — B2 BÖLÜM FİNALİ (kapılı, Кухня) — şefin teklifi
+  STORY_LF_B2,   // ünite 144 — B2 BÖLÜM FİNALİ (kapılı, Кухня) — şefin teklifi
   STORY_7,       // ünite 70 — kontrol noktası 7
   STORY_8,       // ünite 80 — kontrol noktası 8 (düğün)
-  STORY_LF_C1,   // ünite 82 — C1/C2 BÖLÜM FİNALİ (kapılı) — DİZİ FİNALİ
+  STORY_LF_C1,   // ünite 183 — C1/C2 BÖLÜM FİNALİ (kapılı) — DİZİ FİNALİ
 ];
 
 /** Toplam hikaye sayısı: 8 kontrol noktası + 5 bölüm finali. */

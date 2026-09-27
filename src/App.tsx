@@ -17,6 +17,7 @@ const LEVEL_COLORS: Record<CefrTag, string> = {
   'C1/C2': '#a78bfa',
 };
 
+import { ALPHABET_LESSONS_EXTRA } from './alphabetExtra';
 import { UNITS_DATA, ALL_WORDS, ALL_SENTENCES } from './curriculumData';
 import { GRAMMAR_FOUNDATION_UNITS } from './grammarFoundationData';
 import type { WordDetail, DialogueLine, SmesharikiQuestion, SmesharikiScene, UnitModule } from './curriculumData';
@@ -201,7 +202,180 @@ export const ALPHABET_LESSONS: { id: string; title: string; subtitle: string; le
       { word: 'мы', correct: 'My', distractors: ['Mi', 'Mu', 'Ma'], tr: 'Biz' },
       { word: 'сыр', correct: 'Syr', distractors: ['Sir', 'Sur', 'Sar'], tr: 'Peynir' }
     ]
-  }
+  },
+  {
+    id: 'alpha_9',
+    title: 'Vurgu Okulu',
+    subtitle: 'Vurgusuz hecelerde sesler nasıl değişir? (akanje & ikanje pratiği)',
+    letters: [
+      { id: 'r9_o', upper: 'О', lower: 'о', translit: 'A (vurgusuz)', soundHint: 'Vurgusuz О her zaman A okunur', phoneticRule: 'Молоко → "Malakó": kelimedeki İKİ vurgusuz О da A sesine dönüştü, sadece vurgulu son hece O kaldı... o da yok, o da A değil O! Vurgu sondadır: ko hecesi net O okunur.', examples: [{ ru: 'МОЛОКО', reading: 'Malakó', tr: 'Süt' }, { ru: 'ХОРОШО', reading: 'Haraşó', tr: 'İyi / Güzel' }] },
+      { id: 'r9_e', upper: 'Е', lower: 'е', translit: 'İ (vurgusuz)', soundHint: 'Vurgusuz Е zayıflar, İ gibi duyulur', phoneticRule: 'Телефон → "Tilifón": iki vurgusuz Е de İ sesine yaklaşır (ikanje kuralı).', examples: [{ ru: 'ТЕЛЕФОН', reading: 'Tilifón', tr: 'Telefon' }, { ru: 'СЕСТРА', reading: 'Sistrá', tr: 'Kız kardeş' }] },
+      { id: 'r9_ya', upper: 'Я', lower: 'я', translit: 'Yİ (vurgusuz)', soundHint: 'Vurgusuz Я bile İ sesine kayar', phoneticRule: 'Язык → "Yizík": vurgusuz Я, YA değil Yİ gibi okunur.', examples: [{ ru: 'ЯЗЫК', reading: 'Yizík', tr: 'Dil (lisan)' }, { ru: 'ЯЙЦО', reading: 'Yiytsó', tr: 'Yumurta' }] },
+    ],
+    readingDrills: [
+      { word: 'молоко', correct: 'Malakó', distractors: ['Moloko', 'Malóka', 'Mólaka'], tr: 'Süt' },
+      { word: 'хорошо', correct: 'Haraşó', distractors: ['Horoşo', 'Haróşa', 'Hóraşa'], tr: 'İyi / Güzel' },
+      { word: 'спасибо', correct: 'Spasíba', distractors: ['Spasibó', 'Spósiba', 'Spasíbo'], tr: 'Teşekkürler' },
+      { word: 'погода', correct: 'Pagóda', distractors: ['Pogóda', 'Pagodá', 'Pógada'], tr: 'Hava durumu' },
+      { word: 'голова', correct: 'Galavá', distractors: ['Golová', 'Gálava', 'Galóva'], tr: 'Kafa' },
+      { word: 'дорога', correct: 'Daróga', distractors: ['Doróga', 'Darogá', 'Dóraga'], tr: 'Yol' },
+      { word: 'собака', correct: 'Sabáka', distractors: ['Sobáka', 'Sabaká', 'Sóbaka'], tr: 'Köpek' },
+      { word: 'окно', correct: 'Aknó', distractors: ['Oknó', 'Ákna', 'Okná'], tr: 'Pencere' }
+    ]
+  },
+  {
+    id: 'alpha_10',
+    title: 'Sedasızlaşma Dojo',
+    subtitle: 'Kelime sonundaki Б, В, Г, Д, Ж, З seslerini sertleştirme sanatı',
+    letters: [
+      { id: 'r10_b', upper: 'Б', lower: 'б (sonda)', translit: 'P (sonda)', soundHint: 'Kelime sonunda Б → P olur', phoneticRule: 'Хлеб → "Hlyep": sondaki Б sedasızlaşıp P okunur.', examples: [{ ru: 'ХЛЕБ', reading: 'Hlyep', tr: 'Ekmek' }, { ru: 'ЗУБ', reading: 'Zup', tr: 'Diş' }] },
+      { id: 'r10_d', upper: 'Д', lower: 'д (sonda)', translit: 'T (sonda)', soundHint: 'Kelime sonunda Д → T olur', phoneticRule: 'Город → "Górat": sondaki Д sedasızlaşıp T okunur.', examples: [{ ru: 'ГОРОД', reading: 'Górat', tr: 'Şehir' }, { ru: 'САД', reading: 'Sat', tr: 'Bahçe' }] },
+      { id: 'r10_v', upper: 'В', lower: 'в (sonda)', translit: 'F (sonda)', soundHint: 'Kelime sonunda ve sert ünsüz önünde В → F', phoneticRule: 'Любовь → "Lyubóf\'": sondaki ВЬ, F gibi okunur; Автобус → "Aftóbus": Т\'den önceki В de F olur.', examples: [{ ru: 'ЛЮБОВЬ', reading: "Lyubóf'", tr: 'Aşk' }, { ru: 'АВТОБУС', reading: 'Aftóbus', tr: 'Otobüs' }] },
+      { id: 'r10_g', upper: 'Г', lower: 'г (sonda)', translit: 'K (sonda)', soundHint: 'Kelime sonunda Г → K olur', phoneticRule: 'Друг → "Druk": sondaki Г sedasızlaşıp K okunur.', examples: [{ ru: 'ДРУГ', reading: 'Druk', tr: 'Arkadaş' }, { ru: 'СНЕГ', reading: 'Snyek', tr: 'Kar' }] },
+      { id: 'r10_zh', upper: 'Ж З', lower: 'ж з (sonda)', translit: 'Ş / S (sonda)', soundHint: 'Sonda Ж → Ş, З → S olur', phoneticRule: 'Нож → "Noş", Глаз → "Glas": vızıltılı sesler sonda ıslığa döner.', examples: [{ ru: 'НОЖ', reading: 'Noş', tr: 'Bıçak' }, { ru: 'ГЛАЗ', reading: 'Glas', tr: 'Göz' }] },
+    ],
+    readingDrills: [
+      { word: 'хлеб', correct: 'Hlyep', distractors: ['Hlyeb', 'Hilep', 'Hleb'], tr: 'Ekmek' },
+      { word: 'город', correct: 'Górat', distractors: ['Górad', 'Garót', 'Gorod'], tr: 'Şehir' },
+      { word: 'друг', correct: 'Druk', distractors: ['Drug', 'Duruk', 'Drúga'], tr: 'Arkadaş' },
+      { word: 'нож', correct: 'Noş', distractors: ['Noj', 'Nош', 'Nója'], tr: 'Bıçak' },
+      { word: 'глаз', correct: 'Glas', distractors: ['Glaz', 'Gılas', 'Glása'], tr: 'Göz' },
+      { word: 'снег', correct: 'Snyek', distractors: ['Snyeg', 'Sneg', 'Sinek'], tr: 'Kar' },
+      { word: 'водка', correct: 'Vótka', distractors: ['Vódka', 'Vatká', 'Vodak'], tr: 'Votka' },
+      { word: 'завтра', correct: 'Záftra', distractors: ['Závtra', 'Zaftará', 'Zavatra'], tr: 'Yarın' },
+      { word: 'всё', correct: 'Fsyo', distractors: ['Vsyo', 'Fıse', 'Vise'], tr: 'Her şey' }
+    ]
+  },
+  {
+    id: 'alpha_11',
+    title: 'Yumuşatma Atölyesi',
+    subtitle: 'Ь işaretiyle biten kelimeleri gerçekten "ince" okuma pratiği',
+    letters: [
+      { id: 'r11_t', upper: 'ТЬ', lower: 'ть', translit: "T'", soundHint: 'İnce T — dilin ortası damağa yapışır', phoneticRule: 'Мать → "Mat\'": sert "mat" değil, T sesi incelerek biter.', examples: [{ ru: 'МАТЬ', reading: "Mat'", tr: 'Anne' }, { ru: 'ЖИТЬ', reading: "Jıt'", tr: 'Yaşamak' }] },
+      { id: 'r11_n', upper: 'НЬ', lower: 'нь', translit: "N'", soundHint: 'İnce N — "ny" gibi ama tek ses', phoneticRule: 'День → "Dyen\'": N sesi yumuşayarak biter, "den" değil.', examples: [{ ru: 'ДЕНЬ', reading: "Dyen'", tr: 'Gün' }, { ru: 'ОСЕНЬ', reading: "Ósin'", tr: 'Sonbahar' }] },
+      { id: 'r11_l', upper: 'ЛЬ', lower: 'ль', translit: "L'", soundHint: 'İnce L — Türkçe "gel" kelimesindeki L gibi', phoneticRule: 'Соль → "Sol\'": kalın Rus L\'si burada incelir.', examples: [{ ru: 'СОЛЬ', reading: "Sol'", tr: 'Tuz' }, { ru: 'МЕДАЛЬ', reading: "Midál'", tr: 'Madalya' }] },
+      { id: 'r11_r', upper: 'РЬ', lower: 'рь', translit: "R'", soundHint: 'İnce, titrek R', phoneticRule: 'Дверь → "Dvyer\'": R titreşirken incelir.', examples: [{ ru: 'ДВЕРЬ', reading: "Dvyer'", tr: 'Kapı' }, { ru: 'ЦАРЬ', reading: "Tsar'", tr: 'Çar' }] },
+    ],
+    readingDrills: [
+      { word: 'мать', correct: "Mat'", distractors: ['Mat', 'Matı', 'Máti'], tr: 'Anne' },
+      { word: 'день', correct: "Dyen'", distractors: ['Den', 'Dyen', 'Déni'], tr: 'Gün' },
+      { word: 'соль', correct: "Sol'", distractors: ['Sol', 'Solı', 'Sóli'], tr: 'Tuz' },
+      { word: 'гость', correct: "Gost'", distractors: ['Gost', 'Gostı', 'Gósti'], tr: 'Misafir' },
+      { word: 'дверь', correct: "Dvyer'", distractors: ['Dver', 'Dıver', 'Dvyera'], tr: 'Kapı' },
+      { word: 'осень', correct: "Ósin'", distractors: ['Osen', 'Asén', 'Ósen'], tr: 'Sonbahar' },
+      { word: 'семь', correct: "Syem'", distractors: ['Sem', 'Syem', 'Semi'], tr: 'Yedi' },
+      { word: 'десять', correct: "Dyésit'", distractors: ['Desyat', 'Disyát', 'Dyesyat'], tr: 'On' },
+      { word: 'любить', correct: "Lyubít'", distractors: ['Lyubit', 'Lubít', 'Lyúbit'], tr: 'Sevmek' }
+    ]
+  },
+  {
+    id: 'alpha_12',
+    title: 'Hece Kuralları',
+    subtitle: 'ЖИ-ШИ, ЧА-ЩА, ЧУ-ЩУ, ЦИ — Rus okullarında ezberletilen 4 altın hece',
+    letters: [
+      { id: 'r12_zhi', upper: 'ЖИ ШИ', lower: 'жи ши', translit: 'JI / ŞI', soundHint: 'И yazılır ama I okunur!', phoneticRule: 'Ж ve Ş HER ZAMAN serttir: Машина → "Maşína" derken ş\'den sonraki ses aslında kalın I\'dır.', examples: [{ ru: 'МАШИНА', reading: 'Maşína', tr: 'Araba' }, { ru: 'ЖИЗНЬ', reading: "Jızn'", tr: 'Hayat' }] },
+      { id: 'r12_cha', upper: 'ЧА ЩА', lower: 'ча ща', translit: 'ÇA / ŞÇA', soundHint: 'Ч ve Щ her zaman yumuşaktır', phoneticRule: 'Я değil А yazılır: Чай → "Çay", Площадь → "Plóşşit\'".', examples: [{ ru: 'ЧАЙ', reading: 'Çay', tr: 'Çay' }, { ru: 'ПЛОЩАДЬ', reading: "Plóşşit'", tr: 'Meydan' }] },
+      { id: 'r12_chu', upper: 'ЧУ ЩУ', lower: 'чу щу', translit: 'ÇU / ŞÇU', soundHint: 'Ю değil У yazılır', phoneticRule: 'Чудо → "Çúda", Щука → "Şşúka" — kural gereği hep У harfi kullanılır.', examples: [{ ru: 'ЧУДО', reading: 'Çúda', tr: 'Mucize' }, { ru: 'ЩУКА', reading: 'Şşúka', tr: 'Turna balığı' }] },
+      { id: 'r12_tsi', upper: 'ЦИ', lower: 'ци', translit: 'TSI', soundHint: 'Ц her zaman serttir, И → I okunur', phoneticRule: 'Цирк → "Tsırk": И yazılsa da kalın I duyulur.', examples: [{ ru: 'ЦИРК', reading: 'Tsırk', tr: 'Sirk' }, { ru: 'ЦИФРА', reading: 'Tsıfra', tr: 'Rakam' }] },
+    ],
+    readingDrills: [
+      { word: 'машина', correct: 'Maşína', distractors: ['Maşiná', 'Máşina', 'Mişána'], tr: 'Araba' },
+      { word: 'жизнь', correct: "Jızn'", distractors: ['Jizn', 'Jízni', 'Zijn'], tr: 'Hayat' },
+      { word: 'час', correct: 'Çyas', distractors: ['Ças', 'Çyás', 'Tsas'], tr: 'Saat (zaman dilimi)' },
+      { word: 'чай', correct: 'Çay', distractors: ['Tsay', 'Şay', 'Çya'], tr: 'Çay' },
+      { word: 'площадь', correct: "Plóşşit'", distractors: ['Ploşad', 'Plaşşát', 'Plóşad'], tr: 'Meydan' },
+      { word: 'чудо', correct: 'Çúda', distractors: ['Çudó', 'Şúda', 'Tsúda'], tr: 'Mucize' },
+      { word: 'щука', correct: 'Şşúka', distractors: ['Şuká', 'Çúka', 'Skúka'], tr: 'Turna balığı' },
+      { word: 'цирк', correct: 'Tsırk', distractors: ['Tsirk', 'Sirk', 'Çırk'], tr: 'Sirk' }
+    ]
+  },
+  {
+    id: 'alpha_13',
+    title: 'Sessiz Harf Avı',
+    subtitle: 'Yazılan ama OKUNMAYAN harfler: солнце, сердце, здравствуйте...',
+    letters: [
+      { id: 'r13_l', upper: 'ЛНЦ', lower: 'лнц', translit: 'NTS (Л düşer)', soundHint: 'СОЛНЦЕ kelimesinde Л okunmaz', phoneticRule: 'Солнце → "Sóntse": ЛНЦ üçlüsünde Л sessizce kaybolur.', examples: [{ ru: 'СОЛНЦЕ', reading: 'Sóntse', tr: 'Güneş' }] },
+      { id: 'r13_d', upper: 'РДЦ / ЗДН', lower: 'рдц / здн', translit: 'RTS / ZN (Д düşer)', soundHint: 'СЕРДЦЕ ve ПРАЗДНИК kelimelerinde Д okunmaz', phoneticRule: 'Сердце → "Syértse", Праздник → "Práznik": Д harfi iki ünsüz arasında düşer.', examples: [{ ru: 'СЕРДЦЕ', reading: 'Syértse', tr: 'Kalp' }, { ru: 'ПРАЗДНИК', reading: 'Práznik', tr: 'Bayram' }] },
+      { id: 'r13_v', upper: 'ВСТВ', lower: 'вств', translit: 'STV (ilk В düşer)', soundHint: 'ЗДРАВСТВУЙТЕ ve ЧУВСТВО kelimelerinde ilk В okunmaz', phoneticRule: 'Здравствуйте → "Zdrástvuytye", Чувство → "Çústva": ВСТВ kümesindeki ilk В düşer.', examples: [{ ru: 'ЗДРАВСТВУЙТЕ', reading: 'Zdrástvuytye', tr: 'Merhaba (resmi)' }, { ru: 'ЧУВСТВО', reading: 'Çústva', tr: 'Duygu' }] },
+      { id: 'r13_t', upper: 'СТН', lower: 'стн', translit: 'SN (Т düşer)', soundHint: 'ЛЕСТНИЦА kelimesinde Т okunmaz', phoneticRule: 'Лестница → "Lyésnitsa", Известный → "Izvyésnıy": СТН kümesinde Т düşer.', examples: [{ ru: 'ЛЕСТНИЦА', reading: 'Lyésnitsa', tr: 'Merdiven' }, { ru: 'ИЗВЕСТНЫЙ', reading: 'Izvyésnıy', tr: 'Ünlü / Bilinen' }] },
+    ],
+    readingDrills: [
+      { word: 'солнце', correct: 'Sóntse', distractors: ['Sólntse', 'Salnısé', 'Sólnitse'], tr: 'Güneş' },
+      { word: 'сердце', correct: 'Syértse', distractors: ['Syérdtse', 'Serdisé', 'Sirdtsé'], tr: 'Kalp' },
+      { word: 'лестница', correct: 'Lyésnitsa', distractors: ['Lyéstnitsa', 'Listnítsa', 'Lesnitsá'], tr: 'Merdiven' },
+      { word: 'чувство', correct: 'Çústva', distractors: ['Çúvstva', 'Çuvusto', 'Tsústva'], tr: 'Duygu' },
+      { word: 'праздник', correct: 'Práznik', distractors: ['Prázdnik', 'Prazník', 'Pırazdnik'], tr: 'Bayram' },
+      { word: 'поздно', correct: 'Pózna', distractors: ['Pózdna', 'Paznó', 'Pozıdno'], tr: 'Geç' },
+      { word: 'счастье', correct: 'Şşástye', distractors: ['Sçastye', 'Şastyé', 'Sşásti'], tr: 'Mutluluk' },
+      { word: 'известный', correct: 'Izvyésnıy', distractors: ['Izvyéstnıy', 'İzvestní', 'Izvisnói'], tr: 'Ünlü / Bilinen' }
+    ]
+  },
+  {
+    id: 'alpha_14',
+    title: 'Gizli V Kuralı',
+    subtitle: 'ЕГО/-ОГО ekleri "-YİVO/-OVA" okunur + -ТСЯ = -TSA',
+    letters: [
+      { id: 'r14_ego', upper: 'ЕГО', lower: 'его', translit: 'YİVÓ (Г → V!)', soundHint: 'Bu ekteki Г her zaman V okunur', phoneticRule: 'Его → "Yivó", Сегодня → "Sivódnya": tarihî bir istisna, Г burada V\'dir.', examples: [{ ru: 'ЕГО', reading: 'Yivó', tr: 'Onun / Onu' }, { ru: 'СЕГОДНЯ', reading: 'Sivódnya', tr: 'Bugün' }] },
+      { id: 'r14_ogo', upper: '-ОГО', lower: '-ого', translit: '-OVA (Г → V!)', soundHint: 'Sıfat çekim eki -ого da V ile okunur', phoneticRule: 'Ничего → "Niçivó", Красного → "Krásnava": ek içindeki Г daima V.', examples: [{ ru: 'НИЧЕГО', reading: 'Niçivó', tr: 'Hiçbir şey' }, { ru: 'КРАСНОГО', reading: 'Krásnava', tr: 'Kırmızının' }] },
+      { id: 'r14_tsya', upper: '-ТСЯ', lower: '-тся / -ться', translit: '-TSA', soundHint: 'İki yazım, TEK ses: uzun TS + A', phoneticRule: 'Нравится → "Nrávitsa", Учиться → "Uçítsa": -тся ve -ться aynı şekilde okunur.', examples: [{ ru: 'НРАВИТСЯ', reading: 'Nrávitsa', tr: 'Hoşa gidiyor' }, { ru: 'УЧИТЬСЯ', reading: 'Uçítsa', tr: 'Okumak / Öğrenim görmek' }] },
+    ],
+    readingDrills: [
+      { word: 'его', correct: 'Yivó', distractors: ['Yegó', 'Égo', 'Yigó'], tr: 'Onun / Onu' },
+      { word: 'сегодня', correct: 'Sivódnya', distractors: ['Segódnya', 'Sigadnyá', 'Sevódna'], tr: 'Bugün' },
+      { word: 'ничего', correct: 'Niçivó', distractors: ['Niçegó', 'Níçego', 'Niçivá'], tr: 'Hiçbir şey' },
+      { word: 'нравится', correct: 'Nrávitsa', distractors: ['Nrávitsya', 'Nravítsa', 'Narávitsa'], tr: 'Hoşa gidiyor' },
+      { word: 'учится', correct: 'Úçitsa', distractors: ['Úçitsya', 'Uçítsa', 'Uçisyá'], tr: 'Ders çalışıyor / Okuyor' },
+      { word: 'красного', correct: 'Krásnava', distractors: ['Krásnogo', 'Krasnavá', 'Kırásnago'], tr: 'Kırmızının' },
+      { word: 'русского', correct: 'Rúskava', distractors: ['Rússkogo', 'Ruskagó', 'Rúskogo'], tr: 'Rusçanın / Rus\'un' },
+      { word: 'одного', correct: 'Adnavó', distractors: ['Odnogó', 'Ádnogo', 'Adnagá'], tr: 'Birinin' }
+    ]
+  },
+  {
+    id: 'alpha_15',
+    title: 'Şehir Tabelaları',
+    subtitle: 'Moskova sokağında hayatta kalma: gerçek tabelaları oku',
+    letters: [
+      { id: 'r15_apteka', upper: 'АПТЕКА', lower: 'аптека', translit: 'Aptyéka', soundHint: 'Yeşil haçlı tabela = eczane', phoneticRule: 'Vurgu ortada: ap-TYÉ-ka. Her köşede bir tane vardır.', examples: [{ ru: 'АПТЕКА', reading: 'Aptyéka', tr: 'Eczane' }] },
+      { id: 'r15_vyhod', upper: 'ВЫХОД', lower: 'выход', translit: 'Vıhat', soundHint: 'Metrodaki en hayati kelime: ÇIKIŞ', phoneticRule: 'Выход → "Vıhat": sondaki Д sedasızlaşır (T). ВХОД (giriş) ise "Fhot" okunur — В burada F!', examples: [{ ru: 'ВЫХОД', reading: 'Vıhat', tr: 'Çıkış' }, { ru: 'ВХОД', reading: 'Fhot', tr: 'Giriş' }] },
+      { id: 'r15_kassa', upper: 'КАССА', lower: 'касса', translit: 'Kássa', soundHint: 'Çift С uzun okunur', phoneticRule: 'Касса → "Kás-sa": çift ünsüz hafifçe uzatılır.', examples: [{ ru: 'КАССА', reading: 'Kássa', tr: 'Kasa / Gişe' }] },
+      { id: 'r15_magazin', upper: 'МАГАЗИН', lower: 'магазин', translit: 'Magazín', soundHint: 'Dergi değil, MARKET demek!', phoneticRule: 'Магазин → mağaza/market ("yalancı dost" kelime: magazin dergisi değildir).', examples: [{ ru: 'МАГАЗИН', reading: 'Magazín', tr: 'Market / Mağaza' }, { ru: 'ПРОДУКТЫ', reading: 'Pradúktı', tr: 'Gıda market' }] },
+    ],
+    readingDrills: [
+      { word: 'магазин', correct: 'Magazín', distractors: ['Mágazin', 'Magázin', 'Magazí'], tr: 'Market / Mağaza' },
+      { word: 'аптека', correct: 'Aptyéka', distractors: ['Áptika', 'Aptiká', 'Apteká'], tr: 'Eczane' },
+      { word: 'вокзал', correct: 'Vagzál', distractors: ['Vokzál', 'Vágzal', 'Vokazál'], tr: 'Gar / Tren istasyonu' },
+      { word: 'больница', correct: "Bal'nítsa", distractors: ['Bolnitsá', 'Bólnitsa', 'Balnitsá'], tr: 'Hastane' },
+      { word: 'ресторан', correct: 'Ristarán', distractors: ['Restorán', 'Réstoran', 'Ristorána'], tr: 'Restoran' },
+      { word: 'остановка', correct: 'Astanófka', distractors: ['Ostanóvka', 'Astanovká', 'Óstanofka'], tr: 'Durak' },
+      { word: 'вход', correct: 'Fhot', distractors: ['Vhod', 'Vıhot', 'Fıhod'], tr: 'Giriş' },
+      { word: 'туалет', correct: 'Tualyét', distractors: ['Túalet', 'Tualét', 'Tvalyet'], tr: 'Tuvalet' },
+      { word: 'метро', correct: 'Mitró', distractors: ['Métro', 'Mitrá', 'Metró'], tr: 'Metro' }
+    ]
+  },
+  {
+    id: 'alpha_16',
+    title: 'Hız Okuma Finali',
+    subtitle: 'Uzun kelime maratonu — buradan geçen her tabelayı okur!',
+    letters: [
+      { id: 'r16_pozh', upper: 'ПОЖАЛУЙСТА', lower: 'пожалуйста', translit: 'Pajálusta', soundHint: 'Günde 50 kez duyacaksın: LÜTFEN / RİCA EDERİM', phoneticRule: 'Пожалуйста → "Pajálusta": УЙ hecesindeki Й hızlı konuşmada kaybolur.', examples: [{ ru: 'ПОЖАЛУЙСТА', reading: 'Pajálusta', tr: 'Lütfen / Rica ederim' }] },
+      { id: 'r16_prepod', upper: 'ПРЕПОДАВАТЕЛЬ', lower: 'преподаватель', translit: "Pripadavátil'", soundHint: '14 harf ama korkma: pri-pa-da-VÁ-til', phoneticRule: 'Uzun kelimeleri VURGULU heceden geriye doğru kur: ВА → давá → падавá → припадавátil\'.', examples: [{ ru: 'ПРЕПОДАВАТЕЛЬ', reading: "Pripadavátil'", tr: 'Öğretim görevlisi' }] },
+      { id: 'r16_dosto', upper: 'ДОСТОПРИМЕЧАТЕЛЬНОСТЬ', lower: 'достопримечательность', translit: "Dastaprimiçátil'nast'", soundHint: 'Rusçanın en ünlü canavar kelimesi: GEZİLECEK YER', phoneticRule: '22 harf! Parçala: даста-прими-ЧÁ-тиль-насть. Turist rehberlerinin göz bebeği.', examples: [{ ru: 'ДОСТОПРИМЕЧАТЕЛЬНОСТЬ', reading: "Dastaprimiçátil'nast'", tr: 'Gezilecek yer' }] },
+      { id: 'r16_zdor', upper: 'ЗДОРОВЬЕ', lower: 'здоровье', translit: 'Zdaróvye', soundHint: 'Kadeh kaldırırken: На здоровье!', phoneticRule: 'ВЬЕ üçlüsü "vye" diye tek hamlede okunur: zda-RÓV-ye.', examples: [{ ru: 'ЗДОРОВЬЕ', reading: 'Zdaróvye', tr: 'Sağlık' }] },
+    ],
+    readingDrills: [
+      { word: 'пожалуйста', correct: 'Pajálusta', distractors: ['Pojaluystá', 'Pajaluystá', 'Pójalusta'], tr: 'Lütfen / Rica ederim' },
+      { word: 'преподаватель', correct: "Pripadavátil'", distractors: ['Prepodavátel', 'Pripodavatél', 'Prípadavatil'], tr: 'Öğretim görevlisi' },
+      { word: 'путешествие', correct: 'Putişéstviye', distractors: ['Puteşestvié', 'Pútişestvie', 'Putişestvíye'], tr: 'Seyahat' },
+      { word: 'поздравляю', correct: 'Pazdravlyáyu', distractors: ['Pozdravlyayú', 'Pázdravlyayu', 'Pozıdravlyáyu'], tr: 'Tebrik ederim' },
+      { word: 'международный', correct: 'Mijdunaródnıy', distractors: ['Mejdunárodnıy', 'Mijdunarodní', 'Méjdunarodnıy'], tr: 'Uluslararası' },
+      { word: 'достопримечательность', correct: "Dastaprimiçátil'nast'", distractors: ['Dostoprimeçatelnóst', 'Dastáprimeçatilnast', 'Dostoprímeçatelnost'], tr: 'Gezilecek yer' },
+      { word: 'электричество', correct: 'Eliktríçistva', distractors: ['Elektriçestvó', 'Eléktriçestva', 'Eliktriçistvá'], tr: 'Elektrik' },
+      { word: 'четверг', correct: 'Çitvyérk', distractors: ['Çetvérg', 'Çítverk', 'Çitvyérg'], tr: 'Perşembe' },
+      { word: 'здоровье', correct: 'Zdaróvye', distractors: ['Zdórovye', 'Zdaravyé', 'Zıdorovye'], tr: 'Sağlık' }
+    ]
+  },
+  // 30 EK OKUMA DERSİ (17-46): sayılar, günler, renkler, isimler, menüler, hız turları
+  ...ALPHABET_LESSONS_EXTRA
 ];
 
 export const ALL_ALPHA_LETTERS = ALPHABET_LESSONS.flatMap(x => x.letters);
@@ -229,6 +403,10 @@ interface SaveState {
   completedStories: string[]; // tamamlanan hikaye modülü kontrol noktaları (story_cp1...)
   mistakes: { id: string; ru: string; tr: string; reason: string }[];
   srsBank: SRSItem[];
+  // ZAYIF NOKTA İSTATİSTİĞİ: kelime bazında TOPLAM hata sayacı.
+  // "Unutulanlar" kütüğünden farkı: kelime doğru cevaplanıp kütükten silinse bile
+  // buradaki sayaç kalır — hangi kelimelerde KRONİK olarak zorlandığını gösterir.
+  errorStats?: Record<string, { count: number; tr: string; last: number }>;
 }
 
 export interface SRSItem {
@@ -266,6 +444,40 @@ const SceneBanner: React.FC<{ icon: string; color: string; label: string }> = ({
     <div style={{ fontSize: '13px', fontWeight: 800, color, zIndex: 1 }}>{label}</div>
   </div>
 );
+
+// Ünite banner'ı: /unit-art/{unitId}.jpg görselini gösterir; görsel yoksa
+// (veya yüklenemezse) otomatik olarak ikonlu SceneBanner'a geri döner.
+const UnitBanner: React.FC<{ unitId: string; icon: string; color: string; label: string }> = ({ unitId, icon, color, label }) => {
+  const [imgOk, setImgOk] = useState(true);
+  useEffect(() => { setImgOk(true); }, [unitId]);
+  if (!imgOk) return <SceneBanner icon={icon} color={color} label={label} />;
+  return (
+    <div style={{
+      border: `1px solid ${color}55`,
+      borderRadius: '16px',
+      marginBottom: '16px',
+      overflow: 'hidden',
+      position: 'relative',
+      background: `linear-gradient(135deg, ${color}35, ${color}0f)`
+    }}>
+      <img
+        src={`/unit-art/${unitId}.jpg`}
+        alt={label}
+        onError={() => setImgOk(false)}
+        style={{ display: 'block', width: '100%', aspectRatio: '16 / 7', objectFit: 'cover' }}
+      />
+      <div style={{
+        position: 'absolute', left: 0, right: 0, bottom: 0,
+        padding: '26px 16px 10px',
+        background: 'linear-gradient(180deg, rgba(10,12,20,0) 0%, rgba(10,12,20,0.82) 100%)',
+        display: 'flex', alignItems: 'center', gap: '10px'
+      }}>
+        <span style={{ fontSize: '22px', lineHeight: 1 }}>{icon}</span>
+        <span style={{ fontSize: '13px', fontWeight: 800, color: '#fff', textShadow: '0 1px 6px rgba(0,0,0,0.6)' }}>{label}</span>
+      </div>
+    </div>
+  );
+};
 
 const ALPHA_BANNER_COLORS = ['#3b82f6', '#10b981', '#f59e0b', '#8b5cf6', '#ec4899', '#14b8a6', '#f97316', '#64748b'];
 
@@ -319,10 +531,10 @@ const LEVEL_ANCHORS: Record<CefrTag, number> = (() => {
 })();
 
 export default function App() {
-  const [activeTab, setActiveTab] = useState<'MAP' | 'PROFILE' | 'MISTAKES' | 'METHODS'>('MAP');
+  const [activeTab, setActiveTab] = useState<'MAP' | 'PROFILE' | 'MISTAKES' | 'METHODS' | 'CONNECTIONS'>('MAP');
   const [screen, setScreen] = useState<'MAP' | 'ALPHA' | 'ALPHA_CHECK' | 'ALPHA_READING' | 'GRAMMAR' | 'TOPIC' | 'TOPIC_TEST' | 'STORY' | 'DIALOG' | 'SMESHARIKI' | 'FLASHCARD' | 'MATCH' | 'TYPING' | 'SENTENCE' | 'QUIZ' | 'UNIT_STORY' | 'STORY_TEST' | 'STORY_RESULT' | 'CHECKPOINT_STORY'>('MAP');
   // Sınav/test motorunun hangi bağlamda çalıştığını belirtir: her biri bittiğinde farklı bir sonraki adıma geçer
-  const [quizContext, setQuizContext] = useState<'ALPHA_FINAL' | 'GRAMMAR_FOUNDATION' | 'LISTENING' | 'UNIT_FINAL' | 'REVIEW' | 'SRS_REVIEW'>('UNIT_FINAL');
+  const [quizContext, setQuizContext] = useState<'ALPHA_FINAL' | 'GRAMMAR_FOUNDATION' | 'LISTENING' | 'UNIT_FINAL' | 'REVIEW' | 'SRS_REVIEW' | 'MARATHON' | 'WEAKSPOT'>('UNIT_FINAL');
   // Harf bazlı anlık tanıma testi
   const [alphaCheckQ, setAlphaCheckQ] = useState<{ type: 'reading' | 'listen'; prompt: string; correct: string; options: string[] } | null>(null);
   // Okuma testi (kelime okuma alıştırması) durumu
@@ -340,6 +552,8 @@ export default function App() {
   const [completedStories, setCompletedStories] = useState<string[]>([]);
   const [mistakes, setMistakes] = useState<{ id: string; ru: string; tr: string; reason: string }[]>([]);
   const [srsBank, setSrsBank] = useState<SRSItem[]>([]);
+  // Kelime bazlı kronik hata sayaçları (Zayıf Noktalarım paneli bunu okur)
+  const [errorStats, setErrorStats] = useState<Record<string, { count: number; tr: string; last: number }>>({});
 
   // KULAĞI ALIŞTIR — 100 KONU (sesli dinleme + "dinle & seç" test) durumu
   const [topicIdx, setTopicIdx] = useState(0);              // seçili 100'lük konu (TOPICS_100 indeksi)
@@ -421,6 +635,7 @@ export default function App() {
         setCompletedStories(d.completedStories || []);
         setMistakes(d.mistakes || []);
         setSrsBank(d.srsBank || []);
+        setErrorStats(d.errorStats || {});
       } catch (e) {
         console.error(e);
       }
@@ -429,9 +644,9 @@ export default function App() {
 
   // OTOMATİK KAYIT
   useEffect(() => {
-    const d: SaveState = { xp, streak, gems, completedAlpha, completedGrammar, completedUnits, completedTopics, completedStories, mistakes, srsBank };
+    const d: SaveState = { xp, streak, gems, completedAlpha, completedGrammar, completedUnits, completedTopics, completedStories, mistakes, srsBank, errorStats };
     localStorage.setItem(SAVE_KEY, JSON.stringify(d));
-  }, [xp, streak, gems, completedAlpha, completedGrammar, completedUnits, completedTopics, completedStories, mistakes, srsBank]);
+  }, [xp, streak, gems, completedAlpha, completedGrammar, completedUnits, completedTopics, completedStories, mistakes, srsBank, errorStats]);
 
   // SESLENDİRME — rate parametresiyle yavaş (0.55) veya normal (0.85) tempoda okuma.
   // SES SAĞLAMLILIĞI: uzun metin cümle sınırlarından kısa parçalara bölünür ve
@@ -485,6 +700,12 @@ export default function App() {
   };
 
   const addMistake = (ru: string, tr: string, reason: string) => {
+    // Kronik hata sayacı: kütükte zaten olsa bile HER yanlışta +1 —
+    // böylece "en çok hangi kelimede takılıyorum?" sorusunun gerçek cevabı birikir.
+    setErrorStats(prev => {
+      const cur = prev[ru];
+      return { ...prev, [ru]: { count: (cur?.count || 0) + 1, tr, last: Date.now() } };
+    });
     setMistakes(prev => {
       if (prev.some(x => x.ru === ru)) return prev;
       return [...prev, { id: `${ru}-${Date.now()}`, ru, tr, reason }];
@@ -608,12 +829,29 @@ export default function App() {
 
   const startAlphaFinalQuiz = () => {
     const les = ALPHABET_LESSONS[alphaIdx];
-    const q = les.letters.map(l => ({
+    const q: any[] = les.letters.map(l => ({
       prompt: `"${l.upper} ${l.lower}" harfinin okunuş/fonetik kuralı nedir?`,
       correct: l.translit,
       options: shuffle([l.translit, ...shuffle(ALL_ALPHA_LETTERS.filter(x => x.translit !== l.translit)).slice(0, 3).map(x => x.translit)]),
       ru: `${l.upper} ${l.lower}`, tr: l.translit
     }));
+    // KALICI ÖĞRENME TÜM PROJEDE: bitiş sınavına ÖNCEKİ derslerden 2 harf + 2 okuma sorusu karışır —
+    // alfabe dersleri de asla "emekli" olmaz, eski harfler düzenli geri döner.
+    if (alphaIdx > 0) {
+      const prevLessons = ALPHABET_LESSONS.slice(0, alphaIdx);
+      shuffle(prevLessons.flatMap(x => x.letters)).slice(0, 2).forEach(l => q.push({
+        prompt: `🔁 KALICI TEKRAR (önceki ders) — "${l.upper} ${l.lower}" nasıl okunuyordu?`,
+        correct: l.translit,
+        options: shuffle([l.translit, ...shuffle(ALL_ALPHA_LETTERS.filter(x => x.translit !== l.translit)).slice(0, 3).map(x => x.translit)]),
+        ru: `${l.upper} ${l.lower}`, tr: l.translit
+      }));
+      shuffle(prevLessons.flatMap(x => x.readingDrills)).slice(0, 2).forEach(d => q.push({
+        prompt: `🔁 KALICI TEKRAR (önceki ders) — "${d.word}" kelimesinin doğru okunuşu hangisi?`,
+        correct: d.correct,
+        options: shuffle([d.correct, ...d.distractors]),
+        ru: d.word, tr: d.correct
+      }));
+    }
     setQuizContext('ALPHA_FINAL');
     setQuizQuestions(shuffle(q));
     setQuizIdx(0);
@@ -816,29 +1054,77 @@ export default function App() {
 
   // Kelime kartlarını bitirince sesli dinleme testine geçilir (metin gizli, sadece ses)
   const startListening = () => {
-    const uWords = UNITS_DATA[unitIdx].words;
+    const mod = UNITS_DATA[unitIdx];
+    const uWords = mod.words;
     const q = shuffle(uWords).map(w => ({
       prompt: '',
       correct: w.tr,
       options: shuffle([w.tr, ...shuffle(ALL_WORDS.filter(x => x.tr !== w.tr)).slice(0, 3).map(x => x.tr)]),
       ru: w.ru, tr: w.tr, audioOnly: true
     }));
+    // KALICI ÖĞRENME TÜM PROJEDE: dinleme testine de eski ünitelerden 3 tekrar sorusu karışır.
+    const reviewQ = buildReviewInjection(mod, 3);
     setQuizContext('LISTENING');
-    setQuizQuestions(q);
+    setQuizQuestions(shuffle([...q, ...reviewQ]));
     setQuizIdx(0);
     setScreen('QUIZ');
   };
 
+  // ==========================================
+  // KALICI ÖĞRENME — KARMA TEKRAR ENJEKSİYONU (Interleaving + Genişleyen Aralık)
+  // Bir ünite %100 doğru tamamlansa BİLE kelimeleri kaybolmaz: sonraki HER ünitenin
+  // bitiş sınavına, önceki ünitelerden seçilen "🔁 KALICI TEKRAR" soruları karışır.
+  // Seçim iki bilimsel ilkeye dayanır:
+  //  1) Genişleyen aralık (expanding retrieval): 1, 2, 3, 5, 8, 13, 21 ünite geriden kelime çekilir —
+  //     yeni öğrenilen sık, eskiden öğrenilen seyrek ama DÜZENLİ sorulur.
+  //  2) Kümülatif rastgele örnekleme (RST — araştırmalarda kümülatif sınavdan daha dengeli
+  //     bulunmuştur): TÜM geçmiş ünitelerden rastgele örnek eklenir, hiçbir kelime "emekli" olmaz.
+  //  + Üretim etkisi (production effect): soruların yarısı ters yönde (TR → RU) sorulur.
+  //  + Vadesi gelen Aralıklı Tekrar (SRS) kelimeleri öncelik alır; doğru cevap kutu atlatır.
+  const buildReviewInjection = (mod: UnitModule, count: number) => {
+    const prevUnits = UNITS_DATA.filter(u => u.unitNumber < mod.unitNumber);
+    if (prevUnits.length === 0 || count <= 0) return [] as any[];
+    const pool: WordDetail[] = [];
+    [1, 2, 3, 5, 8, 13, 21].forEach(off => {
+      const u = prevUnits.find(x => x.unitNumber === mod.unitNumber - off);
+      if (u) pool.push(...shuffle(u.words).slice(0, 4));
+    });
+    pool.push(...shuffle(prevUnits.flatMap(u => u.words)).slice(0, 10));
+    const dueRu = new Set(srsBank.filter(i => i.nextReview <= Date.now()).map(i => i.ru));
+    const uniq = [...new Map(pool.map(w => [w.ru, w])).values()].filter(w => !mod.words.some(mw => mw.ru === w.ru));
+    const prioritized = [...uniq].sort((a, b) => (dueRu.has(b.ru) ? 1 : 0) - (dueRu.has(a.ru) ? 1 : 0));
+    return prioritized.slice(0, count).map((w, i) => {
+      if (i % 2 === 1) {
+        // Üretim etkisi: Türkçeden Rusçayı GERİ ÇAĞIRMAK, pasif tanımadan çok daha güçlü iz bırakır.
+        return {
+          prompt: `🔁 KALICI TEKRAR (eski üniteden) — "${w.tr}" kelimesinin RUSÇASI hangisi?`,
+          correct: w.ru,
+          options: shuffle([w.ru, ...shuffle(ALL_WORDS.filter(x => x.ru !== w.ru)).slice(0, 3).map(x => x.ru)]),
+          ru: w.ru, tr: w.tr, review: true
+        };
+      }
+      return {
+        prompt: `🔁 KALICI TEKRAR (eski üniteden) — "${w.ru}" ne anlama geliyordu?`,
+        correct: w.tr,
+        options: shuffle([w.tr, ...shuffle(ALL_WORDS.filter(x => x.tr !== w.tr)).slice(0, 3).map(x => x.tr)]),
+        ru: w.ru, tr: w.tr, review: true
+      };
+    });
+  };
+
   const startUnitQuiz = () => {
-    const uWords = UNITS_DATA[unitIdx].words;
+    const mod = UNITS_DATA[unitIdx];
+    const uWords = mod.words;
     const q = uWords.map(w => ({
       prompt: `"${w.ru}" kelimesinin Türkçe karşılığı nedir?`,
       correct: w.tr,
       options: shuffle([w.tr, ...shuffle(ALL_WORDS.filter(x => x.tr !== w.tr)).slice(0, 3).map(x => x.tr)]),
       ru: w.ru, tr: w.tr
     }));
+    // Her ünite sınavına 5 adet "eski kelime" sorusu karışır (kalıcı öğrenme motoru).
+    const reviewQ = buildReviewInjection(mod, 5);
     setQuizContext('UNIT_FINAL');
-    setQuizQuestions(shuffle(q));
+    setQuizQuestions(shuffle([...q, ...reviewQ]));
     setQuizIdx(0);
     setScreen('QUIZ');
   };
@@ -1078,6 +1364,51 @@ export default function App() {
     setScreen('QUIZ');
   };
 
+  // ==========================================
+  // ZAYIF NOKTA MOTORU — KİŞİSELLEŞTİRİLMİŞ EK TEST
+  // errorStats'taki kronik hata sayaçlarına göre EN ÇOK yanlış yapılan ~12 kelimeden
+  // kişiye özel bir sınav kurar. Sorular iki yönlü sorulur (tanıma + üretim) ve her
+  // kelime doğru cevaplandıkça sayaç 1 azalır — panel zamanla "iyileşmeyi" gösterir.
+  // ==========================================
+  const weakWords = Object.entries(errorStats)
+    .map(([ru, v]) => ({ ru, tr: v.tr, count: v.count, last: v.last }))
+    .filter(w => w.count > 0)
+    .sort((a, b) => b.count - a.count || b.last - a.last);
+
+  const startWeakspotQuiz = () => {
+    const target = weakWords.slice(0, 12);
+    if (target.length === 0) return;
+    const q = shuffle(target.flatMap(w => {
+      const rec = {
+        prompt: `🎯 ZAYIF NOKTA — "${w.ru}" ne anlama geliyor?`,
+        correct: w.tr,
+        options: shuffle([w.tr, ...shuffle(ALL_WORDS.filter(x => x.tr !== w.tr)).slice(0, 3).map(x => x.tr)]),
+        ru: w.ru, tr: w.tr
+      };
+      // Üretim etkisi: en kronik ilk 6 kelime TERS yönde de sorulur (TR → RU)
+      if (w.count >= 2 && ALL_WORDS.some(x => x.ru === w.ru)) {
+        return [rec, {
+          prompt: `🎯 ZAYIF NOKTA (üretim) — "${w.tr}" kelimesinin RUSÇASI hangisi?`,
+          correct: w.ru,
+          options: shuffle([w.ru, ...shuffle(ALL_WORDS.filter(x => x.ru !== w.ru)).slice(0, 3).map(x => x.ru)]),
+          ru: w.ru, tr: w.tr
+        }];
+      }
+      return [rec];
+    })).slice(0, 16);
+    setQuizContext('WEAKSPOT');
+    setQuizQuestions(q);
+    setQuizIdx(0);
+    setActiveTab('MAP');
+    setScreen('QUIZ');
+  };
+
+  // Zayıf kelimenin hangi ünite/kategoriden geldiğini bulur (panelde rozet olarak gösterilir)
+  const findWordHome = (ru: string) => {
+    const u = UNITS_DATA.find(x => x.words.some(w => w.ru === ru));
+    return u ? { title: u.title, category: u.category, icon: u.icon, color: u.color } : null;
+  };
+
   // ARALIKLI TEKRAR (SPACED REPETITION) OTURUMU: Sadece bugün "vadesi gelmiş" kelimeler sorulur.
   // Bu, kalıcı hafızanın bilimsel temelidir — beyin bir bilgiyi unutmaya en yakın olduğu anda tekrar hatırlarsa iz kalıcılaşır.
   const dueSRS = srsBank.filter(i => i.nextReview <= Date.now());
@@ -1097,17 +1428,61 @@ export default function App() {
     setScreen('QUIZ');
   };
 
+  // 🔀 KARMA MARATON (Kümülatif Rastgele Örnekleme Sınavı):
+  // Tamamlanmış TÜM ünitelerin kelime havuzundan rastgele 15 soru çeker — vadesi gelmemiş
+  // olsa bile her kelime her an sorulabilir; hiçbir bilgi "bitti" rafına kalkmaz.
+  // Araştırmalar (randomly sampled tests), bu yöntemin tüm kelimeleri dengeli biçimde
+  // canlı tuttuğunu gösteriyor. Soruların yarısı üretim yönünde (TR → RU) sorulur.
+  const startMarathon = () => {
+    const doneUnits = UNITS_DATA.filter(u => completedUnits.includes(u.id));
+    const pool = doneUnits.flatMap(u => u.words);
+    if (pool.length === 0) return;
+    const sample = shuffle(pool).slice(0, 15);
+    const q = sample.map((w, i) => {
+      if (i % 2 === 1) {
+        return {
+          prompt: `🔀 MARATON — "${w.tr}" kelimesinin RUSÇASI hangisi?`,
+          correct: w.ru,
+          options: shuffle([w.ru, ...shuffle(ALL_WORDS.filter(x => x.ru !== w.ru)).slice(0, 3).map(x => x.ru)]),
+          ru: w.ru, tr: w.tr
+        };
+      }
+      return {
+        prompt: `🔀 MARATON — "${w.ru}" ne anlama geliyor?`,
+        correct: w.tr,
+        options: shuffle([w.tr, ...shuffle(ALL_WORDS.filter(x => x.tr !== w.tr)).slice(0, 3).map(x => x.tr)]),
+        ru: w.ru, tr: w.tr
+      };
+    });
+    setQuizContext('MARATHON');
+    setQuizQuestions(q);
+    setQuizIdx(0);
+    setActiveTab('MAP');
+    setScreen('QUIZ');
+  };
+
   const handleQuizAnswer = (ans: string) => {
     const q = quizQuestions[quizIdx];
     if (ans === q.correct) {
       setXp(x => x + (quizContext === 'REVIEW' ? 5 : quizContext === 'SRS_REVIEW' ? 8 : 20));
       setFeedback(null);
+      if (quizContext === 'WEAKSPOT') {
+        // İyileşme: zayıf nokta testinde doğru cevap sayacı 1 azaltır (0'a inince kelime panelden düşer)
+        setErrorStats(prev => {
+          const cur = prev[q.ru];
+          if (!cur) return prev;
+          const next = { ...prev };
+          if (cur.count <= 1) delete next[q.ru]; else next[q.ru] = { ...cur, count: cur.count - 1 };
+          return next;
+        });
+      }
       if (quizContext === 'REVIEW') {
         // Ustalaşılan kelimeyi Unutulanlar kütüğünden kaldır
         setMistakes(prev => prev.filter(m => !(m.ru === q.ru && m.tr === q.tr)));
       }
-      if (quizContext === 'SRS_REVIEW') {
+      if (quizContext === 'SRS_REVIEW' || (q as any).review) {
         // Doğru bilindi: bir sonraki kutuya terfi eder, tekrar aralığı büyür (1→3→7→16→35 gün)
+        // (🔁 KALICI TEKRAR soruları da SRS kutusunu ilerletir — sınav içi tekrar boşa gitmez.)
         setSrsBank(prev => prev.map(item => {
           if (item.ru !== q.ru) return item;
           const newBox = Math.min(item.box + 1, SRS_INTERVALS_DAYS.length);
@@ -1153,15 +1528,22 @@ export default function App() {
           }
         } else if (quizContext === 'SRS_REVIEW') {
           setScreen('MAP');
+        } else if (quizContext === 'MARATHON') {
+          setGems(g => g + 40);
+          setScreen('MAP');
+        } else if (quizContext === 'WEAKSPOT') {
+          setGems(g => g + 35);
+          setScreen('MAP');
+          setActiveTab('MISTAKES');
         } else {
           setScreen('MAP');
           setActiveTab('MISTAKES');
         }
       }
     } else {
-      const reason = quizContext === 'LISTENING' ? 'Dinleme Hatası' : quizContext === 'REVIEW' ? 'Tekrar Testinde Yine Yanlış' : quizContext === 'ALPHA_FINAL' ? 'Alfabe Sınavı Hatası' : quizContext === 'GRAMMAR_FOUNDATION' ? 'Cümle Temeli Hatası' : quizContext === 'SRS_REVIEW' ? 'Aralıklı Tekrarda Unutuldu' : 'Sınav Hatası';
+      const reason = (q as any).review ? 'Kalıcı Tekrarda Unutuldu (eski ünite)' : quizContext === 'LISTENING' ? 'Dinleme Hatası' : quizContext === 'REVIEW' ? 'Tekrar Testinde Yine Yanlış' : quizContext === 'ALPHA_FINAL' ? 'Alfabe Sınavı Hatası' : quizContext === 'GRAMMAR_FOUNDATION' ? 'Cümle Temeli Hatası' : quizContext === 'SRS_REVIEW' ? 'Aralıklı Tekrarda Unutuldu' : quizContext === 'MARATHON' ? 'Karma Maratonda Unutuldu' : quizContext === 'WEAKSPOT' ? 'Zayıf Nokta Testinde Yine Yanlış' : 'Sınav Hatası';
       addMistake(q.ru, q.tr, reason);
-      if (quizContext === 'SRS_REVIEW') {
+      if (quizContext === 'SRS_REVIEW' || quizContext === 'MARATHON' || (q as any).review) {
         // Unutulan kelime kutu 1'e geri düşer: yarın tekrar sorulacak (kalıcı hafıza mantığının kalbi)
         setSrsBank(prev => prev.map(item => item.ru === q.ru ? { ...item, box: 1, nextReview: Date.now() + SRS_INTERVALS_DAYS[0] * DAY_MS } : item));
       }
@@ -1186,6 +1568,7 @@ export default function App() {
 
         <div style={{ display: 'flex', gap: '16px', alignItems: 'center', fontWeight: 800, fontSize: '14px' }}>
           <button onClick={() => { setActiveTab('METHODS'); setScreen('MAP'); }} style={{ background: 'transparent', border: 'none', color: '#a78bfa', cursor: 'pointer', fontWeight: 800, fontSize: '13px' }}>📚 Yöntemler</button>
+          <button onClick={() => { setActiveTab('CONNECTIONS'); setScreen('MAP'); }} style={{ background: 'transparent', border: 'none', color: '#f472b6', cursor: 'pointer', fontWeight: 800, fontSize: '13px' }}>🕸️ Hikaye Bağları</button>
           <span style={{ color: '#f59e0b', display: 'flex', alignItems: 'center', gap: '4px' }}>🔥 {streak}</span>
           <span style={{ color: '#38bdf8', display: 'flex', alignItems: 'center', gap: '4px' }}>💎 {gems}</span>
           <span style={{ color: '#10b981', display: 'flex', alignItems: 'center', gap: '4px' }}>⚡ {xp} XP</span>
@@ -1213,10 +1596,20 @@ export default function App() {
                     <div style={{ fontSize: '20px', fontWeight: 900, marginTop: '2px' }}>{dueSRS.length > 0 ? `${dueSRS.length} kelime/harf hatırlanmayı bekliyor!` : 'Bugün için tekrar yok, harika gidiyorsun! ✅'}</div>
                     <div style={{ fontSize: '12px', color: '#94a3b8', marginTop: '4px' }}>Toplam {srsBank.length} kelime/harf uzun süreli hafıza takibinde.</div>
                   </div>
-                  {dueSRS.length > 0 && (
-                    <button onClick={startSRSReview} style={{ background: '#f59e0b', border: 'none', color: '#0f172a', padding: '12px 18px', borderRadius: '10px', fontWeight: 900, cursor: 'pointer' }}>▶️ Tekrarı Başlat</button>
-                  )}
+                  <div style={{ display: 'flex', gap: '10px', flexWrap: 'wrap' }}>
+                    {dueSRS.length > 0 && (
+                      <button onClick={startSRSReview} style={{ background: '#f59e0b', border: 'none', color: '#0f172a', padding: '12px 18px', borderRadius: '10px', fontWeight: 900, cursor: 'pointer' }}>▶️ Tekrarı Başlat</button>
+                    )}
+                    {completedUnits.length > 0 && (
+                      <button onClick={startMarathon} style={{ background: 'transparent', border: '2px solid #a78bfa', color: '#a78bfa', padding: '10px 16px', borderRadius: '10px', fontWeight: 900, cursor: 'pointer' }} title="Tamamlanmış TÜM ünitelerden rastgele 15 soru — vadesi gelmese bile her kelime sorulabilir!">🔀 Karma Maraton</button>
+                    )}
+                  </div>
                 </div>
+                {completedUnits.length > 0 && (
+                  <div style={{ fontSize: '11px', color: '#94a3b8', marginTop: '10px', borderTop: '1px dashed #334155', paddingTop: '8px' }}>
+                    🧠 <b>Kalıcı öğrenme motoru açık:</b> Bir üniteyi %100 bitirsen bile kelimeleri emekli olmaz — sonraki her ünitenin sınavına "🔁 KALICI TEKRAR" soruları olarak karışır (1-2-3-5-8-13-21 ünite geriden + tüm geçmişten rastgele) ve yarısı ters yönde (TR → RU) sorulur.
+                  </div>
+                )}
               </div>
             )}
 
@@ -1431,7 +1824,11 @@ export default function App() {
                 { icon: '🔁', title: '9. Aynı İçeriği Tekrar İzleme (Repeated Viewing)', text: 'Bir Смешарики bölümünü bir kez izlemek yetmez. Aynı bölümü 2-3 gün arayla tekrar izlediğinde, ilk seferde kaçırdığın kelimeleri fark edersin — çünkü artık o kelimeler uygulamada öğrendiğin kelimeler haline geldi. Bu, pasif izlemeyi aktif bir "tanıma tatmini"ne çevirir ve kalıcılığı ciddi şekilde artırır.' },
                 { icon: '😴', title: '10. Uyku ve Hafıza Pekiştirmesi', text: 'Kısa süreli hafızadaki bilginin uzun süreli hafızaya "kaydedilmesi" büyük ölçüde UYKU sırasında gerçekleşir. Yeni bir üniteyi akşam bitirip hemen ardından uyumak, o bilgiyi sabaha kalıcılaştırma ihtimalini belirgin şekilde artırır.' },
                 { icon: '🎧', title: `11. Kulağı Alıştırma — ${TOPICS_100_TOTAL} Dinleme Konusu (yolun içinde)`, text: `Gözden önce KULAK öğrenir: Rusçaya maruz kalmak (exposure) beynin ses örüntülerini tanımasını sağlar. Öğrenme yolundaki önce 🧩 cümle temeli kartları (özne-yüklem-edat), sonra 🎧 rozetli kartlar bunu yapar — 33 harf + 8 fonetik konusu ve müfredat ön-hazırlık konuları (ilgili ünitenin hemen öncesinde, yani konuyu duyduktan saniyeler sonra ünitesine girersin). Toplam ${TOPICS_100_TOTAL} konunun her biri kelime kartları odaklıdır: tek tek 🔊 dinle, "Konuyu Dinle" / "Yavaşça Dinle" ile akışa bat, sonra 5 soruluk "dinle & seç" testiyle kanıtla. Günde 3-5 konu dinlemek, 2-3 hafta içinde doğal konuşma hızını kavraman için yeterlidir.` },
-                { icon: '📖', title: '12. Hikaye & Özet — Okuma Anlama + Üretici Çıktı (10\'lu kontrol noktaları + bölüm finalleri)', text: 'İki tür hikaye var: (1) Her 10 müfredat ünitesinin sonunda bir HİKAYE KONTROL NOKTASI açılır: o 10 ünitede öğrendiğin kelimelerle yazılmış, içinde en fazla 5-6 yeni kelime olan bir sit-com hikayesi. (2) Her bölümün (A1, A2, B1, B2, C1/C2) sonunda bir BÖLÜM FİNALİ açılır — bunlar KAPILIDIR: özetin TAMAMEN doğru yazılması ve Seviye Tekrar Sınavı\'ndan en az 7/10 alınması şarttır; geçmeden sonraki bölüm açılmaz! Hikayeler iki tarzda: Dima\'nın 2035\'te çocuklarına anlattığı HIMYM tadında bölümler VE «Кухня» dizisinden esinlenen mutfak komedileri (Şef Pyotr, garson Lyosha, Nina, Semyon — «Ван Гог» restoranı). Okurken istediğin satırın çevirisini açabilir, yeni kelimeleri sözlük kartlarından, ESKİ kelimeleri "Eski Kelimeler" bölümünden tekrar edersin — çünkü B\'deyken A kelimeleri unutulmasın diye finallere bilerek serpiştirildiler (kalıcı öğrenme!). Ardından en önemli adım: ÖZETİNİ TÜRKÇE YAZ — okuduğunu kendi cümlelerinle yeniden kurmak "üretici çıktı"dır ve pasif tanımadan çok daha güçlü kalıcılaşır. Analiz motoru özetini ana fikirlerle karşılaştırır: kaç doğru nokta yakaladığını, neyi kaçırdığını ve neleri yanlış anladığını söyler. Bölüm finallerinde ayrıca 10 soruluk seviye sınavı vardır: 6 soru bitirilen bölümden, 4 soru önceki bölümlerden. Düşük skor alırsan hikayeyi tekrar oku — ikinci okuma, tıpkı bir sitcom\'u tekrar izlemek gibi, her zaman daha kolaydır.' }
+                { icon: '📖', title: '12. Hikaye & Özet — Okuma Anlama + Üretici Çıktı (10\'lu kontrol noktaları + bölüm finalleri)', text: 'İki tür hikaye var: (1) Her 10 müfredat ünitesinin sonunda bir HİKAYE KONTROL NOKTASI açılır: o 10 ünitede öğrendiğin kelimelerle yazılmış, içinde en fazla 5-6 yeni kelime olan bir sit-com hikayesi. (2) Her bölümün (A1, A2, B1, B2, C1/C2) sonunda bir BÖLÜM FİNALİ açılır — bunlar KAPILIDIR: özetin TAMAMEN doğru yazılması ve Seviye Tekrar Sınavı\'ndan en az 7/10 alınması şarttır; geçmeden sonraki bölüm açılmaz! Hikayeler iki tarzda: Dima\'nın 2035\'te çocuklarına anlattığı HIMYM tadında bölümler VE «Кухня» dizisinden esinlenen mutfak komedileri (Şef Pyotr, garson Lyosha, Nina, Semyon — «Ван Гог» restoranı). Okurken istediğin satırın çevirisini açabilir, yeni kelimeleri sözlük kartlarından, ESKİ kelimeleri "Eski Kelimeler" bölümünden tekrar edersin — çünkü B\'deyken A kelimeleri unutulmasın diye finallere bilerek serpiştirildiler (kalıcı öğrenme!). Ardından en önemli adım: ÖZETİNİ TÜRKÇE YAZ — okuduğunu kendi cümlelerinle yeniden kurmak "üretici çıktı"dır ve pasif tanımadan çok daha güçlü kalıcılaşır. Analiz motoru özetini ana fikirlerle karşılaştırır: kaç doğru nokta yakaladığını, neyi kaçırdığını ve neleri yanlış anladığını söyler. Bölüm finallerinde ayrıca 10 soruluk seviye sınavı vardır: 6 soru bitirilen bölümden, 4 soru önceki bölümlerden. Düşük skor alırsan hikayeyi tekrar oku — ikinci okuma, tıpkı bir sitcom\'u tekrar izlemek gibi, her zaman daha kolaydır.' },
+                { icon: '♾️', title: '13. Hiçbir Kelime Emekli Olmaz — Sınav İçi Karma Tekrar (YENİ, OTOMATİK)', text: 'Bir üniteyi %100 doğru bitirsen bile o ünitenin kelimeleri seninle yolculuğa devam eder: SONRAKİ HER ünitenin bitiş sınavına, önceki ünitelerden seçilen 5 adet "🔁 KALICI TEKRAR" sorusu otomatik karışır. Seçim genişleyen aralık ilkesine göre yapılır: 1, 2, 3, 5, 8, 13 ve 21 ünite geriden kelimeler + TÜM geçmişten rastgele örnekler. Araştırmalar (spaced/expanding retrieval) bunun, bilgiyi tam unutma eşiğinde yakalayıp kalıcılaştırdığını gösteriyor. Bu sorularda yanılırsan kelime Aralıklı Tekrar kutusunda 1. kutuya düşer ve ertesi gün yeniden sorulur.' },
+                { icon: '🔄', title: '14. Üretim Etkisi (Production Effect) — Ters Yön Soruları (YENİ, OTOMATİK)', text: 'Rusça kelimeyi görüp Türkçesini TANIMAK kolaydır; zor ve asıl kalıcı olan, Türkçesinden Rusçasını GERİ ÇAĞIRMAKTIR. Bu yüzden karma tekrar ve maraton sorularının yarısı ters yönde sorulur: "Tuz kelimesinin Rusçası hangisi?" Beynin cevabı üretmek için harcadığı ekstra çaba (desirable difficulty), izi çok daha derin kazır.' },
+                { icon: '🔀', title: '15. Karma Maraton — Kümülatif Rastgele Örnekleme Sınavı (YENİ, İSTEĞE BAĞLI)', text: 'Ana ekrandaki "🔀 Karma Maraton" butonu, tamamladığın TÜM ünitelerin kelime havuzundan rastgele 15 soru çeker — vadesi gelmemiş, çoktan "öğrenilmiş" kelimeler bile her an sorulabilir. Araştırmalar, rastgele örneklenmiş kümülatif testlerin (RST) tüm kelimeleri dengeli biçimde canlı tuttuğunu ve sınav kapsamı büyüdükçe zayıf kelimelerin kendiliğinden ortaya çıktığını gösteriyor. Haftada 2-3 maraton, "eskiden biliyordum" cümlesini sözlüğünden siler.' },
+                { icon: '🪜', title: '16. Ardışık Yeniden Öğrenme (Successive Relearning)', text: 'En güçlü kombinasyon: aynı kelimeyi FARKLI oturumlarda, FARKLI biçimlerde tekrar tekrar öğrenme kriterine ulaştırmak. Uygulamada bu döngü hazır: kelimeyi önce kartta görürsün → ünite sınavında tanırsın → sonraki ünitelerin karma tekrarlarında hatırlarsın → Aralıklı Tekrar gününde geri çağırırsın → bölüm finali hikayesinde bağlam içinde okursun. Aynı bilgiye 5 farklı kapıdan girmek, tek kapıdan 5 kez girmekten çok daha kalıcıdır.' }
               ].map((m, i) => (
                 <div key={i} style={{ background: '#0f172a', border: '1px solid #334155', borderRadius: '12px', padding: '16px', display: 'flex', gap: '14px' }}>
                   <div style={{ fontSize: '28px', flexShrink: 0 }}>{m.icon}</div>
@@ -1449,10 +1846,113 @@ export default function App() {
           </div>
         )}
 
+        {/* HİKAYE BAĞLANTI HARİTASI — hangi hikaye hangisine bağlanır (ÖZET YOK) */}
+        {activeTab === 'CONNECTIONS' && (
+          <div style={cardBox}>
+            <button onClick={() => setActiveTab('MAP')} style={{ background: 'transparent', border: 'none', color: '#94a3b8', fontWeight: 700, cursor: 'pointer', marginBottom: '12px' }}>← Haritaya Dön</button>
+            <SceneBanner icon="🕸️" color="#f472b6" label="Hikaye Bağlantı Haritası" />
+            <h2 style={{ marginTop: 0, color: '#f472b6' }}>Hangi Hikaye Hangisine Bağlanıyor?</h2>
+            <p style={{ color: '#cbd5e1', fontSize: '14px', lineHeight: '1.7' }}>
+              13 hikayenin tamamı <b>tek bir dizi evreninde</b> geçer ve iki anlatı kolu üzerinde ilerler.
+              Aşağıda yalnızca hikayelerin <b>birbirine nasıl bağlandığı</b> gösterilir — içerik/özet yoktur, sürpriz bozulmaz.
+            </p>
+
+            {/* İKİ ANLATI KOLU */}
+            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(260px, 1fr))', gap: '14px', marginTop: '16px' }}>
+              <div style={{ background: '#0f172a', border: '1px solid #eab308', borderRadius: '12px', padding: '16px' }}>
+                <div style={{ fontWeight: 900, color: '#eab308', marginBottom: '8px' }}>🎙️ KOL 1 — HIMYM Çerçevesi</div>
+                <div style={{ fontSize: '13px', color: '#cbd5e1', lineHeight: '1.7' }}>
+                  Anlatıcı: <b>Dima</b> — 2035 yılında çocuklarına anlatıyor. Bu koldaki her hikaye aynı anlatının bir parçasıdır:
+                </div>
+                <ul style={{ fontSize: '13px', color: '#e2e8f0', lineHeight: '1.9', margin: '8px 0 0', paddingLeft: '18px' }}>
+                  <li>☂️ Sarı Şemsiye <span style={{ color: '#64748b' }}>(A1 Finali — pilot bölüm)</span></li>
+                  <li>🌧️ Bölüm 1: Annenizle Nasıl Tanıştım → 🥂 Bölüm 8: Düğün <span style={{ color: '#64748b' }}>(8 kontrol noktası hikayesi, sırayla)</span></li>
+                  <li>☂️ Gerçek Hikaye <span style={{ color: '#64748b' }}>(C1/C2 Finali — dizi finali)</span></li>
+                </ul>
+              </div>
+              <div style={{ background: '#0f172a', border: '1px solid #38bdf8', borderRadius: '12px', padding: '16px' }}>
+                <div style={{ fontWeight: 900, color: '#38bdf8', marginBottom: '8px' }}>🍽️ KOL 2 — «Ван Гог» Restoranı («Кухня» tarzı)</div>
+                <div style={{ fontSize: '13px', color: '#cbd5e1', lineHeight: '1.7' }}>
+                  Ortak mekân: <b>«Ван Гог» restoranı</b>. Ortak kadro: <b>Şef Pyotr, Lyosha, Nina, Semyon</b>:
+                </div>
+                <ul style={{ fontSize: '13px', color: '#e2e8f0', lineHeight: '1.9', margin: '8px 0 0', paddingLeft: '18px' }}>
+                  <li>🍳 Yeni Garson <span style={{ color: '#64748b' }}>(A2 Finali)</span></li>
+                  <li>🍽️ «Ван Гог»ta Akşam Yemeği <span style={{ color: '#64748b' }}>(B1 Finali — crossover)</span></li>
+                  <li>🌹 Şefin Akşamı <span style={{ color: '#64748b' }}>(B2 Finali)</span></li>
+                </ul>
+              </div>
+            </div>
+
+            {/* BAĞLANTILAR */}
+            <h3 style={{ color: '#f472b6', margin: '22px 0 10px' }}>🔗 Bağlantılar</h3>
+            <div style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}>
+              {[
+                { icon: '☂️', type: 'MOTİF', color: '#eab308', from: 'Sarı Şemsiye (A1 Finali)', to: 'Gerçek Hikaye (C1/C2 Finali)', why: 'Pilot bölümde ortaya çıkan sarı şemsiyenin sırrı, dizi finalinde çözülür. Aynı nesne iki hikayeyi uçtan uca birbirine bağlar.' },
+                { icon: '🎙️', type: 'ANLATICI', color: '#eab308', from: 'Bölüm 1-8 (kontrol noktaları)', to: 'Sarı Şemsiye + Gerçek Hikaye', why: 'Hepsi aynı çerçeve anlatının parçası: Dima 2035\'te çocuklarına anlatıyor. Bölüm 1\'deki soru, ancak dizi finalinde cevaplanır.' },
+                { icon: '💙', type: 'KARAKTER', color: '#eab308', from: 'Son Bekâr (Bölüm 7)', to: 'Düğün (Bölüm 8)', why: 'Bölüm 7\'nin sonu, Bölüm 8\'deki düğünün doğrudan hazırlığıdır — aynı çift, aynı olay örgüsü devam eder.' },
+                { icon: '📍', type: 'MEKÂN + KADRO', color: '#38bdf8', from: 'Yeni Garson (A2 Finali)', to: '«Ван Гог»ta Akşam Yemeği (B1) → Şefin Akşamı (B2)', why: 'Üç hikaye de aynı restoranda geçer; Şef Pyotr, Lyosha, Nina ve Semyon üçünde de sahnededir. Lyosha\'nın restorandaki yolculuğu A2\'de başlar.' },
+                { icon: '🔀', type: 'CROSSOVER', color: '#a78bfa', from: 'HIMYM kadrosu (Bölüm 1-8)', to: '«Ван Гог»ta Akşam Yemeği (B1 Finali)', why: 'İki anlatı kolu burada kesişir: kontrol noktası hikayelerinin karakterleri (Dima, Marina, Tyoma) restoran koluna misafir olur.' },
+                { icon: '🍰', type: 'CALLBACK', color: '#38bdf8', from: '«Ван Гог»ta Akşam Yemeği (B1)', to: 'Şefin Akşamı (B2)', why: 'B1 finalindeki meşhur "düşen tatlı" olayı, B2 finalinde hatırlanır ve göndermeyle geri döner.' },
+                { icon: '💍', type: 'KARAKTER YAYI', color: '#38bdf8', from: 'Şefin Akşamı (B2 Finali)', to: 'Önceki «Ван Гог» hikayeleri', why: 'Pyotr ile Nina arasındaki çizgi A2\'den beri adım adım örülür ve B2 finalinde doruk noktasına ulaşır.' },
+                { icon: '👨‍🍳', type: 'ÜNİTE BAĞI', color: '#10b981', from: 'Aşçılık üniteleri (32-41, 86-96, 135-144, 175-183)', to: '«Ван Гог» hikaye kolu', why: 'Aşçılık ünitelerinin diyalogları da «Ван Гог» mutfağında geçer: Lyosha\'nın çıraklıktan kendi hayaline uzanan yolunu ünite ünite izlersiniz.' }
+              ].map((c, i) => (
+                <div key={i} style={{ background: '#0f172a', border: '1px solid #334155', borderRadius: '12px', padding: '14px 16px', display: 'flex', gap: '14px', alignItems: 'flex-start' }}>
+                  <div style={{ fontSize: '26px', flexShrink: 0 }}>{c.icon}</div>
+                  <div>
+                    <div style={{ fontSize: '11px', fontWeight: 900, color: c.color, letterSpacing: '0.5px', marginBottom: '4px' }}>{c.type}</div>
+                    <div style={{ fontWeight: 800, color: '#f8fafc', fontSize: '14px', marginBottom: '4px' }}>{c.from} <span style={{ color: c.color }}>⟶</span> {c.to}</div>
+                    <div style={{ fontSize: '13px', color: '#94a3b8', lineHeight: '1.6' }}>{c.why}</div>
+                  </div>
+                </div>
+              ))}
+            </div>
+
+            <div style={{ marginTop: '18px', padding: '12px 14px', borderRadius: '10px', background: 'rgba(244,114,182,0.08)', border: '1px solid #f472b6', fontSize: '13px', color: '#fbcfe8' }}>
+              💡 Bu haritada bilerek hiçbir olay örgüsü anlatılmaz — bağların tadını hikayeleri sırayla okuyarak çıkarın.
+            </div>
+          </div>
+        )}
+
         {/* HATA / UNUTULANLAR KÜTÜĞÜ */}
         {activeTab === 'MISTAKES' && (
           <div style={cardBox}>
             <button onClick={() => setActiveTab('MAP')} style={{ background: 'transparent', border: 'none', color: '#94a3b8', fontWeight: 700, cursor: 'pointer', marginBottom: '12px' }}>← Haritaya Dön</button>
+            {/* 🎯 ZAYIF NOKTALARIM — kronik hata panosu + kişiye özel ek test */}
+            <div style={{ background: '#0f172a', borderRadius: '14px', padding: '18px', border: '1px solid #f97316', marginBottom: '22px' }}>
+              <h2 style={{ color: '#f97316', marginTop: 0, marginBottom: '6px' }}>🎯 Zayıf Noktalarım</h2>
+              <p style={{ color: '#cbd5e1', fontSize: '13px', marginTop: 0 }}>
+                Burası anlık hata listesi değil, <b>kronik</b> hata panosudur: bir kelimeyi her yanlışladığında sayaç artar,
+                zayıf nokta testinde doğru bildiğinde azalır. Sayaç sıfırlanınca kelime panodan düşer — gerçek iyileşme budur.
+              </p>
+              {weakWords.length === 0 ? (
+                <p style={{ color: '#10b981', fontWeight: 700, marginBottom: 0 }}>Kronik zayıf noktan yok — pano tertemiz! 💪</p>
+              ) : (
+                <>
+                  <button onClick={startWeakspotQuiz} style={{ ...primaryBtn, background: '#f97316', boxShadow: '0 4px 14px rgba(249,115,22,0.4)', marginBottom: '16px' }}>
+                    🎯 Bana Özel Zayıf Nokta Testi Başlat ({Math.min(weakWords.length, 12)} kelime)
+                  </button>
+                  {weakWords.slice(0, 15).map(w => {
+                    const home = findWordHome(w.ru);
+                    const maxCount = weakWords[0].count;
+                    const pct = Math.max(8, Math.round((w.count / maxCount) * 100));
+                    return (
+                      <div key={w.ru} style={{ marginBottom: '10px' }}>
+                        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', fontSize: '13px' }}>
+                          <span style={{ fontWeight: 800, color: '#f8fafc' }}>{w.ru} <span style={{ color: '#94a3b8', fontWeight: 600 }}>— {w.tr}</span></span>
+                          <span style={{ color: '#f97316', fontWeight: 900 }}>{w.count}× yanlış</span>
+                        </div>
+                        <div style={{ height: '7px', background: '#1e293b', borderRadius: '4px', marginTop: '4px', overflow: 'hidden' }}>
+                          <div style={{ width: `${pct}%`, height: '100%', background: w.count >= 4 ? '#ef4444' : w.count >= 2 ? '#f97316' : '#facc15', borderRadius: '4px' }} />
+                        </div>
+                        {home && <div style={{ fontSize: '11px', color: '#64748b', marginTop: '3px' }}>{home.icon} {home.title} • {home.category}</div>}
+                      </div>
+                    );
+                  })}
+                  {weakWords.length > 15 && <div style={{ fontSize: '12px', color: '#94a3b8' }}>… ve {weakWords.length - 15} kelime daha (test en kronik olanlardan başlar)</div>}
+                </>
+              )}
+            </div>
+
             <h2 style={{ color: '#ef4444', marginTop: 0 }}>🚨 Unutulan Kelimeler Kütüğü</h2>
             {mistakes.length === 0 ? <p style={{ color: '#10b981', fontWeight: 700 }}>Harika! Şu an hiç hatanız yok.</p> : (
               <>
@@ -1908,7 +2408,7 @@ export default function App() {
                   const mod = UNITS_DATA[unitIdx];
                   return (
                     <div>
-                      <SceneBanner icon={mod.icon} color={mod.color} label={`${mod.levelGroup} • ${mod.category}`} />
+                      <UnitBanner unitId={mod.id} icon={mod.icon} color={mod.color} label={`${mod.levelGroup} • ${mod.category}`} />
                       <span style={{ fontSize: '11px', fontWeight: 900, background: '#0f172a', color: mod.color, padding: '2px 8px', borderRadius: '4px' }}>ÜNİTE {UNIT_PATH_POS[unitIdx]} GRAMER & İPUÇLARI</span>
                       <h2 style={{ marginTop: '8px', fontSize: '22px' }}>{mod.title}</h2>
 
@@ -1932,7 +2432,7 @@ export default function App() {
                   const mod = UNITS_DATA[unitIdx];
                   return (
                     <div>
-                      <SceneBanner icon={mod.icon} color={mod.color} label={mod.sceneTitle || 'Dizi Sahnesi'} />
+                      <UnitBanner unitId={mod.id} icon={mod.icon} color={mod.color} label={mod.sceneTitle || 'Dizi Sahnesi'} />
                       <span style={{ fontSize: '11px', fontWeight: 900, background: '#0f172a', color: mod.color, padding: '2px 8px', borderRadius: '4px' }}>🎬 DİZİ SAHNESİ</span>
                       <h2 style={{ marginTop: '8px', marginBottom: '2px', fontSize: '22px' }}>{mod.sceneTitle}</h2>
                       <p style={{ color: '#94a3b8', fontSize: '13px', marginTop: 0 }}>{mod.sceneContext}</p>
@@ -2034,7 +2534,7 @@ export default function App() {
                   const w = mod.words[cardIdx];
                   return (
                     <div>
-                      <SceneBanner icon={mod.icon} color={mod.color} label={mod.title} />
+                      <UnitBanner unitId={mod.id} icon={mod.icon} color={mod.color} label={mod.title} />
                       <div style={{ fontSize: '12px', color: '#94a3b8', fontWeight: 700 }}>KELİME {cardIdx + 1} / {mod.words.length}</div>
 
                       <div onClick={() => setIsFlipped(!isFlipped)} style={{ minHeight: '180px', background: '#0f172a', border: '1px solid #334155', borderRadius: '16px', padding: '24px', display: 'flex', flexDirection: 'column', justifyContent: 'center', alignItems: 'center', cursor: 'pointer', margin: '20px 0' }}>
@@ -2067,7 +2567,7 @@ export default function App() {
             {/* EŞLEŞTİRME TESTİ */}
             {screen === 'MATCH' && (
               <div>
-                <SceneBanner icon={UNITS_DATA[unitIdx].icon} color={UNITS_DATA[unitIdx].color} label={UNITS_DATA[unitIdx].title} />
+                <UnitBanner unitId={UNITS_DATA[unitIdx].id} icon={UNITS_DATA[unitIdx].icon} color={UNITS_DATA[unitIdx].color} label={UNITS_DATA[unitIdx].title} />
                 <h3>🧩 Kelimeleri Eşleştir</h3>
                 <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '10px', margin: '20px 0' }}>
                   <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
@@ -2090,7 +2590,7 @@ export default function App() {
             {/* HIZLI TANIMA TESTİ (klavyesiz — Rusça/Kiril klavyesi olmayanlar için 4 seçenekli üretici hatırlama) */}
             {screen === 'TYPING' && (
               <div>
-                <SceneBanner icon={UNITS_DATA[unitIdx].icon} color={UNITS_DATA[unitIdx].color} label={UNITS_DATA[unitIdx].title} />
+                <UnitBanner unitId={UNITS_DATA[unitIdx].id} icon={UNITS_DATA[unitIdx].icon} color={UNITS_DATA[unitIdx].color} label={UNITS_DATA[unitIdx].title} />
                 <h3>⚡ Anlamını Hatırla ve Seç</h3>
                 <p style={{ color: '#94a3b8', fontSize: '13px', marginTop: '-8px' }}>Kelimeyi çevirmeden ÖNCE anlamını zihninden tahmin etmeye çalış, sonra doğru seçeneğe dokun. (Klavye gerekmez.)</p>
                 <div style={{ background: '#0f172a', padding: '24px', borderRadius: '14px', border: '1px solid #334155', textAlign: 'center', margin: '16px 0' }}>
@@ -2108,7 +2608,7 @@ export default function App() {
             {/* CÜMLE KURMA TESTİ */}
             {screen === 'SENTENCE' && (
               <div>
-                <SceneBanner icon={UNITS_DATA[unitIdx].icon} color={UNITS_DATA[unitIdx].color} label={UNITS_DATA[unitIdx].title} />
+                <UnitBanner unitId={UNITS_DATA[unitIdx].id} icon={UNITS_DATA[unitIdx].icon} color={UNITS_DATA[unitIdx].color} label={UNITS_DATA[unitIdx].title} />
                 <h3>💬 Cümleyi Oluştur</h3>
                 {(() => {
                   const s = UNITS_DATA[unitIdx].sentences[sentIdx];
@@ -2139,16 +2639,20 @@ export default function App() {
               <div>
                 {quizContext === 'ALPHA_FINAL' && <SceneBanner icon={`${ALPHABET_LESSONS[alphaIdx].letters[0].upper}${ALPHABET_LESSONS[alphaIdx].letters[0].lower}`} color={ALPHA_BANNER_COLORS[alphaIdx % ALPHA_BANNER_COLORS.length]} label="Alfabe Bitiş Sınavı" />}
                 {quizContext === 'GRAMMAR_FOUNDATION' && <SceneBanner icon={GRAMMAR_FOUNDATION_UNITS[grammarIdx].icon} color={GRAMMAR_FOUNDATION_UNITS[grammarIdx].color} label={GRAMMAR_FOUNDATION_UNITS[grammarIdx].title} />}
-                {(quizContext === 'LISTENING' || quizContext === 'UNIT_FINAL') && <SceneBanner icon={UNITS_DATA[unitIdx].icon} color={UNITS_DATA[unitIdx].color} label={UNITS_DATA[unitIdx].title} />}
+                {(quizContext === 'LISTENING' || quizContext === 'UNIT_FINAL') && <UnitBanner unitId={UNITS_DATA[unitIdx].id} icon={UNITS_DATA[unitIdx].icon} color={UNITS_DATA[unitIdx].color} label={UNITS_DATA[unitIdx].title} />}
                 {quizContext === 'REVIEW' && <SceneBanner icon="🔁" color="#ef4444" label="Genel Tekrar Testi" />}
                 {quizContext === 'SRS_REVIEW' && <SceneBanner icon="📅" color="#f59e0b" label="Aralıklı Tekrar (Spaced Repetition)" />}
-                <div style={{ fontSize: '12px', color: quizContext === 'REVIEW' || quizContext === 'SRS_REVIEW' ? '#f59e0b' : '#38bdf8', fontWeight: 800 }}>
+                {quizContext === 'MARATHON' && <SceneBanner icon="🔀" color="#a78bfa" label="Karma Maraton — Tüm Geçmişten Rastgele" />}
+                {quizContext === 'WEAKSPOT' && <SceneBanner icon="🎯" color="#f97316" label="Zayıf Nokta Antrenmanı — Sana Özel Test" />}
+                <div style={{ fontSize: '12px', color: quizContext === 'REVIEW' || quizContext === 'SRS_REVIEW' ? '#f59e0b' : quizContext === 'MARATHON' ? '#a78bfa' : '#38bdf8', fontWeight: 800 }}>
                   {quizContext === 'ALPHA_FINAL' && `🔤 ALFABE BİTİŞ SINAVI — SORU ${quizIdx + 1} / ${quizQuestions.length}`}
                   {quizContext === 'GRAMMAR_FOUNDATION' && `🧩 CÜMLE TEMELLERİ KONTROLÜ — SORU ${quizIdx + 1} / ${quizQuestions.length}`}
                   {quizContext === 'LISTENING' && `🎧 DİNLEME TESTİ — SORU ${quizIdx + 1} / ${quizQuestions.length}`}
-                  {quizContext === 'UNIT_FINAL' && `✅ ÜNİTE BİTİŞ SINAVI — SORU ${quizIdx + 1} / ${quizQuestions.length}`}
+                  {quizContext === 'UNIT_FINAL' && `✅ ÜNİTE BİTİŞ SINAVI (+ 🔁 kalıcı tekrar soruları) — SORU ${quizIdx + 1} / ${quizQuestions.length}`}
                   {quizContext === 'REVIEW' && `🔁 GENEL TEKRAR (Doğru cevaplayana kadar sorulur!) — ${quizIdx + 1} / ${quizQuestions.length}`}
                   {quizContext === 'SRS_REVIEW' && `📅 ARALIKLI TEKRAR — ${quizIdx + 1} / ${quizQuestions.length}`}
+                  {quizContext === 'MARATHON' && `🔀 KARMA MARATON — ${quizIdx + 1} / ${quizQuestions.length}`}
+                  {quizContext === 'WEAKSPOT' && `🎯 ZAYIF NOKTA ANTRENMANI (kişiye özel) — ${quizIdx + 1} / ${quizQuestions.length}`}
                 </div>
 
                 {quizQuestions[quizIdx].audioOnly ? (
