@@ -607,7 +607,7 @@ const STORY_LF_A2: CheckpointStory = {
 };
 
 // ---------------------------------------------------------------------------
-// BÖLÜM FİNALİ 3 — Ünite 62-116 (B1 SONU) — Crossover: HIMYM kadrosu «Ван Гог»ta
+// BÖLÜM FİNALİ 3 — Ünite 62-126 (B1 SONU) — Crossover: HIMYM kadrosu «Ван Гог»ta
 // Kapılı final: özet %100 + Seviye Tekrar Sınavı geçilmeden B2 açılmaz.
 // ---------------------------------------------------------------------------
 const STORY_LF_B1: CheckpointStory = {
@@ -615,7 +615,7 @@ const STORY_LF_B1: CheckpointStory = {
   kind: 'levelFinal',
   checkpoint: null,
   unitFrom: 62,
-  unitTo: 116,
+  unitTo: 126,
   levelId: 'B1',
   nextLevelId: 'B2',
   titleRu: 'Ужин в «Ван Гоге»',
@@ -680,15 +680,15 @@ const STORY_LF_B1: CheckpointStory = {
 };
 
 // ---------------------------------------------------------------------------
-// BÖLÜM FİNALİ 4 — Ünite 117-164 (B2 SONU) — Кухня tarzı: şefin teklifi
+// BÖLÜM FİNALİ 4 — Ünite 127-174 (B2 SONU) — Кухня tarzı: şefin teklifi
 // Kapılı final: özet %100 + Seviye Tekrar Sınavı geçilmeden C1 açılmaz.
 // ---------------------------------------------------------------------------
 const STORY_LF_B2: CheckpointStory = {
   id: 'story_lf_b2',
   kind: 'levelFinal',
   checkpoint: null,
-  unitFrom: 117,
-  unitTo: 164,
+  unitFrom: 127,
+  unitTo: 174,
   levelId: 'B2',
   nextLevelId: 'C1/C2',
   titleRu: 'Вечер шефа',
@@ -752,15 +752,15 @@ const STORY_LF_B2: CheckpointStory = {
 };
 
 // ---------------------------------------------------------------------------
-// BÖLÜM FİNALİ 5 — Ünite 165-203 (C1/C2 SONU) — DİZİ FİNALİ: gerçek hikaye
+// BÖLÜM FİNALİ 5 — Ünite 175-213 (C1/C2 SONU) — DİZİ FİNALİ: gerçek hikaye
 // Kapılı final: özet %100 + Seviye Tekrar Sınavı geçilmeden "mezuniyet" yok.
 // ---------------------------------------------------------------------------
 const STORY_LF_C1: CheckpointStory = {
   id: 'story_lf_c1',
   kind: 'levelFinal',
   checkpoint: null,
-  unitFrom: 165,
-  unitTo: 203,
+  unitFrom: 175,
+  unitTo: 213,
   levelId: 'C1/C2',
   nextLevelId: 'C1/C2',
   titleRu: 'Настоящая история',

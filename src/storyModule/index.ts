@@ -47,8 +47,8 @@ export function gateStoryForUnitNumber(unitNumber: number): CheckpointStory | un
 export function levelOfUnitNumber(unitNumber: number): 'A1' | 'A2' | 'B1' | 'B2' | 'C1/C2' {
   if (unitNumber <= 11) return 'A1';
   if (unitNumber <= 61) return 'A2';
-  if (unitNumber <= 116) return 'B1';
-  if (unitNumber <= 164) return 'B2';
+  if (unitNumber <= 126) return 'B1';
+  if (unitNumber <= 174) return 'B2';
   return 'C1/C2';
 }
 
