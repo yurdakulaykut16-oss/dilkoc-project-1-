@@ -39,11 +39,14 @@ export interface GrammarFoundationUnit {
 }
 
 export const GRAMMAR_FOUNDATION_UNITS: GrammarFoundationUnit[] = [
+  // ZAMANLAR (TENSES) PAKETİ — alfabeden hemen sonra: şimdiki, geçmiş, gelecek zaman + görünüş (вид)
+  ...TENSE_UNITS,
+  // CÜMLE TEMELLERİ — zamanlardan sonra: özne, yüklem, edat vb.
   {
     id: 'gram_sentence_core',
     levelGroup: 'A1',
     title: 'Cümlenin İskeleti: Özne + Yüklem + Tamamlayıcı',
-    description: 'Alfabeden sonra ilk hedef: Rusça cümlenin temel parçalarını tanımak.',
+    description: 'Zamanlardan sonra sıradaki hedef: Rusça cümlenin temel parçalarını tanımak.',
     icon: '🧩',
     color: '#22c55e',
     coreConcept: 'Cümlede genellikle bir “kim/ne?” parçası (özne) ve onun hakkında söylenen bir “ne yapıyor/ne durumda?” parçası (yüklem) bulunur. Edatlar ise kelimeler arasındaki yer, yön, araç, kaynak gibi ilişkileri kurar.',
@@ -219,9 +222,7 @@ export const GRAMMAR_FOUNDATION_UNITS: GrammarFoundationUnit[] = [
       { prompt: '«У него нет времени.» cümlesindeki temel anlam nedir?', correct: 'Onun zamanı yok.', options: ['Onun zamanı yok.', 'O kafede.', 'Doktora gidiyoruz.', 'Ben okuyorum.'] },
       { prompt: 'Bir cümlede edat gördüğünde ilk yapman gereken ne?', correct: 'Hangi soruya cevap verdiğini sormak.', options: ['Hangi soruya cevap verdiğini sormak.', 'Her zaman silmek.', 'Yüklem sanmak.', 'Özneyle yer değiştirmek.'] }
     ]
-  },
-  // ZAMANLAR (TENSES) PAKETİ — 10 ünite: şimdiki, geçmiş, gelecek zaman + görünüş (вид)
-  ...TENSE_UNITS
+  }
 ];
 
 export const ALL_GRAMMAR_FOUNDATION_QUESTIONS = GRAMMAR_FOUNDATION_UNITS.flatMap((u) => u.quiz);

@@ -296,7 +296,7 @@ export const TENSE_UNITS: GrammarFoundationUnit[] = [
   },
   {
     id: 'tense_past_negation',
-    levelGroup: 'A2',
+    levelGroup: 'A1',
     title: 'Zamanlar 6/10 — Geçmişte Yokluk ve "У меня был..."',
     description: '"Vardı / yoktu" demeyi öğren: sahiplik cümleleri geçmişe taşınıyor.',
     icon: '📦',
@@ -348,7 +348,7 @@ export const TENSE_UNITS: GrammarFoundationUnit[] = [
   },
   {
     id: 'tense_future_budu',
-    levelGroup: 'A2',
+    levelGroup: 'A1',
     title: 'Zamanlar 7/10 — Bileşik Gelecek: буду + Mastar',
     description: 'Tek tabloyla SINIRSIZ gelecek zaman: буду, будешь, будет...',
     icon: '⏩',
@@ -403,7 +403,7 @@ export const TENSE_UNITS: GrammarFoundationUnit[] = [
   },
   {
     id: 'tense_aspect',
-    levelGroup: 'A2',
+    levelGroup: 'A1',
     title: 'Zamanlar 8/10 — Görünüş (Вид): делать vs сделать',
     description: 'Rusçanın kalbi: her fiil bir İKİZ ile doğar — süreç ve sonuç.',
     icon: '🎭',
@@ -460,7 +460,7 @@ export const TENSE_UNITS: GrammarFoundationUnit[] = [
   },
   {
     id: 'tense_future_perfective',
-    levelGroup: 'A2',
+    levelGroup: 'A1',
     title: 'Zamanlar 9/10 — Basit Gelecek: Tek Kelimede "Yapıp Bitireceğim"',
     description: 'Прочитаю, куплю, скажу: bitmiş fiili çek, gelecek hazır!',
     icon: '🚀',
@@ -521,7 +521,7 @@ export const TENSE_UNITS: GrammarFoundationUnit[] = [
   },
   {
     id: 'tense_review',
-    levelGroup: 'A2',
+    levelGroup: 'A1',
     title: 'Zamanlar 10/10 — Zaman Zarfları ve Büyük Final',
     description: 'Вчера, сегодня, завтра... Tüm zamanları tek turnuvada birleştir!',
     icon: '🏆',
