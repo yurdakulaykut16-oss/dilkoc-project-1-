@@ -1,5 +1,5 @@
 // ==========================================================
-// EK MÜFREDAT — A1 SONU GRAMER PAKETİ (Ünite 7-11)
+// EK MÜFREDAT — A1 BAŞLANGIÇ GRAMER PAKETİ (Ünite 2-6: sayılardan hemen sonra)
 // "Ben, benim, benimki, bende, bana, benimle..." — cümlelerde
 // hangi form NEDEN kullanılıyor? A2'ye geçmeden önce cümle
 // çözme anahtarı: zamirler, iyelik, у меня есть ve hâl mantığı.
@@ -9,7 +9,7 @@ import type { UnitModule } from '../curriculumData';
 export const EXTRA_A1_GRAM: UnitModule[] = [
   {
     id: 'mod_a1_g1',
-    unitNumber: 7,
+    unitNumber: 2,
     levelGroup: 'A1',
     title: 'Ben, Sen, O — Şahıs Zamirleri',
     description: 'я, ты, он, она... — Rusça cümlenin öznesini tanı',
@@ -50,7 +50,7 @@ export const EXTRA_A1_GRAM: UnitModule[] = [
   },
   {
     id: 'mod_a1_g2',
-    unitNumber: 8,
+    unitNumber: 3,
     levelGroup: 'A1',
     title: 'Benim, Senin, Benimki — İyelik Sırları',
     description: 'мой/моя/моё/мои — "benim" neden dört şekilde söyleniyor?',
@@ -91,7 +91,7 @@ export const EXTRA_A1_GRAM: UnitModule[] = [
   },
   {
     id: 'mod_a1_g3',
-    unitNumber: 9,
+    unitNumber: 4,
     levelGroup: 'A1',
     title: 'Bende Var! — У меня есть Kalıbı',
     description: '"Benim ... var/yok" — Rusça sahiplik cümlesinin şifresi',
@@ -132,7 +132,7 @@ export const EXTRA_A1_GRAM: UnitModule[] = [
   },
   {
     id: 'mod_a1_g4',
-    unitNumber: 10,
+    unitNumber: 5,
     levelGroup: 'A1',
     title: 'Beni, Bana, Benimle — Zamirin Halleri',
     description: 'меня, мне, со мной — aynı "ben" cümlede neden değişiyor?',
@@ -174,7 +174,7 @@ export const EXTRA_A1_GRAM: UnitModule[] = [
   },
   {
     id: 'mod_a1_g5',
-    unitNumber: 11,
+    unitNumber: 6,
     levelGroup: 'A1',
     title: 'Cümle Çözme Anahtarı: Kim, Kimi, Kime?',
     description: 'Soru kelimeleriyle cümleyi röntgenle: her form neden orada?',

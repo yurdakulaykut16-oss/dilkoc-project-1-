@@ -1,4 +1,5 @@
 import type { CefrTag } from './topics100';
+import { TENSE_UNITS } from './tensesData';
 
 export interface GrammarFoundationExample {
   ru: string;
@@ -38,11 +39,14 @@ export interface GrammarFoundationUnit {
 }
 
 export const GRAMMAR_FOUNDATION_UNITS: GrammarFoundationUnit[] = [
+  // ZAMANLAR (TENSES) PAKETİ — alfabeden hemen sonra: şimdiki, geçmiş, gelecek zaman + görünüş (вид)
+  ...TENSE_UNITS,
+  // CÜMLE TEMELLERİ — zamanlardan sonra: özne, yüklem, edat vb.
   {
     id: 'gram_sentence_core',
     levelGroup: 'A1',
     title: 'Cümlenin İskeleti: Özne + Yüklem + Tamamlayıcı',
-    description: 'Alfabeden sonra ilk hedef: Rusça cümlenin temel parçalarını tanımak.',
+    description: 'Zamanlardan sonra sıradaki hedef: Rusça cümlenin temel parçalarını tanımak.',
     icon: '🧩',
     color: '#22c55e',
     coreConcept: 'Cümlede genellikle bir “kim/ne?” parçası (özne) ve onun hakkında söylenen bir “ne yapıyor/ne durumda?” parçası (yüklem) bulunur. Edatlar ise kelimeler arasındaki yer, yön, araç, kaynak gibi ilişkileri kurar.',

@@ -18,6 +18,7 @@ const LEVEL_COLORS: Record<CefrTag, string> = {
 };
 
 import { ALPHABET_LESSONS_EXTRA } from './alphabetExtra';
+import { ALPHABET_LESSONS_EXTRA2 } from './alphabetExtra2';
 import { UNITS_DATA, ALL_WORDS, ALL_SENTENCES } from './curriculumData';
 import { GRAMMAR_FOUNDATION_UNITS } from './grammarFoundationData';
 import type { WordDetail, DialogueLine, SmesharikiQuestion, SmesharikiScene, UnitModule } from './curriculumData';
@@ -375,7 +376,9 @@ export const ALPHABET_LESSONS: { id: string; title: string; subtitle: string; le
     ]
   },
   // 30 EK OKUMA DERSİ (17-46): sayılar, günler, renkler, isimler, menüler, hız turları
-  ...ALPHABET_LESSONS_EXTRA
+  ...ALPHABET_LESSONS_EXTRA,
+  // 30 EK OKUMA DERSİ (47-76): havaalanı, otel, kafe, banka, acil durum, vurgu ikizleri, sessiz harfler, mezuniyet
+  ...ALPHABET_LESSONS_EXTRA2
 ];
 
 export const ALL_ALPHA_LETTERS = ALPHABET_LESSONS.flatMap(x => x.letters);
@@ -499,9 +502,12 @@ export type PathStep =
 
 export const PATH: PathStep[] = (() => {
   const steps: PathStep[] = [];
-  for (let i = 0; i < ALPHABET_LESSONS.length; i++) steps.push({ kind: 'alpha', lessonIdx: i });
-  for (let i = 0; i < GRAMMAR_FOUNDATION_UNITS.length; i++) steps.push({ kind: 'grammar', grammarIdx: i });
+  // 1) EN BAŞTA: 🎧 Harf Dinleme (33 harf) + 🎧 Fonetik Dinleme (8 konu) — Ünite 1'den itibaren
   TOPICS_100.forEach((t, idx) => { if (t.cat !== 'mufredat') steps.push({ kind: 'topic', topicIdx: idx }); });
+  // 2) Sonra: Alfabe dersleri (okuma)
+  for (let i = 0; i < ALPHABET_LESSONS.length; i++) steps.push({ kind: 'alpha', lessonIdx: i });
+  // 3) Sonra: Zamanlar + özne/yüklem/edat (cümle temelleri)
+  for (let i = 0; i < GRAMMAR_FOUNDATION_UNITS.length; i++) steps.push({ kind: 'grammar', grammarIdx: i });
   const previewByUnit = new Map<string, number>();
   TOPICS_100.forEach((t, idx) => { if (t.cat === 'mufredat' && t.unitId && !previewByUnit.has(t.unitId)) previewByUnit.set(t.unitId, idx); });
   UNITS_DATA.forEach((u, uIdx) => {
