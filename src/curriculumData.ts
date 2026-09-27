@@ -84,7 +84,7 @@ export function shuffle<T>(arr: T[]): T[] {
 const BASE_UNITS: UnitModule[] = [
   {
     id: 'mod_a1_1',
-    unitNumber: 1,
+    unitNumber: 7,
     levelGroup: 'A1',
     title: 'Tanışma & Selamlaşma',
     description: 'İlk tanışma, hal hatır sorma ve vedalaşma kalıpları',
@@ -144,7 +144,7 @@ const BASE_UNITS: UnitModule[] = [
   },
   {
     id: 'mod_a1_2',
-    unitNumber: 2,
+    unitNumber: 8,
     levelGroup: 'A1',
     title: 'Aile Tanıtımı',
     description: 'Aile üyelerini tanıtma ve iyelik zamirlerinin temelleri',
@@ -182,7 +182,7 @@ const BASE_UNITS: UnitModule[] = [
   },
   {
     id: 'mod_a1_3',
-    unitNumber: 3,
+    unitNumber: 9,
     levelGroup: 'A1',
     title: 'Kafe & Restoranda Sipariş Verme',
     description: 'Kahve, su sipariş etme ve ödeme yapma diyalogları',
@@ -220,7 +220,7 @@ const BASE_UNITS: UnitModule[] = [
   },
   {
     id: 'mod_a1_4',
-    unitNumber: 4,
+    unitNumber: 10,
     levelGroup: 'A1',
     title: 'Şehir Ulaşımı & Yön Sorma',
     description: 'Metro, taksi ve otobüste yol tarifi alma',
@@ -258,7 +258,7 @@ const BASE_UNITS: UnitModule[] = [
   },
   {
     id: 'mod_a1_5',
-    unitNumber: 5,
+    unitNumber: 1,
     levelGroup: 'A1',
     title: 'Sayılar & Zaman Söyleme',
     description: 'Temel sayılar ve saat sorma-söyleme kalıpları',
@@ -296,7 +296,7 @@ const BASE_UNITS: UnitModule[] = [
   },
   {
     id: 'mod_a1_6',
-    unitNumber: 6,
+    unitNumber: 11,
     levelGroup: 'A1',
     title: 'Hava Durumu & Küçük Sohbet',
     description: 'Hava durumundan bahsetme ve durakta küçük sohbet',

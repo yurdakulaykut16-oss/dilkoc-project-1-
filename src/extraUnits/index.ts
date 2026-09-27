@@ -1,6 +1,6 @@
 // ==========================================================
 // EK MÜFREDAT PAKETİ — 101 yeni ünite
-//   A1 gramer +5  : Ünite 7-11   (ben/benim/benimki/bende — cümle anahtarı)
+//   A1 gramer +5  : Ünite 2-6    (ben/benim/benimki/bende — cümle anahtarı; sohbet üniteleri 7-11 e kaydı)
 //   A2 gündelik +8: Ünite 24-31  (market, kıyafet, kargo, taksi, ev, mutfak, operatör, havalimanı)
 //   A2 aşçılık +10: Ünite 32-41  (eşyalar, malzemeler, ölçüler, ilk tarif, aletler, süt ürünleri, meyveler, içecekler, saklama)
 //   B1 +16        : Ünite 67-82  (iş, emlak, banka, alışveriş, flört başlangıcı, resmî işler)
@@ -31,7 +31,7 @@ import { EXTRA_DAILY2B } from './daily2b';
 import { EXTRA_DAILY2C_B2, EXTRA_DAILY2C_C1 } from './daily2c';
 
 export const EXTRA_UNITS: UnitModule[] = [
-  ...EXTRA_A1_GRAM,  // Ünite 7-11 (A1 — cümle anahtarı)
+  ...EXTRA_A1_GRAM,  // Ünite 2-6 (A1 — cümle anahtarı, müfredatın en başı)
   ...EXTRA_GRAM_CASES, // Ünite 12-21 (A2 — ismin 6 hali + vurgu okulu)
   ...EXTRA_A2,       // Ünite 24-31 (A2)
   ...EXTRA_DAILY2A,  // Ünite 32-41 (A2 — gündelik yaşam 2 kat, parti 1/3)
