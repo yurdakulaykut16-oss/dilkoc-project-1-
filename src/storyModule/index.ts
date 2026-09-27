@@ -26,7 +26,7 @@ export function storyForCheckpoint(checkpoint: number): CheckpointStory | undefi
 /**
  * Bir ünitenin tamamlanmasıyla TETİKLENEN hikayeyi döndürür (kontrol noktası ya da
  * bölüm finali). Yol doğrusal olduğu için her ünitenin en fazla bir hikayesi vardır:
- *   ünite 6 → A1 finali, ünite 10 → kontrol noktası 1, ünite 18 → A2 finali ...
+ *   ünite 6 → A1 finali, ünite 10 → kontrol noktası 1, ünite 26 → A2 finali ...
  * Hikayesi olmayan üniteler için undefined döner.
  */
 export function storyTriggeredAtUnit(unitNumber: number): CheckpointStory | undefined {
@@ -36,7 +36,7 @@ export function storyTriggeredAtUnit(unitNumber: number): CheckpointStory | unde
 /**
  * BÖLÜM FİNALİ KAPISI: verilen ünite numarasından önce biten EN YAKIN bölüm finalini
  * döndürür. Bu final tamamlanmadan o ünite (ve ön-dinleme konusu) açılamaz.
- * Örnek: unitNumber=19 (B1'in ilk ünitesi) → A2 finali (ünite 18'de biter).
+ * Örnek: unitNumber=27 (B1'in ilk ünitesi) → A2 finali (ünite 26'da biter).
  */
 export function gateStoryForUnitNumber(unitNumber: number): CheckpointStory | undefined {
   const gates = STORIES.filter((s) => s.kind === 'levelFinal' && s.unitTo < unitNumber);
@@ -46,9 +46,9 @@ export function gateStoryForUnitNumber(unitNumber: number): CheckpointStory | un
 /** Bir ünite numarasının ait olduğu müfredat bölümünü (A1..C1/C2) döndürür. */
 export function levelOfUnitNumber(unitNumber: number): 'A1' | 'A2' | 'B1' | 'B2' | 'C1/C2' {
   if (unitNumber <= 6) return 'A1';
-  if (unitNumber <= 18) return 'A2';
-  if (unitNumber <= 43) return 'B1';
-  if (unitNumber <= 64) return 'B2';
+  if (unitNumber <= 26) return 'A2';
+  if (unitNumber <= 67) return 'B1';
+  if (unitNumber <= 102) return 'B2';
   return 'C1/C2';
 }
 
