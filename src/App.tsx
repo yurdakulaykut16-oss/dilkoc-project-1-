@@ -267,6 +267,40 @@ const SceneBanner: React.FC<{ icon: string; color: string; label: string }> = ({
   </div>
 );
 
+// Ünite banner'ı: /unit-art/{unitId}.jpg görselini gösterir; görsel yoksa
+// (veya yüklenemezse) otomatik olarak ikonlu SceneBanner'a geri döner.
+const UnitBanner: React.FC<{ unitId: string; icon: string; color: string; label: string }> = ({ unitId, icon, color, label }) => {
+  const [imgOk, setImgOk] = useState(true);
+  useEffect(() => { setImgOk(true); }, [unitId]);
+  if (!imgOk) return <SceneBanner icon={icon} color={color} label={label} />;
+  return (
+    <div style={{
+      border: `1px solid ${color}55`,
+      borderRadius: '16px',
+      marginBottom: '16px',
+      overflow: 'hidden',
+      position: 'relative',
+      background: `linear-gradient(135deg, ${color}35, ${color}0f)`
+    }}>
+      <img
+        src={`/unit-art/${unitId}.jpg`}
+        alt={label}
+        onError={() => setImgOk(false)}
+        style={{ display: 'block', width: '100%', aspectRatio: '16 / 7', objectFit: 'cover' }}
+      />
+      <div style={{
+        position: 'absolute', left: 0, right: 0, bottom: 0,
+        padding: '26px 16px 10px',
+        background: 'linear-gradient(180deg, rgba(10,12,20,0) 0%, rgba(10,12,20,0.82) 100%)',
+        display: 'flex', alignItems: 'center', gap: '10px'
+      }}>
+        <span style={{ fontSize: '22px', lineHeight: 1 }}>{icon}</span>
+        <span style={{ fontSize: '13px', fontWeight: 800, color: '#fff', textShadow: '0 1px 6px rgba(0,0,0,0.6)' }}>{label}</span>
+      </div>
+    </div>
+  );
+};
+
 const ALPHA_BANNER_COLORS = ['#3b82f6', '#10b981', '#f59e0b', '#8b5cf6', '#ec4899', '#14b8a6', '#f97316', '#64748b'];
 
 // ==========================================
@@ -1908,7 +1942,7 @@ export default function App() {
                   const mod = UNITS_DATA[unitIdx];
                   return (
                     <div>
-                      <SceneBanner icon={mod.icon} color={mod.color} label={`${mod.levelGroup} • ${mod.category}`} />
+                      <UnitBanner unitId={mod.id} icon={mod.icon} color={mod.color} label={`${mod.levelGroup} • ${mod.category}`} />
                       <span style={{ fontSize: '11px', fontWeight: 900, background: '#0f172a', color: mod.color, padding: '2px 8px', borderRadius: '4px' }}>ÜNİTE {UNIT_PATH_POS[unitIdx]} GRAMER & İPUÇLARI</span>
                       <h2 style={{ marginTop: '8px', fontSize: '22px' }}>{mod.title}</h2>
 
@@ -1932,7 +1966,7 @@ export default function App() {
                   const mod = UNITS_DATA[unitIdx];
                   return (
                     <div>
-                      <SceneBanner icon={mod.icon} color={mod.color} label={mod.sceneTitle || 'Dizi Sahnesi'} />
+                      <UnitBanner unitId={mod.id} icon={mod.icon} color={mod.color} label={mod.sceneTitle || 'Dizi Sahnesi'} />
                       <span style={{ fontSize: '11px', fontWeight: 900, background: '#0f172a', color: mod.color, padding: '2px 8px', borderRadius: '4px' }}>🎬 DİZİ SAHNESİ</span>
                       <h2 style={{ marginTop: '8px', marginBottom: '2px', fontSize: '22px' }}>{mod.sceneTitle}</h2>
                       <p style={{ color: '#94a3b8', fontSize: '13px', marginTop: 0 }}>{mod.sceneContext}</p>
@@ -2034,7 +2068,7 @@ export default function App() {
                   const w = mod.words[cardIdx];
                   return (
                     <div>
-                      <SceneBanner icon={mod.icon} color={mod.color} label={mod.title} />
+                      <UnitBanner unitId={mod.id} icon={mod.icon} color={mod.color} label={mod.title} />
                       <div style={{ fontSize: '12px', color: '#94a3b8', fontWeight: 700 }}>KELİME {cardIdx + 1} / {mod.words.length}</div>
 
                       <div onClick={() => setIsFlipped(!isFlipped)} style={{ minHeight: '180px', background: '#0f172a', border: '1px solid #334155', borderRadius: '16px', padding: '24px', display: 'flex', flexDirection: 'column', justifyContent: 'center', alignItems: 'center', cursor: 'pointer', margin: '20px 0' }}>
@@ -2067,7 +2101,7 @@ export default function App() {
             {/* EŞLEŞTİRME TESTİ */}
             {screen === 'MATCH' && (
               <div>
-                <SceneBanner icon={UNITS_DATA[unitIdx].icon} color={UNITS_DATA[unitIdx].color} label={UNITS_DATA[unitIdx].title} />
+                <UnitBanner unitId={UNITS_DATA[unitIdx].id} icon={UNITS_DATA[unitIdx].icon} color={UNITS_DATA[unitIdx].color} label={UNITS_DATA[unitIdx].title} />
                 <h3>🧩 Kelimeleri Eşleştir</h3>
                 <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '10px', margin: '20px 0' }}>
                   <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
@@ -2090,7 +2124,7 @@ export default function App() {
             {/* HIZLI TANIMA TESTİ (klavyesiz — Rusça/Kiril klavyesi olmayanlar için 4 seçenekli üretici hatırlama) */}
             {screen === 'TYPING' && (
               <div>
-                <SceneBanner icon={UNITS_DATA[unitIdx].icon} color={UNITS_DATA[unitIdx].color} label={UNITS_DATA[unitIdx].title} />
+                <UnitBanner unitId={UNITS_DATA[unitIdx].id} icon={UNITS_DATA[unitIdx].icon} color={UNITS_DATA[unitIdx].color} label={UNITS_DATA[unitIdx].title} />
                 <h3>⚡ Anlamını Hatırla ve Seç</h3>
                 <p style={{ color: '#94a3b8', fontSize: '13px', marginTop: '-8px' }}>Kelimeyi çevirmeden ÖNCE anlamını zihninden tahmin etmeye çalış, sonra doğru seçeneğe dokun. (Klavye gerekmez.)</p>
                 <div style={{ background: '#0f172a', padding: '24px', borderRadius: '14px', border: '1px solid #334155', textAlign: 'center', margin: '16px 0' }}>
@@ -2108,7 +2142,7 @@ export default function App() {
             {/* CÜMLE KURMA TESTİ */}
             {screen === 'SENTENCE' && (
               <div>
-                <SceneBanner icon={UNITS_DATA[unitIdx].icon} color={UNITS_DATA[unitIdx].color} label={UNITS_DATA[unitIdx].title} />
+                <UnitBanner unitId={UNITS_DATA[unitIdx].id} icon={UNITS_DATA[unitIdx].icon} color={UNITS_DATA[unitIdx].color} label={UNITS_DATA[unitIdx].title} />
                 <h3>💬 Cümleyi Oluştur</h3>
                 {(() => {
                   const s = UNITS_DATA[unitIdx].sentences[sentIdx];
@@ -2139,7 +2173,7 @@ export default function App() {
               <div>
                 {quizContext === 'ALPHA_FINAL' && <SceneBanner icon={`${ALPHABET_LESSONS[alphaIdx].letters[0].upper}${ALPHABET_LESSONS[alphaIdx].letters[0].lower}`} color={ALPHA_BANNER_COLORS[alphaIdx % ALPHA_BANNER_COLORS.length]} label="Alfabe Bitiş Sınavı" />}
                 {quizContext === 'GRAMMAR_FOUNDATION' && <SceneBanner icon={GRAMMAR_FOUNDATION_UNITS[grammarIdx].icon} color={GRAMMAR_FOUNDATION_UNITS[grammarIdx].color} label={GRAMMAR_FOUNDATION_UNITS[grammarIdx].title} />}
-                {(quizContext === 'LISTENING' || quizContext === 'UNIT_FINAL') && <SceneBanner icon={UNITS_DATA[unitIdx].icon} color={UNITS_DATA[unitIdx].color} label={UNITS_DATA[unitIdx].title} />}
+                {(quizContext === 'LISTENING' || quizContext === 'UNIT_FINAL') && <UnitBanner unitId={UNITS_DATA[unitIdx].id} icon={UNITS_DATA[unitIdx].icon} color={UNITS_DATA[unitIdx].color} label={UNITS_DATA[unitIdx].title} />}
                 {quizContext === 'REVIEW' && <SceneBanner icon="🔁" color="#ef4444" label="Genel Tekrar Testi" />}
                 {quizContext === 'SRS_REVIEW' && <SceneBanner icon="📅" color="#f59e0b" label="Aralıklı Tekrar (Spaced Repetition)" />}
                 <div style={{ fontSize: '12px', color: quizContext === 'REVIEW' || quizContext === 'SRS_REVIEW' ? '#f59e0b' : '#38bdf8', fontWeight: 800 }}>

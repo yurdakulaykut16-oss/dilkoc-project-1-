@@ -9,7 +9,7 @@ import type { UnitModule } from '../curriculumData';
 export const EXTRA_A2: UnitModule[] = [
   {
     id: 'mod_a2_x1',
-    unitNumber: 19,
+    unitNumber: 24,
     levelGroup: 'A2',
     title: 'Market Alışverişi Temelleri',
     description: 'Süpermarkette ürün bulma, fiyat sorma ve kasada ödeme',
@@ -49,7 +49,7 @@ export const EXTRA_A2: UnitModule[] = [
   },
   {
     id: 'mod_a2_x2',
-    unitNumber: 20,
+    unitNumber: 25,
     levelGroup: 'A2',
     title: 'Kıyafet Alışverişi & Beden Sorma',
     description: 'Mağazada beden sorma, deneme kabini ve "üzerime oldu/olmadı" kalıpları',
@@ -89,7 +89,7 @@ export const EXTRA_A2: UnitModule[] = [
   },
   {
     id: 'mod_a2_x3',
-    unitNumber: 21,
+    unitNumber: 26,
     levelGroup: 'A2',
     title: 'Kargo, Posta & Paket Takibi',
     description: 'Postanede paket gönderme, teslim alma ve kargo takip diyalogları',
@@ -129,7 +129,7 @@ export const EXTRA_A2: UnitModule[] = [
   },
   {
     id: 'mod_a2_x4',
-    unitNumber: 22,
+    unitNumber: 27,
     levelGroup: 'A2',
     title: 'Taksi Çağırma & Uygulama Kullanma',
     description: 'Uygulamadan taksi çağırma, şoförle konuşma ve "burada durun" kalıpları',
@@ -169,7 +169,7 @@ export const EXTRA_A2: UnitModule[] = [
   },
   {
     id: 'mod_a2_x5',
-    unitNumber: 23,
+    unitNumber: 28,
     levelGroup: 'A2',
     title: 'Ev İşleri & Temizlik Paylaşımı',
     description: 'Bulaşık, çamaşır, çöp — ev işi paylaşma ve rica etme kalıpları',
@@ -209,7 +209,7 @@ export const EXTRA_A2: UnitModule[] = [
   },
   {
     id: 'mod_a2_x6',
-    unitNumber: 24,
+    unitNumber: 29,
     levelGroup: 'A2',
     title: 'Yemek Tarifi & Mutfakta Pişirme',
     description: 'Tarif takip etme, malzemeler ve "kes, kavur, ekle" emir kipleri',
@@ -249,7 +249,7 @@ export const EXTRA_A2: UnitModule[] = [
   },
   {
     id: 'mod_a2_x7',
-    unitNumber: 25,
+    unitNumber: 30,
     levelGroup: 'A2',
     title: 'İnternet, Operatör & Fatura',
     description: 'Hat/paket işlemleri, bakiye yükleme ve "internet çalışmıyor" şikâyeti',
@@ -289,7 +289,7 @@ export const EXTRA_A2: UnitModule[] = [
   },
   {
     id: 'mod_a2_x8',
-    unitNumber: 26,
+    unitNumber: 31,
     levelGroup: 'A2',
     title: 'Havalimanı & Seyahat Hazırlığı',
     description: 'Check-in, bagaj, pasaport kontrolü ve uçuş kalıpları',
