@@ -201,6 +201,177 @@ export const ALPHABET_LESSONS: { id: string; title: string; subtitle: string; le
       { word: 'мы', correct: 'My', distractors: ['Mi', 'Mu', 'Ma'], tr: 'Biz' },
       { word: 'сыр', correct: 'Syr', distractors: ['Sir', 'Sur', 'Sar'], tr: 'Peynir' }
     ]
+  },
+  {
+    id: 'alpha_9',
+    title: 'Vurgu Okulu',
+    subtitle: 'Vurgusuz hecelerde sesler nasıl değişir? (akanje & ikanje pratiği)',
+    letters: [
+      { id: 'r9_o', upper: 'О', lower: 'о', translit: 'A (vurgusuz)', soundHint: 'Vurgusuz О her zaman A okunur', phoneticRule: 'Молоко → "Malakó": kelimedeki İKİ vurgusuz О da A sesine dönüştü, sadece vurgulu son hece O kaldı... o da yok, o da A değil O! Vurgu sondadır: ko hecesi net O okunur.', examples: [{ ru: 'МОЛОКО', reading: 'Malakó', tr: 'Süt' }, { ru: 'ХОРОШО', reading: 'Haraşó', tr: 'İyi / Güzel' }] },
+      { id: 'r9_e', upper: 'Е', lower: 'е', translit: 'İ (vurgusuz)', soundHint: 'Vurgusuz Е zayıflar, İ gibi duyulur', phoneticRule: 'Телефон → "Tilifón": iki vurgusuz Е de İ sesine yaklaşır (ikanje kuralı).', examples: [{ ru: 'ТЕЛЕФОН', reading: 'Tilifón', tr: 'Telefon' }, { ru: 'СЕСТРА', reading: 'Sistrá', tr: 'Kız kardeş' }] },
+      { id: 'r9_ya', upper: 'Я', lower: 'я', translit: 'Yİ (vurgusuz)', soundHint: 'Vurgusuz Я bile İ sesine kayar', phoneticRule: 'Язык → "Yizík": vurgusuz Я, YA değil Yİ gibi okunur.', examples: [{ ru: 'ЯЗЫК', reading: 'Yizík', tr: 'Dil (lisan)' }, { ru: 'ЯЙЦО', reading: 'Yiytsó', tr: 'Yumurta' }] },
+    ],
+    readingDrills: [
+      { word: 'молоко', correct: 'Malakó', distractors: ['Moloko', 'Malóka', 'Mólaka'], tr: 'Süt' },
+      { word: 'хорошо', correct: 'Haraşó', distractors: ['Horoşo', 'Haróşa', 'Hóraşa'], tr: 'İyi / Güzel' },
+      { word: 'спасибо', correct: 'Spasíba', distractors: ['Spasibó', 'Spósiba', 'Spasíbo'], tr: 'Teşekkürler' },
+      { word: 'погода', correct: 'Pagóda', distractors: ['Pogóda', 'Pagodá', 'Pógada'], tr: 'Hava durumu' },
+      { word: 'голова', correct: 'Galavá', distractors: ['Golová', 'Gálava', 'Galóva'], tr: 'Kafa' },
+      { word: 'дорога', correct: 'Daróga', distractors: ['Doróga', 'Darogá', 'Dóraga'], tr: 'Yol' },
+      { word: 'собака', correct: 'Sabáka', distractors: ['Sobáka', 'Sabaká', 'Sóbaka'], tr: 'Köpek' },
+      { word: 'окно', correct: 'Aknó', distractors: ['Oknó', 'Ákna', 'Okná'], tr: 'Pencere' }
+    ]
+  },
+  {
+    id: 'alpha_10',
+    title: 'Sedasızlaşma Dojo',
+    subtitle: 'Kelime sonundaki Б, В, Г, Д, Ж, З seslerini sertleştirme sanatı',
+    letters: [
+      { id: 'r10_b', upper: 'Б', lower: 'б (sonda)', translit: 'P (sonda)', soundHint: 'Kelime sonunda Б → P olur', phoneticRule: 'Хлеб → "Hlyep": sondaki Б sedasızlaşıp P okunur.', examples: [{ ru: 'ХЛЕБ', reading: 'Hlyep', tr: 'Ekmek' }, { ru: 'ЗУБ', reading: 'Zup', tr: 'Diş' }] },
+      { id: 'r10_d', upper: 'Д', lower: 'д (sonda)', translit: 'T (sonda)', soundHint: 'Kelime sonunda Д → T olur', phoneticRule: 'Город → "Górat": sondaki Д sedasızlaşıp T okunur.', examples: [{ ru: 'ГОРОД', reading: 'Górat', tr: 'Şehir' }, { ru: 'САД', reading: 'Sat', tr: 'Bahçe' }] },
+      { id: 'r10_v', upper: 'В', lower: 'в (sonda)', translit: 'F (sonda)', soundHint: 'Kelime sonunda ve sert ünsüz önünde В → F', phoneticRule: 'Любовь → "Lyubóf\'": sondaki ВЬ, F gibi okunur; Автобус → "Aftóbus": Т\'den önceki В de F olur.', examples: [{ ru: 'ЛЮБОВЬ', reading: "Lyubóf'", tr: 'Aşk' }, { ru: 'АВТОБУС', reading: 'Aftóbus', tr: 'Otobüs' }] },
+      { id: 'r10_g', upper: 'Г', lower: 'г (sonda)', translit: 'K (sonda)', soundHint: 'Kelime sonunda Г → K olur', phoneticRule: 'Друг → "Druk": sondaki Г sedasızlaşıp K okunur.', examples: [{ ru: 'ДРУГ', reading: 'Druk', tr: 'Arkadaş' }, { ru: 'СНЕГ', reading: 'Snyek', tr: 'Kar' }] },
+      { id: 'r10_zh', upper: 'Ж З', lower: 'ж з (sonda)', translit: 'Ş / S (sonda)', soundHint: 'Sonda Ж → Ş, З → S olur', phoneticRule: 'Нож → "Noş", Глаз → "Glas": vızıltılı sesler sonda ıslığa döner.', examples: [{ ru: 'НОЖ', reading: 'Noş', tr: 'Bıçak' }, { ru: 'ГЛАЗ', reading: 'Glas', tr: 'Göz' }] },
+    ],
+    readingDrills: [
+      { word: 'хлеб', correct: 'Hlyep', distractors: ['Hlyeb', 'Hilep', 'Hleb'], tr: 'Ekmek' },
+      { word: 'город', correct: 'Górat', distractors: ['Górad', 'Garót', 'Gorod'], tr: 'Şehir' },
+      { word: 'друг', correct: 'Druk', distractors: ['Drug', 'Duruk', 'Drúga'], tr: 'Arkadaş' },
+      { word: 'нож', correct: 'Noş', distractors: ['Noj', 'Nош', 'Nója'], tr: 'Bıçak' },
+      { word: 'глаз', correct: 'Glas', distractors: ['Glaz', 'Gılas', 'Glása'], tr: 'Göz' },
+      { word: 'снег', correct: 'Snyek', distractors: ['Snyeg', 'Sneg', 'Sinek'], tr: 'Kar' },
+      { word: 'водка', correct: 'Vótka', distractors: ['Vódka', 'Vatká', 'Vodak'], tr: 'Votka' },
+      { word: 'завтра', correct: 'Záftra', distractors: ['Závtra', 'Zaftará', 'Zavatra'], tr: 'Yarın' },
+      { word: 'всё', correct: 'Fsyo', distractors: ['Vsyo', 'Fıse', 'Vise'], tr: 'Her şey' }
+    ]
+  },
+  {
+    id: 'alpha_11',
+    title: 'Yumuşatma Atölyesi',
+    subtitle: 'Ь işaretiyle biten kelimeleri gerçekten "ince" okuma pratiği',
+    letters: [
+      { id: 'r11_t', upper: 'ТЬ', lower: 'ть', translit: "T'", soundHint: 'İnce T — dilin ortası damağa yapışır', phoneticRule: 'Мать → "Mat\'": sert "mat" değil, T sesi incelerek biter.', examples: [{ ru: 'МАТЬ', reading: "Mat'", tr: 'Anne' }, { ru: 'ЖИТЬ', reading: "Jıt'", tr: 'Yaşamak' }] },
+      { id: 'r11_n', upper: 'НЬ', lower: 'нь', translit: "N'", soundHint: 'İnce N — "ny" gibi ama tek ses', phoneticRule: 'День → "Dyen\'": N sesi yumuşayarak biter, "den" değil.', examples: [{ ru: 'ДЕНЬ', reading: "Dyen'", tr: 'Gün' }, { ru: 'ОСЕНЬ', reading: "Ósin'", tr: 'Sonbahar' }] },
+      { id: 'r11_l', upper: 'ЛЬ', lower: 'ль', translit: "L'", soundHint: 'İnce L — Türkçe "gel" kelimesindeki L gibi', phoneticRule: 'Соль → "Sol\'": kalın Rus L\'si burada incelir.', examples: [{ ru: 'СОЛЬ', reading: "Sol'", tr: 'Tuz' }, { ru: 'МЕДАЛЬ', reading: "Midál'", tr: 'Madalya' }] },
+      { id: 'r11_r', upper: 'РЬ', lower: 'рь', translit: "R'", soundHint: 'İnce, titrek R', phoneticRule: 'Дверь → "Dvyer\'": R titreşirken incelir.', examples: [{ ru: 'ДВЕРЬ', reading: "Dvyer'", tr: 'Kapı' }, { ru: 'ЦАРЬ', reading: "Tsar'", tr: 'Çar' }] },
+    ],
+    readingDrills: [
+      { word: 'мать', correct: "Mat'", distractors: ['Mat', 'Matı', 'Máti'], tr: 'Anne' },
+      { word: 'день', correct: "Dyen'", distractors: ['Den', 'Dyen', 'Déni'], tr: 'Gün' },
+      { word: 'соль', correct: "Sol'", distractors: ['Sol', 'Solı', 'Sóli'], tr: 'Tuz' },
+      { word: 'гость', correct: "Gost'", distractors: ['Gost', 'Gostı', 'Gósti'], tr: 'Misafir' },
+      { word: 'дверь', correct: "Dvyer'", distractors: ['Dver', 'Dıver', 'Dvyera'], tr: 'Kapı' },
+      { word: 'осень', correct: "Ósin'", distractors: ['Osen', 'Asén', 'Ósen'], tr: 'Sonbahar' },
+      { word: 'семь', correct: "Syem'", distractors: ['Sem', 'Syem', 'Semi'], tr: 'Yedi' },
+      { word: 'десять', correct: "Dyésit'", distractors: ['Desyat', 'Disyát', 'Dyesyat'], tr: 'On' },
+      { word: 'любить', correct: "Lyubít'", distractors: ['Lyubit', 'Lubít', 'Lyúbit'], tr: 'Sevmek' }
+    ]
+  },
+  {
+    id: 'alpha_12',
+    title: 'Hece Kuralları',
+    subtitle: 'ЖИ-ШИ, ЧА-ЩА, ЧУ-ЩУ, ЦИ — Rus okullarında ezberletilen 4 altın hece',
+    letters: [
+      { id: 'r12_zhi', upper: 'ЖИ ШИ', lower: 'жи ши', translit: 'JI / ŞI', soundHint: 'И yazılır ama I okunur!', phoneticRule: 'Ж ve Ş HER ZAMAN serttir: Машина → "Maşína" derken ş\'den sonraki ses aslında kalın I\'dır.', examples: [{ ru: 'МАШИНА', reading: 'Maşína', tr: 'Araba' }, { ru: 'ЖИЗНЬ', reading: "Jızn'", tr: 'Hayat' }] },
+      { id: 'r12_cha', upper: 'ЧА ЩА', lower: 'ча ща', translit: 'ÇA / ŞÇA', soundHint: 'Ч ve Щ her zaman yumuşaktır', phoneticRule: 'Я değil А yazılır: Чай → "Çay", Площадь → "Plóşşit\'".', examples: [{ ru: 'ЧАЙ', reading: 'Çay', tr: 'Çay' }, { ru: 'ПЛОЩАДЬ', reading: "Plóşşit'", tr: 'Meydan' }] },
+      { id: 'r12_chu', upper: 'ЧУ ЩУ', lower: 'чу щу', translit: 'ÇU / ŞÇU', soundHint: 'Ю değil У yazılır', phoneticRule: 'Чудо → "Çúda", Щука → "Şşúka" — kural gereği hep У harfi kullanılır.', examples: [{ ru: 'ЧУДО', reading: 'Çúda', tr: 'Mucize' }, { ru: 'ЩУКА', reading: 'Şşúka', tr: 'Turna balığı' }] },
+      { id: 'r12_tsi', upper: 'ЦИ', lower: 'ци', translit: 'TSI', soundHint: 'Ц her zaman serttir, И → I okunur', phoneticRule: 'Цирк → "Tsırk": И yazılsa da kalın I duyulur.', examples: [{ ru: 'ЦИРК', reading: 'Tsırk', tr: 'Sirk' }, { ru: 'ЦИФРА', reading: 'Tsıfra', tr: 'Rakam' }] },
+    ],
+    readingDrills: [
+      { word: 'машина', correct: 'Maşína', distractors: ['Maşiná', 'Máşina', 'Mişána'], tr: 'Araba' },
+      { word: 'жизнь', correct: "Jızn'", distractors: ['Jizn', 'Jízni', 'Zijn'], tr: 'Hayat' },
+      { word: 'час', correct: 'Çyas', distractors: ['Ças', 'Çyás', 'Tsas'], tr: 'Saat (zaman dilimi)' },
+      { word: 'чай', correct: 'Çay', distractors: ['Tsay', 'Şay', 'Çya'], tr: 'Çay' },
+      { word: 'площадь', correct: "Plóşşit'", distractors: ['Ploşad', 'Plaşşát', 'Plóşad'], tr: 'Meydan' },
+      { word: 'чудо', correct: 'Çúda', distractors: ['Çudó', 'Şúda', 'Tsúda'], tr: 'Mucize' },
+      { word: 'щука', correct: 'Şşúka', distractors: ['Şuká', 'Çúka', 'Skúka'], tr: 'Turna balığı' },
+      { word: 'цирк', correct: 'Tsırk', distractors: ['Tsirk', 'Sirk', 'Çırk'], tr: 'Sirk' }
+    ]
+  },
+  {
+    id: 'alpha_13',
+    title: 'Sessiz Harf Avı',
+    subtitle: 'Yazılan ama OKUNMAYAN harfler: солнце, сердце, здравствуйте...',
+    letters: [
+      { id: 'r13_l', upper: 'ЛНЦ', lower: 'лнц', translit: 'NTS (Л düşer)', soundHint: 'СОЛНЦЕ kelimesinde Л okunmaz', phoneticRule: 'Солнце → "Sóntse": ЛНЦ üçlüsünde Л sessizce kaybolur.', examples: [{ ru: 'СОЛНЦЕ', reading: 'Sóntse', tr: 'Güneş' }] },
+      { id: 'r13_d', upper: 'РДЦ / ЗДН', lower: 'рдц / здн', translit: 'RTS / ZN (Д düşer)', soundHint: 'СЕРДЦЕ ve ПРАЗДНИК kelimelerinde Д okunmaz', phoneticRule: 'Сердце → "Syértse", Праздник → "Práznik": Д harfi iki ünsüz arasında düşer.', examples: [{ ru: 'СЕРДЦЕ', reading: 'Syértse', tr: 'Kalp' }, { ru: 'ПРАЗДНИК', reading: 'Práznik', tr: 'Bayram' }] },
+      { id: 'r13_v', upper: 'ВСТВ', lower: 'вств', translit: 'STV (ilk В düşer)', soundHint: 'ЗДРАВСТВУЙТЕ ve ЧУВСТВО kelimelerinde ilk В okunmaz', phoneticRule: 'Здравствуйте → "Zdrástvuytye", Чувство → "Çústva": ВСТВ kümesindeki ilk В düşer.', examples: [{ ru: 'ЗДРАВСТВУЙТЕ', reading: 'Zdrástvuytye', tr: 'Merhaba (resmi)' }, { ru: 'ЧУВСТВО', reading: 'Çústva', tr: 'Duygu' }] },
+      { id: 'r13_t', upper: 'СТН', lower: 'стн', translit: 'SN (Т düşer)', soundHint: 'ЛЕСТНИЦА kelimesinde Т okunmaz', phoneticRule: 'Лестница → "Lyésnitsa", Известный → "Izvyésnıy": СТН kümesinde Т düşer.', examples: [{ ru: 'ЛЕСТНИЦА', reading: 'Lyésnitsa', tr: 'Merdiven' }, { ru: 'ИЗВЕСТНЫЙ', reading: 'Izvyésnıy', tr: 'Ünlü / Bilinen' }] },
+    ],
+    readingDrills: [
+      { word: 'солнце', correct: 'Sóntse', distractors: ['Sólntse', 'Salnısé', 'Sólnitse'], tr: 'Güneş' },
+      { word: 'сердце', correct: 'Syértse', distractors: ['Syérdtse', 'Serdisé', 'Sirdtsé'], tr: 'Kalp' },
+      { word: 'лестница', correct: 'Lyésnitsa', distractors: ['Lyéstnitsa', 'Listnítsa', 'Lesnitsá'], tr: 'Merdiven' },
+      { word: 'чувство', correct: 'Çústva', distractors: ['Çúvstva', 'Çuvusto', 'Tsústva'], tr: 'Duygu' },
+      { word: 'праздник', correct: 'Práznik', distractors: ['Prázdnik', 'Prazník', 'Pırazdnik'], tr: 'Bayram' },
+      { word: 'поздно', correct: 'Pózna', distractors: ['Pózdna', 'Paznó', 'Pozıdno'], tr: 'Geç' },
+      { word: 'счастье', correct: 'Şşástye', distractors: ['Sçastye', 'Şastyé', 'Sşásti'], tr: 'Mutluluk' },
+      { word: 'известный', correct: 'Izvyésnıy', distractors: ['Izvyéstnıy', 'İzvestní', 'Izvisnói'], tr: 'Ünlü / Bilinen' }
+    ]
+  },
+  {
+    id: 'alpha_14',
+    title: 'Gizli V Kuralı',
+    subtitle: 'ЕГО/-ОГО ekleri "-YİVO/-OVA" okunur + -ТСЯ = -TSA',
+    letters: [
+      { id: 'r14_ego', upper: 'ЕГО', lower: 'его', translit: 'YİVÓ (Г → V!)', soundHint: 'Bu ekteki Г her zaman V okunur', phoneticRule: 'Его → "Yivó", Сегодня → "Sivódnya": tarihî bir istisna, Г burada V\'dir.', examples: [{ ru: 'ЕГО', reading: 'Yivó', tr: 'Onun / Onu' }, { ru: 'СЕГОДНЯ', reading: 'Sivódnya', tr: 'Bugün' }] },
+      { id: 'r14_ogo', upper: '-ОГО', lower: '-ого', translit: '-OVA (Г → V!)', soundHint: 'Sıfat çekim eki -ого da V ile okunur', phoneticRule: 'Ничего → "Niçivó", Красного → "Krásnava": ek içindeki Г daima V.', examples: [{ ru: 'НИЧЕГО', reading: 'Niçivó', tr: 'Hiçbir şey' }, { ru: 'КРАСНОГО', reading: 'Krásnava', tr: 'Kırmızının' }] },
+      { id: 'r14_tsya', upper: '-ТСЯ', lower: '-тся / -ться', translit: '-TSA', soundHint: 'İki yazım, TEK ses: uzun TS + A', phoneticRule: 'Нравится → "Nrávitsa", Учиться → "Uçítsa": -тся ve -ться aynı şekilde okunur.', examples: [{ ru: 'НРАВИТСЯ', reading: 'Nrávitsa', tr: 'Hoşa gidiyor' }, { ru: 'УЧИТЬСЯ', reading: 'Uçítsa', tr: 'Okumak / Öğrenim görmek' }] },
+    ],
+    readingDrills: [
+      { word: 'его', correct: 'Yivó', distractors: ['Yegó', 'Égo', 'Yigó'], tr: 'Onun / Onu' },
+      { word: 'сегодня', correct: 'Sivódnya', distractors: ['Segódnya', 'Sigadnyá', 'Sevódna'], tr: 'Bugün' },
+      { word: 'ничего', correct: 'Niçivó', distractors: ['Niçegó', 'Níçego', 'Niçivá'], tr: 'Hiçbir şey' },
+      { word: 'нравится', correct: 'Nrávitsa', distractors: ['Nrávitsya', 'Nravítsa', 'Narávitsa'], tr: 'Hoşa gidiyor' },
+      { word: 'учится', correct: 'Úçitsa', distractors: ['Úçitsya', 'Uçítsa', 'Uçisyá'], tr: 'Ders çalışıyor / Okuyor' },
+      { word: 'красного', correct: 'Krásnava', distractors: ['Krásnogo', 'Krasnavá', 'Kırásnago'], tr: 'Kırmızının' },
+      { word: 'русского', correct: 'Rúskava', distractors: ['Rússkogo', 'Ruskagó', 'Rúskogo'], tr: 'Rusçanın / Rus\'un' },
+      { word: 'одного', correct: 'Adnavó', distractors: ['Odnogó', 'Ádnogo', 'Adnagá'], tr: 'Birinin' }
+    ]
+  },
+  {
+    id: 'alpha_15',
+    title: 'Şehir Tabelaları',
+    subtitle: 'Moskova sokağında hayatta kalma: gerçek tabelaları oku',
+    letters: [
+      { id: 'r15_apteka', upper: 'АПТЕКА', lower: 'аптека', translit: 'Aptyéka', soundHint: 'Yeşil haçlı tabela = eczane', phoneticRule: 'Vurgu ortada: ap-TYÉ-ka. Her köşede bir tane vardır.', examples: [{ ru: 'АПТЕКА', reading: 'Aptyéka', tr: 'Eczane' }] },
+      { id: 'r15_vyhod', upper: 'ВЫХОД', lower: 'выход', translit: 'Vıhat', soundHint: 'Metrodaki en hayati kelime: ÇIKIŞ', phoneticRule: 'Выход → "Vıhat": sondaki Д sedasızlaşır (T). ВХОД (giriş) ise "Fhot" okunur — В burada F!', examples: [{ ru: 'ВЫХОД', reading: 'Vıhat', tr: 'Çıkış' }, { ru: 'ВХОД', reading: 'Fhot', tr: 'Giriş' }] },
+      { id: 'r15_kassa', upper: 'КАССА', lower: 'касса', translit: 'Kássa', soundHint: 'Çift С uzun okunur', phoneticRule: 'Касса → "Kás-sa": çift ünsüz hafifçe uzatılır.', examples: [{ ru: 'КАССА', reading: 'Kássa', tr: 'Kasa / Gişe' }] },
+      { id: 'r15_magazin', upper: 'МАГАЗИН', lower: 'магазин', translit: 'Magazín', soundHint: 'Dergi değil, MARKET demek!', phoneticRule: 'Магазин → mağaza/market ("yalancı dost" kelime: magazin dergisi değildir).', examples: [{ ru: 'МАГАЗИН', reading: 'Magazín', tr: 'Market / Mağaza' }, { ru: 'ПРОДУКТЫ', reading: 'Pradúktı', tr: 'Gıda market' }] },
+    ],
+    readingDrills: [
+      { word: 'магазин', correct: 'Magazín', distractors: ['Mágazin', 'Magázin', 'Magazí'], tr: 'Market / Mağaza' },
+      { word: 'аптека', correct: 'Aptyéka', distractors: ['Áptika', 'Aptiká', 'Apteká'], tr: 'Eczane' },
+      { word: 'вокзал', correct: 'Vagzál', distractors: ['Vokzál', 'Vágzal', 'Vokazál'], tr: 'Gar / Tren istasyonu' },
+      { word: 'больница', correct: "Bal'nítsa", distractors: ['Bolnitsá', 'Bólnitsa', 'Balnitsá'], tr: 'Hastane' },
+      { word: 'ресторан', correct: 'Ristarán', distractors: ['Restorán', 'Réstoran', 'Ristorána'], tr: 'Restoran' },
+      { word: 'остановка', correct: 'Astanófka', distractors: ['Ostanóvka', 'Astanovká', 'Óstanofka'], tr: 'Durak' },
+      { word: 'вход', correct: 'Fhot', distractors: ['Vhod', 'Vıhot', 'Fıhod'], tr: 'Giriş' },
+      { word: 'туалет', correct: 'Tualyét', distractors: ['Túalet', 'Tualét', 'Tvalyet'], tr: 'Tuvalet' },
+      { word: 'метро', correct: 'Mitró', distractors: ['Métro', 'Mitrá', 'Metró'], tr: 'Metro' }
+    ]
+  },
+  {
+    id: 'alpha_16',
+    title: 'Hız Okuma Finali',
+    subtitle: 'Uzun kelime maratonu — buradan geçen her tabelayı okur!',
+    letters: [
+      { id: 'r16_pozh', upper: 'ПОЖАЛУЙСТА', lower: 'пожалуйста', translit: 'Pajálusta', soundHint: 'Günde 50 kez duyacaksın: LÜTFEN / RİCA EDERİM', phoneticRule: 'Пожалуйста → "Pajálusta": УЙ hecesindeki Й hızlı konuşmada kaybolur.', examples: [{ ru: 'ПОЖАЛУЙСТА', reading: 'Pajálusta', tr: 'Lütfen / Rica ederim' }] },
+      { id: 'r16_prepod', upper: 'ПРЕПОДАВАТЕЛЬ', lower: 'преподаватель', translit: "Pripadavátil'", soundHint: '14 harf ama korkma: pri-pa-da-VÁ-til', phoneticRule: 'Uzun kelimeleri VURGULU heceden geriye doğru kur: ВА → давá → падавá → припадавátil\'.', examples: [{ ru: 'ПРЕПОДАВАТЕЛЬ', reading: "Pripadavátil'", tr: 'Öğretim görevlisi' }] },
+      { id: 'r16_dosto', upper: 'ДОСТОПРИМЕЧАТЕЛЬНОСТЬ', lower: 'достопримечательность', translit: "Dastaprimiçátil'nast'", soundHint: 'Rusçanın en ünlü canavar kelimesi: GEZİLECEK YER', phoneticRule: '22 harf! Parçala: даста-прими-ЧÁ-тиль-насть. Turist rehberlerinin göz bebeği.', examples: [{ ru: 'ДОСТОПРИМЕЧАТЕЛЬНОСТЬ', reading: "Dastaprimiçátil'nast'", tr: 'Gezilecek yer' }] },
+      { id: 'r16_zdor', upper: 'ЗДОРОВЬЕ', lower: 'здоровье', translit: 'Zdaróvye', soundHint: 'Kadeh kaldırırken: На здоровье!', phoneticRule: 'ВЬЕ üçlüsü "vye" diye tek hamlede okunur: zda-RÓV-ye.', examples: [{ ru: 'ЗДОРОВЬЕ', reading: 'Zdaróvye', tr: 'Sağlık' }] },
+    ],
+    readingDrills: [
+      { word: 'пожалуйста', correct: 'Pajálusta', distractors: ['Pojaluystá', 'Pajaluystá', 'Pójalusta'], tr: 'Lütfen / Rica ederim' },
+      { word: 'преподаватель', correct: "Pripadavátil'", distractors: ['Prepodavátel', 'Pripodavatél', 'Prípadavatil'], tr: 'Öğretim görevlisi' },
+      { word: 'путешествие', correct: 'Putişéstviye', distractors: ['Puteşestvié', 'Pútişestvie', 'Putişestvíye'], tr: 'Seyahat' },
+      { word: 'поздравляю', correct: 'Pazdravlyáyu', distractors: ['Pozdravlyayú', 'Pázdravlyayu', 'Pozıdravlyáyu'], tr: 'Tebrik ederim' },
+      { word: 'международный', correct: 'Mijdunaródnıy', distractors: ['Mejdunárodnıy', 'Mijdunarodní', 'Méjdunarodnıy'], tr: 'Uluslararası' },
+      { word: 'достопримечательность', correct: "Dastaprimiçátil'nast'", distractors: ['Dostoprimeçatelnóst', 'Dastáprimeçatilnast', 'Dostoprímeçatelnost'], tr: 'Gezilecek yer' },
+      { word: 'электричество', correct: 'Eliktríçistva', distractors: ['Elektriçestvó', 'Eléktriçestva', 'Eliktriçistvá'], tr: 'Elektrik' },
+      { word: 'четверг', correct: 'Çitvyérk', distractors: ['Çetvérg', 'Çítverk', 'Çitvyérg'], tr: 'Perşembe' },
+      { word: 'здоровье', correct: 'Zdaróvye', distractors: ['Zdórovye', 'Zdaravyé', 'Zıdorovye'], tr: 'Sağlık' }
+    ]
   }
 ];
 
@@ -356,7 +527,7 @@ export default function App() {
   const [activeTab, setActiveTab] = useState<'MAP' | 'PROFILE' | 'MISTAKES' | 'METHODS' | 'CONNECTIONS'>('MAP');
   const [screen, setScreen] = useState<'MAP' | 'ALPHA' | 'ALPHA_CHECK' | 'ALPHA_READING' | 'GRAMMAR' | 'TOPIC' | 'TOPIC_TEST' | 'STORY' | 'DIALOG' | 'SMESHARIKI' | 'FLASHCARD' | 'MATCH' | 'TYPING' | 'SENTENCE' | 'QUIZ' | 'UNIT_STORY' | 'STORY_TEST' | 'STORY_RESULT' | 'CHECKPOINT_STORY'>('MAP');
   // Sınav/test motorunun hangi bağlamda çalıştığını belirtir: her biri bittiğinde farklı bir sonraki adıma geçer
-  const [quizContext, setQuizContext] = useState<'ALPHA_FINAL' | 'GRAMMAR_FOUNDATION' | 'LISTENING' | 'UNIT_FINAL' | 'REVIEW' | 'SRS_REVIEW'>('UNIT_FINAL');
+  const [quizContext, setQuizContext] = useState<'ALPHA_FINAL' | 'GRAMMAR_FOUNDATION' | 'LISTENING' | 'UNIT_FINAL' | 'REVIEW' | 'SRS_REVIEW' | 'MARATHON'>('UNIT_FINAL');
   // Harf bazlı anlık tanıma testi
   const [alphaCheckQ, setAlphaCheckQ] = useState<{ type: 'reading' | 'listen'; prompt: string; correct: string; options: string[] } | null>(null);
   // Okuma testi (kelime okuma alıştırması) durumu
@@ -863,16 +1034,61 @@ export default function App() {
     setScreen('QUIZ');
   };
 
+  // ==========================================
+  // KALICI ÖĞRENME — KARMA TEKRAR ENJEKSİYONU (Interleaving + Genişleyen Aralık)
+  // Bir ünite %100 doğru tamamlansa BİLE kelimeleri kaybolmaz: sonraki HER ünitenin
+  // bitiş sınavına, önceki ünitelerden seçilen "🔁 KALICI TEKRAR" soruları karışır.
+  // Seçim iki bilimsel ilkeye dayanır:
+  //  1) Genişleyen aralık (expanding retrieval): 1, 2, 3, 5, 8, 13, 21 ünite geriden kelime çekilir —
+  //     yeni öğrenilen sık, eskiden öğrenilen seyrek ama DÜZENLİ sorulur.
+  //  2) Kümülatif rastgele örnekleme (RST — araştırmalarda kümülatif sınavdan daha dengeli
+  //     bulunmuştur): TÜM geçmiş ünitelerden rastgele örnek eklenir, hiçbir kelime "emekli" olmaz.
+  //  + Üretim etkisi (production effect): soruların yarısı ters yönde (TR → RU) sorulur.
+  //  + Vadesi gelen Aralıklı Tekrar (SRS) kelimeleri öncelik alır; doğru cevap kutu atlatır.
+  const buildReviewInjection = (mod: UnitModule, count: number) => {
+    const prevUnits = UNITS_DATA.filter(u => u.unitNumber < mod.unitNumber);
+    if (prevUnits.length === 0 || count <= 0) return [] as any[];
+    const pool: WordDetail[] = [];
+    [1, 2, 3, 5, 8, 13, 21].forEach(off => {
+      const u = prevUnits.find(x => x.unitNumber === mod.unitNumber - off);
+      if (u) pool.push(...shuffle(u.words).slice(0, 4));
+    });
+    pool.push(...shuffle(prevUnits.flatMap(u => u.words)).slice(0, 10));
+    const dueRu = new Set(srsBank.filter(i => i.nextReview <= Date.now()).map(i => i.ru));
+    const uniq = [...new Map(pool.map(w => [w.ru, w])).values()].filter(w => !mod.words.some(mw => mw.ru === w.ru));
+    const prioritized = [...uniq].sort((a, b) => (dueRu.has(b.ru) ? 1 : 0) - (dueRu.has(a.ru) ? 1 : 0));
+    return prioritized.slice(0, count).map((w, i) => {
+      if (i % 2 === 1) {
+        // Üretim etkisi: Türkçeden Rusçayı GERİ ÇAĞIRMAK, pasif tanımadan çok daha güçlü iz bırakır.
+        return {
+          prompt: `🔁 KALICI TEKRAR (eski üniteden) — "${w.tr}" kelimesinin RUSÇASI hangisi?`,
+          correct: w.ru,
+          options: shuffle([w.ru, ...shuffle(ALL_WORDS.filter(x => x.ru !== w.ru)).slice(0, 3).map(x => x.ru)]),
+          ru: w.ru, tr: w.tr, review: true
+        };
+      }
+      return {
+        prompt: `🔁 KALICI TEKRAR (eski üniteden) — "${w.ru}" ne anlama geliyordu?`,
+        correct: w.tr,
+        options: shuffle([w.tr, ...shuffle(ALL_WORDS.filter(x => x.tr !== w.tr)).slice(0, 3).map(x => x.tr)]),
+        ru: w.ru, tr: w.tr, review: true
+      };
+    });
+  };
+
   const startUnitQuiz = () => {
-    const uWords = UNITS_DATA[unitIdx].words;
+    const mod = UNITS_DATA[unitIdx];
+    const uWords = mod.words;
     const q = uWords.map(w => ({
       prompt: `"${w.ru}" kelimesinin Türkçe karşılığı nedir?`,
       correct: w.tr,
       options: shuffle([w.tr, ...shuffle(ALL_WORDS.filter(x => x.tr !== w.tr)).slice(0, 3).map(x => x.tr)]),
       ru: w.ru, tr: w.tr
     }));
+    // Her ünite sınavına 5 adet "eski kelime" sorusu karışır (kalıcı öğrenme motoru).
+    const reviewQ = buildReviewInjection(mod, 5);
     setQuizContext('UNIT_FINAL');
-    setQuizQuestions(shuffle(q));
+    setQuizQuestions(shuffle([...q, ...reviewQ]));
     setQuizIdx(0);
     setScreen('QUIZ');
   };
@@ -1131,6 +1347,39 @@ export default function App() {
     setScreen('QUIZ');
   };
 
+  // 🔀 KARMA MARATON (Kümülatif Rastgele Örnekleme Sınavı):
+  // Tamamlanmış TÜM ünitelerin kelime havuzundan rastgele 15 soru çeker — vadesi gelmemiş
+  // olsa bile her kelime her an sorulabilir; hiçbir bilgi "bitti" rafına kalkmaz.
+  // Araştırmalar (randomly sampled tests), bu yöntemin tüm kelimeleri dengeli biçimde
+  // canlı tuttuğunu gösteriyor. Soruların yarısı üretim yönünde (TR → RU) sorulur.
+  const startMarathon = () => {
+    const doneUnits = UNITS_DATA.filter(u => completedUnits.includes(u.id));
+    const pool = doneUnits.flatMap(u => u.words);
+    if (pool.length === 0) return;
+    const sample = shuffle(pool).slice(0, 15);
+    const q = sample.map((w, i) => {
+      if (i % 2 === 1) {
+        return {
+          prompt: `🔀 MARATON — "${w.tr}" kelimesinin RUSÇASI hangisi?`,
+          correct: w.ru,
+          options: shuffle([w.ru, ...shuffle(ALL_WORDS.filter(x => x.ru !== w.ru)).slice(0, 3).map(x => x.ru)]),
+          ru: w.ru, tr: w.tr
+        };
+      }
+      return {
+        prompt: `🔀 MARATON — "${w.ru}" ne anlama geliyor?`,
+        correct: w.tr,
+        options: shuffle([w.tr, ...shuffle(ALL_WORDS.filter(x => x.tr !== w.tr)).slice(0, 3).map(x => x.tr)]),
+        ru: w.ru, tr: w.tr
+      };
+    });
+    setQuizContext('MARATHON');
+    setQuizQuestions(q);
+    setQuizIdx(0);
+    setActiveTab('MAP');
+    setScreen('QUIZ');
+  };
+
   const handleQuizAnswer = (ans: string) => {
     const q = quizQuestions[quizIdx];
     if (ans === q.correct) {
@@ -1140,8 +1389,9 @@ export default function App() {
         // Ustalaşılan kelimeyi Unutulanlar kütüğünden kaldır
         setMistakes(prev => prev.filter(m => !(m.ru === q.ru && m.tr === q.tr)));
       }
-      if (quizContext === 'SRS_REVIEW') {
+      if (quizContext === 'SRS_REVIEW' || (q as any).review) {
         // Doğru bilindi: bir sonraki kutuya terfi eder, tekrar aralığı büyür (1→3→7→16→35 gün)
+        // (🔁 KALICI TEKRAR soruları da SRS kutusunu ilerletir — sınav içi tekrar boşa gitmez.)
         setSrsBank(prev => prev.map(item => {
           if (item.ru !== q.ru) return item;
           const newBox = Math.min(item.box + 1, SRS_INTERVALS_DAYS.length);
@@ -1187,15 +1437,18 @@ export default function App() {
           }
         } else if (quizContext === 'SRS_REVIEW') {
           setScreen('MAP');
+        } else if (quizContext === 'MARATHON') {
+          setGems(g => g + 40);
+          setScreen('MAP');
         } else {
           setScreen('MAP');
           setActiveTab('MISTAKES');
         }
       }
     } else {
-      const reason = quizContext === 'LISTENING' ? 'Dinleme Hatası' : quizContext === 'REVIEW' ? 'Tekrar Testinde Yine Yanlış' : quizContext === 'ALPHA_FINAL' ? 'Alfabe Sınavı Hatası' : quizContext === 'GRAMMAR_FOUNDATION' ? 'Cümle Temeli Hatası' : quizContext === 'SRS_REVIEW' ? 'Aralıklı Tekrarda Unutuldu' : 'Sınav Hatası';
+      const reason = (q as any).review ? 'Kalıcı Tekrarda Unutuldu (eski ünite)' : quizContext === 'LISTENING' ? 'Dinleme Hatası' : quizContext === 'REVIEW' ? 'Tekrar Testinde Yine Yanlış' : quizContext === 'ALPHA_FINAL' ? 'Alfabe Sınavı Hatası' : quizContext === 'GRAMMAR_FOUNDATION' ? 'Cümle Temeli Hatası' : quizContext === 'SRS_REVIEW' ? 'Aralıklı Tekrarda Unutuldu' : quizContext === 'MARATHON' ? 'Karma Maratonda Unutuldu' : 'Sınav Hatası';
       addMistake(q.ru, q.tr, reason);
-      if (quizContext === 'SRS_REVIEW') {
+      if (quizContext === 'SRS_REVIEW' || quizContext === 'MARATHON' || (q as any).review) {
         // Unutulan kelime kutu 1'e geri düşer: yarın tekrar sorulacak (kalıcı hafıza mantığının kalbi)
         setSrsBank(prev => prev.map(item => item.ru === q.ru ? { ...item, box: 1, nextReview: Date.now() + SRS_INTERVALS_DAYS[0] * DAY_MS } : item));
       }
@@ -1248,10 +1501,20 @@ export default function App() {
                     <div style={{ fontSize: '20px', fontWeight: 900, marginTop: '2px' }}>{dueSRS.length > 0 ? `${dueSRS.length} kelime/harf hatırlanmayı bekliyor!` : 'Bugün için tekrar yok, harika gidiyorsun! ✅'}</div>
                     <div style={{ fontSize: '12px', color: '#94a3b8', marginTop: '4px' }}>Toplam {srsBank.length} kelime/harf uzun süreli hafıza takibinde.</div>
                   </div>
-                  {dueSRS.length > 0 && (
-                    <button onClick={startSRSReview} style={{ background: '#f59e0b', border: 'none', color: '#0f172a', padding: '12px 18px', borderRadius: '10px', fontWeight: 900, cursor: 'pointer' }}>▶️ Tekrarı Başlat</button>
-                  )}
+                  <div style={{ display: 'flex', gap: '10px', flexWrap: 'wrap' }}>
+                    {dueSRS.length > 0 && (
+                      <button onClick={startSRSReview} style={{ background: '#f59e0b', border: 'none', color: '#0f172a', padding: '12px 18px', borderRadius: '10px', fontWeight: 900, cursor: 'pointer' }}>▶️ Tekrarı Başlat</button>
+                    )}
+                    {completedUnits.length > 0 && (
+                      <button onClick={startMarathon} style={{ background: 'transparent', border: '2px solid #a78bfa', color: '#a78bfa', padding: '10px 16px', borderRadius: '10px', fontWeight: 900, cursor: 'pointer' }} title="Tamamlanmış TÜM ünitelerden rastgele 15 soru — vadesi gelmese bile her kelime sorulabilir!">🔀 Karma Maraton</button>
+                    )}
+                  </div>
                 </div>
+                {completedUnits.length > 0 && (
+                  <div style={{ fontSize: '11px', color: '#94a3b8', marginTop: '10px', borderTop: '1px dashed #334155', paddingTop: '8px' }}>
+                    🧠 <b>Kalıcı öğrenme motoru açık:</b> Bir üniteyi %100 bitirsen bile kelimeleri emekli olmaz — sonraki her ünitenin sınavına "🔁 KALICI TEKRAR" soruları olarak karışır (1-2-3-5-8-13-21 ünite geriden + tüm geçmişten rastgele) ve yarısı ters yönde (TR → RU) sorulur.
+                  </div>
+                )}
               </div>
             )}
 
@@ -1466,7 +1729,11 @@ export default function App() {
                 { icon: '🔁', title: '9. Aynı İçeriği Tekrar İzleme (Repeated Viewing)', text: 'Bir Смешарики bölümünü bir kez izlemek yetmez. Aynı bölümü 2-3 gün arayla tekrar izlediğinde, ilk seferde kaçırdığın kelimeleri fark edersin — çünkü artık o kelimeler uygulamada öğrendiğin kelimeler haline geldi. Bu, pasif izlemeyi aktif bir "tanıma tatmini"ne çevirir ve kalıcılığı ciddi şekilde artırır.' },
                 { icon: '😴', title: '10. Uyku ve Hafıza Pekiştirmesi', text: 'Kısa süreli hafızadaki bilginin uzun süreli hafızaya "kaydedilmesi" büyük ölçüde UYKU sırasında gerçekleşir. Yeni bir üniteyi akşam bitirip hemen ardından uyumak, o bilgiyi sabaha kalıcılaştırma ihtimalini belirgin şekilde artırır.' },
                 { icon: '🎧', title: `11. Kulağı Alıştırma — ${TOPICS_100_TOTAL} Dinleme Konusu (yolun içinde)`, text: `Gözden önce KULAK öğrenir: Rusçaya maruz kalmak (exposure) beynin ses örüntülerini tanımasını sağlar. Öğrenme yolundaki önce 🧩 cümle temeli kartları (özne-yüklem-edat), sonra 🎧 rozetli kartlar bunu yapar — 33 harf + 8 fonetik konusu ve müfredat ön-hazırlık konuları (ilgili ünitenin hemen öncesinde, yani konuyu duyduktan saniyeler sonra ünitesine girersin). Toplam ${TOPICS_100_TOTAL} konunun her biri kelime kartları odaklıdır: tek tek 🔊 dinle, "Konuyu Dinle" / "Yavaşça Dinle" ile akışa bat, sonra 5 soruluk "dinle & seç" testiyle kanıtla. Günde 3-5 konu dinlemek, 2-3 hafta içinde doğal konuşma hızını kavraman için yeterlidir.` },
-                { icon: '📖', title: '12. Hikaye & Özet — Okuma Anlama + Üretici Çıktı (10\'lu kontrol noktaları + bölüm finalleri)', text: 'İki tür hikaye var: (1) Her 10 müfredat ünitesinin sonunda bir HİKAYE KONTROL NOKTASI açılır: o 10 ünitede öğrendiğin kelimelerle yazılmış, içinde en fazla 5-6 yeni kelime olan bir sit-com hikayesi. (2) Her bölümün (A1, A2, B1, B2, C1/C2) sonunda bir BÖLÜM FİNALİ açılır — bunlar KAPILIDIR: özetin TAMAMEN doğru yazılması ve Seviye Tekrar Sınavı\'ndan en az 7/10 alınması şarttır; geçmeden sonraki bölüm açılmaz! Hikayeler iki tarzda: Dima\'nın 2035\'te çocuklarına anlattığı HIMYM tadında bölümler VE «Кухня» dizisinden esinlenen mutfak komedileri (Şef Pyotr, garson Lyosha, Nina, Semyon — «Ван Гог» restoranı). Okurken istediğin satırın çevirisini açabilir, yeni kelimeleri sözlük kartlarından, ESKİ kelimeleri "Eski Kelimeler" bölümünden tekrar edersin — çünkü B\'deyken A kelimeleri unutulmasın diye finallere bilerek serpiştirildiler (kalıcı öğrenme!). Ardından en önemli adım: ÖZETİNİ TÜRKÇE YAZ — okuduğunu kendi cümlelerinle yeniden kurmak "üretici çıktı"dır ve pasif tanımadan çok daha güçlü kalıcılaşır. Analiz motoru özetini ana fikirlerle karşılaştırır: kaç doğru nokta yakaladığını, neyi kaçırdığını ve neleri yanlış anladığını söyler. Bölüm finallerinde ayrıca 10 soruluk seviye sınavı vardır: 6 soru bitirilen bölümden, 4 soru önceki bölümlerden. Düşük skor alırsan hikayeyi tekrar oku — ikinci okuma, tıpkı bir sitcom\'u tekrar izlemek gibi, her zaman daha kolaydır.' }
+                { icon: '📖', title: '12. Hikaye & Özet — Okuma Anlama + Üretici Çıktı (10\'lu kontrol noktaları + bölüm finalleri)', text: 'İki tür hikaye var: (1) Her 10 müfredat ünitesinin sonunda bir HİKAYE KONTROL NOKTASI açılır: o 10 ünitede öğrendiğin kelimelerle yazılmış, içinde en fazla 5-6 yeni kelime olan bir sit-com hikayesi. (2) Her bölümün (A1, A2, B1, B2, C1/C2) sonunda bir BÖLÜM FİNALİ açılır — bunlar KAPILIDIR: özetin TAMAMEN doğru yazılması ve Seviye Tekrar Sınavı\'ndan en az 7/10 alınması şarttır; geçmeden sonraki bölüm açılmaz! Hikayeler iki tarzda: Dima\'nın 2035\'te çocuklarına anlattığı HIMYM tadında bölümler VE «Кухня» dizisinden esinlenen mutfak komedileri (Şef Pyotr, garson Lyosha, Nina, Semyon — «Ван Гог» restoranı). Okurken istediğin satırın çevirisini açabilir, yeni kelimeleri sözlük kartlarından, ESKİ kelimeleri "Eski Kelimeler" bölümünden tekrar edersin — çünkü B\'deyken A kelimeleri unutulmasın diye finallere bilerek serpiştirildiler (kalıcı öğrenme!). Ardından en önemli adım: ÖZETİNİ TÜRKÇE YAZ — okuduğunu kendi cümlelerinle yeniden kurmak "üretici çıktı"dır ve pasif tanımadan çok daha güçlü kalıcılaşır. Analiz motoru özetini ana fikirlerle karşılaştırır: kaç doğru nokta yakaladığını, neyi kaçırdığını ve neleri yanlış anladığını söyler. Bölüm finallerinde ayrıca 10 soruluk seviye sınavı vardır: 6 soru bitirilen bölümden, 4 soru önceki bölümlerden. Düşük skor alırsan hikayeyi tekrar oku — ikinci okuma, tıpkı bir sitcom\'u tekrar izlemek gibi, her zaman daha kolaydır.' },
+                { icon: '♾️', title: '13. Hiçbir Kelime Emekli Olmaz — Sınav İçi Karma Tekrar (YENİ, OTOMATİK)', text: 'Bir üniteyi %100 doğru bitirsen bile o ünitenin kelimeleri seninle yolculuğa devam eder: SONRAKİ HER ünitenin bitiş sınavına, önceki ünitelerden seçilen 5 adet "🔁 KALICI TEKRAR" sorusu otomatik karışır. Seçim genişleyen aralık ilkesine göre yapılır: 1, 2, 3, 5, 8, 13 ve 21 ünite geriden kelimeler + TÜM geçmişten rastgele örnekler. Araştırmalar (spaced/expanding retrieval) bunun, bilgiyi tam unutma eşiğinde yakalayıp kalıcılaştırdığını gösteriyor. Bu sorularda yanılırsan kelime Aralıklı Tekrar kutusunda 1. kutuya düşer ve ertesi gün yeniden sorulur.' },
+                { icon: '🔄', title: '14. Üretim Etkisi (Production Effect) — Ters Yön Soruları (YENİ, OTOMATİK)', text: 'Rusça kelimeyi görüp Türkçesini TANIMAK kolaydır; zor ve asıl kalıcı olan, Türkçesinden Rusçasını GERİ ÇAĞIRMAKTIR. Bu yüzden karma tekrar ve maraton sorularının yarısı ters yönde sorulur: "Tuz kelimesinin Rusçası hangisi?" Beynin cevabı üretmek için harcadığı ekstra çaba (desirable difficulty), izi çok daha derin kazır.' },
+                { icon: '🔀', title: '15. Karma Maraton — Kümülatif Rastgele Örnekleme Sınavı (YENİ, İSTEĞE BAĞLI)', text: 'Ana ekrandaki "🔀 Karma Maraton" butonu, tamamladığın TÜM ünitelerin kelime havuzundan rastgele 15 soru çeker — vadesi gelmemiş, çoktan "öğrenilmiş" kelimeler bile her an sorulabilir. Araştırmalar, rastgele örneklenmiş kümülatif testlerin (RST) tüm kelimeleri dengeli biçimde canlı tuttuğunu ve sınav kapsamı büyüdükçe zayıf kelimelerin kendiliğinden ortaya çıktığını gösteriyor. Haftada 2-3 maraton, "eskiden biliyordum" cümlesini sözlüğünden siler.' },
+                { icon: '🪜', title: '16. Ardışık Yeniden Öğrenme (Successive Relearning)', text: 'En güçlü kombinasyon: aynı kelimeyi FARKLI oturumlarda, FARKLI biçimlerde tekrar tekrar öğrenme kriterine ulaştırmak. Uygulamada bu döngü hazır: kelimeyi önce kartta görürsün → ünite sınavında tanırsın → sonraki ünitelerin karma tekrarlarında hatırlarsın → Aralıklı Tekrar gününde geri çağırırsın → bölüm finali hikayesinde bağlam içinde okursun. Aynı bilgiye 5 farklı kapıdan girmek, tek kapıdan 5 kez girmekten çok daha kalıcıdır.' }
               ].map((m, i) => (
                 <div key={i} style={{ background: '#0f172a', border: '1px solid #334155', borderRadius: '12px', padding: '16px', display: 'flex', gap: '14px' }}>
                   <div style={{ fontSize: '28px', flexShrink: 0 }}>{m.icon}</div>
@@ -2244,13 +2511,15 @@ export default function App() {
                 {(quizContext === 'LISTENING' || quizContext === 'UNIT_FINAL') && <UnitBanner unitId={UNITS_DATA[unitIdx].id} icon={UNITS_DATA[unitIdx].icon} color={UNITS_DATA[unitIdx].color} label={UNITS_DATA[unitIdx].title} />}
                 {quizContext === 'REVIEW' && <SceneBanner icon="🔁" color="#ef4444" label="Genel Tekrar Testi" />}
                 {quizContext === 'SRS_REVIEW' && <SceneBanner icon="📅" color="#f59e0b" label="Aralıklı Tekrar (Spaced Repetition)" />}
-                <div style={{ fontSize: '12px', color: quizContext === 'REVIEW' || quizContext === 'SRS_REVIEW' ? '#f59e0b' : '#38bdf8', fontWeight: 800 }}>
+                {quizContext === 'MARATHON' && <SceneBanner icon="🔀" color="#a78bfa" label="Karma Maraton — Tüm Geçmişten Rastgele" />}
+                <div style={{ fontSize: '12px', color: quizContext === 'REVIEW' || quizContext === 'SRS_REVIEW' ? '#f59e0b' : quizContext === 'MARATHON' ? '#a78bfa' : '#38bdf8', fontWeight: 800 }}>
                   {quizContext === 'ALPHA_FINAL' && `🔤 ALFABE BİTİŞ SINAVI — SORU ${quizIdx + 1} / ${quizQuestions.length}`}
                   {quizContext === 'GRAMMAR_FOUNDATION' && `🧩 CÜMLE TEMELLERİ KONTROLÜ — SORU ${quizIdx + 1} / ${quizQuestions.length}`}
                   {quizContext === 'LISTENING' && `🎧 DİNLEME TESTİ — SORU ${quizIdx + 1} / ${quizQuestions.length}`}
-                  {quizContext === 'UNIT_FINAL' && `✅ ÜNİTE BİTİŞ SINAVI — SORU ${quizIdx + 1} / ${quizQuestions.length}`}
+                  {quizContext === 'UNIT_FINAL' && `✅ ÜNİTE BİTİŞ SINAVI (+ 🔁 kalıcı tekrar soruları) — SORU ${quizIdx + 1} / ${quizQuestions.length}`}
                   {quizContext === 'REVIEW' && `🔁 GENEL TEKRAR (Doğru cevaplayana kadar sorulur!) — ${quizIdx + 1} / ${quizQuestions.length}`}
                   {quizContext === 'SRS_REVIEW' && `📅 ARALIKLI TEKRAR — ${quizIdx + 1} / ${quizQuestions.length}`}
+                  {quizContext === 'MARATHON' && `🔀 KARMA MARATON — ${quizIdx + 1} / ${quizQuestions.length}`}
                 </div>
 
                 {quizQuestions[quizIdx].audioOnly ? (
