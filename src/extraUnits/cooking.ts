@@ -1,12 +1,12 @@
 // ==========================================================
-// AŞÇILIK MÜFREDATI — 20 ÜNİTE (A2 +5, B1 +6, B2 +5, C1 +4)
+// AŞÇILIK MÜFREDATI (PAKET 1/2) — 20 ÜNİTE (A2 +5, B1 +6, B2 +5, C1 +4); devamı cooking2.ts
 // Önce kelimeler → malzemeler → teknikler → tarifler → profesyonel mutfak.
 // Diyaloglar «Кухня» kadrosuyla (Şef Pyotr, Lyosha, Nina) yazılmıştır —
 // hikaye modülündeki «Ван Гог» restoranı evrenine bağlanır.
 //   A2 : Ünite 32-36  (mutfak eşyaları, temel ürünler, sebze hazırlığı, ölçüler, ilk tarif)
-//   B1 : Ünite 81-86  (pişirme fiilleri, tarif okuma, çorbalar, hamur işleri, salatalar, kazalar)
-//   B2 : Ünite 125-129 (et & balık, tatlılar, turşu/konserve, misafir sofrası, restoran mutfağı)
-//   C1 : Ünite 160-163 (şef dili, tabak sunumu, degüstasyon, kendi restoranını açmak)
+//   B1 : Ünite 86-91  (pişirme fiilleri, tarif okuma, çorbalar, hamur işleri, salatalar, kazalar)
+//   B2 : Ünite 135-139 (et & balık, tatlılar, turşu/konserve, misafir sofrası, restoran mutfağı)
+//   C1 : Ünite 175-178 (şef dili, tabak sunumu, degüstasyon, kendi restoranını açmak)
 // ==========================================================
 import type { UnitModule } from '../curriculumData';
 
@@ -197,7 +197,7 @@ export const EXTRA_COOKING: UnitModule[] = [
   // ============================ B1 ============================
   {
     id: 'mod_b1_k1',
-    unitNumber: 81,
+    unitNumber: 86,
     levelGroup: 'B1',
     title: 'Aşçılık 6: Pişirme Fiilleri',
     description: 'Kesmek, doğramak, karıştırmak, eklemek — mutfağın fiil çekirdeği',
@@ -233,7 +233,7 @@ export const EXTRA_COOKING: UnitModule[] = [
   },
   {
     id: 'mod_b1_k2',
-    unitNumber: 82,
+    unitNumber: 87,
     levelGroup: 'B1',
     title: 'Aşçılık 7: Tarif Okuma — Adım Adım',
     description: '"Önce... sonra... ardından" — bir tarifi baştan sona takip etmek',
@@ -269,7 +269,7 @@ export const EXTRA_COOKING: UnitModule[] = [
   },
   {
     id: 'mod_b1_k3',
-    unitNumber: 83,
+    unitNumber: 88,
     levelGroup: 'B1',
     title: 'Aşçılık 8: Çorbalar — Borşç & Şçi',
     description: 'Et suyu, pancar, smetana — Rus çorba kültürünün iki efsanesi',
@@ -305,7 +305,7 @@ export const EXTRA_COOKING: UnitModule[] = [
   },
   {
     id: 'mod_b1_k4',
-    unitNumber: 84,
+    unitNumber: 89,
     levelGroup: 'B1',
     title: 'Aşçılık 9: Hamur İşleri — Blini & Pirojki',
     description: 'Hamur, maya, iç harç — oklava ile tanışma vakti',
@@ -341,7 +341,7 @@ export const EXTRA_COOKING: UnitModule[] = [
   },
   {
     id: 'mod_b1_k5',
-    unitNumber: 85,
+    unitNumber: 90,
     levelGroup: 'B1',
     title: 'Aşçılık 10: Salatalar & Mezeler',
     description: 'Olivye, vinegret, zakuska — bayram sofrasının açılış takımı',
@@ -377,7 +377,7 @@ export const EXTRA_COOKING: UnitModule[] = [
   },
   {
     id: 'mod_b1_k6',
-    unitNumber: 86,
+    unitNumber: 91,
     levelGroup: 'B1',
     title: 'Aşçılık 11: Mutfak Kazaları & Kurtarma',
     description: '"Tuzu fazla kaçırdım!", "Dibi tuttu!" — felaketi yemeğe çevirme sanatı',
@@ -415,7 +415,7 @@ export const EXTRA_COOKING: UnitModule[] = [
   // ============================ B2 ============================
   {
     id: 'mod_b2_k1',
-    unitNumber: 125,
+    unitNumber: 135,
     levelGroup: 'B2',
     title: 'Aşçılık 12: Et & Balık Teknikleri',
     description: 'Marine etmek, fırınlamak, pişirme derecesi — proteinin ustalık sınıfı',
@@ -451,7 +451,7 @@ export const EXTRA_COOKING: UnitModule[] = [
   },
   {
     id: 'mod_b2_k2',
-    unitNumber: 126,
+    unitNumber: 136,
     levelGroup: 'B2',
     title: 'Aşçılık 13: Fırıncılık & Tatlılar',
     description: 'Medovik, krem, çırpmak, süslemek — tatlı departmanının incelikleri',
@@ -487,7 +487,7 @@ export const EXTRA_COOKING: UnitModule[] = [
   },
   {
     id: 'mod_b2_k3',
-    unitNumber: 127,
+    unitNumber: 137,
     levelGroup: 'B2',
     title: 'Aşçılık 14: Turşu & Kışlık Konserve',
     description: 'Kavanoz, salamura, reçel — Rus balkonlarının altın stoku',
@@ -523,7 +523,7 @@ export const EXTRA_COOKING: UnitModule[] = [
   },
   {
     id: 'mod_b2_k4',
-    unitNumber: 128,
+    unitNumber: 138,
     levelGroup: 'B2',
     title: 'Aşçılık 15: Misafir Sofrası & Menü Planlama',
     description: 'Servis düzeni, ikram etme, kadeh kalıpları — ev sahipliğinin mutfak tarafı',
@@ -559,7 +559,7 @@ export const EXTRA_COOKING: UnitModule[] = [
   },
   {
     id: 'mod_b2_k5',
-    unitNumber: 129,
+    unitNumber: 139,
     levelGroup: 'B2',
     title: 'Aşçılık 16: Restoran Mutfağında Bir Gün',
     description: 'Sipariş, vardiya, servis paniği — profesyonel mutfağın nabzı',
@@ -597,7 +597,7 @@ export const EXTRA_COOKING: UnitModule[] = [
   // ============================ C1 ============================
   {
     id: 'mod_c1_k1',
-    unitNumber: 160,
+    unitNumber: 175,
     levelGroup: 'C1/C2',
     title: 'Aşçılık 17: Şef Dili & Profesyonel Teknikler',
     description: 'Blanşe etmek, karamelize etmek, redüksiyon — yüksek mutfağın terminolojisi',
@@ -633,7 +633,7 @@ export const EXTRA_COOKING: UnitModule[] = [
   },
   {
     id: 'mod_c1_k2',
-    unitNumber: 161,
+    unitNumber: 176,
     levelGroup: 'C1/C2',
     title: 'Aşçılık 18: Tabak Sunumu & Estetik',
     description: 'Kompozisyon, aksan, minimalizm — göz de yer',
@@ -669,7 +669,7 @@ export const EXTRA_COOKING: UnitModule[] = [
   },
   {
     id: 'mod_c1_k3',
-    unitNumber: 162,
+    unitNumber: 177,
     levelGroup: 'C1/C2',
     title: 'Aşçılık 19: Degüstasyon & Yemek Eleştirisi',
     description: 'Ağızda kalan tat, uyum, nüans — yemeği kelimelerle anlatma sanatı',
@@ -705,7 +705,7 @@ export const EXTRA_COOKING: UnitModule[] = [
   },
   {
     id: 'mod_c1_k4',
-    unitNumber: 163,
+    unitNumber: 178,
     levelGroup: 'C1/C2',
     title: 'Aşçılık 20: Kendi Restoranını Açmak',
     description: 'Konsept, maliyet, tedarikçi, açılış — mutfak hayalinin iş planı',

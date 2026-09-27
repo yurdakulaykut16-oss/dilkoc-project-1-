@@ -8,7 +8,7 @@ import type { UnitModule } from '../curriculumData';
 export const EXTRA_B1B: UnitModule[] = [
   {
     id: 'mod_b1_x9',
-    unitNumber: 70,
+    unitNumber: 75,
     levelGroup: 'B1',
     title: 'Elektronik Mağazası & Garanti',
     description: 'Cihaz özellikleri sorma, garanti ve "bozuldu" şikâyeti',
@@ -48,7 +48,7 @@ export const EXTRA_B1B: UnitModule[] = [
   },
   {
     id: 'mod_b1_x10',
-    unitNumber: 71,
+    unitNumber: 76,
     levelGroup: 'B1',
     title: 'İade & Değişim Hakkı',
     description: '"Uymadı, iade etmek istiyorum" — 14 gün kuralı ve para iadesi',
@@ -88,7 +88,7 @@ export const EXTRA_B1B: UnitModule[] = [
   },
   {
     id: 'mod_b1_x11',
-    unitNumber: 72,
+    unitNumber: 77,
     levelGroup: 'B1',
     title: 'Sosyal Medyada Flört & İlk Mesaj',
     description: 'DM atma, profil beğenme ve buluşmaya davet — dijital manitacılık',
@@ -128,7 +128,7 @@ export const EXTRA_B1B: UnitModule[] = [
   },
   {
     id: 'mod_b1_x12',
-    unitNumber: 73,
+    unitNumber: 78,
     levelGroup: 'B1',
     title: 'Buluşma Hazırlığı & Heyecan Yönetimi',
     description: 'Kıyafet seçimi, arkadaş tavsiyeleri ve "harika görünüyorsun" kalıpları',
@@ -168,7 +168,7 @@ export const EXTRA_B1B: UnitModule[] = [
   },
   {
     id: 'mod_b1_x13',
-    unitNumber: 74,
+    unitNumber: 79,
     levelGroup: 'B1',
     title: 'Sevgili Olma & "Biz Neyiz?" Konuşması',
     description: 'İlişkiyi tanımlama, duyguları itiraf etme ve resmen çift olma',
@@ -208,7 +208,7 @@ export const EXTRA_B1B: UnitModule[] = [
   },
   {
     id: 'mod_b1_x14',
-    unitNumber: 75,
+    unitNumber: 80,
     levelGroup: 'B1',
     title: 'Sevgiliyle İlk Tatil Planı',
     description: 'Otel rezervasyonu, plaj programı ve romantik gün batımı',
@@ -248,7 +248,7 @@ export const EXTRA_B1B: UnitModule[] = [
   },
   {
     id: 'mod_b1_x15',
-    unitNumber: 76,
+    unitNumber: 81,
     levelGroup: 'B1',
     title: 'Araba Kiralama & Trafik',
     description: 'Ehliyet, sigorta, benzin istasyonu ve trafik sıkışıklığı',
@@ -288,7 +288,7 @@ export const EXTRA_B1B: UnitModule[] = [
   },
   {
     id: 'mod_b1_x16',
-    unitNumber: 77,
+    unitNumber: 82,
     levelGroup: 'B1',
     title: 'Vergi Dairesi & Resmî İşlemler',
     description: 'Belge alma, sıra numarası, damga ve devlet dairesi sabrı',

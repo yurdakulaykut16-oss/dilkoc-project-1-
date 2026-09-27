@@ -1532,7 +1532,7 @@ export default function App() {
                 { icon: '🔀', type: 'CROSSOVER', color: '#a78bfa', from: 'HIMYM kadrosu (Bölüm 1-8)', to: '«Ван Гог»ta Akşam Yemeği (B1 Finali)', why: 'İki anlatı kolu burada kesişir: kontrol noktası hikayelerinin karakterleri (Dima, Marina, Tyoma) restoran koluna misafir olur.' },
                 { icon: '🍰', type: 'CALLBACK', color: '#38bdf8', from: '«Ван Гог»ta Akşam Yemeği (B1)', to: 'Şefin Akşamı (B2)', why: 'B1 finalindeki meşhur "düşen tatlı" olayı, B2 finalinde hatırlanır ve göndermeyle geri döner.' },
                 { icon: '💍', type: 'KARAKTER YAYI', color: '#38bdf8', from: 'Şefin Akşamı (B2 Finali)', to: 'Önceki «Ван Гог» hikayeleri', why: 'Pyotr ile Nina arasındaki çizgi A2\'den beri adım adım örülür ve B2 finalinde doruk noktasına ulaşır.' },
-                { icon: '👨‍🍳', type: 'ÜNİTE BAĞI', color: '#10b981', from: 'Aşçılık üniteleri (32-36, 81-86, 125-129, 160-163)', to: '«Ван Гог» hikaye kolu', why: 'Aşçılık ünitelerinin diyalogları da «Ван Гог» mutfağında geçer: Lyosha\'nın çıraklıktan kendi hayaline uzanan yolunu ünite ünite izlersiniz.' }
+                { icon: '👨‍🍳', type: 'ÜNİTE BAĞI', color: '#10b981', from: 'Aşçılık üniteleri (32-41, 86-96, 135-144, 175-183)', to: '«Ван Гог» hikaye kolu', why: 'Aşçılık ünitelerinin diyalogları da «Ван Гог» mutfağında geçer: Lyosha\'nın çıraklıktan kendi hayaline uzanan yolunu ünite ünite izlersiniz.' }
               ].map((c, i) => (
                 <div key={i} style={{ background: '#0f172a', border: '1px solid #334155', borderRadius: '12px', padding: '14px 16px', display: 'flex', gap: '14px', alignItems: 'flex-start' }}>
                   <div style={{ fontSize: '26px', flexShrink: 0 }}>{c.icon}</div>
