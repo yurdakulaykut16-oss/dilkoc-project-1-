@@ -536,7 +536,7 @@ const STORY_LF_A1: CheckpointStory = {
 };
 
 // ---------------------------------------------------------------------------
-// BÖLÜM FİNALİ 2 — Ünite 12-41 (A2 SONU) — Кухня tarzı: yeni garsonun ilk günü
+// BÖLÜM FİNALİ 2 — Ünite 12-51 (A2 SONU) — Кухня tarzı: yeni garsonun ilk günü
 // Kapılı final: özet %100 + Seviye Tekrar Sınavı geçilmeden B1 açılmaz.
 // ---------------------------------------------------------------------------
 const STORY_LF_A2: CheckpointStory = {
@@ -544,7 +544,7 @@ const STORY_LF_A2: CheckpointStory = {
   kind: 'levelFinal',
   checkpoint: null,
   unitFrom: 12,
-  unitTo: 41,
+  unitTo: 51,
   levelId: 'A2',
   nextLevelId: 'B1',
   titleRu: 'Новый официант',
@@ -607,15 +607,15 @@ const STORY_LF_A2: CheckpointStory = {
 };
 
 // ---------------------------------------------------------------------------
-// BÖLÜM FİNALİ 3 — Ünite 42-96 (B1 SONU) — Crossover: HIMYM kadrosu «Ван Гог»ta
+// BÖLÜM FİNALİ 3 — Ünite 52-106 (B1 SONU) — Crossover: HIMYM kadrosu «Ван Гог»ta
 // Kapılı final: özet %100 + Seviye Tekrar Sınavı geçilmeden B2 açılmaz.
 // ---------------------------------------------------------------------------
 const STORY_LF_B1: CheckpointStory = {
   id: 'story_lf_b1',
   kind: 'levelFinal',
   checkpoint: null,
-  unitFrom: 42,
-  unitTo: 96,
+  unitFrom: 52,
+  unitTo: 106,
   levelId: 'B1',
   nextLevelId: 'B2',
   titleRu: 'Ужин в «Ван Гоге»',
@@ -680,15 +680,15 @@ const STORY_LF_B1: CheckpointStory = {
 };
 
 // ---------------------------------------------------------------------------
-// BÖLÜM FİNALİ 4 — Ünite 97-144 (B2 SONU) — Кухня tarzı: şefin teklifi
+// BÖLÜM FİNALİ 4 — Ünite 107-154 (B2 SONU) — Кухня tarzı: şefin teklifi
 // Kapılı final: özet %100 + Seviye Tekrar Sınavı geçilmeden C1 açılmaz.
 // ---------------------------------------------------------------------------
 const STORY_LF_B2: CheckpointStory = {
   id: 'story_lf_b2',
   kind: 'levelFinal',
   checkpoint: null,
-  unitFrom: 97,
-  unitTo: 144,
+  unitFrom: 107,
+  unitTo: 154,
   levelId: 'B2',
   nextLevelId: 'C1/C2',
   titleRu: 'Вечер шефа',
@@ -752,15 +752,15 @@ const STORY_LF_B2: CheckpointStory = {
 };
 
 // ---------------------------------------------------------------------------
-// BÖLÜM FİNALİ 5 — Ünite 145-183 (C1/C2 SONU) — DİZİ FİNALİ: gerçek hikaye
+// BÖLÜM FİNALİ 5 — Ünite 155-193 (C1/C2 SONU) — DİZİ FİNALİ: gerçek hikaye
 // Kapılı final: özet %100 + Seviye Tekrar Sınavı geçilmeden "mezuniyet" yok.
 // ---------------------------------------------------------------------------
 const STORY_LF_C1: CheckpointStory = {
   id: 'story_lf_c1',
   kind: 'levelFinal',
   checkpoint: null,
-  unitFrom: 145,
-  unitTo: 183,
+  unitFrom: 155,
+  unitTo: 193,
   levelId: 'C1/C2',
   nextLevelId: 'C1/C2',
   titleRu: 'Настоящая история',

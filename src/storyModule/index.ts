@@ -46,9 +46,9 @@ export function gateStoryForUnitNumber(unitNumber: number): CheckpointStory | un
 /** Bir ünite numarasının ait olduğu müfredat bölümünü (A1..C1/C2) döndürür. */
 export function levelOfUnitNumber(unitNumber: number): 'A1' | 'A2' | 'B1' | 'B2' | 'C1/C2' {
   if (unitNumber <= 11) return 'A1';
-  if (unitNumber <= 41) return 'A2';
-  if (unitNumber <= 96) return 'B1';
-  if (unitNumber <= 144) return 'B2';
+  if (unitNumber <= 51) return 'A2';
+  if (unitNumber <= 106) return 'B1';
+  if (unitNumber <= 154) return 'B2';
   return 'C1/C2';
 }
 
