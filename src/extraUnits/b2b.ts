@@ -7,7 +7,7 @@ import type { UnitModule } from '../curriculumData';
 export const EXTRA_B2B: UnitModule[] = [
   {
     id: 'mod_b2_x8',
-    unitNumber: 104,
+    unitNumber: 115,
     levelGroup: 'B2',
     title: 'Tadilat & Ustayla Pazarlık',
     description: 'Keşif/fiyat teklifi, malzeme seçimi ve uzayan tadilat dramı',
@@ -47,7 +47,7 @@ export const EXTRA_B2B: UnitModule[] = [
   },
   {
     id: 'mod_b2_x9',
-    unitNumber: 105,
+    unitNumber: 116,
     levelGroup: 'B2',
     title: 'Yatırım, Borsa & Birikim Sohbeti',
     description: 'Hisse, döviz kuru, portföy ve "her şeyi tek sepete koyma" bilgeliği',
@@ -87,7 +87,7 @@ export const EXTRA_B2B: UnitModule[] = [
   },
   {
     id: 'mod_b2_x10',
-    unitNumber: 106,
+    unitNumber: 117,
     levelGroup: 'B2',
     title: 'Sigorta Poliçesi & Hasar Talebi',
     description: 'Poliçe kapsamı, hasar bildirimi, eksper ve tazminat süreci',
@@ -127,7 +127,7 @@ export const EXTRA_B2B: UnitModule[] = [
   },
   {
     id: 'mod_b2_x11',
-    unitNumber: 107,
+    unitNumber: 118,
     levelGroup: 'B2',
     title: 'Kıskançlık Konuşması & Güven İnşası',
     description: 'Kıskançlığı sakin dile getirme, açıklama ve barışma sanatı',
@@ -167,7 +167,7 @@ export const EXTRA_B2B: UnitModule[] = [
   },
   {
     id: 'mod_b2_x12',
-    unitNumber: 108,
+    unitNumber: 119,
     levelGroup: 'B2',
     title: 'Çift Olarak Bütçe & Para Konuşması',
     description: 'Ortak bütçe, birikim hedefi ve harcama alışkanlığı müzakeresi',
@@ -207,7 +207,7 @@ export const EXTRA_B2B: UnitModule[] = [
   },
   {
     id: 'mod_b2_x13',
-    unitNumber: 109,
+    unitNumber: 120,
     levelGroup: 'B2',
     title: 'Ailelerle Tanışma Yemeği',
     description: 'Anne-babayla tanışma, hediye seçimi ve sofra diplomasisi',
@@ -247,7 +247,7 @@ export const EXTRA_B2B: UnitModule[] = [
   },
   {
     id: 'mod_b2_x14',
-    unitNumber: 110,
+    unitNumber: 121,
     levelGroup: 'B2',
     title: 'İş & İlişki Dengesi Tartışması',
     description: '"Hep çalışıyorsun!" sitemi, zaman ayırma ve uzlaşma konuşması',

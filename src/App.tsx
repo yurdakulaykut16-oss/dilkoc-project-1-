@@ -353,7 +353,7 @@ const LEVEL_ANCHORS: Record<CefrTag, number> = (() => {
 })();
 
 export default function App() {
-  const [activeTab, setActiveTab] = useState<'MAP' | 'PROFILE' | 'MISTAKES' | 'METHODS'>('MAP');
+  const [activeTab, setActiveTab] = useState<'MAP' | 'PROFILE' | 'MISTAKES' | 'METHODS' | 'CONNECTIONS'>('MAP');
   const [screen, setScreen] = useState<'MAP' | 'ALPHA' | 'ALPHA_CHECK' | 'ALPHA_READING' | 'GRAMMAR' | 'TOPIC' | 'TOPIC_TEST' | 'STORY' | 'DIALOG' | 'SMESHARIKI' | 'FLASHCARD' | 'MATCH' | 'TYPING' | 'SENTENCE' | 'QUIZ' | 'UNIT_STORY' | 'STORY_TEST' | 'STORY_RESULT' | 'CHECKPOINT_STORY'>('MAP');
   // Sınav/test motorunun hangi bağlamda çalıştığını belirtir: her biri bittiğinde farklı bir sonraki adıma geçer
   const [quizContext, setQuizContext] = useState<'ALPHA_FINAL' | 'GRAMMAR_FOUNDATION' | 'LISTENING' | 'UNIT_FINAL' | 'REVIEW' | 'SRS_REVIEW'>('UNIT_FINAL');
@@ -1220,6 +1220,7 @@ export default function App() {
 
         <div style={{ display: 'flex', gap: '16px', alignItems: 'center', fontWeight: 800, fontSize: '14px' }}>
           <button onClick={() => { setActiveTab('METHODS'); setScreen('MAP'); }} style={{ background: 'transparent', border: 'none', color: '#a78bfa', cursor: 'pointer', fontWeight: 800, fontSize: '13px' }}>📚 Yöntemler</button>
+          <button onClick={() => { setActiveTab('CONNECTIONS'); setScreen('MAP'); }} style={{ background: 'transparent', border: 'none', color: '#f472b6', cursor: 'pointer', fontWeight: 800, fontSize: '13px' }}>🕸️ Hikaye Bağları</button>
           <span style={{ color: '#f59e0b', display: 'flex', alignItems: 'center', gap: '4px' }}>🔥 {streak}</span>
           <span style={{ color: '#38bdf8', display: 'flex', alignItems: 'center', gap: '4px' }}>💎 {gems}</span>
           <span style={{ color: '#10b981', display: 'flex', alignItems: 'center', gap: '4px' }}>⚡ {xp} XP</span>
@@ -1479,6 +1480,73 @@ export default function App() {
 
             <div style={{ marginTop: '20px', padding: '14px', borderRadius: '10px', background: 'rgba(239,68,68,0.1)', border: '1px solid #ef4444', fontSize: '13px', color: '#fecaca' }}>
               ⚠️ Not: Bu uygulamada hiçbir yerde Rusça (Kiril) klavyeyle bir şey YAZMAN istenmez — senin isteğin üzerine bilinçli olarak böyle tasarlandı. "Hızlı Tanıma Testi" dahil tüm alıştırmalar seçmeli (dokunmalı) çalışır. Kâğıda harf/kelime yazarak tekrar etme yöntemi de bu listeye dahil edilmedi. Ama merak edersen: motor hafıza (elle yazmak) da faydalıdır, sadece TEK BAŞINA yeterli değildir — yukarıdaki yöntemlerle birleştirilmelidir.
+            </div>
+          </div>
+        )}
+
+        {/* HİKAYE BAĞLANTI HARİTASI — hangi hikaye hangisine bağlanır (ÖZET YOK) */}
+        {activeTab === 'CONNECTIONS' && (
+          <div style={cardBox}>
+            <button onClick={() => setActiveTab('MAP')} style={{ background: 'transparent', border: 'none', color: '#94a3b8', fontWeight: 700, cursor: 'pointer', marginBottom: '12px' }}>← Haritaya Dön</button>
+            <SceneBanner icon="🕸️" color="#f472b6" label="Hikaye Bağlantı Haritası" />
+            <h2 style={{ marginTop: 0, color: '#f472b6' }}>Hangi Hikaye Hangisine Bağlanıyor?</h2>
+            <p style={{ color: '#cbd5e1', fontSize: '14px', lineHeight: '1.7' }}>
+              13 hikayenin tamamı <b>tek bir dizi evreninde</b> geçer ve iki anlatı kolu üzerinde ilerler.
+              Aşağıda yalnızca hikayelerin <b>birbirine nasıl bağlandığı</b> gösterilir — içerik/özet yoktur, sürpriz bozulmaz.
+            </p>
+
+            {/* İKİ ANLATI KOLU */}
+            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(260px, 1fr))', gap: '14px', marginTop: '16px' }}>
+              <div style={{ background: '#0f172a', border: '1px solid #eab308', borderRadius: '12px', padding: '16px' }}>
+                <div style={{ fontWeight: 900, color: '#eab308', marginBottom: '8px' }}>🎙️ KOL 1 — HIMYM Çerçevesi</div>
+                <div style={{ fontSize: '13px', color: '#cbd5e1', lineHeight: '1.7' }}>
+                  Anlatıcı: <b>Dima</b> — 2035 yılında çocuklarına anlatıyor. Bu koldaki her hikaye aynı anlatının bir parçasıdır:
+                </div>
+                <ul style={{ fontSize: '13px', color: '#e2e8f0', lineHeight: '1.9', margin: '8px 0 0', paddingLeft: '18px' }}>
+                  <li>☂️ Sarı Şemsiye <span style={{ color: '#64748b' }}>(A1 Finali — pilot bölüm)</span></li>
+                  <li>🌧️ Bölüm 1: Annenizle Nasıl Tanıştım → 🥂 Bölüm 8: Düğün <span style={{ color: '#64748b' }}>(8 kontrol noktası hikayesi, sırayla)</span></li>
+                  <li>☂️ Gerçek Hikaye <span style={{ color: '#64748b' }}>(C1/C2 Finali — dizi finali)</span></li>
+                </ul>
+              </div>
+              <div style={{ background: '#0f172a', border: '1px solid #38bdf8', borderRadius: '12px', padding: '16px' }}>
+                <div style={{ fontWeight: 900, color: '#38bdf8', marginBottom: '8px' }}>🍽️ KOL 2 — «Ван Гог» Restoranı («Кухня» tarzı)</div>
+                <div style={{ fontSize: '13px', color: '#cbd5e1', lineHeight: '1.7' }}>
+                  Ortak mekân: <b>«Ван Гог» restoranı</b>. Ortak kadro: <b>Şef Pyotr, Lyosha, Nina, Semyon</b>:
+                </div>
+                <ul style={{ fontSize: '13px', color: '#e2e8f0', lineHeight: '1.9', margin: '8px 0 0', paddingLeft: '18px' }}>
+                  <li>🍳 Yeni Garson <span style={{ color: '#64748b' }}>(A2 Finali)</span></li>
+                  <li>🍽️ «Ван Гог»ta Akşam Yemeği <span style={{ color: '#64748b' }}>(B1 Finali — crossover)</span></li>
+                  <li>🌹 Şefin Akşamı <span style={{ color: '#64748b' }}>(B2 Finali)</span></li>
+                </ul>
+              </div>
+            </div>
+
+            {/* BAĞLANTILAR */}
+            <h3 style={{ color: '#f472b6', margin: '22px 0 10px' }}>🔗 Bağlantılar</h3>
+            <div style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}>
+              {[
+                { icon: '☂️', type: 'MOTİF', color: '#eab308', from: 'Sarı Şemsiye (A1 Finali)', to: 'Gerçek Hikaye (C1/C2 Finali)', why: 'Pilot bölümde ortaya çıkan sarı şemsiyenin sırrı, dizi finalinde çözülür. Aynı nesne iki hikayeyi uçtan uca birbirine bağlar.' },
+                { icon: '🎙️', type: 'ANLATICI', color: '#eab308', from: 'Bölüm 1-8 (kontrol noktaları)', to: 'Sarı Şemsiye + Gerçek Hikaye', why: 'Hepsi aynı çerçeve anlatının parçası: Dima 2035\'te çocuklarına anlatıyor. Bölüm 1\'deki soru, ancak dizi finalinde cevaplanır.' },
+                { icon: '💙', type: 'KARAKTER', color: '#eab308', from: 'Son Bekâr (Bölüm 7)', to: 'Düğün (Bölüm 8)', why: 'Bölüm 7\'nin sonu, Bölüm 8\'deki düğünün doğrudan hazırlığıdır — aynı çift, aynı olay örgüsü devam eder.' },
+                { icon: '📍', type: 'MEKÂN + KADRO', color: '#38bdf8', from: 'Yeni Garson (A2 Finali)', to: '«Ван Гог»ta Akşam Yemeği (B1) → Şefin Akşamı (B2)', why: 'Üç hikaye de aynı restoranda geçer; Şef Pyotr, Lyosha, Nina ve Semyon üçünde de sahnededir. Lyosha\'nın restorandaki yolculuğu A2\'de başlar.' },
+                { icon: '🔀', type: 'CROSSOVER', color: '#a78bfa', from: 'HIMYM kadrosu (Bölüm 1-8)', to: '«Ван Гог»ta Akşam Yemeği (B1 Finali)', why: 'İki anlatı kolu burada kesişir: kontrol noktası hikayelerinin karakterleri (Dima, Marina, Tyoma) restoran koluna misafir olur.' },
+                { icon: '🍰', type: 'CALLBACK', color: '#38bdf8', from: '«Ван Гог»ta Akşam Yemeği (B1)', to: 'Şefin Akşamı (B2)', why: 'B1 finalindeki meşhur "düşen tatlı" olayı, B2 finalinde hatırlanır ve göndermeyle geri döner.' },
+                { icon: '💍', type: 'KARAKTER YAYI', color: '#38bdf8', from: 'Şefin Akşamı (B2 Finali)', to: 'Önceki «Ван Гог» hikayeleri', why: 'Pyotr ile Nina arasındaki çizgi A2\'den beri adım adım örülür ve B2 finalinde doruk noktasına ulaşır.' },
+                { icon: '👨‍🍳', type: 'ÜNİTE BAĞI', color: '#10b981', from: 'Aşçılık üniteleri (32-36, 81-86, 125-129, 160-163)', to: '«Ван Гог» hikaye kolu', why: 'Aşçılık ünitelerinin diyalogları da «Ван Гог» mutfağında geçer: Lyosha\'nın çıraklıktan kendi hayaline uzanan yolunu ünite ünite izlersiniz.' }
+              ].map((c, i) => (
+                <div key={i} style={{ background: '#0f172a', border: '1px solid #334155', borderRadius: '12px', padding: '14px 16px', display: 'flex', gap: '14px', alignItems: 'flex-start' }}>
+                  <div style={{ fontSize: '26px', flexShrink: 0 }}>{c.icon}</div>
+                  <div>
+                    <div style={{ fontSize: '11px', fontWeight: 900, color: c.color, letterSpacing: '0.5px', marginBottom: '4px' }}>{c.type}</div>
+                    <div style={{ fontWeight: 800, color: '#f8fafc', fontSize: '14px', marginBottom: '4px' }}>{c.from} <span style={{ color: c.color }}>⟶</span> {c.to}</div>
+                    <div style={{ fontSize: '13px', color: '#94a3b8', lineHeight: '1.6' }}>{c.why}</div>
+                  </div>
+                </div>
+              ))}
+            </div>
+
+            <div style={{ marginTop: '18px', padding: '12px 14px', borderRadius: '10px', background: 'rgba(244,114,182,0.08)', border: '1px solid #f472b6', fontSize: '13px', color: '#fbcfe8' }}>
+              💡 Bu haritada bilerek hiçbir olay örgüsü anlatılmaz — bağların tadını hikayeleri sırayla okuyarak çıkarın.
             </div>
           </div>
         )}

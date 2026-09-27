@@ -7,7 +7,7 @@ import type { UnitModule } from '../curriculumData';
 export const EXTRA_B1A: UnitModule[] = [
   {
     id: 'mod_b1_x1',
-    unitNumber: 57,
+    unitNumber: 62,
     levelGroup: 'B1',
     title: 'İş İlanı, CV & Başvuru',
     description: 'İlan okuma, özgeçmiş gönderme ve "deneyimim var" kalıpları',
@@ -47,7 +47,7 @@ export const EXTRA_B1A: UnitModule[] = [
   },
   {
     id: 'mod_b1_x2',
-    unitNumber: 58,
+    unitNumber: 63,
     levelGroup: 'B1',
     title: 'İlk İş Günü & Ofise Uyum',
     description: 'Ekiple tanışma, çalışma alanı ve ilk görevler',
@@ -87,7 +87,7 @@ export const EXTRA_B1A: UnitModule[] = [
   },
   {
     id: 'mod_b1_x3',
-    unitNumber: 59,
+    unitNumber: 64,
     levelGroup: 'B1',
     title: 'Resmî E-posta & Yazışma Dili',
     description: '"Уважаемый..." hitabı, rica kalıpları ve resmî kapanışlar',
@@ -127,7 +127,7 @@ export const EXTRA_B1A: UnitModule[] = [
   },
   {
     id: 'mod_b1_x4',
-    unitNumber: 60,
+    unitNumber: 65,
     levelGroup: 'B1',
     title: 'Emlakçıyla Daire Gezmek',
     description: 'Daire özellikleri, kat, semt ve "metroya yakın mı" soruları',
@@ -167,7 +167,7 @@ export const EXTRA_B1A: UnitModule[] = [
   },
   {
     id: 'mod_b1_x5',
-    unitNumber: 61,
+    unitNumber: 66,
     levelGroup: 'B1',
     title: 'Kira Sözleşmesi & Depozito',
     description: 'Kontrat imzalama, depozito, faturalar ve taşınma günü',
@@ -207,7 +207,7 @@ export const EXTRA_B1A: UnitModule[] = [
   },
   {
     id: 'mod_b1_x6',
-    unitNumber: 62,
+    unitNumber: 67,
     levelGroup: 'B1',
     title: 'Bankada Hesap Açma',
     description: 'Hesap açma, gerekli belgeler, kart teslimi ve komisyon soruları',
@@ -247,7 +247,7 @@ export const EXTRA_B1A: UnitModule[] = [
   },
   {
     id: 'mod_b1_x7',
-    unitNumber: 63,
+    unitNumber: 68,
     levelGroup: 'B1',
     title: 'Kredi Kartı, Taksit & Borç',
     description: 'Kredi çekme, taksitli alışveriş, faiz ve borç kapama',
@@ -287,7 +287,7 @@ export const EXTRA_B1A: UnitModule[] = [
   },
   {
     id: 'mod_b1_x8',
-    unitNumber: 64,
+    unitNumber: 69,
     levelGroup: 'B1',
     title: 'Pazar & Manavda Pazarlık',
     description: 'Tartma, tatma, taze ürün seçme ve tatlı-sert pazarlık sanatı',
