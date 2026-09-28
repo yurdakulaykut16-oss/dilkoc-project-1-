@@ -530,10 +530,13 @@ const ListenSpeedControl: React.FC<{ speed: number; onChange: (s: number) => voi
 // "Aşama 1 / Aşama 2 / Aşama 3" gruplandırması YOK: alfabe + dinleme konuları +
 // müfredat üniteleri tek bir sıralı çizgi üzerinde "Ünite 1, Ünite 2, ..."
 // olarak akar ve her kart bir önceki tamamlanınca açılır.
-//   1-  8 : Alfabe üniteleri (33 harf)
-//   9- 13 : Cümle temelleri (özne, yüklem, edat, yüklemin değişimi)
-//  14- 54 : Harf + fonetik dinleme konuları (41 konu)
-//  55+    : Her müfredat ünitesi, (varsa) hemen öncesinde dinleme ön-hazırlığıyla
+//   SIRALAMA (yeni başlayan dostu):
+//   1) Alfabe dersi 1 → o derste öğrenilen harflerin dinleme konuları → Alfabe dersi 2 → ...
+//      (ÖNCE harfi öğren, HEMEN ARDINDAN kulağını o harfe alıştır — henüz
+//       öğrenilmemiş harflerin/ileri seviye kelimelerin konusu ÖNE GELMEZ)
+//   2) Fonetik dinleme konuları (heceler + akanje/ikanje vb. kurallar)
+//   3) Zamanlar + özne/yüklem/edat (cümle temelleri)
+//   4) Müfredat üniteleri; (varsa) hemen öncesinde dinleme ön-hazırlığıyla
 // ==========================================
 export type PathStep =
   | { kind: 'alpha'; lessonIdx: number }
@@ -543,10 +546,25 @@ export type PathStep =
 
 export const PATH: PathStep[] = (() => {
   const steps: PathStep[] = [];
-  // 1) EN BAŞTA: 🎧 Harf Dinleme (33 harf) + 🎧 Fonetik Dinleme (8 konu) — Ünite 1'den itibaren
-  TOPICS_100.forEach((t, idx) => { if (t.cat !== 'mufredat') steps.push({ kind: 'topic', topicIdx: idx }); });
-  // 2) Sonra: Alfabe dersleri (okuma)
-  for (let i = 0; i < ALPHABET_LESSONS.length; i++) steps.push({ kind: 'alpha', lessonIdx: i });
+  const usedTopics = new Set<number>();
+  // 1) ALFABE ÖNCE: her alfabe dersinin HEMEN ARDINDAN, o derste öğrenilen
+  //    harflerin 🎧 dinleme konuları gelir (harfini bilmediğin sesi dinlemezsin).
+  ALPHABET_LESSONS.forEach((lesson, li) => {
+    steps.push({ kind: 'alpha', lessonIdx: li });
+    lesson.letters.forEach(l => {
+      const tIdx = TOPICS_100.findIndex(t => t.cat === 'harf' && t.letterGlyph === l.upper);
+      if (tIdx !== -1 && !usedTopics.has(tIdx)) {
+        usedTopics.add(tIdx);
+        steps.push({ kind: 'topic', topicIdx: tIdx });
+      }
+    });
+  });
+  // Güvenlik ağı: alfabe derslerinde karşılığı bulunmayan harf konusu kaldıysa sona ekle
+  TOPICS_100.forEach((t, idx) => {
+    if (t.cat === 'harf' && !usedTopics.has(idx)) { usedTopics.add(idx); steps.push({ kind: 'topic', topicIdx: idx }); }
+  });
+  // 2) Fonetik dinleme konuları (heceler + ses kuralları) — tüm harfler öğrenildikten sonra
+  TOPICS_100.forEach((t, idx) => { if (t.cat === 'fonetik') steps.push({ kind: 'topic', topicIdx: idx }); });
   // 3) Sonra: Zamanlar + özne/yüklem/edat (cümle temelleri)
   for (let i = 0; i < GRAMMAR_FOUNDATION_UNITS.length; i++) steps.push({ kind: 'grammar', grammarIdx: i });
   const previewByUnit = new Map<string, number>();
