@@ -35,6 +35,12 @@ import { EXPANSION_C1 } from './expansion50c';
 import { A_BOOST_1 } from './aBoost1';
 import { A_BOOST_2 } from './aBoost2';
 import { A_BOOST_3 } from './aBoost3';
+import { PACK100_A1 } from './pack100a1';
+import { PACK100_A2 } from './pack100a2';
+import { PACK100_B1 } from './pack100b1';
+import { PACK100_B2 } from './pack100b2';
+import { PACK100_C1 } from './pack100c1';
+import { COOKING30 } from './cooking30';
 
 export const EXTRA_UNITS: UnitModule[] = [
   ...EXTRA_A1_GRAM,  // Ünite 2-6 (A1 — cümle anahtarı, müfredatın en başı)
@@ -62,5 +68,21 @@ export const EXTRA_UNITS: UnitModule[] = [
   // A SEVİYESİ BÜYÜK GENİŞLEME — 54 ünite, HİKÂYEDEN HEMEN ÖNCE (10.9601-10.9654 < 11)
   ...A_BOOST_1,      // Ünite 10.9601-10.9618 (A1 ×18: selamlaşma, aile, para, saat, okul, ev, sağlık...)
   ...A_BOOST_2,      // Ünite 10.9619-10.9636 (A1 ×18: hava, ulaşım, kafe, market, telefon, hobiler...)
-  ...A_BOOST_3       // Ünite 10.9637-10.9654 (A1 ×18: HİKÂYEYE HAZIRLIK — HIMYM kelime hazinesi)
+  ...A_BOOST_3,      // Ünite 10.9637-10.9654 (A1 ×18: HİKÂYEYE HAZIRLIK — HIMYM kelime hazinesi)
+  // ========================================================
+  // BÜYÜK PAKET 100 — her seviyeye 20 ünite: temel/ileri gramer,
+  // CÜMLEDE ANLAM (olumsuzluk, tonlama, mecaz, deyim, atasözü,
+  // eş seslilik, ironi, eşdizim, nüans), KÜLTÜR ve DİN üniteleri.
+  // ========================================================
+  ...PACK100_A1,     // Ünite 10.9701-10.9720 (A1 ×20)
+  ...PACK100_A2,     // Ünite 40.9601-40.9620 (A2 ×20)
+  ...PACK100_B1,     // Ünite 95.9601-95.9620 (B1 ×20)
+  ...PACK100_B2,     // Ünite 143.9601-143.9620 (B2 ×20)
+  ...PACK100_C1,     // Ünite 180.9601-180.9620 (C1/C2 ×20)
+  // ========================================================
+  // AŞÇILIK ÖZEL PAKETİ — 30 ünite (100'lük paketin DIŞINDA):
+  // yalnızca yemek yapma, baharatlar, mutfak malzemeleri,
+  // teknikler, pastacılık, profesyonel mutfak dili.
+  // ========================================================
+  ...COOKING30       // Ünite 40.9701-40.9710, 95.9701-95.9710, 143.9701-143.9705, 180.9701-180.9705
 ];
