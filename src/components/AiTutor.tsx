@@ -220,6 +220,17 @@ function levenshtein(a: string, b: string) {
   return dp[a.length][b.length];
 }
 
+// Kapsama (substring) kontrolü tek başına kullanılınca çok kısa cevaplar yanlışlıkla
+// DOĞRU sayılıyordu: beklenen "как дела" iken kullanıcı sadece "да" dese
+// expected.includes(heard) true dönüyordu. Artık kapsama, uzunluk oranı yeterliyse geçerli.
+function containsMatch(heard: string, expected: string) {
+  if (!heard || !expected) return false;
+  const longer = Math.max(heard.length, expected.length);
+  const shorter = Math.min(heard.length, expected.length);
+  if (shorter / longer < 0.6) return false;
+  return heard.includes(expected) || expected.includes(heard);
+}
+
 function similarity(a: string, b: string) {
   if (!a || !b) return 0;
   if (a === b) return 1;
@@ -469,7 +480,7 @@ function evaluateTask(task: AiTask, transcript: string): EvaluationResult {
     const heardTokens = tokens(transcript, 'ru-RU');
     const tokenHits = expectedTokens.filter((word) => heardTokens.includes(word)).length;
     const tokenRecall = expectedTokens.length === 0 ? 0 : tokenHits / expectedTokens.length;
-    const closeEnough = heard.includes(expected) || expected.includes(heard) || similarity(heard, expected) >= 0.72 || tokenRecall >= 0.72;
+    const closeEnough = containsMatch(heard, expected) || similarity(heard, expected) >= 0.72 || tokenRecall >= 0.72;
     const missing = expectedTokens.filter((word) => !heardTokens.includes(word));
     if (closeEnough) {
       return {
@@ -498,7 +509,7 @@ function evaluateTask(task: AiTask, transcript: string): EvaluationResult {
   const heardTokens = tokens(transcript, 'tr-TR');
   const tokenHits = expectedTokens.filter((word) => heardTokens.includes(word)).length;
   const tokenRecall = expectedTokens.length === 0 ? 0 : tokenHits / expectedTokens.length;
-  const closeEnough = heard.includes(expected) || expected.includes(heard) || similarity(heard, expected) >= 0.68 || tokenRecall >= 0.58;
+  const closeEnough = containsMatch(heard, expected) || similarity(heard, expected) >= 0.68 || tokenRecall >= 0.58;
   const missing = expectedTokens.filter((word) => !heardTokens.includes(word));
   if (closeEnough) {
     return {
@@ -761,7 +772,11 @@ async function speakOne(text: string, lang: SpeechLang, rate: number, onChunkSta
         onChunkEnd?.();
         continue;
       }
+      // Edge sessiz döndüyse ağız animasyonunu durdur; sıradaki sağlayıcı kendi
+      // onChunkStart'ını tetikleyecek. Aksi hâlde ağız boşa oynamaya devam ediyordu.
+      onChunkEnd?.();
     } catch (error) {
+      onChunkEnd?.();
       console.warn('Edge TTS fallback:', error);
     }
     try {
@@ -784,6 +799,8 @@ async function speakOne(text: string, lang: SpeechLang, rate: number, onChunkSta
     }
     // Asıl amaç internet AI sesi. PC'de bulut servisleri o an cevap vermezse uygulama sessiz kalmasın.
     if (!ALLOW_DEVICE_TTS_FALLBACK) {
+      // Ağız animasyonu sonsuza kadar açık kalmasın diye burada da kapatılır.
+      onChunkEnd?.();
       console.warn('Cloud AI TTS başarısız oldu; cihaz TTS fallback kapalı olduğu için konuşma atlandı.');
       continue;
     }
@@ -791,6 +808,7 @@ async function speakOne(text: string, lang: SpeechLang, rate: number, onChunkSta
       onChunkEnd?.();
       continue;
     }
+    onChunkEnd?.();
     try {
       onChunkStart?.(chunk);
       await TextToSpeech.speak({
@@ -822,9 +840,15 @@ export default function AiTutor({
   onEarnXp,
 }: AiTutorProps) {
   const day = useMemo(() => todayKey(), []);
-  const initialPlanData = useRef({ completedUnits, completedTopics, completedAlpha, completedGrammar, learningFocus, mistakes, srsBank });
-  const tasks = useMemo(() => buildDailyPlan(initialPlanData.current), []);
-  const focus = initialPlanData.current.learningFocus;
+  // Plan verisi her render'da tazelenir; böylece kullanıcı haritada ilerleyince
+  // koç hâlâ eski üniteyi sormaz. Plan YALNIZCA oturum başlamadan yeniden kurulur,
+  // yani ders ortasında sorular değişip akış bozulmaz.
+  const planData = useRef({ completedUnits, completedTopics, completedAlpha, completedGrammar, learningFocus, mistakes, srsBank });
+  planData.current = { completedUnits, completedTopics, completedAlpha, completedGrammar, learningFocus, mistakes, srsBank };
+  const focusKey = `${learningFocus.pathPosition}|${learningFocus.title}|${completedUnits.length}|${completedTopics.length}|${completedAlpha.length}|${completedGrammar.length}`;
+  const [planKey, setPlanKey] = useState(focusKey);
+  const tasks = useMemo(() => buildDailyPlan(planData.current), [planKey]);
+  const focus = learningFocus;
   const elevenLabsEnabled = Boolean(ELEVENLABS_PROXY_URL || ELEVENLABS_API_KEY);
   const [attempts, setAttempts] = useState<Record<string, AttemptRecord>>(() => loadStoredAttempts(day));
   const [currentIndex, setCurrentIndex] = useState(0);
@@ -839,6 +863,13 @@ export default function AiTutor({
   const [mouthViseme, setMouthViseme] = useState<MouthViseme>('rest');
   const recognitionRef = useRef<BrowserSpeechRecognition | null>(null);
   const speechRunRef = useRef(0);
+  // isSpeaking/isListening state'leri asenkron geri çağrılarda (konuşma tanıma sonucu,
+  // native plugin promise'i) ESKİ değerle yakalanıyordu; bu yüzden cevaplar bazen
+  // sessizce yutuluyordu. Ref'ler her zaman güncel değeri verir.
+  const isSpeakingRef = useRef(false);
+  const isListeningRef = useRef(false);
+  const messageSeqRef = useRef(0);
+  const autoAdvanceRef = useRef<number | null>(null);
   const lipSyncTimerRef = useRef<number | null>(null);
   const recognitionSupported = Boolean(getSpeechRecognitionConstructor());
   const currentTask = tasks[currentIndex];
@@ -850,6 +881,13 @@ export default function AiTutor({
   }, [attempts, day]);
 
   useEffect(() => {
+    if (sessionStarted || focusKey === planKey) return;
+    setPlanKey(focusKey);
+    setCurrentIndex(0);
+    setLastResult(null);
+  }, [focusKey, planKey, sessionStarted]);
+
+  useEffect(() => {
     if (sessionStarted) return;
     const next = tasks.findIndex((task) => !attempts[task.id]?.correct);
     setCurrentIndex(next === -1 ? 0 : next);
@@ -859,6 +897,7 @@ export default function AiTutor({
     return () => {
       recognitionRef.current?.abort();
       if (lipSyncTimerRef.current !== null) window.clearTimeout(lipSyncTimerRef.current);
+      if (autoAdvanceRef.current !== null) window.clearTimeout(autoAdvanceRef.current);
       void NativeSpeechRecognition.stop().catch(() => undefined);
       if ('speechSynthesis' in window) window.speechSynthesis.cancel();
       void TextToSpeech.stop();
@@ -866,7 +905,11 @@ export default function AiTutor({
   }, []);
 
   const addMessage = (role: 'bot' | 'user', text: string, tone: ChatMessage['tone'] = 'neutral') => {
-    setMessages((prev) => [...prev, { id: `${Date.now()}-${prev.length}`, role, text, tone }].slice(-9));
+    // Eski kimlik `${Date.now()}-${prev.length}` idi; liste 9 mesajda sabitlendiği için
+    // aynı milisaniyede eklenen mesajlar AYNI React key'ini alıp uyarı/kaybolma yapıyordu.
+    messageSeqRef.current += 1;
+    const id = `msg-${messageSeqRef.current}`;
+    setMessages((prev) => [...prev, { id, role, text, tone }].slice(-9));
   };
 
   const stopLipSync = () => {
@@ -906,14 +949,32 @@ export default function AiTutor({
       recognitionRef.current = null;
     }
     void NativeSpeechRecognition.stop().catch(() => undefined);
+    isListeningRef.current = false;
     setIsListening(false);
+  };
+
+  const setSpeaking = (value: boolean) => {
+    isSpeakingRef.current = value;
+    setIsSpeaking(value);
+  };
+
+  const setListening = (value: boolean) => {
+    isListeningRef.current = value;
+    setIsListening(value);
+  };
+
+  const cancelAutoAdvance = () => {
+    if (autoAdvanceRef.current !== null) {
+      window.clearTimeout(autoAdvanceRef.current);
+      autoAdvanceRef.current = null;
+    }
   };
 
   const speakParts = async (parts: SpeechPart[]) => {
     const runId = speechRunRef.current + 1;
     speechRunRef.current = runId;
     stopListeningIfNeeded();
-    setIsSpeaking(true);
+    setSpeaking(true);
     setStatusText('Yapay zeka konuşuyor… Bas Konuş kilitli.');
     try {
       try { await TextToSpeech.stop(); } catch { /* native TTS olmayabilir */ }
@@ -931,7 +992,7 @@ export default function AiTutor({
     } finally {
       if (speechRunRef.current === runId) {
         stopLipSync();
-        setIsSpeaking(false);
+        setSpeaking(false);
         setStatusText('Sıra sende. Bas Konuş sadece dokunduğunda dinler.');
       }
     }
@@ -947,6 +1008,7 @@ export default function AiTutor({
 
   const startSession = () => {
     if (!currentTask) return;
+    cancelAutoAdvance();
     setSessionStarted(true);
     setLastResult(null);
     setStatusText('Yapay zeka konuşuyor…');
@@ -957,9 +1019,13 @@ export default function AiTutor({
   };
 
   const handleTranscript = (transcript: string, mode: ResponseMode) => {
-    if (!currentTask || isSpeaking) return;
+    // Eskiden buradaki `isSpeaking` kontrolü ESKİ state'i okuyordu ve mikrofondan
+    // gelen cevap bazen sessizce yok sayılıyordu. Artık güncel ref okunuyor.
+    if (!currentTask || isSpeakingRef.current) return;
     const cleanTranscript = transcript.trim();
     if (!cleanTranscript) return;
+    cancelAutoAdvance();
+    stopListeningIfNeeded();
     setManualAnswer('');
     setLastResult(null);
     addMessage('user', `${mode === 'voice' ? '🎙️' : '⌨️'} ${cleanTranscript}`);
@@ -979,13 +1045,26 @@ export default function AiTutor({
     }
     const speech: SpeechPart[] = [{ text: evaluation.spoken, lang: 'tr-TR', rate: 1 }];
     if (!evaluation.correct && currentTask.expectedLang === 'ru-RU') speech.push({ text: currentTask.ru, lang: 'ru-RU', rate: 0.92 });
-    void speakParts(speech);
+    const answeredId = currentTask.id;
+    void speakParts(speech).then(() => {
+      // Doğru cevaptan sonra kullanıcı "→" butonuna basmak zorunda kalıyordu ve
+      // akış duruyordu. Artık koç kendi kendine sıradaki göreve geçip soruyu okur.
+      if (!evaluation.correct) return;
+      cancelAutoAdvance();
+      autoAdvanceRef.current = window.setTimeout(() => {
+        autoAdvanceRef.current = null;
+        if (isSpeakingRef.current || isListeningRef.current) return;
+        if (tasks[currentIndex]?.id !== answeredId) return;
+        goNext();
+      }, 900);
+    });
   };
 
   const startListening = async () => {
-    if (!currentTask || isSpeaking || isListening) return;
+    if (!currentTask || isSpeakingRef.current || isListeningRef.current) return;
+    cancelAutoAdvance();
     setMicHelpVisible(false);
-    setIsListening(true);
+    setListening(true);
     setStatusText(currentTask.expectedLang === 'ru-RU' ? 'Dinliyorum… Rusça söyle.' : 'Dinliyorum… Türkçe cevap ver.');
 
     // Android Studio / APK içinde Web Speech çoğu cihazda "not-allowed" verir.
@@ -998,7 +1077,7 @@ export default function AiTutor({
         if (permission.speechRecognition !== 'granted') {
           const requested = await NativeSpeechRecognition.requestPermissions();
           if (requested.speechRecognition !== 'granted') {
-            setIsListening(false);
+            setListening(false);
             setMicHelpVisible(true);
             setStatusText('Mikrofon izni verilmedi. Android ayarlarından mikrofon iznini aç veya yazılı cevap alanını kullan.');
             return;
@@ -1011,7 +1090,7 @@ export default function AiTutor({
           partialResults: false,
           prompt: currentTask.expectedLang === 'ru-RU' ? 'Rusça cevabını söyle' : 'Türkçe cevabını söyle',
         });
-        setIsListening(false);
+        setListening(false);
         const transcript = result.matches?.[0] || '';
         if (transcript) handleTranscript(transcript, 'voice');
         else setStatusText('Ses anlaşılmadı. Tekrar Bas Konuş veya yazılı cevap alanını kullan.');
@@ -1019,16 +1098,18 @@ export default function AiTutor({
       }
     } catch {
       // Web ortamında plugin "not implemented" diyebilir; sorun değil, aşağıdaki fallback çalışır.
+      // Native taraf yarıda kaldıysa mikrofon oturumunu kapat ki buton kilitli kalmasın.
+      void NativeSpeechRecognition.stop().catch(() => undefined);
     }
 
     const Recognition = getSpeechRecognitionConstructor();
     if (!Recognition) {
-      setIsListening(false);
+      setListening(false);
       setStatusText('Bu cihaz/tarayıcı konuşma tanımayı desteklemiyor. Aşağıdaki yazılı cevap alanını kullanabilirsin.');
       return;
     }
     if (!(await ensureBrowserMicPermission())) {
-      setIsListening(false);
+      setListening(false);
       setMicHelpVisible(true);
       setStatusText('Mikrofon izni tarayıcıda kapalı. PC tarayıcıda izin elle açılmalı; aşağıdaki yardım butonlarını kullanabilirsin.');
       return;
@@ -1045,7 +1126,7 @@ export default function AiTutor({
         handleTranscript(transcript, 'voice');
       };
       recognition.onerror = (event) => {
-        setIsListening(false);
+        setListening(false);
         const code = event.error || event.message || 'izin ya da bağlantı hatası';
         if (code === 'not-allowed') setMicHelpVisible(true);
         setStatusText(code === 'not-allowed'
@@ -1053,12 +1134,12 @@ export default function AiTutor({
           : `Mikrofon dinlemesi durdu: ${code}.`);
       };
       recognition.onend = () => {
-        setIsListening(false);
+        setListening(false);
         recognitionRef.current = null;
       };
       recognition.start();
     } catch {
-      setIsListening(false);
+      setListening(false);
       setStatusText('Mikrofon başlatılamadı. Android ayarlarından mikrofon iznini kontrol et veya yazılı cevap ver.');
     }
   };
@@ -1078,6 +1159,7 @@ export default function AiTutor({
   };
 
   const goNext = () => {
+    cancelAutoAdvance();
     if (tasks.length === 0) return;
     const nextIndex = tasks.findIndex((task, index) => index > currentIndex && !attempts[task.id]?.correct);
     const fallbackIndex = tasks.findIndex((task) => !attempts[task.id]?.correct);
@@ -1094,6 +1176,7 @@ export default function AiTutor({
   };
 
   const retryCurrent = () => {
+    cancelAutoAdvance();
     if (!currentTask) return;
     setLastResult(null);
     void playTaskPrompt(currentTask, currentIndex);
@@ -1105,6 +1188,10 @@ export default function AiTutor({
   };
 
   const resetDailyCoach = () => {
+    cancelAutoAdvance();
+    stopListeningIfNeeded();
+    speechRunRef.current += 1;
+    setSpeaking(false);
     setAttempts({});
     setCurrentIndex(0);
     setLastResult(null);
