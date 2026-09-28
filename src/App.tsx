@@ -1,5 +1,6 @@
 import { TextToSpeech } from '@capacitor-community/text-to-speech';
 import React, { useState, useEffect, useRef } from 'react';
+import AiTutor from './components/AiTutor';
 import { TOPICS_100, TOPICS_100_TOTAL, topicCatInfo, buildTopicDrills, topicFullText, LEVELS, topicSourceUnits, sourceUnitInfo } from './topics100';
 import type { Topic100, Topic100Question, CefrTag } from './topics100';
 
@@ -538,7 +539,7 @@ const LEVEL_ANCHORS: Record<CefrTag, number> = (() => {
 
 export default function App() {
   const [activeTab, setActiveTab] = useState<'MAP' | 'PROFILE' | 'MISTAKES' | 'METHODS' | 'CONNECTIONS'>('MAP');
-  const [screen, setScreen] = useState<'MAP' | 'ALPHA' | 'ALPHA_CHECK' | 'ALPHA_READING' | 'GRAMMAR' | 'TOPIC' | 'TOPIC_TEST' | 'STORY' | 'DIALOG' | 'SMESHARIKI' | 'FLASHCARD' | 'MATCH' | 'TYPING' | 'SENTENCE' | 'QUIZ' | 'UNIT_STORY' | 'STORY_TEST' | 'STORY_RESULT' | 'CHECKPOINT_STORY'>('MAP');
+  const [screen, setScreen] = useState<'MAP' | 'AI_TUTOR' | 'ALPHA' | 'ALPHA_CHECK' | 'ALPHA_READING' | 'GRAMMAR' | 'TOPIC' | 'TOPIC_TEST' | 'STORY' | 'DIALOG' | 'SMESHARIKI' | 'FLASHCARD' | 'MATCH' | 'TYPING' | 'SENTENCE' | 'QUIZ' | 'UNIT_STORY' | 'STORY_TEST' | 'STORY_RESULT' | 'CHECKPOINT_STORY'>('MAP');
   // Sınav/test motorunun hangi bağlamda çalıştığını belirtir: her biri bittiğinde farklı bir sonraki adıma geçer
   const [quizContext, setQuizContext] = useState<'ALPHA_FINAL' | 'GRAMMAR_FOUNDATION' | 'LISTENING' | 'UNIT_FINAL' | 'REVIEW' | 'SRS_REVIEW' | 'MARATHON' | 'WEAKSPOT'>('UNIT_FINAL');
   // Harf bazlı anlık tanıma testi
@@ -1419,6 +1420,61 @@ export default function App() {
   // Bu, kalıcı hafızanın bilimsel temelidir — beyin bir bilgiyi unutmaya en yakın olduğu anda tekrar hatırlarsa iz kalıcılaşır.
   const dueSRS = srsBank.filter(i => i.nextReview <= Date.now());
 
+  // AI koçu da haritadaki TEK SIRA öğrenme yolunu takip eder: Ünite 1 → Ünite {PATH.length}.
+  // Yani koç, sadece müfredat kelime ünitelerini değil; harf, fonetik dinleme, gramer ve ünite kartlarının
+  // hangisinde kaldıysan onu "şu anki ünite" kabul eder.
+  const aiPathIndexRaw = PATH.findIndex(s => !isStepDone(s));
+  const aiPathIndex = aiPathIndexRaw === -1 ? Math.max(0, PATH.length - 1) : aiPathIndexRaw;
+  const aiStep = PATH[aiPathIndex];
+  const aiLearningFocus = (() => {
+    const base = { pathPosition: aiPathIndex + 1, pathTotal: PATH.length };
+    if (aiStep.kind === 'alpha') {
+      const lesson = ALPHABET_LESSONS[aiStep.lessonIdx];
+      return {
+        ...base,
+        icon: '🔤',
+        title: lesson.title,
+        description: lesson.subtitle,
+        words: [
+          ...lesson.readingDrills.map(d => ({ ru: d.word, tr: d.tr, reading: d.correct })),
+          ...lesson.letters.flatMap(l => l.examples.map(e => ({ ru: e.ru, tr: e.tr, reading: e.reading })))
+        ].slice(0, 14),
+        sentences: lesson.readingDrills.map(d => ({ ru: d.word, tr: d.tr }))
+      };
+    }
+    if (aiStep.kind === 'grammar') {
+      const g = GRAMMAR_FOUNDATION_UNITS[aiStep.grammarIdx];
+      return {
+        ...base,
+        icon: g.icon,
+        title: g.title,
+        description: g.description,
+        words: g.examples.map(e => ({ ru: e.ru, tr: e.tr, reading: e.reading })),
+        sentences: g.examples.map(e => ({ ru: e.ru, tr: e.tr }))
+      };
+    }
+    if (aiStep.kind === 'topic') {
+      const t = TOPICS_100[aiStep.topicIdx];
+      return {
+        ...base,
+        icon: t.icon,
+        title: t.titleTr,
+        description: t.descTr,
+        words: t.items.map(i => ({ ru: i.ru, tr: i.tr, reading: i.reading })),
+        sentences: [...t.sentences.map(s => ({ ru: s.ru, tr: s.tr })), ...t.dialogue.map(d => ({ ru: d.ru, tr: d.tr }))]
+      };
+    }
+    const u = UNITS_DATA[aiStep.unitIdx];
+    return {
+      ...base,
+      icon: u.icon,
+      title: u.title,
+      description: u.description,
+      words: u.words.map(w => ({ ru: w.ru, tr: w.tr, reading: w.reading })),
+      sentences: [...u.sentences.map(s => ({ ru: s.ru, tr: s.tr })), ...(u.dialogue || []).map(d => ({ ru: d.ru, tr: d.tr }))]
+    };
+  })();
+
   const startSRSReview = () => {
     if (dueSRS.length === 0) return;
     const q = shuffle(dueSRS).map(item => ({
@@ -1592,6 +1648,25 @@ export default function App() {
         {screen === 'MAP' && activeTab === 'MAP' && (
           <div>
             <SceneBanner icon="🇷🇺" color="#38bdf8" label="Rusça Akademisi — Alfabeden Dizi Seviyesine" />
+
+            {/* SESLİ YAPAY ZEKA KOÇU — kullanıcının ilerlemesine göre günlük konuşma/çeviri/telaffuz tekrarı */}
+            <div style={{ ...cardBox, marginBottom: '24px', border: '1px solid #38bdf8', background: 'linear-gradient(135deg, rgba(56,189,248,0.18), rgba(168,85,247,0.12), #1e293b)' }}>
+              <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: '14px', flexWrap: 'wrap' }}>
+                <div style={{ display: 'flex', alignItems: 'center', gap: '14px' }}>
+                  <div style={{ width: '58px', height: '58px', borderRadius: '50%', display: 'grid', placeItems: 'center', fontSize: '30px', background: 'radial-gradient(circle at 30% 20%, #e0f2fe, #38bdf8 50%, #1d4ed8)', boxShadow: '0 12px 25px rgba(56,189,248,0.22)', position: 'relative' }}>
+                    🪐
+                  </div>
+                  <div>
+                    <div style={{ fontSize: '12px', color: '#7dd3fc', fontWeight: 900 }}>YENİ • GEZEGEN KOÇ • SESLİ TÜRKÇE AI</div>
+                    <div style={{ fontSize: '20px', fontWeight: 950, marginTop: '2px' }}>Bulunduğun üniteye göre günlük konuşma</div>
+                    <div style={{ fontSize: '12px', color: '#cbd5e1', marginTop: '4px', lineHeight: 1.5 }}>Öğrenme Yolu Ünite 1 → {PATH.length} içinde kaldığın karta göre; Rusça söyleme, dinlediğini çevirme ve telaffuz kontrolü.</div>
+                  </div>
+                </div>
+                <button onClick={() => { setFeedback(null); setActiveTab('MAP'); setScreen('AI_TUTOR'); }} style={{ background: 'linear-gradient(135deg, #38bdf8, #22c55e)', border: 'none', color: '#07111f', padding: '13px 18px', borderRadius: '12px', fontWeight: 950, cursor: 'pointer', boxShadow: '0 10px 25px rgba(34,197,94,0.22)' }}>
+                  🪐 Sesli Koça Git
+                </button>
+              </div>
+            </div>
 
             {/* GÜNLÜK ARALIKLI TEKRAR (SPACED REPETITION) KARTI — KALICI HAFIZANIN KALBİ */}
             {srsBank.length > 0 && (
@@ -1978,12 +2053,27 @@ export default function App() {
         {/* DERS EKRANLARI */}
         {screen !== 'MAP' && activeTab === 'MAP' && (
           <div style={cardBox}>
-            <button onClick={() => setScreen('MAP')} style={{ background: 'transparent', border: 'none', color: '#94a3b8', fontWeight: 700, cursor: 'pointer', marginBottom: '16px' }}>← Dersten Çık</button>
+            <button onClick={() => setScreen('MAP')} style={{ background: 'transparent', border: 'none', color: '#94a3b8', fontWeight: 700, cursor: 'pointer', marginBottom: '16px' }}>← {screen === 'AI_TUTOR' ? 'Haritaya Dön' : 'Dersten Çık'}</button>
 
             {feedback && (
               <div style={{ padding: '14px', borderRadius: '10px', background: feedback.isError ? 'rgba(239,68,68,0.2)' : 'rgba(16,185,129,0.2)', border: `1px solid ${feedback.isError ? '#ef4444' : '#10b981'}`, color: '#fff', marginBottom: '16px', fontWeight: 700 }}>
                 {feedback.message}
               </div>
+            )}
+
+            {screen === 'AI_TUTOR' && (
+              <AiTutor
+                completedUnits={completedUnits}
+                completedTopics={completedTopics}
+                completedAlpha={completedAlpha}
+                completedGrammar={completedGrammar}
+                learningFocus={aiLearningFocus}
+                mistakes={mistakes}
+                srsBank={srsBank}
+                addMistake={addMistake}
+                addToSRS={addToSRS}
+                onEarnXp={(amount) => setXp(x => x + amount)}
+              />
             )}
 
             {/* CÜMLE TEMELLERİ — alfabeden sonra gelen özne/yüklem/edat mini üniteleri */}
