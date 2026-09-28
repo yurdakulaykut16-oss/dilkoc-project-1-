@@ -152,6 +152,17 @@ export default function RescueTest({ target, speak, onFinish, onExit }: Props) {
     else finish();
   };
 
+  // ⌨️ KLAVYE KISAYOLU: 1-4 tuşları şıkları seçer (hızlı kurtarma testinde hız kritik!)
+  useEffect(() => {
+    const onKey = (e: KeyboardEvent) => {
+      if (done || e.key < '1' || e.key > '4') return;
+      const opt = questions[idx]?.options[Number(e.key) - 1];
+      if (opt !== undefined) answer(opt);
+    };
+    window.addEventListener('keydown', onKey);
+    return () => window.removeEventListener('keydown', onKey);
+  });
+
   if (done) {
     const total = statsRef.current.answered;
     const okCount = statsRef.current.correct;

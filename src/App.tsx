@@ -1,6 +1,9 @@
 import { TextToSpeech } from '@capacitor-community/text-to-speech';
-import React, { useState, useEffect, useRef } from 'react';
+import React, { useState, useEffect, useMemo, useRef } from 'react';
 import AiTutor from './components/AiTutor';
+// 📊 İSTATİSTİK MERKEZİ: gerçek seri takibi, günlük hedef, lig, rozetler, yedekleme
+import ProfileStats from './components/ProfileStats';
+import { DAILY_GOAL_XP, effectiveStreak, leagueForXp, loadStats, recordRescuePass, recordXpGain, todayStr, xpToday } from './statsStore';
 
 // MICROSOFT EDGE TTS: Rusça = ru-RU-Svetlana/DmitryNeural, Türkçe = tr-TR-Emel/AhmetNeural.
 // Dinleme ekranlarındaki hız düğmesi perde korumalı (preservesPitch) çalışır — kelime bozulmaz.
@@ -563,10 +566,13 @@ export const PATH: PathStep[] = (() => {
   TOPICS_100.forEach((t, idx) => {
     if (t.cat === 'harf' && !usedTopics.has(idx)) { usedTopics.add(idx); steps.push({ kind: 'topic', topicIdx: idx }); }
   });
-  // 2) Fonetik dinleme konuları (heceler + ses kuralları) — tüm harfler öğrenildikten sonra
-  TOPICS_100.forEach((t, idx) => { if (t.cat === 'fonetik') steps.push({ kind: 'topic', topicIdx: idx }); });
-  // 3) Sonra: Zamanlar + özne/yüklem/edat (cümle temelleri)
+  // 2) HECE PRATİĞİ (2 fonetik hece konusu) — harfleri sese bağlama köprüsü
+  TOPICS_100.forEach((t, idx) => { if (t.cat === 'fonetik' && t.num < 36) steps.push({ kind: 'topic', topicIdx: idx }); });
+  // 3) ALFABEDEN HEMEN SONRA: SAYILAR + ZAMANLAR + ÖZNE/YÜKLEM/EDATLAR (cümle temelleri).
+  //    Dinleme kural konuları bu temellerden SONRA gelir — önce dilin iskeleti kurulur.
   for (let i = 0; i < GRAMMAR_FOUNDATION_UNITS.length; i++) steps.push({ kind: 'grammar', grammarIdx: i });
+  // 4) Fonetik ses kuralı konuları (akanje, ikanje, sedasızlaşma...) — temellerden sonra
+  TOPICS_100.forEach((t, idx) => { if (t.cat === 'fonetik' && t.num >= 36) steps.push({ kind: 'topic', topicIdx: idx }); });
   const previewByUnit = new Map<string, number>();
   TOPICS_100.forEach((t, idx) => { if (t.cat === 'mufredat' && t.unitId && !previewByUnit.has(t.unitId)) previewByUnit.set(t.unitId, idx); });
   UNITS_DATA.forEach((u, uIdx) => {
@@ -597,7 +603,7 @@ const LEVEL_ANCHORS: Record<CefrTag, number> = (() => {
 
 export default function App() {
   const [activeTab, setActiveTab] = useState<'MAP' | 'PROFILE' | 'MISTAKES' | 'METHODS' | 'CONNECTIONS'>('MAP');
-  const [screen, setScreen] = useState<'MAP' | 'AI_TUTOR' | 'ALPHA' | 'ALPHA_CHECK' | 'ALPHA_READING' | 'GRAMMAR' | 'TOPIC' | 'TOPIC_TEST' | 'STORY' | 'DIALOG' | 'SMESHARIKI' | 'FLASHCARD' | 'MATCH' | 'TYPING' | 'SENTENCE' | 'QUIZ' | 'UNIT_STORY' | 'STORY_TEST' | 'STORY_RESULT' | 'CHECKPOINT_STORY' | 'ROUTE' | 'GRAPH' | 'SHORTS' | 'RESCUE'>('MAP');
+  const [screen, setScreen] = useState<'MAP' | 'AI_TUTOR' | 'ALPHA' | 'ALPHA_CHECK' | 'ALPHA_READING' | 'GRAMMAR' | 'TOPIC' | 'TOPIC_TEST' | 'STORY' | 'DIALOG' | 'SMESHARIKI' | 'FLASHCARD' | 'MATCH' | 'TYPING' | 'SENTENCE' | 'QUIZ' | 'UNIT_STORY' | 'STORY_TEST' | 'STORY_RESULT' | 'CHECKPOINT_STORY' | 'ROUTE' | 'GRAPH' | 'SHORTS' | 'RESCUE' | 'STATS'>('MAP');
   // Sınav/test motorunun hangi bağlamda çalıştığını belirtir: her biri bittiğinde farklı bir sonraki adıma geçer
   const [quizContext, setQuizContext] = useState<'ALPHA_FINAL' | 'GRAMMAR_FOUNDATION' | 'LISTENING' | 'UNIT_FINAL' | 'REVIEW' | 'SRS_REVIEW' | 'MARATHON' | 'WEAKSPOT'>('UNIT_FINAL');
   // Harf bazlı anlık tanıma testi
@@ -619,6 +625,12 @@ export default function App() {
   const [srsBank, setSrsBank] = useState<SRSItem[]>([]);
   // Kelime bazlı kronik hata sayaçları (Zayıf Noktalarım paneli bunu okur)
   const [errorStats, setErrorStats] = useState<Record<string, { count: number; tr: string; last: number }>>({});
+
+  // 📊 GERÇEK SERİ + GÜNLÜK HEDEF: bugün kazanılan XP (statsStore'dan beslenir)
+  const [todayXp, setTodayXp] = useState(0);
+  const prevXpRef = useRef<number | null>(null);
+  // 🔊 KELİME KARTI OTOMATİK SESLENDİRME tercihi (localStorage'da saklanır)
+  const [autoSpeak, setAutoSpeak] = useState(() => localStorage.getItem('dilkoc_autospeak') !== '0');
 
   // KULAĞI ALIŞTIR — 100 KONU (sesli dinleme + "dinle & seç" test) durumu
   const [topicIdx, setTopicIdx] = useState(0);              // seçili 100'lük konu (TOPICS_100 indeksi)
@@ -703,6 +715,7 @@ export default function App() {
       try {
         const d: SaveState = JSON.parse(raw);
         setXp(d.xp || 0);
+        prevXpRef.current = d.xp || 0; // XP-delta takibi kayıtlı değerden başlasın (yükleme "kazanç" sayılmasın)
         setStreak(d.streak || 1);
         setGems(d.gems || 250);
         setCompletedAlpha(d.completedAlpha || []);
@@ -724,6 +737,31 @@ export default function App() {
     const d: SaveState = { xp, streak, gems, completedAlpha, completedGrammar, completedUnits, completedTopics, completedStories, mistakes, srsBank, errorStats };
     localStorage.setItem(SAVE_KEY, JSON.stringify(d));
   }, [xp, streak, gems, completedAlpha, completedGrammar, completedUnits, completedTopics, completedStories, mistakes, srsBank, errorStats]);
+
+  // 📊 AÇILIŞTA SERİ TAZELEME: statsStore'daki gerçek seri (dün/bugün çalışıldı mı?)
+  // eski kayıttaki sabit değerin yerine geçer; bugünkü XP sayacı da yüklenir.
+  useEffect(() => {
+    const s = loadStats();
+    setStreak(Math.max(1, effectiveStreak(s)));
+    setTodayXp(xpToday(s));
+  }, []);
+
+  // 📊 XP-DELTA KANCASI: xp her arttığında kazancı güne yazar, seriyi günceller.
+  // Böylece TÜM ekranlardaki (quiz, eşleştirme, kurtarma...) setXp çağrıları tek
+  // noktadan istatistiğe akar — ayrı ayrı elden geçirmek gerekmez.
+  useEffect(() => {
+    if (prevXpRef.current === null) { prevXpRef.current = xp; return; }
+    const delta = xp - prevXpRef.current;
+    prevXpRef.current = xp;
+    if (delta > 0) {
+      const s = recordXpGain(delta);
+      setStreak(Math.max(1, s.streak));
+      setTodayXp(xpToday(s));
+    }
+  }, [xp]);
+
+  // 🔊 Kelime kartı otomatik seslendirme tercihini kalıcılaştır
+  useEffect(() => { localStorage.setItem('dilkoc_autospeak', autoSpeak ? '1' : '0'); }, [autoSpeak]);
 
   // Dinleme bağlamı takibi: hız düğmesi SADECE dinleme ekranlarında sesi etkiler
   // (TOPIC = dinleme konusu, TOPIC_TEST = dinle&seç, DIALOG/SMESHARIKI = sahne dinleme,
@@ -1753,6 +1791,7 @@ export default function App() {
   // Kurtarma testi bitti: geçildiyse kelimenin SRS kutusu yükselir (ağda yeşile döner),
   // kronik hata sayacı düşer; geçilemediyse kutu 1'e iner (yarın tekrar sorulur).
   const finishRescue = (r: RescueResult) => {
+    if (r.passed) recordRescuePass(); // 📊 rozet/istatistik sayacı
     const t = rescueTarget;
     if (t?.kind === 'word' && t.ru) {
       const ru = t.ru;
@@ -1783,6 +1822,49 @@ export default function App() {
     setScreen('GRAPH');
   };
 
+  // ⌨️ KLAVYE KISAYOLLARI: 1-4 tuşları test ekranlarındaki şıkları seçer
+  // (QUIZ tüm bağlamlarda + dinle&seç TOPIC_TEST). Girdi alanlarında devre dışıdır.
+  useEffect(() => {
+    const onKey = (e: KeyboardEvent) => {
+      if (e.key < '1' || e.key > '4') return;
+      const t = e.target as HTMLElement | null;
+      if (t && (t.tagName === 'INPUT' || t.tagName === 'TEXTAREA' || t.isContentEditable)) return;
+      const i = Number(e.key) - 1;
+      if (screen === 'QUIZ') {
+        const q = quizQuestions[quizIdx];
+        if (q && q.options && q.options[i] !== undefined) handleQuizAnswer(q.options[i]);
+      } else if (screen === 'TOPIC_TEST' && !topicQDone) {
+        const q = topicQs[topicQIdx];
+        if (q && q.options[i] !== undefined) handleTopicAnswer(q.options[i]);
+      }
+    };
+    window.addEventListener('keydown', onKey);
+    return () => window.removeEventListener('keydown', onKey);
+  });
+
+  // 🔊 KELİME KARTI OTOMATİK SESLENDİRME: kart her değiştiğinde Rusça kelime
+  // otomatik okunur (kapatılabilir). Kulak + göz aynı anda çalışır.
+  useEffect(() => {
+    if (screen !== 'FLASHCARD' || !autoSpeak) return;
+    const w = UNITS_DATA[unitIdx]?.words[cardIdx];
+    if (!w) return;
+    const t = setTimeout(() => { speak(w.ru); }, 300);
+    return () => clearTimeout(t);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [screen, unitIdx, cardIdx, autoSpeak]);
+
+  // 🗓️ GÜNÜN KELİMESİ: tarihin deterministik hash'i ile her gün TÜM havuzdan
+  // farklı bir kelime seçilir — herkes aynı gün aynı kelimeyi görür.
+  const wordOfDay = useMemo(() => {
+    const d = todayStr();
+    let h = 0;
+    for (let i = 0; i < d.length; i++) h = (h * 31 + d.charCodeAt(i)) >>> 0;
+    return ALL_WORDS[h % ALL_WORDS.length];
+  }, []);
+
+  // 🏆 LİG DURUMU (üst bar rozeti)
+  const currentLeague = leagueForXp(xp);
+
   // STİLLER
   const containerStyle: React.CSSProperties = { maxWidth: '720px', margin: '0 auto', padding: '16px' };
   const cardBox: React.CSSProperties = { background: '#1e293b', borderRadius: '16px', padding: '24px', border: '1px solid #334155', boxShadow: '0 10px 25px -5px rgba(0,0,0,0.3)' };
@@ -1804,6 +1886,9 @@ export default function App() {
           <button onClick={() => { setActiveTab('MAP'); setScreen('SHORTS'); }} style={{ background: 'transparent', border: 'none', color: '#fb923c', cursor: 'pointer', fontWeight: 800, fontSize: '13px' }} title="Hatalarına özel AI üretimi 15-30 saniyelik dikey mikro dersler">🎬 Koç Akışı</button>
           <button onClick={() => { setActiveTab('METHODS'); setScreen('MAP'); }} style={{ background: 'transparent', border: 'none', color: '#a78bfa', cursor: 'pointer', fontWeight: 800, fontSize: '13px' }}>📚 Yöntemler</button>
           <button onClick={() => { setActiveTab('CONNECTIONS'); setScreen('MAP'); }} style={{ background: 'transparent', border: 'none', color: '#f472b6', cursor: 'pointer', fontWeight: 800, fontSize: '13px' }}>🕸️ Hikaye Bağları</button>
+          <button onClick={() => { setActiveTab('MAP'); setScreen('STATS'); }} style={{ background: 'transparent', border: 'none', color: '#facc15', cursor: 'pointer', fontWeight: 800, fontSize: '13px' }} title="Lig, seri, günlük hedef, rozetler ve ilerleme yedeği">📊 İstatistik</button>
+          <span onClick={() => { setActiveTab('MAP'); setScreen('STATS'); }} title={`${currentLeague.league.name} Ligi — toplam XP'ye göre yükselir`} style={{ color: currentLeague.league.color, display: 'flex', alignItems: 'center', gap: '4px', cursor: 'pointer' }}>{currentLeague.league.icon} {currentLeague.league.name}</span>
+          <span title={`Günlük hedef: ${DAILY_GOAL_XP} XP`} style={{ color: todayXp >= DAILY_GOAL_XP ? '#22c55e' : '#fb923c', display: 'flex', alignItems: 'center', gap: '4px' }}>🎯 {todayXp}/{DAILY_GOAL_XP}</span>
           <span style={{ color: '#f59e0b', display: 'flex', alignItems: 'center', gap: '4px' }}>🔥 {streak}</span>
           <span style={{ color: '#38bdf8', display: 'flex', alignItems: 'center', gap: '4px' }}>💎 {gems}</span>
           <span style={{ color: '#10b981', display: 'flex', alignItems: 'center', gap: '4px' }}>⚡ {xp} XP</span>
@@ -1821,6 +1906,41 @@ export default function App() {
         {screen === 'MAP' && activeTab === 'MAP' && (
           <div>
             <SceneBanner icon="🇷🇺" color="#38bdf8" label="Rusça Akademisi — Alfabeden Dizi Seviyesine" />
+
+            {/* 🗓️ GÜNÜN KELİMESİ — tarihe göre deterministik seçilir, dinlenebilir */}
+            <div style={{ ...cardBox, marginBottom: '16px', border: '1px solid #f59e0b55', background: 'linear-gradient(135deg, rgba(245,158,11,0.12), #1e293b)' }}>
+              <div style={{ display: 'flex', alignItems: 'center', gap: '14px', flexWrap: 'wrap' }}>
+                <div style={{ fontSize: '30px' }}>🗓️</div>
+                <div style={{ flex: 1, minWidth: '180px' }}>
+                  <div style={{ fontSize: '11px', fontWeight: 900, color: '#f59e0b', letterSpacing: '0.5px' }}>GÜNÜN KELİMESİ</div>
+                  <div style={{ fontSize: '24px', fontWeight: 900, marginTop: '2px' }}>{wordOfDay.ru}</div>
+                  <div style={{ fontSize: '13px', color: '#94a3b8' }}>{wordOfDay.reading} — <span style={{ color: '#e2e8f0', fontWeight: 700 }}>{wordOfDay.tr}</span> <span style={{ color: '#64748b' }}>({wordOfDay.level})</span></div>
+                  <div style={{ fontSize: '12px', color: '#cbd5e1', marginTop: '6px' }}>💡 {wordOfDay.usageNote}</div>
+                </div>
+                <button onClick={() => speak(wordOfDay.ru)} style={{ padding: '14px 18px', borderRadius: '50%', background: '#f59e0b', border: 'none', color: '#0f172a', cursor: 'pointer', fontSize: '20px' }} title="Dinle">🔊</button>
+              </div>
+            </div>
+
+            {/* 📋 GÜNLÜK AKILLI PLAN — vadesi gelen SRS + zayıf kelimeler + sıradaki adım */}
+            <div style={{ ...cardBox, marginBottom: '16px', border: '1px solid #22c55e55' }}>
+              <div style={{ fontWeight: 900, marginBottom: '10px' }}>📋 Bugünün Planı <span style={{ fontSize: '12px', color: todayXp >= DAILY_GOAL_XP ? '#22c55e' : '#94a3b8', fontWeight: 800 }}>— hedef: {todayXp}/{DAILY_GOAL_XP} XP {todayXp >= DAILY_GOAL_XP ? '✅' : ''}</span></div>
+              <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))', gap: '10px' }}>
+                <button onClick={startSRSReview} disabled={dueSRS.length === 0}
+                  style={{ padding: '12px', borderRadius: '12px', border: '1px solid #334155', background: dueSRS.length > 0 ? 'rgba(245,158,11,0.15)' : '#0f172a', color: '#e2e8f0', cursor: dueSRS.length > 0 ? 'pointer' : 'default', textAlign: 'left', opacity: dueSRS.length > 0 ? 1 : 0.5 }}>
+                  <div style={{ fontWeight: 900, fontSize: '14px' }}>📅 Aralıklı tekrar</div>
+                  <div style={{ fontSize: '12px', color: '#94a3b8', marginTop: '2px' }}>{dueSRS.length > 0 ? `${dueSRS.length} kelimenin vadesi geldi — şimdi tekrar et!` : 'Bugün vadesi gelen kelime yok 🎉'}</div>
+                </button>
+                <button onClick={startWeakspotQuiz} disabled={weakWords.length === 0}
+                  style={{ padding: '12px', borderRadius: '12px', border: '1px solid #334155', background: weakWords.length > 0 ? 'rgba(249,115,22,0.15)' : '#0f172a', color: '#e2e8f0', cursor: weakWords.length > 0 ? 'pointer' : 'default', textAlign: 'left', opacity: weakWords.length > 0 ? 1 : 0.5 }}>
+                  <div style={{ fontWeight: 900, fontSize: '14px' }}>🎯 Zayıf noktalar</div>
+                  <div style={{ fontSize: '12px', color: '#94a3b8', marginTop: '2px' }}>{weakWords.length > 0 ? `${weakWords.length} kronik kelime seni bekliyor` : 'Kronik hatan yok — harika!'}</div>
+                </button>
+                <div style={{ padding: '12px', borderRadius: '12px', border: '1px solid #334155', background: 'rgba(56,189,248,0.12)', textAlign: 'left' }}>
+                  <div style={{ fontWeight: 900, fontSize: '14px' }}>{aiLearningFocus.icon} Sıradaki adım</div>
+                  <div style={{ fontSize: '12px', color: '#94a3b8', marginTop: '2px' }}>{aiLearningFocus.title} <span style={{ color: '#64748b' }}>({aiLearningFocus.pathPosition}/{aiLearningFocus.pathTotal})</span> — haritada seni bekliyor ⬇️</div>
+                </div>
+              </div>
+            </div>
 
             {/* SESLİ YAPAY ZEKA KOÇU — kullanıcının ilerlemesine göre günlük konuşma/çeviri/telaffuz tekrarı */}
             <div style={{ ...cardBox, marginBottom: '24px', border: '1px solid #38bdf8', background: 'linear-gradient(135deg, rgba(56,189,248,0.18), rgba(168,85,247,0.12), #1e293b)' }}>
@@ -2234,6 +2354,22 @@ export default function App() {
               </div>
             )}
 
+            {/* 📊 İSTATİSTİK MERKEZİ — lig, seri, günlük hedef, 14 günlük grafik, rozetler, yedekleme */}
+            {screen === 'STATS' && (
+              <ProfileStats
+                xp={xp}
+                gems={gems}
+                completedAlpha={completedAlpha.length}
+                completedUnits={completedUnits.length}
+                completedTopics={completedTopics.length}
+                completedGrammar={completedGrammar.length}
+                completedStories={completedStories.length}
+                srsCount={srsBank.length}
+                mistakesCount={mistakes.length}
+                onBack={() => setScreen('MAP')}
+              />
+            )}
+
             {/* 🧭 KİŞİSELLEŞTİRİLMİŞ ÖĞRENİM ROTASI — çözülen sorulardan zaman/edat eksik haritası */}
             {screen === 'ROUTE' && (
               <LearningRoute
@@ -2602,7 +2738,7 @@ export default function App() {
                   </div>
                   <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '10px' }}>
                     {q.options.map((opt, i) => (
-                      <button key={i} onClick={() => handleTopicAnswer(opt)} style={{ padding: '16px', borderRadius: '12px', background: '#0f172a', border: '1px solid #334155', color: '#fff', fontWeight: 800, cursor: 'pointer', fontSize: '15px' }}>{opt}</button>
+                      <button key={i} onClick={() => handleTopicAnswer(opt)} style={{ padding: '16px', borderRadius: '12px', background: '#0f172a', border: '1px solid #334155', color: '#fff', fontWeight: 800, cursor: 'pointer', fontSize: '15px' }}><span style={{ opacity: 0.35, fontSize: '11px', marginRight: '6px' }}>{i + 1}</span>{opt}</button>
                     ))}
                   </div>
                 </div>
@@ -2849,7 +2985,15 @@ export default function App() {
                   return (
                     <div>
                       <UnitBanner unitId={mod.id} icon={mod.icon} color={mod.color} label={mod.title} />
-                      <div style={{ fontSize: '12px', color: '#94a3b8', fontWeight: 700 }}>KELİME {cardIdx + 1} / {mod.words.length}</div>
+                      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: '8px' }}>
+                        <div style={{ fontSize: '12px', color: '#94a3b8', fontWeight: 700 }}>KELİME {cardIdx + 1} / {mod.words.length}</div>
+                        {/* 🔊 OTOMATİK SESLENDİRME AÇMA/KAPAMA: kart değişince kelime kendiliğinden okunur */}
+                        <button onClick={() => setAutoSpeak(v => !v)}
+                          title="Kart her değiştiğinde Rusça kelimeyi otomatik okur"
+                          style={{ background: autoSpeak ? 'rgba(34,197,94,0.15)' : '#0f172a', border: `1px solid ${autoSpeak ? '#22c55e' : '#334155'}`, color: autoSpeak ? '#22c55e' : '#64748b', borderRadius: '999px', padding: '6px 12px', fontSize: '12px', fontWeight: 800, cursor: 'pointer' }}>
+                          {autoSpeak ? '🔊 Otomatik ses: AÇIK' : '🔇 Otomatik ses: KAPALI'}
+                        </button>
+                      </div>
 
                       <div onClick={() => setIsFlipped(!isFlipped)} style={{ minHeight: '180px', background: '#0f172a', border: '1px solid #334155', borderRadius: '16px', padding: '24px', display: 'flex', flexDirection: 'column', justifyContent: 'center', alignItems: 'center', cursor: 'pointer', margin: '20px 0' }}>
                         {!isFlipped ? (
@@ -3005,7 +3149,7 @@ export default function App() {
 
                 <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '10px' }}>
                   {quizQuestions[quizIdx].options.map((opt: string, i: number) => (
-                    <button key={i} onClick={() => handleQuizAnswer(opt)} style={{ padding: '16px', borderRadius: '12px', background: '#0f172a', border: '1px solid #334155', color: '#fff', fontWeight: 800, cursor: 'pointer' }}>{opt}</button>
+                    <button key={i} onClick={() => handleQuizAnswer(opt)} style={{ padding: '16px', borderRadius: '12px', background: '#0f172a', border: '1px solid #334155', color: '#fff', fontWeight: 800, cursor: 'pointer' }}><span style={{ opacity: 0.35, fontSize: '11px', marginRight: '6px' }}>{i + 1}</span>{opt}</button>
                   ))}
                 </div>
               </div>

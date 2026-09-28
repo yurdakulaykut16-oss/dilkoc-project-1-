@@ -39,6 +39,82 @@ export interface GrammarFoundationUnit {
 }
 
 export const GRAMMAR_FOUNDATION_UNITS: GrammarFoundationUnit[] = [
+  // SAYILAR PAKETİ — alfabeden hemen sonra: 0-20, onluklar/yüzler + yaş/fiyat kullanımı
+  {
+    id: 'num_0_20',
+    levelGroup: 'A1',
+    title: 'Sayılar 0-20: Say, Sor, Cevapla',
+    description: 'Alfabeden hemen sonra ilk pratik araç: sayıları tanı ve kullan.',
+    icon: '🔢',
+    color: '#06b6d4',
+    coreConcept: 'Sayılar günlük hayatın anahtarıdır: fiyat, saat, yaş, telefon numarası. 0-20 arasını otomatikleştirmeden ileri gitme — Rusçada 11-19 arası “-надцать” ekiyle kurulur (одиннадцать = 1 + üzeri → 11).',
+    keyPoints: [
+      '0-10: ноль, один, два, три, четыре, пять, шесть, семь, восемь, девять, десять.',
+      '11-19 “-надцать” ile biter: одиннадцать (11), двенадцать (12), пятнадцать (15), девятнадцать (19).',
+      '20 = двадцать. 11-19’un “-надцать”ı ile 20’nin “-дцать”ını karıştırma.',
+      '“Сколько?” = “Kaç / ne kadar?” sorusudur: Сколько это стоит? (Bu ne kadar?)',
+      'один/одна/одно cinsiyete göre değişir: один брат, одна сестра. два/две de öyle: два дома, две книги.'
+    ],
+    examples: [
+      { ru: 'Один, два, три, четыре, пять.', reading: 'Adín, dva, tri, çitíri, pyat.', tr: 'Bir, iki, üç, dört, beş.', note: 'İlk beş sayı — yüksek sesle say, parmaklarınla göster.' },
+      { ru: 'Мне двадцать лет.', reading: 'Mnye dvátsat lyet.', tr: 'Ben yirmi yaşındayım.', note: 'Yaş söyleme kalıbı: Мне + sayı + лет.' },
+      { ru: 'Сколько это стоит? — Десять рублей.', reading: 'Skólka éta stóit? — Dyésit rublyéy.', tr: 'Bu ne kadar? — On ruble.', note: 'Fiyat sorma-cevaplama: sayılar olmadan alışveriş yapılamaz.' },
+      { ru: 'У меня два брата и одна сестра.', reading: 'U minyá dva bráta i adná sistrá.', tr: 'İki erkek kardeşim ve bir kız kardeşim var.', note: 'два (eril) / одна (dişil) — sayının cinsiyet uyumu.' }
+    ],
+    miniChecklist: [
+      '0-10’u ezberden, sırayla ve geriye doğru sayabiliyor musun?',
+      '11-19’daki “-надцать” kalıbını duyduğunda tanıyor musun?',
+      '“Сколько?” sorusuna sayıyla cevap verebiliyor musun?'
+    ],
+    quiz: [
+      { prompt: '“Beş” Rusça nasıl söylenir?', correct: 'пять', options: ['пять', 'девять', 'два', 'семь'] },
+      { prompt: '«двенадцать» kaçtır?', correct: '12', options: ['12', '20', '2', '19'] },
+      { prompt: '“Ben yirmi yaşındayım” hangisi?', correct: 'Мне двадцать лет.', options: ['Мне двадцать лет.', 'Я двадцать год.', 'Мне два лет.', 'У меня двадцать.'] },
+      { prompt: '“Bu ne kadar?” diye nasıl sorulur?', correct: 'Сколько это стоит?', options: ['Сколько это стоит?', 'Где это стоит?', 'Когда это стоит?', 'Кто это стоит?'] },
+      { prompt: '“Bir kız kardeş” için doğru biçim hangisi?', correct: 'одна сестра', options: ['одна сестра', 'один сестра', 'одно сестра', 'два сестра'] }
+    ]
+  },
+  {
+    id: 'num_big',
+    levelGroup: 'A1',
+    title: 'Sayılar 20-1000: Fiyat, Saat, Telefon',
+    description: 'Onluklar, yüzler ve binler — gerçek hayatta sayıları birleştirme.',
+    icon: '💯',
+    color: '#0ea5e9',
+    coreConcept: 'Büyük sayılar LEGO gibi birleşir: тридцать пять = 30 + 5 = 35, сто двадцать = 100 + 20 = 120. Onlukları ve yüzü öğrenince aradaki her sayıyı kurabilirsin.',
+    keyPoints: [
+      'Onluklar: двадцать (20), тридцать (30), сорок (40 — kural dışı!), пятьдесят (50), шестьдесят (60), семьдесят (70), восемьдесят (80), девяносто (90 — kural dışı!).',
+      'сто (100), двести (200), пятьсот (500), тысяча (1000).',
+      'Birleştirme: kırk iki = сорок два; yüz on beş = сто пятнадцать. Ekstra bağlaç YOK.',
+      'Fiyatlarda рубль değişir: 1 рубль, 2-4 рубля, 5+ рублей.',
+      'Saat sorma: Сколько времени? / Который час? — cevapta yine sayılar.'
+    ],
+    changeRules: [
+      {
+        label: 'Sayı + isim uyumu (рубль örneği)',
+        explanation: 'Sayının son rakamı ismin biçimini belirler: 1 → рубль, 2-4 → рубля, 5-20 → рублей.',
+        examples: ['двадцать один рубль (21)', 'тридцать два рубля (32)', 'сто пять рублей (105)']
+      }
+    ],
+    examples: [
+      { ru: 'Это стоит триста рублей.', reading: 'Éta stóit trísta rublyéy.', tr: 'Bu üç yüz ruble.', note: 'сто → двести → триста: yüzler de kalıpla büyür.' },
+      { ru: 'Мой номер: девятьсот шестьдесят пять...', reading: 'Moy nómir: divitsót şizdisyát pyat...', tr: 'Numaram: dokuz yüz altmış beş...', note: 'Telefon numaraları üçlü-ikili gruplarla okunur.' },
+      { ru: 'Сейчас сорок минут пятого.', reading: 'Siçás sórak minút pyátava.', tr: 'Şu an beşe yirmi var (4:40).', note: 'Saat ifadelerinde de aynı sayılar iş başında.' },
+      { ru: 'В классе тридцать два студента.', reading: 'F klási trítsat dva studyénta.', tr: 'Sınıfta otuz iki öğrenci var.', note: 'два’dan sonra isim tekil-родительный biçim alır: студента.' }
+    ],
+    miniChecklist: [
+      'сорок ve девяносто’nun kural dışı olduğunu hatırlıyor musun?',
+      '347 gibi bir sayıyı üç parçada (триста сорок семь) kurabiliyor musun?',
+      '1-2-5 kuralıyla рубль/рубля/рублей ayrımını yapabiliyor musun?'
+    ],
+    quiz: [
+      { prompt: '“40” Rusça hangisi?', correct: 'сорок', options: ['сорок', 'четыредцать', 'сорокть', 'четырсто'] },
+      { prompt: '«пятьдесят шесть» kaçtır?', correct: '56', options: ['56', '65', '506', '15'] },
+      { prompt: '“200” hangisi?', correct: 'двести', options: ['двести', 'два сто', 'двадцать', 'двесто'] },
+      { prompt: '32 ruble nasıl söylenir?', correct: 'тридцать два рубля', options: ['тридцать два рубля', 'тридцать два рубль', 'тридцать два рублей', 'тридцать две рубля'] },
+      { prompt: '“1000” Rusça nedir?', correct: 'тысяча', options: ['тысяча', 'миллион', 'сто', 'десять'] }
+    ]
+  },
   // ZAMANLAR (TENSES) PAKETİ — alfabeden hemen sonra: şimdiki, geçmiş, gelecek zaman + görünüş (вид)
   ...TENSE_UNITS,
   // CÜMLE TEMELLERİ — zamanlardan sonra: özne, yüklem, edat vb.
