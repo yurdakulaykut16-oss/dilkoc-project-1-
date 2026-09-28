@@ -5,7 +5,8 @@ import { ALL_WORDS, UNITS_DATA } from '../curriculumData';
 import type { UnitModule, WordDetail } from '../curriculumData';
 // MICROSOFT EDGE TTS — BİRİNCİL SES: botun Türkçe konuşmaları tr-TR-Emel/AhmetNeural,
 // Rusça telaffuzları ru-RU-Svetlana/DmitryNeural ile okunur (Rotam ekranından seçilir).
-import { edgeSpeak, getVoicePrefs } from '../tts/edgeTts';
+import { edgeSpeak, edgeTtsLooksHealthy, getVoicePrefs } from '../tts/edgeTts';
+import { webSpeak, webSpeechSupported } from '../tts/webSpeech';
 
 type CoachMistake = { id: string; ru: string; tr: string; reason: string };
 type CoachSrsItem = { ru: string; tr: string; box: number; nextReview: number; type: 'word' | 'letter' };
@@ -775,61 +776,32 @@ async function speakWithElevenLabs(text: string, lang: SpeechLang, rate: number,
   return true;
 }
 
-function voiceScore(voice: SpeechSynthesisVoice, lang: SpeechLang) {
-  const voiceLang = voice.lang.toLocaleLowerCase();
-  const targetLang = lang.toLocaleLowerCase();
-  const baseLang = targetLang.split('-')[0];
-  const name = voice.name.toLocaleLowerCase();
-  let score = 0;
-  if (voiceLang === targetLang) score += 100;
-  else if (voiceLang.startsWith(baseLang)) score += 55;
-  if (name.includes('google')) score += 24;
-  if (name.includes('microsoft')) score += 20;
-  if (name.includes('natural')) score += 18;
-  if (name.includes('erkek') || name.includes('male') || name.includes('adam')) score += 16;
-  if (name.includes('türk') || name.includes('turkish') || name.includes('rus') || name.includes('russian')) score += 8;
-  if (voice.localService) score += 4;
-  return score;
-}
-
-async function getSpeechVoices() {
-  if (typeof window === 'undefined' || !('speechSynthesis' in window)) return [] as SpeechSynthesisVoice[];
-  const synth = window.speechSynthesis;
-  const initialVoices = synth.getVoices();
-  if (initialVoices.length > 0) return initialVoices;
-  return new Promise<SpeechSynthesisVoice[]>((resolve) => {
-    const done = () => {
-      synth.onvoiceschanged = null;
-      resolve(synth.getVoices());
-    };
-    synth.onvoiceschanged = done;
-    window.setTimeout(done, 500);
-  });
-}
-
+// NOT: Eski elle yazılmış ses seçme/yükleme yardımcıları (voiceScore, getSpeechVoices)
+// kaldırıldı; bu iş artık src/tts/webSpeech.ts içindeki ortak motorda yapılıyor.
 async function speakWithWebSpeech(text: string, lang: SpeechLang, rate: number, onStart?: () => void) {
-  if (typeof window === 'undefined' || !('speechSynthesis' in window)) return false;
-  const synth = window.speechSynthesis;
-  const voices = await getSpeechVoices();
-  const voice = [...voices].sort((a, b) => voiceScore(b, lang) - voiceScore(a, lang))[0];
-  return new Promise<boolean>((resolve) => {
-    const utterance = new SpeechSynthesisUtterance(text);
-    utterance.lang = voice?.lang || lang;
-    utterance.voice = voice || null;
-    utterance.rate = rate;
-    utterance.pitch = lang === 'tr-TR' ? 0.95 : 1;
-    utterance.volume = 1;
-    utterance.onend = () => resolve(true);
-    utterance.onerror = () => resolve(false);
-    onStart?.();
-    synth.speak(utterance);
+  // Ortak tarayıcı motoru: ses listesi bekleme, uzun metin bölme, Chrome'un
+  // 15 saniyede susma hatasına karşı keep-alive ve dil bazlı ses seçimi içerir.
+  return webSpeak(text, {
+    lang,
+    rate,
+    pitch: lang === 'tr-TR' ? 0.95 : 1,
+    onChunkStart: () => onStart?.(),
   });
 }
 
 async function speakOne(text: string, lang: SpeechLang, rate: number, onChunkStart?: (chunk: string) => void, onChunkEnd?: () => void) {
   const chunks = splitSpeechText(text);
   for (const chunk of chunks) {
-    // 1) ÖNCE MICROSOFT EDGE TTS: TR = Emel/Ahmet, RU = Svetlana/Dmitry
+    // 0) EDGE SERVİSİ REDDEDİYORSA (Sec-MS-GEC kimlik hatası) boşuna websocket
+    //    açıp saniyelerce beklemeyelim: doğrudan tarayıcının yerleşik sesine geç.
+    if (!edgeTtsLooksHealthy() && webSpeechSupported()) {
+      if (await speakWithWebSpeech(chunk, lang, rate, () => onChunkStart?.(chunk))) {
+        onChunkEnd?.();
+        continue;
+      }
+      onChunkEnd?.();
+    }
+    // 1) MICROSOFT EDGE TTS: TR = Emel/Ahmet, RU = Svetlana/Dmitry
     try {
       const prefs = getVoicePrefs();
       onChunkStart?.(chunk);
@@ -837,6 +809,8 @@ async function speakOne(text: string, lang: SpeechLang, rate: number, onChunkSta
         voice: lang === 'ru-RU' ? prefs.ru : prefs.tr,
         prosodyRate: rate < 0.85 ? '-20%' : '+0%',
         playbackRate: Math.min(1.1, Math.max(0.85, rate)),
+        // Bu ekranın kendi sağlayıcı zinciri var; edgeTts kendi içinde yedeklemesin.
+        fallbackToBrowser: false,
       })) {
         onChunkEnd?.();
         continue;
@@ -919,6 +893,17 @@ export default function AiTutor({
   const tasks = useMemo(() => buildDailyPlan(planData.current), [planKey]);
   const focus = learningFocus;
   const elevenLabsEnabled = Boolean(ELEVENLABS_PROXY_URL || ELEVENLABS_API_KEY);
+  // Ses motoru rozetinin gerçeği yansıtması için Edge servisinin sağlık durumu okunur.
+  const ttsBadge = useMemo(() => {
+    if (!edgeTtsLooksHealthy()) {
+      return webSpeechSupported()
+        ? { label: '🔊 Tarayıcı sesi (Edge kapalı)', hint: 'Microsoft Edge/Bing ses servisi kimlik doğrulamayı reddetti; konuşmalar tarayıcının yerleşik sesiyle okunuyor.' }
+        : { label: '🔇 Ses motoru yok', hint: 'Edge servisi kapalı ve tarayıcıda yerleşik ses motoru bulunamadı.' };
+    }
+    if (elevenLabsEnabled) return { label: '🎙️ ElevenLabs proxy aktif', hint: 'ElevenLabs proxy yapılandırılmış.' };
+    if (PUTER_TTS_ENABLED) return { label: '☁️ Edge + bulut AI ses', hint: 'Önce Microsoft Edge TTS, olmazsa bulut sağlayıcıları ve tarayıcı sesi denenir.' };
+    return { label: ALLOW_DEVICE_TTS_FALLBACK ? '🔊 Cihaz sesi açık' : '🔇 AI ses bekleniyor', hint: '' };
+  }, [elevenLabsEnabled]);
   const [attempts, setAttempts] = useState<Record<string, AttemptRecord>>(() => loadStoredAttempts(day));
   const [currentIndex, setCurrentIndex] = useState(0);
   const [sessionStarted, setSessionStarted] = useState(false);
@@ -1183,13 +1168,19 @@ export default function AiTutor({
       setStatusText('Bu cihaz/tarayıcı konuşma tanımayı desteklemiyor. Aşağıdaki yazılı cevap alanını kullanabilirsin.');
       return;
     }
+    // Teşhis olumsuz olsa bile VAZGEÇMEYİZ: bazı tarayıcılarda getUserMedia
+    // sondası başarısız olsa da webkitSpeechRecognition kendi izin akışıyla
+    // çalışabiliyor. Bu yüzden uyarıyı gösterip yine de varsayılan tarayıcı
+    // API'siyle denemeye devam ederiz; gerçek sonucu recognition.onerror verir.
     const micState = await ensureBrowserMicPermission();
     if (micState !== 'ok') {
-      setListening(false);
       setMicIssue(micState);
       setMicHelpVisible(true);
-      setStatusText(micIssueMessage(micState));
-      return;
+      setStatusText(`${micIssueMessage(micState)} Yine de tarayıcının kendi mikrofon iznini deniyorum…`);
+      if (micState === 'unsupported' || micState === 'no-device') {
+        setListening(false);
+        return;
+      }
     }
     try {
       const recognition = new Recognition();
@@ -1199,6 +1190,9 @@ export default function AiTutor({
       recognition.interimResults = false;
       recognition.maxAlternatives = 3;
       recognition.onresult = (event) => {
+        // Tarayıcı API'si çalıştı: önceki uyarı kutusunu kaldır.
+        setMicHelpVisible(false);
+        setMicIssue('ok');
         const transcript = event.results[0]?.[0]?.transcript || '';
         handleTranscript(transcript, 'voice');
       };
@@ -1368,7 +1362,7 @@ export default function AiTutor({
         <div className="stage-topbar">
           <span className="coach-pill">🪐 Sesli koç</span>
           <span className="coach-pill">{focus.icon} Şu an: Ünite {focus.pathPosition}/{focus.pathTotal} • {focus.title}</span>
-          <span className="coach-pill">{PUTER_TTS_ENABLED ? '☁️ ElevenLabs/Speechify AI ses' : elevenLabsEnabled ? '🎙️ ElevenLabs proxy aktif' : ALLOW_DEVICE_TTS_FALLBACK ? '🎙️ Cihaz sesi açık' : '🔇 AI ses bekleniyor'}</span>
+          <span className="coach-pill" title={ttsBadge.hint}>{ttsBadge.label}</span>
           <span className="coach-pill">{embedded ? '⌨️ Önizlemede yazılı mod' : recognitionSupported ? '🎧 Bas konuş hazır' : '⌨️ Yazılı yedek mod'}</span>
         </div>
 
