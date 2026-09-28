@@ -440,14 +440,83 @@ function getSpeechRecognitionConstructor() {
   return speechWindow.SpeechRecognition || speechWindow.webkitSpeechRecognition;
 }
 
-async function ensureBrowserMicPermission() {
-  if (typeof navigator === 'undefined' || !navigator.mediaDevices?.getUserMedia) return true;
+// Mikrofonun neden açılmadığını AYIRT ETMEK gerekir; eskiden her hata tek bir
+// "izin reddedildi" mesajına düşüyordu ve kullanıcı çözümü bulamıyordu.
+type MicIssue = 'ok' | 'iframe' | 'insecure' | 'unsupported' | 'denied' | 'no-device' | 'busy' | 'unknown';
+
+function isInsideIframe() {
+  if (typeof window === 'undefined') return false;
+  try {
+    return window.self !== window.top;
+  } catch {
+    // Cross-origin iframe erişimi engellerse zaten iframe içindeyiz demektir.
+    return true;
+  }
+}
+
+// Arena/CodeSandbox gibi ortamlar uygulamayı cross-origin iframe içinde gösterir.
+// iframe etiketinde allow="microphone" yoksa tarayıcı izin penceresini HİÇ açmadan
+// reddeder; bu durumda tek çözüm sayfayı yeni sekmede açmaktır.
+function iframeMicAllowed() {
+  if (!isInsideIframe()) return true;
+  const featurePolicy = (document as Document & {
+    featurePolicy?: { allowsFeature: (feature: string) => boolean };
+  }).featurePolicy;
+  try {
+    if (featurePolicy?.allowsFeature) return featurePolicy.allowsFeature('microphone');
+  } catch {
+    /* tarayıcı desteklemiyorsa aşağıdaki varsayıma düş */
+  }
+  const permissionsPolicy = (document as Document & {
+    permissionsPolicy?: { allowsFeature: (feature: string) => boolean };
+  }).permissionsPolicy;
+  try {
+    if (permissionsPolicy?.allowsFeature) return permissionsPolicy.allowsFeature('microphone');
+  } catch {
+    /* yoksay */
+  }
+  // Tespit edemiyorsak izin varmış gibi deneriz; gerçek hata aşağıda yakalanır.
+  return true;
+}
+
+function micIssueMessage(issue: MicIssue) {
+  switch (issue) {
+    case 'iframe':
+      return 'Mikrofon burada engelli: uygulama bir önizleme çerçevesi (iframe) içinde açık ve çerçeveye mikrofon izni verilmemiş. Tarayıcı izin penceresini bu yüzden hiç göstermiyor. “Yeni sekmede aç” butonuna bas; orada mikrofon sorunsuz çalışır. Bu arada yazılı cevap alanını kullanabilirsin.';
+    case 'insecure':
+      return 'Mikrofon yalnızca güvenli bağlantıda (https veya localhost) çalışır. Sayfa http üzerinden açık olduğu için tarayıcı mikrofonu kapatıyor. https adresini kullan ya da yazılı cevap ver.';
+    case 'unsupported':
+      return 'Bu tarayıcı mikrofon erişimini desteklemiyor. Chrome/Edge kullan veya aşağıdaki yazılı cevap alanından devam et.';
+    case 'denied':
+      return 'Mikrofon izni reddedilmiş. Adres çubuğundaki kilit simgesi → Site ayarları → Mikrofon: “İzin ver” yapıp sayfayı yenile.';
+    case 'no-device':
+      return 'Bilgisayarda kullanılabilir bir mikrofon bulunamadı. Mikrofonu tak, sistem ses ayarlarından giriş cihazını seç ve tekrar dene.';
+    case 'busy':
+      return 'Mikrofon başka bir uygulama tarafından kullanılıyor (Zoom, Discord, Meet vb.). O uygulamayı kapatıp tekrar dene.';
+    default:
+      return 'Mikrofon başlatılamadı. Yeni sekmede açmayı dene ya da yazılı cevap alanını kullan.';
+  }
+}
+
+async function ensureBrowserMicPermission(): Promise<MicIssue> {
+  if (typeof navigator === 'undefined' || typeof window === 'undefined') return 'unsupported';
+  if (!window.isSecureContext && window.location.hostname !== 'localhost' && window.location.hostname !== '127.0.0.1') {
+    return 'insecure';
+  }
+  if (!iframeMicAllowed()) return 'iframe';
+  // Güvensiz bağlam ve izinsiz iframe'lerde mediaDevices tanımsız olur; eskiden bu
+  // durumda fonksiyon "true" dönüp hatayı gizliyordu.
+  if (!navigator.mediaDevices?.getUserMedia) return isInsideIframe() ? 'iframe' : 'unsupported';
   try {
     const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
     stream.getTracks().forEach((track) => track.stop());
-    return true;
-  } catch {
-    return false;
+    return 'ok';
+  } catch (error) {
+    const name = (error as { name?: string })?.name || '';
+    if (name === 'NotFoundError' || name === 'OverconstrainedError') return 'no-device';
+    if (name === 'NotReadableError' || name === 'AbortError') return 'busy';
+    if (name === 'NotAllowedError' || name === 'SecurityError') return isInsideIframe() ? 'iframe' : 'denied';
+    return isInsideIframe() ? 'iframe' : 'unknown';
   }
 }
 
@@ -860,6 +929,10 @@ export default function AiTutor({
   const [manualAnswer, setManualAnswer] = useState('');
   const [messages, setMessages] = useState<ChatMessage[]>([]);
   const [micHelpVisible, setMicHelpVisible] = useState(false);
+  const [micIssue, setMicIssue] = useState<MicIssue>('ok');
+  // iframe içindeysek mikrofon zaten çalışmayacak; kullanıcıyı butona basıp
+  // hayal kırıklığına uğramadan önce uyar.
+  const [embedded] = useState(() => isInsideIframe());
   const [mouthViseme, setMouthViseme] = useState<MouthViseme>('rest');
   const recognitionRef = useRef<BrowserSpeechRecognition | null>(null);
   const speechRunRef = useRef(0);
@@ -1105,13 +1178,17 @@ export default function AiTutor({
     const Recognition = getSpeechRecognitionConstructor();
     if (!Recognition) {
       setListening(false);
+      setMicIssue('unsupported');
+      setMicHelpVisible(true);
       setStatusText('Bu cihaz/tarayıcı konuşma tanımayı desteklemiyor. Aşağıdaki yazılı cevap alanını kullanabilirsin.');
       return;
     }
-    if (!(await ensureBrowserMicPermission())) {
+    const micState = await ensureBrowserMicPermission();
+    if (micState !== 'ok') {
       setListening(false);
+      setMicIssue(micState);
       setMicHelpVisible(true);
-      setStatusText('Mikrofon izni tarayıcıda kapalı. PC tarayıcıda izin elle açılmalı; aşağıdaki yardım butonlarını kullanabilirsin.');
+      setStatusText(micIssueMessage(micState));
       return;
     }
     try {
@@ -1128,10 +1205,18 @@ export default function AiTutor({
       recognition.onerror = (event) => {
         setListening(false);
         const code = event.error || event.message || 'izin ya da bağlantı hatası';
-        if (code === 'not-allowed') setMicHelpVisible(true);
-        setStatusText(code === 'not-allowed'
-          ? 'Mikrofon izni reddedildi. PC tarayıcı güvenliği nedeniyle bunu uygulama otomatik açamaz; kilit simgesinden izin ver veya yeni sekmede aç.'
-          : `Mikrofon dinlemesi durdu: ${code}.`);
+        if (code === 'not-allowed' || code === 'service-not-allowed') {
+          const issue: MicIssue = isInsideIframe() ? 'iframe' : 'denied';
+          setMicIssue(issue);
+          setMicHelpVisible(true);
+          setStatusText(micIssueMessage(issue));
+          return;
+        }
+        if (code === 'no-speech') {
+          setStatusText('Ses algılanmadı. Mikrofona biraz daha yakın konuş ya da yazılı cevap alanını kullan.');
+          return;
+        }
+        setStatusText(`Mikrofon dinlemesi durdu: ${code}.`);
       };
       recognition.onend = () => {
         setListening(false);
@@ -1146,16 +1231,24 @@ export default function AiTutor({
 
   const requestBrowserMicAccess = async () => {
     setStatusText('Mikrofon izni tekrar isteniyor… Tarayıcı izin penceresi açılırsa İzin Ver seç.');
-    const ok = await ensureBrowserMicPermission();
-    setMicHelpVisible(!ok);
-    setStatusText(ok
+    const state = await ensureBrowserMicPermission();
+    setMicIssue(state);
+    setMicHelpVisible(state !== 'ok');
+    setStatusText(state === 'ok'
       ? 'Mikrofon izni alındı. Şimdi Bas Konuş ile tekrar dene.'
-      : 'Mikrofon hâlâ kapalı. Chrome/Edge’de adres çubuğundaki kilit simgesi → Site ayarları → Mikrofon: İzin ver yapıp sayfayı yenile.');
+      : micIssueMessage(state));
   };
 
   const openCoachInNewTab = () => {
     if (typeof window === 'undefined') return;
-    window.open(window.location.href, '_blank', 'noopener,noreferrer');
+    // iframe içindeyken window.location zaten uygulamanın kendi adresidir; onu
+    // yeni sekmede açmak mikrofonu üst sayfanın izin kısıtından kurtarır.
+    const target = window.location.href;
+    const opened = window.open(target, '_blank', 'noopener,noreferrer');
+    if (!opened) {
+      // Pop-up engellendiyse kullanıcı adresi elle kopyalayabilsin.
+      setStatusText(`Yeni sekme açılamadı (pop-up engelli olabilir). Bu adresi tarayıcında elle aç: ${target}`);
+    }
   };
 
   const goNext = () => {
@@ -1276,7 +1369,7 @@ export default function AiTutor({
           <span className="coach-pill">🪐 Sesli koç</span>
           <span className="coach-pill">{focus.icon} Şu an: Ünite {focus.pathPosition}/{focus.pathTotal} • {focus.title}</span>
           <span className="coach-pill">{PUTER_TTS_ENABLED ? '☁️ ElevenLabs/Speechify AI ses' : elevenLabsEnabled ? '🎙️ ElevenLabs proxy aktif' : ALLOW_DEVICE_TTS_FALLBACK ? '🎙️ Cihaz sesi açık' : '🔇 AI ses bekleniyor'}</span>
-          <span className="coach-pill">{recognitionSupported ? '🎧 Bas konuş hazır' : '⌨️ Yazılı yedek mod'}</span>
+          <span className="coach-pill">{embedded ? '⌨️ Önizlemede yazılı mod' : recognitionSupported ? '🎧 Bas konuş hazır' : '⌨️ Yazılı yedek mod'}</span>
         </div>
 
         <div className="planet-wrap">
@@ -1335,9 +1428,19 @@ export default function AiTutor({
             {statusText}
           </div>
 
+          {embedded && !micHelpVisible && (
+            <div style={{ marginTop: '10px', padding: '12px', borderRadius: '14px', background: 'rgba(56,189,248,.10)', border: '1px solid rgba(56,189,248,.42)', color: '#bae6fd', fontSize: '12px', lineHeight: 1.55 }}>
+              <b>Önizleme penceresindesin.</b> Tarayıcılar, önizleme çerçevesine (iframe) mikrofon izni vermez; bu yüzden “Bas Konuş” burada çalışmaz. Sesli çalışmak için sayfayı yeni sekmede aç, ya da aşağıdaki yazılı cevap alanını kullan — değerlendirme ve puanlama aynı şekilde işler.
+              <div style={{ marginTop: '10px' }}>
+                <button onClick={openCoachInNewTab} style={{ background: '#38bdf8', color: '#04263a', border: 'none', borderRadius: '10px', padding: '9px 11px', fontWeight: 900, cursor: 'pointer' }}>Yeni sekmede aç (mikrofon çalışsın)</button>
+              </div>
+            </div>
+          )}
+
           {micHelpVisible && (
             <div style={{ marginTop: '10px', padding: '12px', borderRadius: '14px', background: 'rgba(245,158,11,.10)', border: '1px solid rgba(245,158,11,.42)', color: '#fde68a', fontSize: '12px', lineHeight: 1.55 }}>
-              <b>PC mikrofon izni tarayıcı tarafından engellenmiş.</b> Uygulama bunu otomatik açamaz. Chrome/Edge’de adres çubuğundaki kilit simgesinden mikrofonu “İzin ver” yapıp sayfayı yenile. Arena önizlemesi iframe içindeyse yeni sekmede açmak genelde izin penceresini düzeltir.
+              <b>{micIssue === 'iframe' ? 'Mikrofon önizleme çerçevesinde açılmıyor.' : micIssue === 'insecure' ? 'Bağlantı güvenli değil.' : micIssue === 'no-device' ? 'Mikrofon bulunamadı.' : micIssue === 'busy' ? 'Mikrofon meşgul.' : 'Mikrofon erişimi engellendi.'}</b>{' '}
+              {micIssueMessage(micIssue)}
               <div style={{ display: 'flex', gap: '8px', marginTop: '10px', flexWrap: 'wrap' }}>
                 <button onClick={requestBrowserMicAccess} style={{ background: '#f59e0b', color: '#111827', border: 'none', borderRadius: '10px', padding: '9px 11px', fontWeight: 900, cursor: 'pointer' }}>Mikrofon iznini tekrar iste</button>
                 <button onClick={openCoachInNewTab} style={{ background: 'transparent', color: '#fde68a', border: '1px solid rgba(245,158,11,.65)', borderRadius: '10px', padding: '9px 11px', fontWeight: 900, cursor: 'pointer' }}>Yeni sekmede aç</button>
