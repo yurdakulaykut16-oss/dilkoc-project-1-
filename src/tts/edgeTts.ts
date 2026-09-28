@@ -9,8 +9,12 @@
 // - HIZ KONTROLÜ: HTMLAudioElement.playbackRate + preservesPitch=true kullanılır,
 //   yani ses YAVAŞLATILIRKEN/HIZLANDIRILIRKEN perde (pitch) BOZULMAZ —
 //   kelime "incelmeden/kalınlaşmadan" yavaşlar ya da hızlanır.
-// - Servis erişilemezse çağıran taraf false alır ve kendi yedeğine düşer.
+// - Servis erişilemezse (ör. Microsoft tarafı Sec-MS-GEC imzasını reddederse,
+//   konsolda "HTTP Authentication failed; no valid credentials available")
+//   otomatik olarak TARAYICI YERLEŞİK SESİNE (Web Speech API) düşülür ve
+//   servis bir süre devre dışı bırakılır; her cümlede boşuna websocket açılmaz.
 // ============================================================================
+import { webSpeak, webSpeechSupported, stopWebSpeech } from './webSpeech';
 
 export const RU_VOICES = [
   { id: 'ru-RU-SvetlanaNeural', label: 'Svetlana (kadın)' },
@@ -78,6 +82,8 @@ function xmlEscape(s: string): string {
 function synthesizeOnce(text: string, voice: string, prosodyRate: string): Promise<Blob> {
   return new Promise(async (resolve, reject) => {
     let settled = false;
+    let opened = false;          // websocket el sıkışması tamamlandı mı?
+    let handshakeFailed = false; // onerror → çoğunlukla 401/403 kimlik reddi
     const fail = (e: unknown) => { if (!settled) { settled = true; reject(e); } };
     try {
       const gec = await generateSecMsGec();
@@ -85,9 +91,11 @@ function synthesizeOnce(text: string, voice: string, prosodyRate: string): Promi
       const ws = new WebSocket(url);
       ws.binaryType = 'arraybuffer';
       const audioChunks: ArrayBuffer[] = [];
-      const timeout = window.setTimeout(() => { try { ws.close(); } catch { /* */ } fail(new Error('edge-tts-timeout')); }, 15000);
+      // 15 saniye beklemek, servis zaten reddediyorken konuşmayı çok geciktiriyordu.
+      const timeout = window.setTimeout(() => { try { ws.close(); } catch { /* */ } fail(new Error('edge-tts-timeout')); }, 6000);
 
       ws.onopen = () => {
+        opened = true;
         const ts = new Date().toString();
         ws.send(
           `X-Timestamp:${ts}\r\nContent-Type:application/json; charset=utf-8\r\nPath:speech.config\r\n\r\n` +
@@ -121,12 +129,16 @@ function synthesizeOnce(text: string, voice: string, prosodyRate: string): Promi
         if (header.includes('Path:audio')) audioChunks.push(buf.slice(2 + headerLen));
       };
 
-      ws.onerror = () => { window.clearTimeout(timeout); fail(new Error('edge-tts-ws-error')); };
-      ws.onclose = () => {
+      // Kimlik doğrulama reddinde tarayıcı HTTP durumunu JS'e vermez; el sıkışma
+      // hiç tamamlanmadığı için 1006 ile kapanır. Bunu "auth" olarak işaretleriz.
+      ws.onerror = () => { window.clearTimeout(timeout); handshakeFailed = true; fail(new Error('edge-tts-ws-error')); };
+      ws.onclose = (ev) => {
         window.clearTimeout(timeout);
         if (!settled) {
           if (audioChunks.length > 0) { settled = true; resolve(new Blob(audioChunks, { type: 'audio/mpeg' })); }
-          else fail(new Error('edge-tts-closed'));
+          else if (handshakeFailed || !opened || ev.code === 1006 || ev.code === 1008 || ev.code === 4403) {
+            fail(new Error('edge-tts-auth'));
+          } else fail(new Error('edge-tts-closed'));
         }
       };
     } catch (e) { fail(e); }
@@ -152,12 +164,64 @@ async function getAudioBlob(text: string, voice: string, prosodyRate: string): P
   return blob;
 }
 
-// Servis sağlığı: art arda hata olursa kısa süre denemeyi bırak (hızlı fallback)
+// ---------------------------------------------------------------------------
+// SERVİS SAĞLIĞI / DEVRE KESİCİ
+// Microsoft imzayı reddettiğinde (auth) her cümlede yeniden websocket açmak
+// hem konsolu hata yağmuruna tutuyor hem de her seferinde saniyelerce gecikme
+// yaratıyordu. Kimlik hatasında servis UZUN süre (24 saat) kapatılır ve bu
+// durum localStorage'a yazılır; sayfa yenilense bile boşuna denenmez.
+// ---------------------------------------------------------------------------
+const EDGE_HEALTH_KEY = 'dilkoc_edge_tts_disabled_until_v1';
+const AUTH_COOLDOWN_MS = 24 * 60 * 60 * 1000;
+const SOFT_COOLDOWN_MS = 60_000;
+
 let failCount = 0;
-let disabledUntil = 0;
+let disabledUntil = (() => {
+  try {
+    const raw = localStorage.getItem(EDGE_HEALTH_KEY);
+    const until = raw ? Number(raw) : 0;
+    return Number.isFinite(until) ? until : 0;
+  } catch {
+    return 0;
+  }
+})();
+
+function setDisabledUntil(ts: number) {
+  disabledUntil = ts;
+  try {
+    if (ts > Date.now()) localStorage.setItem(EDGE_HEALTH_KEY, String(ts));
+    else localStorage.removeItem(EDGE_HEALTH_KEY);
+  } catch {
+    /* yok say */
+  }
+}
+
 export function edgeTtsLooksHealthy(): boolean { return Date.now() >= disabledUntil; }
-function noteFailure() { failCount += 1; if (failCount >= 2) { disabledUntil = Date.now() + 60_000; failCount = 0; } }
-function noteSuccess() { failCount = 0; disabledUntil = 0; }
+
+/** Edge TTS şu an kullanılabiliyor mu? Arayüzde rozet göstermek için. */
+export function edgeTtsStatus(): 'active' | 'disabled' {
+  return edgeTtsLooksHealthy() ? 'active' : 'disabled';
+}
+
+/** Kullanıcı isterse devre kesiciyi elle sıfırlayabilsin. */
+export function resetEdgeTtsHealth() {
+  failCount = 0;
+  setDisabledUntil(0);
+}
+
+function noteFailure(kind: 'auth' | 'other') {
+  if (kind === 'auth') {
+    // Kimlik reddi geçici bir ağ sorunu değildir; kısa süre sonra tekrar denemek anlamsız.
+    failCount = 0;
+    setDisabledUntil(Date.now() + AUTH_COOLDOWN_MS);
+    console.warn('[TTS] Edge/Bing servisi kimlik doğrulamayı reddetti. Tarayıcının yerleşik sesine geçildi; Edge 24 saat denenmeyecek.');
+    return;
+  }
+  failCount += 1;
+  if (failCount >= 2) { setDisabledUntil(Date.now() + SOFT_COOLDOWN_MS); failCount = 0; }
+}
+
+function noteSuccess() { failCount = 0; setDisabledUntil(0); }
 
 // ---------------------------------------------------------------------------
 // Oynatma: tek paylaşılan kuyruk + perde korumalı hız (preservesPitch)
@@ -171,6 +235,8 @@ export function stopEdgeSpeech() {
     try { currentAudio.pause(); currentAudio.src = ''; } catch { /* */ }
     currentAudio = null;
   }
+  // Yedek motor devredeyse onu da sustur; yoksa iki ses üst üste biner.
+  stopWebSpeech();
 }
 
 function splitText(text: string, maxLen = 400): string[] {
@@ -212,6 +278,15 @@ export interface EdgeSpeakOptions {
   prosodyRate?: string;
   /** Perde korumalı oynatma hızı (dinleme hız düğmesi): 0.5 – 2.0 */
   playbackRate?: number;
+  /**
+   * Edge servisi kullanılamazsa tarayıcının yerleşik sesiyle (Web Speech API)
+   * okumayı dener. Varsayılan: true — böylece uygulama asla sessiz kalmaz.
+   * Kendi sağlayıcı zinciri olan ekranlar (AI Koçu) bunu false yapar.
+   */
+  fallbackToBrowser?: boolean;
+  /** Yedek motor konuşurken dudak animasyonu için. */
+  onChunkStart?: (chunk: string) => void;
+  onChunkEnd?: () => void;
 }
 
 export function detectVoiceForText(text: string): string {
@@ -226,11 +301,27 @@ export function detectVoiceForText(text: string): string {
 export async function edgeSpeak(text: string, opts: EdgeSpeakOptions = {}): Promise<boolean> {
   const clean = (text || '').trim();
   if (!clean) return true;
-  if (!edgeTtsLooksHealthy() || typeof WebSocket === 'undefined' || !crypto?.subtle) return false;
 
   const voice = opts.voice || detectVoiceForText(clean);
   const prosodyRate = opts.prosodyRate || '+0%';
   const playbackRate = opts.playbackRate ?? 1;
+  const allowBrowserFallback = opts.fallbackToBrowser !== false;
+  const browserLang: 'tr-TR' | 'ru-RU' = voice.startsWith('ru') ? 'ru-RU' : 'tr-TR';
+
+  const speakWithBrowser = async () => {
+    if (!allowBrowserFallback || !webSpeechSupported()) return false;
+    return webSpeak(clean, {
+      lang: browserLang,
+      rate: playbackRate,
+      onChunkStart: opts.onChunkStart,
+      onChunkEnd: opts.onChunkEnd,
+    });
+  };
+
+  // Servis kapalıysa/desteklenmiyorsa websocket açmaya hiç kalkışma: doğrudan yedeğe geç.
+  if (!edgeTtsLooksHealthy() || typeof WebSocket === 'undefined' || !crypto?.subtle) {
+    return speakWithBrowser();
+  }
 
   stopEdgeSpeech();
   const token = playToken;
@@ -247,9 +338,11 @@ export async function edgeSpeak(text: string, opts: EdgeSpeakOptions = {}): Prom
     noteSuccess();
     return true;
   } catch (e) {
-    console.warn('Edge TTS başarısız, yedeğe düşülüyor:', e);
-    noteFailure();
-    return false;
+    const message = e instanceof Error ? e.message : String(e);
+    const kind: 'auth' | 'other' = message.includes('auth') ? 'auth' : 'other';
+    if (kind !== 'auth') console.warn('Edge TTS başarısız, yedeğe düşülüyor:', e);
+    noteFailure(kind);
+    return speakWithBrowser();
   }
 }
 

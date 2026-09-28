@@ -5,7 +5,8 @@ import { ALL_WORDS, UNITS_DATA } from '../curriculumData';
 import type { UnitModule, WordDetail } from '../curriculumData';
 // MICROSOFT EDGE TTS — BİRİNCİL SES: botun Türkçe konuşmaları tr-TR-Emel/AhmetNeural,
 // Rusça telaffuzları ru-RU-Svetlana/DmitryNeural ile okunur (Rotam ekranından seçilir).
-import { edgeSpeak, getVoicePrefs } from '../tts/edgeTts';
+import { edgeSpeak, edgeTtsLooksHealthy, getVoicePrefs } from '../tts/edgeTts';
+import { webSpeak, webSpeechSupported } from '../tts/webSpeech';
 
 type CoachMistake = { id: string; ru: string; tr: string; reason: string };
 type CoachSrsItem = { ru: string; tr: string; box: number; nextReview: number; type: 'word' | 'letter' };
@@ -220,6 +221,17 @@ function levenshtein(a: string, b: string) {
   return dp[a.length][b.length];
 }
 
+// Kapsama (substring) kontrolü tek başına kullanılınca çok kısa cevaplar yanlışlıkla
+// DOĞRU sayılıyordu: beklenen "как дела" iken kullanıcı sadece "да" dese
+// expected.includes(heard) true dönüyordu. Artık kapsama, uzunluk oranı yeterliyse geçerli.
+function containsMatch(heard: string, expected: string) {
+  if (!heard || !expected) return false;
+  const longer = Math.max(heard.length, expected.length);
+  const shorter = Math.min(heard.length, expected.length);
+  if (shorter / longer < 0.6) return false;
+  return heard.includes(expected) || expected.includes(heard);
+}
+
 function similarity(a: string, b: string) {
   if (!a || !b) return 0;
   if (a === b) return 1;
@@ -429,14 +441,83 @@ function getSpeechRecognitionConstructor() {
   return speechWindow.SpeechRecognition || speechWindow.webkitSpeechRecognition;
 }
 
-async function ensureBrowserMicPermission() {
-  if (typeof navigator === 'undefined' || !navigator.mediaDevices?.getUserMedia) return true;
+// Mikrofonun neden açılmadığını AYIRT ETMEK gerekir; eskiden her hata tek bir
+// "izin reddedildi" mesajına düşüyordu ve kullanıcı çözümü bulamıyordu.
+type MicIssue = 'ok' | 'iframe' | 'insecure' | 'unsupported' | 'denied' | 'no-device' | 'busy' | 'unknown';
+
+function isInsideIframe() {
+  if (typeof window === 'undefined') return false;
+  try {
+    return window.self !== window.top;
+  } catch {
+    // Cross-origin iframe erişimi engellerse zaten iframe içindeyiz demektir.
+    return true;
+  }
+}
+
+// Arena/CodeSandbox gibi ortamlar uygulamayı cross-origin iframe içinde gösterir.
+// iframe etiketinde allow="microphone" yoksa tarayıcı izin penceresini HİÇ açmadan
+// reddeder; bu durumda tek çözüm sayfayı yeni sekmede açmaktır.
+function iframeMicAllowed() {
+  if (!isInsideIframe()) return true;
+  const featurePolicy = (document as Document & {
+    featurePolicy?: { allowsFeature: (feature: string) => boolean };
+  }).featurePolicy;
+  try {
+    if (featurePolicy?.allowsFeature) return featurePolicy.allowsFeature('microphone');
+  } catch {
+    /* tarayıcı desteklemiyorsa aşağıdaki varsayıma düş */
+  }
+  const permissionsPolicy = (document as Document & {
+    permissionsPolicy?: { allowsFeature: (feature: string) => boolean };
+  }).permissionsPolicy;
+  try {
+    if (permissionsPolicy?.allowsFeature) return permissionsPolicy.allowsFeature('microphone');
+  } catch {
+    /* yoksay */
+  }
+  // Tespit edemiyorsak izin varmış gibi deneriz; gerçek hata aşağıda yakalanır.
+  return true;
+}
+
+function micIssueMessage(issue: MicIssue) {
+  switch (issue) {
+    case 'iframe':
+      return 'Mikrofon burada engelli: uygulama bir önizleme çerçevesi (iframe) içinde açık ve çerçeveye mikrofon izni verilmemiş. Tarayıcı izin penceresini bu yüzden hiç göstermiyor. “Yeni sekmede aç” butonuna bas; orada mikrofon sorunsuz çalışır. Bu arada yazılı cevap alanını kullanabilirsin.';
+    case 'insecure':
+      return 'Mikrofon yalnızca güvenli bağlantıda (https veya localhost) çalışır. Sayfa http üzerinden açık olduğu için tarayıcı mikrofonu kapatıyor. https adresini kullan ya da yazılı cevap ver.';
+    case 'unsupported':
+      return 'Bu tarayıcı mikrofon erişimini desteklemiyor. Chrome/Edge kullan veya aşağıdaki yazılı cevap alanından devam et.';
+    case 'denied':
+      return 'Mikrofon izni reddedilmiş. Adres çubuğundaki kilit simgesi → Site ayarları → Mikrofon: “İzin ver” yapıp sayfayı yenile.';
+    case 'no-device':
+      return 'Bilgisayarda kullanılabilir bir mikrofon bulunamadı. Mikrofonu tak, sistem ses ayarlarından giriş cihazını seç ve tekrar dene.';
+    case 'busy':
+      return 'Mikrofon başka bir uygulama tarafından kullanılıyor (Zoom, Discord, Meet vb.). O uygulamayı kapatıp tekrar dene.';
+    default:
+      return 'Mikrofon başlatılamadı. Yeni sekmede açmayı dene ya da yazılı cevap alanını kullan.';
+  }
+}
+
+async function ensureBrowserMicPermission(): Promise<MicIssue> {
+  if (typeof navigator === 'undefined' || typeof window === 'undefined') return 'unsupported';
+  if (!window.isSecureContext && window.location.hostname !== 'localhost' && window.location.hostname !== '127.0.0.1') {
+    return 'insecure';
+  }
+  if (!iframeMicAllowed()) return 'iframe';
+  // Güvensiz bağlam ve izinsiz iframe'lerde mediaDevices tanımsız olur; eskiden bu
+  // durumda fonksiyon "true" dönüp hatayı gizliyordu.
+  if (!navigator.mediaDevices?.getUserMedia) return isInsideIframe() ? 'iframe' : 'unsupported';
   try {
     const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
     stream.getTracks().forEach((track) => track.stop());
-    return true;
-  } catch {
-    return false;
+    return 'ok';
+  } catch (error) {
+    const name = (error as { name?: string })?.name || '';
+    if (name === 'NotFoundError' || name === 'OverconstrainedError') return 'no-device';
+    if (name === 'NotReadableError' || name === 'AbortError') return 'busy';
+    if (name === 'NotAllowedError' || name === 'SecurityError') return isInsideIframe() ? 'iframe' : 'denied';
+    return isInsideIframe() ? 'iframe' : 'unknown';
   }
 }
 
@@ -469,7 +550,7 @@ function evaluateTask(task: AiTask, transcript: string): EvaluationResult {
     const heardTokens = tokens(transcript, 'ru-RU');
     const tokenHits = expectedTokens.filter((word) => heardTokens.includes(word)).length;
     const tokenRecall = expectedTokens.length === 0 ? 0 : tokenHits / expectedTokens.length;
-    const closeEnough = heard.includes(expected) || expected.includes(heard) || similarity(heard, expected) >= 0.72 || tokenRecall >= 0.72;
+    const closeEnough = containsMatch(heard, expected) || similarity(heard, expected) >= 0.72 || tokenRecall >= 0.72;
     const missing = expectedTokens.filter((word) => !heardTokens.includes(word));
     if (closeEnough) {
       return {
@@ -498,7 +579,7 @@ function evaluateTask(task: AiTask, transcript: string): EvaluationResult {
   const heardTokens = tokens(transcript, 'tr-TR');
   const tokenHits = expectedTokens.filter((word) => heardTokens.includes(word)).length;
   const tokenRecall = expectedTokens.length === 0 ? 0 : tokenHits / expectedTokens.length;
-  const closeEnough = heard.includes(expected) || expected.includes(heard) || similarity(heard, expected) >= 0.68 || tokenRecall >= 0.58;
+  const closeEnough = containsMatch(heard, expected) || similarity(heard, expected) >= 0.68 || tokenRecall >= 0.58;
   const missing = expectedTokens.filter((word) => !heardTokens.includes(word));
   if (closeEnough) {
     return {
@@ -695,61 +776,32 @@ async function speakWithElevenLabs(text: string, lang: SpeechLang, rate: number,
   return true;
 }
 
-function voiceScore(voice: SpeechSynthesisVoice, lang: SpeechLang) {
-  const voiceLang = voice.lang.toLocaleLowerCase();
-  const targetLang = lang.toLocaleLowerCase();
-  const baseLang = targetLang.split('-')[0];
-  const name = voice.name.toLocaleLowerCase();
-  let score = 0;
-  if (voiceLang === targetLang) score += 100;
-  else if (voiceLang.startsWith(baseLang)) score += 55;
-  if (name.includes('google')) score += 24;
-  if (name.includes('microsoft')) score += 20;
-  if (name.includes('natural')) score += 18;
-  if (name.includes('erkek') || name.includes('male') || name.includes('adam')) score += 16;
-  if (name.includes('türk') || name.includes('turkish') || name.includes('rus') || name.includes('russian')) score += 8;
-  if (voice.localService) score += 4;
-  return score;
-}
-
-async function getSpeechVoices() {
-  if (typeof window === 'undefined' || !('speechSynthesis' in window)) return [] as SpeechSynthesisVoice[];
-  const synth = window.speechSynthesis;
-  const initialVoices = synth.getVoices();
-  if (initialVoices.length > 0) return initialVoices;
-  return new Promise<SpeechSynthesisVoice[]>((resolve) => {
-    const done = () => {
-      synth.onvoiceschanged = null;
-      resolve(synth.getVoices());
-    };
-    synth.onvoiceschanged = done;
-    window.setTimeout(done, 500);
-  });
-}
-
+// NOT: Eski elle yazılmış ses seçme/yükleme yardımcıları (voiceScore, getSpeechVoices)
+// kaldırıldı; bu iş artık src/tts/webSpeech.ts içindeki ortak motorda yapılıyor.
 async function speakWithWebSpeech(text: string, lang: SpeechLang, rate: number, onStart?: () => void) {
-  if (typeof window === 'undefined' || !('speechSynthesis' in window)) return false;
-  const synth = window.speechSynthesis;
-  const voices = await getSpeechVoices();
-  const voice = [...voices].sort((a, b) => voiceScore(b, lang) - voiceScore(a, lang))[0];
-  return new Promise<boolean>((resolve) => {
-    const utterance = new SpeechSynthesisUtterance(text);
-    utterance.lang = voice?.lang || lang;
-    utterance.voice = voice || null;
-    utterance.rate = rate;
-    utterance.pitch = lang === 'tr-TR' ? 0.95 : 1;
-    utterance.volume = 1;
-    utterance.onend = () => resolve(true);
-    utterance.onerror = () => resolve(false);
-    onStart?.();
-    synth.speak(utterance);
+  // Ortak tarayıcı motoru: ses listesi bekleme, uzun metin bölme, Chrome'un
+  // 15 saniyede susma hatasına karşı keep-alive ve dil bazlı ses seçimi içerir.
+  return webSpeak(text, {
+    lang,
+    rate,
+    pitch: lang === 'tr-TR' ? 0.95 : 1,
+    onChunkStart: () => onStart?.(),
   });
 }
 
 async function speakOne(text: string, lang: SpeechLang, rate: number, onChunkStart?: (chunk: string) => void, onChunkEnd?: () => void) {
   const chunks = splitSpeechText(text);
   for (const chunk of chunks) {
-    // 1) ÖNCE MICROSOFT EDGE TTS: TR = Emel/Ahmet, RU = Svetlana/Dmitry
+    // 0) EDGE SERVİSİ REDDEDİYORSA (Sec-MS-GEC kimlik hatası) boşuna websocket
+    //    açıp saniyelerce beklemeyelim: doğrudan tarayıcının yerleşik sesine geç.
+    if (!edgeTtsLooksHealthy() && webSpeechSupported()) {
+      if (await speakWithWebSpeech(chunk, lang, rate, () => onChunkStart?.(chunk))) {
+        onChunkEnd?.();
+        continue;
+      }
+      onChunkEnd?.();
+    }
+    // 1) MICROSOFT EDGE TTS: TR = Emel/Ahmet, RU = Svetlana/Dmitry
     try {
       const prefs = getVoicePrefs();
       onChunkStart?.(chunk);
@@ -757,11 +809,17 @@ async function speakOne(text: string, lang: SpeechLang, rate: number, onChunkSta
         voice: lang === 'ru-RU' ? prefs.ru : prefs.tr,
         prosodyRate: rate < 0.85 ? '-20%' : '+0%',
         playbackRate: Math.min(1.1, Math.max(0.85, rate)),
+        // Bu ekranın kendi sağlayıcı zinciri var; edgeTts kendi içinde yedeklemesin.
+        fallbackToBrowser: false,
       })) {
         onChunkEnd?.();
         continue;
       }
+      // Edge sessiz döndüyse ağız animasyonunu durdur; sıradaki sağlayıcı kendi
+      // onChunkStart'ını tetikleyecek. Aksi hâlde ağız boşa oynamaya devam ediyordu.
+      onChunkEnd?.();
     } catch (error) {
+      onChunkEnd?.();
       console.warn('Edge TTS fallback:', error);
     }
     try {
@@ -784,6 +842,8 @@ async function speakOne(text: string, lang: SpeechLang, rate: number, onChunkSta
     }
     // Asıl amaç internet AI sesi. PC'de bulut servisleri o an cevap vermezse uygulama sessiz kalmasın.
     if (!ALLOW_DEVICE_TTS_FALLBACK) {
+      // Ağız animasyonu sonsuza kadar açık kalmasın diye burada da kapatılır.
+      onChunkEnd?.();
       console.warn('Cloud AI TTS başarısız oldu; cihaz TTS fallback kapalı olduğu için konuşma atlandı.');
       continue;
     }
@@ -791,6 +851,7 @@ async function speakOne(text: string, lang: SpeechLang, rate: number, onChunkSta
       onChunkEnd?.();
       continue;
     }
+    onChunkEnd?.();
     try {
       onChunkStart?.(chunk);
       await TextToSpeech.speak({
@@ -822,10 +883,27 @@ export default function AiTutor({
   onEarnXp,
 }: AiTutorProps) {
   const day = useMemo(() => todayKey(), []);
-  const initialPlanData = useRef({ completedUnits, completedTopics, completedAlpha, completedGrammar, learningFocus, mistakes, srsBank });
-  const tasks = useMemo(() => buildDailyPlan(initialPlanData.current), []);
-  const focus = initialPlanData.current.learningFocus;
+  // Plan verisi her render'da tazelenir; böylece kullanıcı haritada ilerleyince
+  // koç hâlâ eski üniteyi sormaz. Plan YALNIZCA oturum başlamadan yeniden kurulur,
+  // yani ders ortasında sorular değişip akış bozulmaz.
+  const planData = useRef({ completedUnits, completedTopics, completedAlpha, completedGrammar, learningFocus, mistakes, srsBank });
+  planData.current = { completedUnits, completedTopics, completedAlpha, completedGrammar, learningFocus, mistakes, srsBank };
+  const focusKey = `${learningFocus.pathPosition}|${learningFocus.title}|${completedUnits.length}|${completedTopics.length}|${completedAlpha.length}|${completedGrammar.length}`;
+  const [planKey, setPlanKey] = useState(focusKey);
+  const tasks = useMemo(() => buildDailyPlan(planData.current), [planKey]);
+  const focus = learningFocus;
   const elevenLabsEnabled = Boolean(ELEVENLABS_PROXY_URL || ELEVENLABS_API_KEY);
+  // Ses motoru rozetinin gerçeği yansıtması için Edge servisinin sağlık durumu okunur.
+  const ttsBadge = useMemo(() => {
+    if (!edgeTtsLooksHealthy()) {
+      return webSpeechSupported()
+        ? { label: '🔊 Tarayıcı sesi (Edge kapalı)', hint: 'Microsoft Edge/Bing ses servisi kimlik doğrulamayı reddetti; konuşmalar tarayıcının yerleşik sesiyle okunuyor.' }
+        : { label: '🔇 Ses motoru yok', hint: 'Edge servisi kapalı ve tarayıcıda yerleşik ses motoru bulunamadı.' };
+    }
+    if (elevenLabsEnabled) return { label: '🎙️ ElevenLabs proxy aktif', hint: 'ElevenLabs proxy yapılandırılmış.' };
+    if (PUTER_TTS_ENABLED) return { label: '☁️ Edge + bulut AI ses', hint: 'Önce Microsoft Edge TTS, olmazsa bulut sağlayıcıları ve tarayıcı sesi denenir.' };
+    return { label: ALLOW_DEVICE_TTS_FALLBACK ? '🔊 Cihaz sesi açık' : '🔇 AI ses bekleniyor', hint: '' };
+  }, [elevenLabsEnabled]);
   const [attempts, setAttempts] = useState<Record<string, AttemptRecord>>(() => loadStoredAttempts(day));
   const [currentIndex, setCurrentIndex] = useState(0);
   const [sessionStarted, setSessionStarted] = useState(false);
@@ -836,9 +914,20 @@ export default function AiTutor({
   const [manualAnswer, setManualAnswer] = useState('');
   const [messages, setMessages] = useState<ChatMessage[]>([]);
   const [micHelpVisible, setMicHelpVisible] = useState(false);
+  const [micIssue, setMicIssue] = useState<MicIssue>('ok');
+  // iframe içindeysek mikrofon zaten çalışmayacak; kullanıcıyı butona basıp
+  // hayal kırıklığına uğramadan önce uyar.
+  const [embedded] = useState(() => isInsideIframe());
   const [mouthViseme, setMouthViseme] = useState<MouthViseme>('rest');
   const recognitionRef = useRef<BrowserSpeechRecognition | null>(null);
   const speechRunRef = useRef(0);
+  // isSpeaking/isListening state'leri asenkron geri çağrılarda (konuşma tanıma sonucu,
+  // native plugin promise'i) ESKİ değerle yakalanıyordu; bu yüzden cevaplar bazen
+  // sessizce yutuluyordu. Ref'ler her zaman güncel değeri verir.
+  const isSpeakingRef = useRef(false);
+  const isListeningRef = useRef(false);
+  const messageSeqRef = useRef(0);
+  const autoAdvanceRef = useRef<number | null>(null);
   const lipSyncTimerRef = useRef<number | null>(null);
   const recognitionSupported = Boolean(getSpeechRecognitionConstructor());
   const currentTask = tasks[currentIndex];
@@ -850,6 +939,13 @@ export default function AiTutor({
   }, [attempts, day]);
 
   useEffect(() => {
+    if (sessionStarted || focusKey === planKey) return;
+    setPlanKey(focusKey);
+    setCurrentIndex(0);
+    setLastResult(null);
+  }, [focusKey, planKey, sessionStarted]);
+
+  useEffect(() => {
     if (sessionStarted) return;
     const next = tasks.findIndex((task) => !attempts[task.id]?.correct);
     setCurrentIndex(next === -1 ? 0 : next);
@@ -859,6 +955,7 @@ export default function AiTutor({
     return () => {
       recognitionRef.current?.abort();
       if (lipSyncTimerRef.current !== null) window.clearTimeout(lipSyncTimerRef.current);
+      if (autoAdvanceRef.current !== null) window.clearTimeout(autoAdvanceRef.current);
       void NativeSpeechRecognition.stop().catch(() => undefined);
       if ('speechSynthesis' in window) window.speechSynthesis.cancel();
       void TextToSpeech.stop();
@@ -866,7 +963,11 @@ export default function AiTutor({
   }, []);
 
   const addMessage = (role: 'bot' | 'user', text: string, tone: ChatMessage['tone'] = 'neutral') => {
-    setMessages((prev) => [...prev, { id: `${Date.now()}-${prev.length}`, role, text, tone }].slice(-9));
+    // Eski kimlik `${Date.now()}-${prev.length}` idi; liste 9 mesajda sabitlendiği için
+    // aynı milisaniyede eklenen mesajlar AYNI React key'ini alıp uyarı/kaybolma yapıyordu.
+    messageSeqRef.current += 1;
+    const id = `msg-${messageSeqRef.current}`;
+    setMessages((prev) => [...prev, { id, role, text, tone }].slice(-9));
   };
 
   const stopLipSync = () => {
@@ -906,14 +1007,32 @@ export default function AiTutor({
       recognitionRef.current = null;
     }
     void NativeSpeechRecognition.stop().catch(() => undefined);
+    isListeningRef.current = false;
     setIsListening(false);
+  };
+
+  const setSpeaking = (value: boolean) => {
+    isSpeakingRef.current = value;
+    setIsSpeaking(value);
+  };
+
+  const setListening = (value: boolean) => {
+    isListeningRef.current = value;
+    setIsListening(value);
+  };
+
+  const cancelAutoAdvance = () => {
+    if (autoAdvanceRef.current !== null) {
+      window.clearTimeout(autoAdvanceRef.current);
+      autoAdvanceRef.current = null;
+    }
   };
 
   const speakParts = async (parts: SpeechPart[]) => {
     const runId = speechRunRef.current + 1;
     speechRunRef.current = runId;
     stopListeningIfNeeded();
-    setIsSpeaking(true);
+    setSpeaking(true);
     setStatusText('Yapay zeka konuşuyor… Bas Konuş kilitli.');
     try {
       try { await TextToSpeech.stop(); } catch { /* native TTS olmayabilir */ }
@@ -931,7 +1050,7 @@ export default function AiTutor({
     } finally {
       if (speechRunRef.current === runId) {
         stopLipSync();
-        setIsSpeaking(false);
+        setSpeaking(false);
         setStatusText('Sıra sende. Bas Konuş sadece dokunduğunda dinler.');
       }
     }
@@ -947,6 +1066,7 @@ export default function AiTutor({
 
   const startSession = () => {
     if (!currentTask) return;
+    cancelAutoAdvance();
     setSessionStarted(true);
     setLastResult(null);
     setStatusText('Yapay zeka konuşuyor…');
@@ -957,9 +1077,13 @@ export default function AiTutor({
   };
 
   const handleTranscript = (transcript: string, mode: ResponseMode) => {
-    if (!currentTask || isSpeaking) return;
+    // Eskiden buradaki `isSpeaking` kontrolü ESKİ state'i okuyordu ve mikrofondan
+    // gelen cevap bazen sessizce yok sayılıyordu. Artık güncel ref okunuyor.
+    if (!currentTask || isSpeakingRef.current) return;
     const cleanTranscript = transcript.trim();
     if (!cleanTranscript) return;
+    cancelAutoAdvance();
+    stopListeningIfNeeded();
     setManualAnswer('');
     setLastResult(null);
     addMessage('user', `${mode === 'voice' ? '🎙️' : '⌨️'} ${cleanTranscript}`);
@@ -979,13 +1103,26 @@ export default function AiTutor({
     }
     const speech: SpeechPart[] = [{ text: evaluation.spoken, lang: 'tr-TR', rate: 1 }];
     if (!evaluation.correct && currentTask.expectedLang === 'ru-RU') speech.push({ text: currentTask.ru, lang: 'ru-RU', rate: 0.92 });
-    void speakParts(speech);
+    const answeredId = currentTask.id;
+    void speakParts(speech).then(() => {
+      // Doğru cevaptan sonra kullanıcı "→" butonuna basmak zorunda kalıyordu ve
+      // akış duruyordu. Artık koç kendi kendine sıradaki göreve geçip soruyu okur.
+      if (!evaluation.correct) return;
+      cancelAutoAdvance();
+      autoAdvanceRef.current = window.setTimeout(() => {
+        autoAdvanceRef.current = null;
+        if (isSpeakingRef.current || isListeningRef.current) return;
+        if (tasks[currentIndex]?.id !== answeredId) return;
+        goNext();
+      }, 900);
+    });
   };
 
   const startListening = async () => {
-    if (!currentTask || isSpeaking || isListening) return;
+    if (!currentTask || isSpeakingRef.current || isListeningRef.current) return;
+    cancelAutoAdvance();
     setMicHelpVisible(false);
-    setIsListening(true);
+    setListening(true);
     setStatusText(currentTask.expectedLang === 'ru-RU' ? 'Dinliyorum… Rusça söyle.' : 'Dinliyorum… Türkçe cevap ver.');
 
     // Android Studio / APK içinde Web Speech çoğu cihazda "not-allowed" verir.
@@ -998,7 +1135,7 @@ export default function AiTutor({
         if (permission.speechRecognition !== 'granted') {
           const requested = await NativeSpeechRecognition.requestPermissions();
           if (requested.speechRecognition !== 'granted') {
-            setIsListening(false);
+            setListening(false);
             setMicHelpVisible(true);
             setStatusText('Mikrofon izni verilmedi. Android ayarlarından mikrofon iznini aç veya yazılı cevap alanını kullan.');
             return;
@@ -1011,7 +1148,7 @@ export default function AiTutor({
           partialResults: false,
           prompt: currentTask.expectedLang === 'ru-RU' ? 'Rusça cevabını söyle' : 'Türkçe cevabını söyle',
         });
-        setIsListening(false);
+        setListening(false);
         const transcript = result.matches?.[0] || '';
         if (transcript) handleTranscript(transcript, 'voice');
         else setStatusText('Ses anlaşılmadı. Tekrar Bas Konuş veya yazılı cevap alanını kullan.');
@@ -1019,19 +1156,31 @@ export default function AiTutor({
       }
     } catch {
       // Web ortamında plugin "not implemented" diyebilir; sorun değil, aşağıdaki fallback çalışır.
+      // Native taraf yarıda kaldıysa mikrofon oturumunu kapat ki buton kilitli kalmasın.
+      void NativeSpeechRecognition.stop().catch(() => undefined);
     }
 
     const Recognition = getSpeechRecognitionConstructor();
     if (!Recognition) {
-      setIsListening(false);
+      setListening(false);
+      setMicIssue('unsupported');
+      setMicHelpVisible(true);
       setStatusText('Bu cihaz/tarayıcı konuşma tanımayı desteklemiyor. Aşağıdaki yazılı cevap alanını kullanabilirsin.');
       return;
     }
-    if (!(await ensureBrowserMicPermission())) {
-      setIsListening(false);
+    // Teşhis olumsuz olsa bile VAZGEÇMEYİZ: bazı tarayıcılarda getUserMedia
+    // sondası başarısız olsa da webkitSpeechRecognition kendi izin akışıyla
+    // çalışabiliyor. Bu yüzden uyarıyı gösterip yine de varsayılan tarayıcı
+    // API'siyle denemeye devam ederiz; gerçek sonucu recognition.onerror verir.
+    const micState = await ensureBrowserMicPermission();
+    if (micState !== 'ok') {
+      setMicIssue(micState);
       setMicHelpVisible(true);
-      setStatusText('Mikrofon izni tarayıcıda kapalı. PC tarayıcıda izin elle açılmalı; aşağıdaki yardım butonlarını kullanabilirsin.');
-      return;
+      setStatusText(`${micIssueMessage(micState)} Yine de tarayıcının kendi mikrofon iznini deniyorum…`);
+      if (micState === 'unsupported' || micState === 'no-device') {
+        setListening(false);
+        return;
+      }
     }
     try {
       const recognition = new Recognition();
@@ -1041,43 +1190,63 @@ export default function AiTutor({
       recognition.interimResults = false;
       recognition.maxAlternatives = 3;
       recognition.onresult = (event) => {
+        // Tarayıcı API'si çalıştı: önceki uyarı kutusunu kaldır.
+        setMicHelpVisible(false);
+        setMicIssue('ok');
         const transcript = event.results[0]?.[0]?.transcript || '';
         handleTranscript(transcript, 'voice');
       };
       recognition.onerror = (event) => {
-        setIsListening(false);
+        setListening(false);
         const code = event.error || event.message || 'izin ya da bağlantı hatası';
-        if (code === 'not-allowed') setMicHelpVisible(true);
-        setStatusText(code === 'not-allowed'
-          ? 'Mikrofon izni reddedildi. PC tarayıcı güvenliği nedeniyle bunu uygulama otomatik açamaz; kilit simgesinden izin ver veya yeni sekmede aç.'
-          : `Mikrofon dinlemesi durdu: ${code}.`);
+        if (code === 'not-allowed' || code === 'service-not-allowed') {
+          const issue: MicIssue = isInsideIframe() ? 'iframe' : 'denied';
+          setMicIssue(issue);
+          setMicHelpVisible(true);
+          setStatusText(micIssueMessage(issue));
+          return;
+        }
+        if (code === 'no-speech') {
+          setStatusText('Ses algılanmadı. Mikrofona biraz daha yakın konuş ya da yazılı cevap alanını kullan.');
+          return;
+        }
+        setStatusText(`Mikrofon dinlemesi durdu: ${code}.`);
       };
       recognition.onend = () => {
-        setIsListening(false);
+        setListening(false);
         recognitionRef.current = null;
       };
       recognition.start();
     } catch {
-      setIsListening(false);
+      setListening(false);
       setStatusText('Mikrofon başlatılamadı. Android ayarlarından mikrofon iznini kontrol et veya yazılı cevap ver.');
     }
   };
 
   const requestBrowserMicAccess = async () => {
     setStatusText('Mikrofon izni tekrar isteniyor… Tarayıcı izin penceresi açılırsa İzin Ver seç.');
-    const ok = await ensureBrowserMicPermission();
-    setMicHelpVisible(!ok);
-    setStatusText(ok
+    const state = await ensureBrowserMicPermission();
+    setMicIssue(state);
+    setMicHelpVisible(state !== 'ok');
+    setStatusText(state === 'ok'
       ? 'Mikrofon izni alındı. Şimdi Bas Konuş ile tekrar dene.'
-      : 'Mikrofon hâlâ kapalı. Chrome/Edge’de adres çubuğundaki kilit simgesi → Site ayarları → Mikrofon: İzin ver yapıp sayfayı yenile.');
+      : micIssueMessage(state));
   };
 
   const openCoachInNewTab = () => {
     if (typeof window === 'undefined') return;
-    window.open(window.location.href, '_blank', 'noopener,noreferrer');
+    // iframe içindeyken window.location zaten uygulamanın kendi adresidir; onu
+    // yeni sekmede açmak mikrofonu üst sayfanın izin kısıtından kurtarır.
+    const target = window.location.href;
+    const opened = window.open(target, '_blank', 'noopener,noreferrer');
+    if (!opened) {
+      // Pop-up engellendiyse kullanıcı adresi elle kopyalayabilsin.
+      setStatusText(`Yeni sekme açılamadı (pop-up engelli olabilir). Bu adresi tarayıcında elle aç: ${target}`);
+    }
   };
 
   const goNext = () => {
+    cancelAutoAdvance();
     if (tasks.length === 0) return;
     const nextIndex = tasks.findIndex((task, index) => index > currentIndex && !attempts[task.id]?.correct);
     const fallbackIndex = tasks.findIndex((task) => !attempts[task.id]?.correct);
@@ -1094,6 +1263,7 @@ export default function AiTutor({
   };
 
   const retryCurrent = () => {
+    cancelAutoAdvance();
     if (!currentTask) return;
     setLastResult(null);
     void playTaskPrompt(currentTask, currentIndex);
@@ -1105,6 +1275,10 @@ export default function AiTutor({
   };
 
   const resetDailyCoach = () => {
+    cancelAutoAdvance();
+    stopListeningIfNeeded();
+    speechRunRef.current += 1;
+    setSpeaking(false);
     setAttempts({});
     setCurrentIndex(0);
     setLastResult(null);
@@ -1188,8 +1362,8 @@ export default function AiTutor({
         <div className="stage-topbar">
           <span className="coach-pill">🪐 Sesli koç</span>
           <span className="coach-pill">{focus.icon} Şu an: Ünite {focus.pathPosition}/{focus.pathTotal} • {focus.title}</span>
-          <span className="coach-pill">{PUTER_TTS_ENABLED ? '☁️ ElevenLabs/Speechify AI ses' : elevenLabsEnabled ? '🎙️ ElevenLabs proxy aktif' : ALLOW_DEVICE_TTS_FALLBACK ? '🎙️ Cihaz sesi açık' : '🔇 AI ses bekleniyor'}</span>
-          <span className="coach-pill">{recognitionSupported ? '🎧 Bas konuş hazır' : '⌨️ Yazılı yedek mod'}</span>
+          <span className="coach-pill" title={ttsBadge.hint}>{ttsBadge.label}</span>
+          <span className="coach-pill">{embedded ? '⌨️ Önizlemede yazılı mod' : recognitionSupported ? '🎧 Bas konuş hazır' : '⌨️ Yazılı yedek mod'}</span>
         </div>
 
         <div className="planet-wrap">
@@ -1248,9 +1422,19 @@ export default function AiTutor({
             {statusText}
           </div>
 
+          {embedded && !micHelpVisible && (
+            <div style={{ marginTop: '10px', padding: '12px', borderRadius: '14px', background: 'rgba(56,189,248,.10)', border: '1px solid rgba(56,189,248,.42)', color: '#bae6fd', fontSize: '12px', lineHeight: 1.55 }}>
+              <b>Önizleme penceresindesin.</b> Tarayıcılar, önizleme çerçevesine (iframe) mikrofon izni vermez; bu yüzden “Bas Konuş” burada çalışmaz. Sesli çalışmak için sayfayı yeni sekmede aç, ya da aşağıdaki yazılı cevap alanını kullan — değerlendirme ve puanlama aynı şekilde işler.
+              <div style={{ marginTop: '10px' }}>
+                <button onClick={openCoachInNewTab} style={{ background: '#38bdf8', color: '#04263a', border: 'none', borderRadius: '10px', padding: '9px 11px', fontWeight: 900, cursor: 'pointer' }}>Yeni sekmede aç (mikrofon çalışsın)</button>
+              </div>
+            </div>
+          )}
+
           {micHelpVisible && (
             <div style={{ marginTop: '10px', padding: '12px', borderRadius: '14px', background: 'rgba(245,158,11,.10)', border: '1px solid rgba(245,158,11,.42)', color: '#fde68a', fontSize: '12px', lineHeight: 1.55 }}>
-              <b>PC mikrofon izni tarayıcı tarafından engellenmiş.</b> Uygulama bunu otomatik açamaz. Chrome/Edge’de adres çubuğundaki kilit simgesinden mikrofonu “İzin ver” yapıp sayfayı yenile. Arena önizlemesi iframe içindeyse yeni sekmede açmak genelde izin penceresini düzeltir.
+              <b>{micIssue === 'iframe' ? 'Mikrofon önizleme çerçevesinde açılmıyor.' : micIssue === 'insecure' ? 'Bağlantı güvenli değil.' : micIssue === 'no-device' ? 'Mikrofon bulunamadı.' : micIssue === 'busy' ? 'Mikrofon meşgul.' : 'Mikrofon erişimi engellendi.'}</b>{' '}
+              {micIssueMessage(micIssue)}
               <div style={{ display: 'flex', gap: '8px', marginTop: '10px', flexWrap: 'wrap' }}>
                 <button onClick={requestBrowserMicAccess} style={{ background: '#f59e0b', color: '#111827', border: 'none', borderRadius: '10px', padding: '9px 11px', fontWeight: 900, cursor: 'pointer' }}>Mikrofon iznini tekrar iste</button>
                 <button onClick={openCoachInNewTab} style={{ background: 'transparent', color: '#fde68a', border: '1px solid rgba(245,158,11,.65)', borderRadius: '10px', padding: '9px 11px', fontWeight: 900, cursor: 'pointer' }}>Yeni sekmede aç</button>
