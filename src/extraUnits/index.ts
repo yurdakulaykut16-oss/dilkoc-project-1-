@@ -41,6 +41,9 @@ import { PACK100_B1 } from './pack100b1';
 import { PACK100_B2 } from './pack100b2';
 import { PACK100_C1 } from './pack100c1';
 import { COOKING30 } from './cooking30';
+import { DAILY60_A1 } from './daily60a1';
+import { DAILY60_A2 } from './daily60a2';
+import { DAILY60_B1, DAILY60_B2 } from './daily60b';
 
 export const EXTRA_UNITS: UnitModule[] = [
   ...EXTRA_A1_GRAM,  // Ünite 2-6 (A1 — cümle anahtarı, müfredatın en başı)
@@ -74,6 +77,11 @@ export const EXTRA_UNITS: UnitModule[] = [
   // CÜMLEDE ANLAM (olumsuzluk, tonlama, mecaz, deyim, atasözü,
   // eş seslilik, ironi, eşdizim, nüans), KÜLTÜR ve DİN üniteleri.
   // ========================================================
+  // GÜNDELİK HAYAT 60 — pratik yaşam üniteleri (A1 20, A2 20, B1 15, B2 5)
+  ...DAILY60_A1,     // Ünite 10.9721-10.9740 (A1 ×20)
+  ...DAILY60_A2,     // Ünite 40.9801-40.9820 (A2 ×20)
+  ...DAILY60_B1,     // Ünite 95.9801-95.9815 (B1 ×15)
+  ...DAILY60_B2,     // Ünite 143.9801-143.9805 (B2 ×5)
   ...PACK100_A1,     // Ünite 10.9701-10.9720 (A1 ×20)
   ...PACK100_A2,     // Ünite 40.9601-40.9620 (A2 ×20)
   ...PACK100_B1,     // Ünite 95.9601-95.9620 (B1 ×20)
