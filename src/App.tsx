@@ -1,9 +1,8 @@
 import { TextToSpeech } from '@capacitor-community/text-to-speech';
 import React, { useState, useEffect, useMemo, useRef } from 'react';
 import AiTutor from './components/AiTutor';
-// 📊 İSTATİSTİK MERKEZİ: gerçek seri takibi, günlük hedef, lig, rozetler, yedekleme
-import ProfileStats from './components/ProfileStats';
-import { DAILY_GOAL_XP, effectiveStreak, leagueForXp, loadStats, recordRescuePass, recordXpGain, todayStr, xpToday } from './statsStore';
+// 🔥 GERÇEK SERİ TAKİBİ: XP kazanılan günler sayılır, gün atlanırsa seri sıfırlanır
+import { effectiveStreak, loadStats, recordXpGain, todayStr } from './statsStore';
 
 // MICROSOFT EDGE TTS: Rusça = ru-RU-Svetlana/DmitryNeural, Türkçe = tr-TR-Emel/AhmetNeural.
 // Dinleme ekranlarındaki hız düğmesi perde korumalı (preservesPitch) çalışır — kelime bozulmaz.
@@ -625,7 +624,7 @@ const LEVEL_ANCHORS: Record<CefrTag, number> = (() => {
 
 export default function App() {
   const [activeTab, setActiveTab] = useState<'MAP' | 'PROFILE' | 'MISTAKES' | 'METHODS' | 'CONNECTIONS'>('MAP');
-  const [screen, setScreen] = useState<'MAP' | 'AI_TUTOR' | 'ALPHA' | 'ALPHA_CHECK' | 'ALPHA_READING' | 'GRAMMAR' | 'TOPIC' | 'TOPIC_TEST' | 'STORY' | 'DIALOG' | 'SMESHARIKI' | 'FLASHCARD' | 'MATCH' | 'TYPING' | 'SENTENCE' | 'QUIZ' | 'UNIT_STORY' | 'STORY_TEST' | 'STORY_RESULT' | 'CHECKPOINT_STORY' | 'ROUTE' | 'GRAPH' | 'SHORTS' | 'RESCUE' | 'STATS'>('MAP');
+  const [screen, setScreen] = useState<'MAP' | 'AI_TUTOR' | 'ALPHA' | 'ALPHA_CHECK' | 'ALPHA_READING' | 'GRAMMAR' | 'TOPIC' | 'TOPIC_TEST' | 'STORY' | 'DIALOG' | 'SMESHARIKI' | 'FLASHCARD' | 'MATCH' | 'TYPING' | 'SENTENCE' | 'QUIZ' | 'UNIT_STORY' | 'STORY_TEST' | 'STORY_RESULT' | 'CHECKPOINT_STORY' | 'ROUTE' | 'GRAPH' | 'SHORTS' | 'RESCUE'>('MAP');
   // Sınav/test motorunun hangi bağlamda çalıştığını belirtir: her biri bittiğinde farklı bir sonraki adıma geçer
   const [quizContext, setQuizContext] = useState<'ALPHA_FINAL' | 'GRAMMAR_FOUNDATION' | 'LISTENING' | 'UNIT_FINAL' | 'REVIEW' | 'SRS_REVIEW' | 'MARATHON' | 'WEAKSPOT'>('UNIT_FINAL');
   // Harf bazlı anlık tanıma testi
@@ -648,8 +647,7 @@ export default function App() {
   // Kelime bazlı kronik hata sayaçları (Zayıf Noktalarım paneli bunu okur)
   const [errorStats, setErrorStats] = useState<Record<string, { count: number; tr: string; last: number }>>({});
 
-  // 📊 GERÇEK SERİ + GÜNLÜK HEDEF: bugün kazanılan XP (statsStore'dan beslenir)
-  const [todayXp, setTodayXp] = useState(0);
+  // 📊 GERÇEK SERİ: XP kazanımlarını statsStore'a akıtan delta takibi
   const prevXpRef = useRef<number | null>(null);
   // 🔊 KELİME KARTI OTOMATİK SESLENDİRME tercihi (localStorage'da saklanır)
   const [autoSpeak, setAutoSpeak] = useState(() => localStorage.getItem('dilkoc_autospeak') !== '0');
@@ -761,11 +759,10 @@ export default function App() {
   }, [xp, streak, gems, completedAlpha, completedGrammar, completedUnits, completedTopics, completedStories, mistakes, srsBank, errorStats]);
 
   // 📊 AÇILIŞTA SERİ TAZELEME: statsStore'daki gerçek seri (dün/bugün çalışıldı mı?)
-  // eski kayıttaki sabit değerin yerine geçer; bugünkü XP sayacı da yüklenir.
+  // eski kayıttaki sabit değerin yerine geçer.
   useEffect(() => {
     const s = loadStats();
     setStreak(Math.max(1, effectiveStreak(s)));
-    setTodayXp(xpToday(s));
   }, []);
 
   // 📊 XP-DELTA KANCASI: xp her arttığında kazancı güne yazar, seriyi günceller.
@@ -778,7 +775,6 @@ export default function App() {
     if (delta > 0) {
       const s = recordXpGain(delta);
       setStreak(Math.max(1, s.streak));
-      setTodayXp(xpToday(s));
     }
   }, [xp]);
 
@@ -1236,8 +1232,8 @@ export default function App() {
       options: shuffle([w.tr, ...shuffle(ALL_WORDS.filter(x => x.tr !== w.tr)).slice(0, 3).map(x => x.tr)]),
       ru: w.ru, tr: w.tr, audioOnly: true
     }));
-    // KALICI ÖĞRENME TÜM PROJEDE: dinleme testine de eski ünitelerden 3 tekrar sorusu karışır.
-    const reviewQ = buildReviewInjection(mod, 3);
+    // KALICI ÖĞRENME TÜM PROJEDE: dinleme testine de eski ünitelerden 6 tekrar sorusu karışır.
+    const reviewQ = buildReviewInjection(mod, 6);
     setQuizContext('LISTENING');
     setQuizQuestions(shuffle([...q, ...reviewQ]));
     setQuizIdx(0);
@@ -1286,17 +1282,44 @@ export default function App() {
     });
   };
 
+  // ÜNİTE BİTİŞ SINAVI — GENİŞLETİLMİŞ: her kelime İKİ yönde sorulur (tanıma RU→TR
+  // + üretim TR→RU), araya dinleme soruları ve cümle anlama soruları eklenir,
+  // üstüne 10 adet "eski kelime" kalıcı tekrar sorusu karışır. Amaç: bir üniteyi
+  // geçmek için kelimeyi yalnızca TANIMAK yetmez — GERİ ÇAĞIRMAK, DUYMAK ve
+  // BAĞLAMDA ANLAMAK da gerekir (test etkisi × 4 kanal = kalıcı iz).
   const startUnitQuiz = () => {
     const mod = UNITS_DATA[unitIdx];
     const uWords = mod.words;
-    const q = uWords.map(w => ({
+    // 1) TANIMA: RU → TR (her kelime)
+    const q: any[] = uWords.map(w => ({
       prompt: `"${w.ru}" kelimesinin Türkçe karşılığı nedir?`,
       correct: w.tr,
       options: shuffle([w.tr, ...shuffle(ALL_WORDS.filter(x => x.tr !== w.tr)).slice(0, 3).map(x => x.tr)]),
       ru: w.ru, tr: w.tr
     }));
-    // Her ünite sınavına 5 adet "eski kelime" sorusu karışır (kalıcı öğrenme motoru).
-    const reviewQ = buildReviewInjection(mod, 5);
+    // 2) ÜRETİM: TR → RU (her kelime — geri çağırma, pasif tanımadan çok daha güçlü iz bırakır)
+    uWords.forEach(w => q.push({
+      prompt: `✍️ ÜRETİM — "${w.tr}" kelimesinin RUSÇASI hangisi?`,
+      correct: w.ru,
+      options: shuffle([w.ru, ...shuffle(ALL_WORDS.filter(x => x.ru !== w.ru)).slice(0, 3).map(x => x.ru)]),
+      ru: w.ru, tr: w.tr
+    }));
+    // 3) DİNLEME: ünitenin 3 kelimesi yalnız SESLE sorulur (kulak kanalı da sınanır)
+    shuffle([...uWords]).slice(0, 3).forEach(w => q.push({
+      prompt: '',
+      correct: w.tr,
+      options: shuffle([w.tr, ...shuffle(ALL_WORDS.filter(x => x.tr !== w.tr)).slice(0, 3).map(x => x.tr)]),
+      ru: w.ru, tr: w.tr, audioOnly: true
+    }));
+    // 4) BAĞLAM: ünite cümleleri anlama soruları (kelime cümle içinde tanınmalı)
+    shuffle([...mod.sentences]).slice(0, 3).forEach(s => q.push({
+      prompt: `📖 BAĞLAM — «${s.ru}» cümlesi ne anlatıyor?`,
+      correct: s.tr,
+      options: shuffle([s.tr, ...shuffle(ALL_SENTENCES.filter(x => x.tr !== s.tr)).slice(0, 3).map(x => x.tr)]),
+      ru: s.ru, tr: s.tr
+    }));
+    // 5) KALICI TEKRAR: eski ünitelerden 10 soru (genişleyen aralık + SRS öncelikli)
+    const reviewQ = buildReviewInjection(mod, 10);
     setQuizContext('UNIT_FINAL');
     setQuizQuestions(shuffle([...q, ...reviewQ]));
     setQuizIdx(0);
@@ -1785,7 +1808,13 @@ export default function App() {
         // Unutulan kelime kutu 1'e geri düşer: yarın tekrar sorulacak (kalıcı hafıza mantığının kalbi)
         setSrsBank(prev => prev.map(item => item.ru === q.ru ? { ...item, box: 1, nextReview: Date.now() + SRS_INTERVALS_DAYS[0] * DAY_MS } : item));
       }
-      setFeedback({ isError: true, message: `❌ Yanlış cevap. Doğrusu: "${q.correct}"` });
+      // KALICI ÖĞRENME — YENİDEN SORMA KURALI: yanlışlanan soru sınavın SONUNA
+      // (şıkları yeniden karılarak) bir kez daha eklenir. "Doğrusu buymuş" deyip
+      // geçmek yetmez; aynı bilgi sınav bitmeden bir kez daha GERİ ÇAĞRILMALIDIR.
+      if (!(q as any).requeued && (quizContext === 'UNIT_FINAL' || quizContext === 'LISTENING' || quizContext === 'ALPHA_FINAL' || quizContext === 'GRAMMAR_FOUNDATION')) {
+        setQuizQuestions(prev => [...prev, { ...q, options: shuffle([...(q.options as string[])]), requeued: true }]);
+      }
+      setFeedback({ isError: true, message: `❌ Yanlış cevap. Doğrusu: "${q.correct}" — bu soru sınav sonunda TEKRAR gelecek!` });
     }
   };
 
@@ -1813,7 +1842,6 @@ export default function App() {
   // Kurtarma testi bitti: geçildiyse kelimenin SRS kutusu yükselir (ağda yeşile döner),
   // kronik hata sayacı düşer; geçilemediyse kutu 1'e iner (yarın tekrar sorulur).
   const finishRescue = (r: RescueResult) => {
-    if (r.passed) recordRescuePass(); // 📊 rozet/istatistik sayacı
     const t = rescueTarget;
     if (t?.kind === 'word' && t.ru) {
       const ru = t.ru;
@@ -1884,9 +1912,6 @@ export default function App() {
     return ALL_WORDS[h % ALL_WORDS.length];
   }, []);
 
-  // 🏆 LİG DURUMU (üst bar rozeti)
-  const currentLeague = leagueForXp(xp);
-
   // 🔤/📖 AYRIMI: gerçek alfabe dersleri (ilk 16) ile tematik okuma pratiği ayrı sayılır
   const coreAlphaIds = new Set(ALPHABET_LESSONS.slice(0, CORE_ALPHA_LESSON_COUNT).map(l => l.id));
   const coreAlphaDone = completedAlpha.filter(id => coreAlphaIds.has(id)).length;
@@ -1913,9 +1938,6 @@ export default function App() {
           <button onClick={() => { setActiveTab('MAP'); setScreen('SHORTS'); }} style={{ background: 'transparent', border: 'none', color: '#fb923c', cursor: 'pointer', fontWeight: 800, fontSize: '13px' }} title="Hatalarına özel AI üretimi 15-30 saniyelik dikey mikro dersler">🎬 Koç Akışı</button>
           <button onClick={() => { setActiveTab('METHODS'); setScreen('MAP'); }} style={{ background: 'transparent', border: 'none', color: '#a78bfa', cursor: 'pointer', fontWeight: 800, fontSize: '13px' }}>📚 Yöntemler</button>
           <button onClick={() => { setActiveTab('CONNECTIONS'); setScreen('MAP'); }} style={{ background: 'transparent', border: 'none', color: '#f472b6', cursor: 'pointer', fontWeight: 800, fontSize: '13px' }}>🕸️ Hikaye Bağları</button>
-          <button onClick={() => { setActiveTab('MAP'); setScreen('STATS'); }} style={{ background: 'transparent', border: 'none', color: '#facc15', cursor: 'pointer', fontWeight: 800, fontSize: '13px' }} title="Lig, seri, günlük hedef, rozetler ve ilerleme yedeği">📊 İstatistik</button>
-          <span onClick={() => { setActiveTab('MAP'); setScreen('STATS'); }} title={`${currentLeague.league.name} Ligi — toplam XP'ye göre yükselir`} style={{ color: currentLeague.league.color, display: 'flex', alignItems: 'center', gap: '4px', cursor: 'pointer' }}>{currentLeague.league.icon} {currentLeague.league.name}</span>
-          <span title={`Günlük hedef: ${DAILY_GOAL_XP} XP`} style={{ color: todayXp >= DAILY_GOAL_XP ? '#22c55e' : '#fb923c', display: 'flex', alignItems: 'center', gap: '4px' }}>🎯 {todayXp}/{DAILY_GOAL_XP}</span>
           <span style={{ color: '#f59e0b', display: 'flex', alignItems: 'center', gap: '4px' }}>🔥 {streak}</span>
           <span style={{ color: '#38bdf8', display: 'flex', alignItems: 'center', gap: '4px' }}>💎 {gems}</span>
           <span style={{ color: '#10b981', display: 'flex', alignItems: 'center', gap: '4px' }}>⚡ {xp} XP</span>
@@ -1950,7 +1972,7 @@ export default function App() {
 
             {/* 📋 GÜNLÜK AKILLI PLAN — vadesi gelen SRS + zayıf kelimeler + sıradaki adım */}
             <div style={{ ...cardBox, marginBottom: '16px', border: '1px solid #22c55e55' }}>
-              <div style={{ fontWeight: 900, marginBottom: '10px' }}>📋 Bugünün Planı <span style={{ fontSize: '12px', color: todayXp >= DAILY_GOAL_XP ? '#22c55e' : '#94a3b8', fontWeight: 800 }}>— hedef: {todayXp}/{DAILY_GOAL_XP} XP {todayXp >= DAILY_GOAL_XP ? '✅' : ''}</span></div>
+              <div style={{ fontWeight: 900, marginBottom: '10px' }}>📋 Bugünün Planı — unutmadan tekrar et</div>
               <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))', gap: '10px' }}>
                 <button onClick={startSRSReview} disabled={dueSRS.length === 0}
                   style={{ padding: '12px', borderRadius: '12px', border: '1px solid #334155', background: dueSRS.length > 0 ? 'rgba(245,158,11,0.15)' : '#0f172a', color: '#e2e8f0', cursor: dueSRS.length > 0 ? 'pointer' : 'default', textAlign: 'left', opacity: dueSRS.length > 0 ? 1 : 0.5 }}>
@@ -2384,22 +2406,6 @@ export default function App() {
               </div>
             )}
 
-            {/* 📊 İSTATİSTİK MERKEZİ — lig, seri, günlük hedef, 14 günlük grafik, rozetler, yedekleme */}
-            {screen === 'STATS' && (
-              <ProfileStats
-                xp={xp}
-                gems={gems}
-                completedAlpha={coreAlphaDone}
-                completedUnits={completedUnits.length}
-                completedTopics={completedTopics.length}
-                completedGrammar={completedGrammar.length}
-                completedStories={completedStories.length}
-                srsCount={srsBank.length}
-                mistakesCount={mistakes.length}
-                onBack={() => setScreen('MAP')}
-              />
-            )}
-
             {/* 🧭 KİŞİSELLEŞTİRİLMİŞ ÖĞRENİM ROTASI — çözülen sorulardan zaman/edat eksik haritası */}
             {screen === 'ROUTE' && (
               <LearningRoute
@@ -2724,7 +2730,7 @@ export default function App() {
                   <div style={{ textAlign: 'center' }}>
                     <SceneBanner icon={passed ? '🏆' : '🎧'} color={passed ? '#10b981' : '#f59e0b'} label={`Ünite ${TOPIC_PATH_POS[topicIdx]} — Test Sonucu`} />
                     <div style={{ fontSize: '52px', fontWeight: 900, color: passed ? '#10b981' : '#f59e0b', margin: '24px 0 8px' }}>%{percent}</div>
-                    <p style={{ color: '#cbd5e1', fontSize: '14px' }}>{topicQs.length} sorudan {topicQCorrect} tanesini doğru yanıtladın. Geçmek için en az %75 (4/5) gerekiyor.</p>
+                    <p style={{ color: '#cbd5e1', fontSize: '14px' }}>{topicQs.length} sorudan {topicQCorrect} tanesini doğru yanıtladın. Geçmek için en az %75 gerekiyor.</p>
                     {passed && (
                       <p style={{ color: '#94a3b8', fontSize: '12px', marginTop: '6px' }}>📅 Konudaki {Math.min(currentTopic.items.length, 8)} kelime otomatik olarak Aralıklı Tekrar havuzuna eklendi.</p>
                     )}

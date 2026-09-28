@@ -32,6 +32,9 @@ import { EXTRA_DAILY2C_B2, EXTRA_DAILY2C_C1 } from './daily2c';
 import { EXPANSION_A1, EXPANSION_A2 } from './expansion50a';
 import { EXPANSION_B1, EXPANSION_B2 } from './expansion50b';
 import { EXPANSION_C1 } from './expansion50c';
+import { A_BOOST_1 } from './aBoost1';
+import { A_BOOST_2 } from './aBoost2';
+import { A_BOOST_3 } from './aBoost3';
 
 export const EXTRA_UNITS: UnitModule[] = [
   ...EXTRA_A1_GRAM,  // Ünite 2-6 (A1 — cümle anahtarı, müfredatın en başı)
@@ -55,5 +58,9 @@ export const EXTRA_UNITS: UnitModule[] = [
   ...EXPANSION_A2,   // Ünite 40.1-40.95 (A2 ×10: eczane, kuaför, spor, sinema, tren, otel, postane, misafirlik, bayram, piknik)
   ...EXPANSION_B1,   // Ünite 95.1-95.95 (B1 ×10: CV, ofis, araba, tamir, telefon, sosyal medya, kütüphane, konser, kamp, acil)
   ...EXPANSION_B2,   // Ünite 143.1-143.95 (B2 ×10: hastane, hukuk, startup, pazarlama, sunum, çevre, psikoloji, tadilat, spor, medya)
-  ...EXPANSION_C1    // Ünite 180.1-180.95 (C1 ×10: diplomasi, borsa, bilim, edebiyat, felsefe, tıp, mahkeme, sanat, YZ, kriz)
+  ...EXPANSION_C1,   // Ünite 180.1-180.95 (C1 ×10: diplomasi, borsa, bilim, edebiyat, felsefe, tıp, mahkeme, sanat, YZ, kriz)
+  // A SEVİYESİ BÜYÜK GENİŞLEME — 54 ünite, HİKÂYEDEN HEMEN ÖNCE (10.9601-10.9654 < 11)
+  ...A_BOOST_1,      // Ünite 10.9601-10.9618 (A1 ×18: selamlaşma, aile, para, saat, okul, ev, sağlık...)
+  ...A_BOOST_2,      // Ünite 10.9619-10.9636 (A1 ×18: hava, ulaşım, kafe, market, telefon, hobiler...)
+  ...A_BOOST_3       // Ünite 10.9637-10.9654 (A1 ×18: HİKÂYEYE HAZIRLIK — HIMYM kelime hazinesi)
 ];
