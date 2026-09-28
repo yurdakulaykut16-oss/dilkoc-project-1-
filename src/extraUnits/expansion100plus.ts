@@ -197,6 +197,15 @@ const cookingRaw = [
 ].map(([title,description,category,level,icon,raw,sents]) => ({title,description,category,level: level as WordDetail['level'],icon,words:(raw as string[][]).map(x=>[x[0],x[0],x[1]] as [string,string,string]),sentences:sents as [string,string][]})) as Spec[];
 
 // Kesin kapsam: tam 100 karışık ünite ve bunların dışında tam 30 aşçılık ünitesi.
-export const EXPANSION_MIXED_100 = build(224, 'mix', mixed.slice(0, 100));
+const CEFR_ORDER: WordDetail['level'][] = ['A1', 'A2', 'B1', 'B2', 'C1/C2'];
+
+// Yeni karışık pakette seviye sırası korunur: A1-A2 → B1-B2 → C1/C2.
+// "Karışık" yalnızca konu çeşitliliğidir; öğrenme yolu seviye olarak karışmaz.
+function buildByLevel(start: number, prefix: string, specs: Spec[]): UnitModule[] {
+  const ordered = CEFR_ORDER.flatMap((level) => specs.filter((s) => s.level === level));
+  return build(start, prefix, ordered);
+}
+
+export const EXPANSION_MIXED_100 = buildByLevel(224, 'mix', mixed.slice(0, 100));
 export const EXPANSION_COOKING_30 = build(324, 'cook', cookingRaw.slice(0, 30));
 export const EXPANSION_100_PLUS_30 = [...EXPANSION_MIXED_100, ...EXPANSION_COOKING_30];
