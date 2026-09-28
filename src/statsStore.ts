@@ -144,7 +144,7 @@ export function computeBadges(x: BadgeInput): Badge[] {
   return [
     { id: 'first_step',  icon: '👣', title: 'İlk Adım',        desc: 'İlk XP\'ni kazan',                          earned: x.xp > 0 },
     { id: 'alpha_5',     icon: '🔤', title: 'Harf Avcısı',     desc: '5 alfabe dersi bitir',                      earned: x.completedAlpha >= 5 },
-    { id: 'alpha_all',   icon: '🎓', title: 'Kiril Ustası',    desc: 'Tüm alfabe derslerini bitir',               earned: x.completedAlpha >= 12 },
+    { id: 'alpha_all',   icon: '🎓', title: 'Kiril Ustası',    desc: 'Tüm alfabe derslerini bitir (33 harf)',     earned: x.completedAlpha >= 16 },
     { id: 'streak_3',    icon: '🔥', title: 'Kıvılcım',        desc: '3 günlük seri yap',                         earned: s.bestStreak >= 3 },
     { id: 'streak_7',    icon: '🌋', title: 'Alev Alev',       desc: '7 günlük seri yap',                         earned: s.bestStreak >= 7 },
     { id: 'goal_day',    icon: '🎯', title: 'Hedef Tamam',     desc: `Bir günde ${DAILY_GOAL_XP} XP hedefini doldur`, earned: Object.values(s.dailyXp).some(v => v >= DAILY_GOAL_XP) },

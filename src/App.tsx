@@ -402,6 +402,12 @@ export const ALPHABET_LESSONS: { id: string; title: string; subtitle: string; le
 
 export const ALL_ALPHA_LETTERS = ALPHABET_LESSONS.flatMap(x => x.letters);
 
+// GERÇEK ALFABE DERSİ SAYISI: 33 harfin tamamı ilk 16 derste öğretilir.
+// 17. dersten itibarenki "dersler" (sayılar, aylar, renkler, menü, tabela,
+// hız turları...) harf değil TEMATİK KELİME OKUMA pratiğidir; yol üzerinde
+// alfabe bloğuna değil, müfredat ünitelerinin arasına yerleştirilirler.
+export const CORE_ALPHA_LESSON_COUNT = 16;
+
 
 function shuffle<T>(arr: T[]): T[] {
   const a = [...arr];
@@ -550,9 +556,14 @@ export type PathStep =
 export const PATH: PathStep[] = (() => {
   const steps: PathStep[] = [];
   const usedTopics = new Set<number>();
-  // 1) ALFABE ÖNCE: her alfabe dersinin HEMEN ARDINDAN, o derste öğrenilen
+  // GERÇEK ALFABE = ilk 16 ders (33 harfin tamamı burada öğretilir).
+  // 17. dersten itibaren gelenler (aylar, renkler, aile, menü, tabela...)
+  // harf dersi DEĞİL, tematik KELİME OKUMA pratiğidir — yolun başına yığılmaz,
+  // müfredat ünitelerinin arasına serpiştirilir (aşağıda).
+  const CORE_ALPHA = CORE_ALPHA_LESSON_COUNT;
+  // 1) ALFABE ÖNCE: her GERÇEK alfabe dersinin HEMEN ARDINDAN, o derste öğrenilen
   //    harflerin 🎧 dinleme konuları gelir (harfini bilmediğin sesi dinlemezsin).
-  ALPHABET_LESSONS.forEach((lesson, li) => {
+  ALPHABET_LESSONS.slice(0, CORE_ALPHA).forEach((lesson, li) => {
     steps.push({ kind: 'alpha', lessonIdx: li });
     lesson.letters.forEach(l => {
       const tIdx = TOPICS_100.findIndex(t => t.cat === 'harf' && t.letterGlyph === l.upper);
@@ -575,11 +586,22 @@ export const PATH: PathStep[] = (() => {
   TOPICS_100.forEach((t, idx) => { if (t.cat === 'fonetik' && t.num >= 36) steps.push({ kind: 'topic', topicIdx: idx }); });
   const previewByUnit = new Map<string, number>();
   TOPICS_100.forEach((t, idx) => { if (t.cat === 'mufredat' && t.unitId && !previewByUnit.has(t.unitId)) previewByUnit.set(t.unitId, idx); });
+  // 5) MÜFREDAT + ARAYA SERPİŞTİRİLMİŞ OKUMA PRATİĞİ: tematik okuma dersleri
+  //    (17-76: sayılar, aylar, renkler, menü, tabela, hız turları...) artık
+  //    alfabe bloğunda DEĞİL — her 3 müfredat ünitesinde bir "📖 OKUMA PRATİĞİ"
+  //    kartı olarak kelime öğrenmenin içine dağıtılır.
+  let readingIdx = CORE_ALPHA;
   UNITS_DATA.forEach((u, uIdx) => {
     const pIdx = previewByUnit.get(u.id);
     if (pIdx !== undefined) steps.push({ kind: 'topic', topicIdx: pIdx });
     steps.push({ kind: 'unit', unitIdx: uIdx });
+    if (readingIdx < ALPHABET_LESSONS.length && uIdx % 3 === 2) {
+      steps.push({ kind: 'alpha', lessonIdx: readingIdx });
+      readingIdx++;
+    }
   });
+  // Güvenlik ağı: dağıtımdan artan okuma dersi kaldıysa sona ekle
+  while (readingIdx < ALPHABET_LESSONS.length) { steps.push({ kind: 'alpha', lessonIdx: readingIdx }); readingIdx++; }
   return steps;
 })();
 
@@ -1865,6 +1887,11 @@ export default function App() {
   // 🏆 LİG DURUMU (üst bar rozeti)
   const currentLeague = leagueForXp(xp);
 
+  // 🔤/📖 AYRIMI: gerçek alfabe dersleri (ilk 16) ile tematik okuma pratiği ayrı sayılır
+  const coreAlphaIds = new Set(ALPHABET_LESSONS.slice(0, CORE_ALPHA_LESSON_COUNT).map(l => l.id));
+  const coreAlphaDone = completedAlpha.filter(id => coreAlphaIds.has(id)).length;
+  const readingLessonsDone = completedAlpha.length - coreAlphaDone;
+
   // STİLLER
   const containerStyle: React.CSSProperties = { maxWidth: '720px', margin: '0 auto', padding: '16px' };
   const cardBox: React.CSSProperties = { background: '#1e293b', borderRadius: '16px', padding: '24px', border: '1px solid #334155', boxShadow: '0 10px 25px -5px rgba(0,0,0,0.3)' };
@@ -2046,7 +2073,7 @@ export default function App() {
                     <div style={{ fontSize: '12px', color: '#94a3b8', marginTop: '3px' }}>Ünite 1'den {PATH.length}'e kadar tek sıra — her kart, bir önceki bitince açılır.</div>
                   </div>
                   <div style={{ fontSize: '11px', color: '#94a3b8', fontWeight: 700 }}>
-                    🔤 {completedAlpha.length}/{ALPHABET_LESSONS.length} alfabe • 🧩 {completedGrammar.length}/{GRAMMAR_FOUNDATION_UNITS.length} cümle temeli • 🎧 {completedTopics.length}/{TOPICS_100_TOTAL} dinleme • 📚 {completedUnits.length}/{UNITS_DATA.length} ünite • 📖 {completedStories.length}/{STORIES.length} hikaye
+                    🔤 {coreAlphaDone}/{CORE_ALPHA_LESSON_COUNT} alfabe • 📖 {readingLessonsDone}/{ALPHABET_LESSONS.length - CORE_ALPHA_LESSON_COUNT} okuma pratiği • 🧩 {completedGrammar.length}/{GRAMMAR_FOUNDATION_UNITS.length} cümle temeli • 🎧 {completedTopics.length}/{TOPICS_100_TOTAL} dinleme • 📚 {completedUnits.length}/{UNITS_DATA.length} ünite • 📕 {completedStories.length}/{STORIES.length} hikaye
                   </div>
                 </div>
                 {/* Seviye sıçrama çipleri + ses testi */}
@@ -2076,11 +2103,14 @@ export default function App() {
                   let color: string, icon: string, title: string, desc: string, kindTag: string;
                   if (step.kind === 'alpha') {
                     const les = ALPHABET_LESSONS[step.lessonIdx];
+                    const isCoreAlpha = step.lessonIdx < CORE_ALPHA_LESSON_COUNT;
                     color = ALPHA_BANNER_COLORS[step.lessonIdx % ALPHA_BANNER_COLORS.length];
-                    icon = les.letters[0].upper;
+                    // Gerçek harf dersi: harf ikonlu ALFABE kartı. Tematik ders: 📖 OKUMA PRATİĞİ
+                    // (kelime öğrenme — müfredat aralarına serpiştirilmiştir, alfabe DEĞİLDİR).
+                    icon = isCoreAlpha ? les.letters[0].upper : '📖';
                     title = les.title;
                     desc = les.subtitle;
-                    kindTag = '🔤 ALFABE';
+                    kindTag = isCoreAlpha ? '🔤 ALFABE' : '📖 OKUMA PRATİĞİ';
                   } else if (step.kind === 'grammar') {
                     const g = GRAMMAR_FOUNDATION_UNITS[step.grammarIdx];
                     color = g.color;
@@ -2359,7 +2389,7 @@ export default function App() {
               <ProfileStats
                 xp={xp}
                 gems={gems}
-                completedAlpha={completedAlpha.length}
+                completedAlpha={coreAlphaDone}
                 completedUnits={completedUnits.length}
                 completedTopics={completedTopics.length}
                 completedGrammar={completedGrammar.length}
