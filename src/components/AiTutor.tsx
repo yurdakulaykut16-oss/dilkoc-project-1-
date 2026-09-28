@@ -3,6 +3,9 @@ import { TextToSpeech } from '@capacitor-community/text-to-speech';
 import React, { useEffect, useMemo, useRef, useState } from 'react';
 import { ALL_WORDS, UNITS_DATA } from '../curriculumData';
 import type { UnitModule, WordDetail } from '../curriculumData';
+// MICROSOFT EDGE TTS — BİRİNCİL SES: botun Türkçe konuşmaları tr-TR-Emel/AhmetNeural,
+// Rusça telaffuzları ru-RU-Svetlana/DmitryNeural ile okunur (Rotam ekranından seçilir).
+import { edgeSpeak, getVoicePrefs } from '../tts/edgeTts';
 
 type CoachMistake = { id: string; ru: string; tr: string; reason: string };
 type CoachSrsItem = { ru: string; tr: string; box: number; nextReview: number; type: 'word' | 'letter' };
@@ -746,6 +749,21 @@ async function speakWithWebSpeech(text: string, lang: SpeechLang, rate: number, 
 async function speakOne(text: string, lang: SpeechLang, rate: number, onChunkStart?: (chunk: string) => void, onChunkEnd?: () => void) {
   const chunks = splitSpeechText(text);
   for (const chunk of chunks) {
+    // 1) ÖNCE MICROSOFT EDGE TTS: TR = Emel/Ahmet, RU = Svetlana/Dmitry
+    try {
+      const prefs = getVoicePrefs();
+      onChunkStart?.(chunk);
+      if (await edgeSpeak(chunk, {
+        voice: lang === 'ru-RU' ? prefs.ru : prefs.tr,
+        prosodyRate: rate < 0.85 ? '-20%' : '+0%',
+        playbackRate: Math.min(1.1, Math.max(0.85, rate)),
+      })) {
+        onChunkEnd?.();
+        continue;
+      }
+    } catch (error) {
+      console.warn('Edge TTS fallback:', error);
+    }
     try {
       if (await speakWithPuter(chunk, lang, rate, () => onChunkStart?.(chunk))) {
         onChunkEnd?.();

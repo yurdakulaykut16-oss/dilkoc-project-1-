@@ -18,6 +18,18 @@ Bu uygulamayı düzenli olarak takip eden bir öğrenci aşağıdaki **kazanıml
 
 ---
 
+## 🆕 Kişiselleştirme & Ses Motoru Güncellemesi
+
+* **🧭 Kişisel Rota (`src/learnerModel.ts` + `src/components/LearningRoute.tsx`):** Çözülen HER soru (ünite sınavları, cümle kurma, dinleme testleri, gramer quizleri, hikaye Türkçeleştirme) yerel öğrenen modeline işlenir. Cümlelerden **zamanlar** (şimdiki/geçmiş/gelecek, morfolojik ipuçlarıyla) ve **edatlar** (в, на, к, у, с, из…) deterministik olarak tespit edilir; üst bardaki **"🧭 Rotam"** ekranı her zaman ve her edat için ayrı isabet çubuğu gösterir ve zayıf halkalardan sıralı bir **kişiselleştirilmiş öğrenim rotası** üretir (ilgili gramer ünitesine atlama + 1 dakikalık hedefli test + mikro ders akışı). Ses seçimi de bu ekrandadır.
+* **🔬 Anlamsal Fark Analizi (`src/semanticFeedback.ts`):** Cümle kurma egzersizlerinde yanlış cevaba artık salt "yanlış" denmez; kullanıcının cümlesi ile ideal cümle **anlam düzeyinde** karşılaştırılır: zaman kayması, eksik/fazla edat, hâl eki (çekim) farkı, eksik/fazla kelime ve dizilim/vurgu farkı madde madde raporlanır + anlamsal yakınlık yüzdesi gösterilir.
+* **🎬 Koç Akışı (`src/components/CoachShorts.tsx`):** Üst bardaki ayrı **"🎬 Koç Akışı"** butonuyla açılan bölüm: kullanıcının hata yaptığı kelime ve gramer (zaman/edat) konularından **AI ile üretilmiş 15-30 saniyelik dikey (9:16) video/animasyon mikro dersler** oluşturur — story tarzı sahne çubukları, animasyonlu sahneler, Edge TTS seslendirmesi ve Reels tarzı ▲▼ gezinme ile.
+* **🕸️ 3D Kelime Ağı (`src/components/WordGraph3D.tsx`):** Bildiğin tüm kelimeleri; geldikleri **bölümlere (üniteler)**, **tekniklere** (dinleme, SRS, alfabe, zamanlar, edatlar) ve **seviyelere** (A1→C1/C2) bağlayan, sürükle-döndür + yakınlaştırmalı, kütüphanesiz 3D kuvvet-yönlendirmeli ağ grafiği. **Unutulmaya yüz tutan kelimeler (SRS vadesi geçen / kronik hatalılar) ağ üzerinde KIRMIZILAŞIR** ve nabız gibi atar.
+* **⚡ Hızlı Kurtarma Testi (`src/components/RescueTest.tsx`):** 3D ağda kırmızılaşan veya zayıf bağlanan bir kelime/gramer düğümüne tıklayınca **60 saniyelik geri sayımlı, doğrudan o noktayı hedefleyen test** başlar (tanıma + üretim + dinleme + bağlam soruları). Geçilirse kelimenin SRS kutusu yükselir ve düğüm yeşile döner; geçilemezse kutu 1'e iner.
+* **🎙️ Microsoft Edge TTS (`src/tts/edgeTts.ts`):** Tüm seslendirme artık öncelikle Edge'in nöral sesleriyle yapılır — **Rusça: `ru-RU-SvetlanaNeural` / `ru-RU-DmitryNeural`**, **Türkçe (bot/koç konuşmaları): `tr-TR-EmelNeural` / `tr-TR-AhmetNeural`** (Rotam ekranından seçilir, localStorage'da saklanır). Anahtar gerektirmez; MP3 önbelleğiyle tekrar dinlemeler anında çalar; servis erişilemezse eski native/web TTS zinciri otomatik devreye girer.
+* **🎚️ Perde Korumalı Dinleme Hızı:** Rusça ünitelerin **sadece dinleme olan yerlerinde** (dinleme konuları, dinle&seç testleri, dizi sahnesi/diyalog, ünite dinleme sınavı) 0.5×–1.5× hız düğmesi vardır; `preservesPitch` sayesinde ses yavaşlarken/hızlanırken **kelime bozulmaz** (incelme/kalınlaşma olmaz).
+
+---
+
 ## 🛠 Proje Mimari ve Kod Yapısı (`App.tsx`)
 
 Uygulama, tip güvenliği ve sürdürülebilirlik gözetilerek **React** ve **TypeScript** standartlarına uygun şekilde modüler olarak tasarlanmıştır.
