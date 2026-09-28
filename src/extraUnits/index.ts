@@ -35,6 +35,7 @@ import { EXPANSION_C1 } from './expansion50c';
 import { A_BOOST_1 } from './aBoost1';
 import { A_BOOST_2 } from './aBoost2';
 import { A_BOOST_3 } from './aBoost3';
+import { EXPANSION_100_PLUS_30 } from './expansion100plus';
 
 export const EXTRA_UNITS: UnitModule[] = [
   ...EXTRA_A1_GRAM,  // Ünite 2-6 (A1 — cümle anahtarı, müfredatın en başı)
@@ -62,5 +63,6 @@ export const EXTRA_UNITS: UnitModule[] = [
   // A SEVİYESİ BÜYÜK GENİŞLEME — 54 ünite, HİKÂYEDEN HEMEN ÖNCE (10.9601-10.9654 < 11)
   ...A_BOOST_1,      // Ünite 10.9601-10.9618 (A1 ×18: selamlaşma, aile, para, saat, okul, ev, sağlık...)
   ...A_BOOST_2,      // Ünite 10.9619-10.9636 (A1 ×18: hava, ulaşım, kafe, market, telefon, hobiler...)
-  ...A_BOOST_3       // Ünite 10.9637-10.9654 (A1 ×18: HİKÂYEYE HAZIRLIK — HIMYM kelime hazinesi)
+  ...A_BOOST_3,      // Ünite 10.9637-10.9654 (A1 ×18: HİKÂYEYE HAZIRLIK — HIMYM kelime hazinesi)
+  ...EXPANSION_100_PLUS_30 // 100 karışık + 30 yalnızca aşçılık (Ünite 224-353)
 ];
