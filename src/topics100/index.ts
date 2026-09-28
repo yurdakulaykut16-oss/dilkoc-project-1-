@@ -136,7 +136,9 @@ const LETTER_NAME_RU: Record<string, string> = {
 export function buildTopicDrills(t: Topic100): Topic100Question[] {
   const rnd = mulberry32(t.num * 7919 + 13);
   const qs: Topic100Question[] = [];
-  const nWords = t.cat === 'harf' ? 3 : 4;
+  // GENİŞLETİLMİŞ TEST: daha fazla kelime sorusu — kalıcı öğrenme için her konu
+  // testinde daha çok geri çağırma denemesi yapılır (test etkisi).
+  const nWords = t.cat === 'harf' ? 4 : 6;
 
   if (t.cat === 'harf' && t.letterGlyph) {
     const g = t.letterGlyph;
@@ -192,5 +194,27 @@ export function buildTopicDrills(t: Topic100): Topic100Question[] {
     hint: `${otherItem.ru} — ${otherItem.tr} (Konu ${other.num} den geliyor)`,
   });
 
-  return qs.slice(0, 5);
+  // İKİNCİ karışık tekrar sorusu: bir başka konudan daha kelime gelir —
+  // konular arası bağ kurulur, hiçbir eski kelime "emekli" olmaz.
+  const other2 = otherTopics[Math.floor(rnd() * otherTopics.length)];
+  const otherItem2 = other2.items[Math.floor(rnd() * other2.items.length)];
+  if (otherItem2.ru.toLowerCase() !== otherItem.ru.toLowerCase()) {
+    const d2 = seededShuffle([...t.items, ...other2.items], rnd)
+      .filter((x) => x.ru.toLowerCase() !== otherItem2.ru.toLowerCase())
+      .map((x) => x.ru)
+      .filter((v, i, a) => a.indexOf(v) === i)
+      .slice(0, 3);
+    if (d2.length === 3) {
+      qs.push({
+        type: 'mixed',
+        prompt: '🔁 Karışık tekrar 2 — hangi kelimeyi duydun?',
+        answer: otherItem2.ru,
+        options: seededShuffle([otherItem2.ru, ...d2], rnd),
+        audio: otherItem2.ru,
+        hint: `${otherItem2.ru} — ${otherItem2.tr} (Konu ${other2.num} den geliyor)`,
+      });
+    }
+  }
+
+  return qs.slice(0, 8);
 }

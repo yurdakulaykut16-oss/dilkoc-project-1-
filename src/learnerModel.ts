@@ -1,0 +1,298 @@
+// ============================================================================
+// ÖĞRENEN MODELİ — çözülen sorulardan ZAMANLAR (tenses) ve EDATLAR (prepositions)
+// eksiklerini haritalandırır; kişiselleştirilmiş öğrenim rotasını üretir.
+//
+// Her cevap (doğru + yanlış) buraya işlenir. Cümlenin içinden zaman ve edat
+// tespiti deterministik morfolojik ipuçlarıyla yapılır — böylece "hangi soruda
+// yanlış yaptı"dan öte "HANGİ GRAMER KASI zayıf" bilgisi birikir.
+// ============================================================================
+
+const LEARNER_KEY = 'dilkoc_learner_model_v1';
+export const LEARNER_EVENT = 'dilkoc-learner-updated';
+
+export interface SkillStat { correct: number; wrong: number; last: number }
+
+export interface LearnerData {
+  skills: Record<string, SkillStat>;   // 'tense:past', 'prep:в' ...
+  words: Record<string, { tr: string; correct: number; wrong: number; lastSeen: number; lastCorrect: number }>;
+}
+
+let cache: LearnerData | null = null;
+
+export function loadLearner(): LearnerData {
+  if (cache) return cache;
+  try {
+    const raw = localStorage.getItem(LEARNER_KEY);
+    if (raw) { cache = JSON.parse(raw); return cache!; }
+  } catch { /* yok say */ }
+  cache = { skills: {}, words: {} };
+  return cache;
+}
+
+function save() {
+  if (!cache) return;
+  try { localStorage.setItem(LEARNER_KEY, JSON.stringify(cache)); } catch { /* yok say */ }
+  try { window.dispatchEvent(new CustomEvent(LEARNER_EVENT)); } catch { /* yok say */ }
+}
+
+export function resetLearner() {
+  cache = { skills: {}, words: {} };
+  try { localStorage.removeItem(LEARNER_KEY); } catch { /* yok say */ }
+  try { window.dispatchEvent(new CustomEvent(LEARNER_EVENT)); } catch { /* yok say */ }
+}
+
+// ---------------------------------------------------------------------------
+// ZAMAN & EDAT TESPİTİ (deterministik morfolojik ipuçları)
+// ---------------------------------------------------------------------------
+export const PREPOSITIONS = ['в', 'на', 'к', 'у', 'с', 'из', 'о', 'об', 'по', 'за', 'под', 'над', 'от', 'до', 'для', 'без', 'через', 'при', 'между', 'перед', 'около', 'после', 'про'];
+
+const FUTURE_AUX = ['буду', 'будешь', 'будет', 'будем', 'будете', 'будут'];
+const PAST_RE = /^[а-яё]{2,}(л|ла|ло|ли)(сь|ся)?$/i;
+// GÜÇLÜ şimdiki zaman kanıtı: çok harfli kişi ekleri (-ешь, -ет, -ем, -ют, -ит...)
+const PRESENT_STRONG_RE = /^[а-яё]{2,}(ешь|ёшь|ет|ёт|ем|ём|ете|ёте|ют|ишь|ит|им|ите|ат|ят)(ся|сь)?$/i;
+// ZAYIF kanıt: yalın -у/-ю bitişi (1. tekil kişi) — isimlerin -у/-ю hâl ekiyle karışabilir
+// (книгу, маму...), bu yüzden yalnızca başka zaman kanıtı yoksa ve önünde edat yoksa sayılır.
+const PRESENT_WEAK_RE = /^[а-яё]{2,}(ю|у)(сь)?$/i;
+// Yaygın "fiil olmayan" tuzaklar (isim/zamir olduğu hâlde ek deseni tutanlar)
+const NOT_VERB = new Set(['привет', 'момент', 'билет', 'кабинет', 'пакет', 'банкет', 'бюджет', 'секрет', 'совет', 'ответ', 'обед', 'сосед', 'салат', 'халат', 'брат', 'закат', 'адвокат', 'шоколад', 'стол', 'стул', 'пол', 'футбол', 'гол', 'укол', 'зал', 'вокзал', 'канал', 'мама', 'папа', 'вода', 'еда', 'среда', 'звезда', 'это', 'кто', 'что', 'место', 'лето', 'мясо', 'молоко', 'окно', 'кино', 'вино', 'пальто', 'метро', 'утро', 'много', 'мало', 'дело', 'тело', 'им', 'ним', 'вам', 'нам', 'там', 'сам', 'зачем', 'причём', 'днём', 'потом', 'дом', 'том', 'ем', 'семь', 'восемь']);
+
+function tokenize(ru: string): string[] {
+  return ru.toLowerCase().replace(/[«»"".,!?;:()\-–—]/g, ' ').split(/\s+/).filter(Boolean);
+}
+
+export type TenseKey = 'tense:present' | 'tense:past' | 'tense:future';
+
+/** Cümledeki zaman(lar)ı tespit eder. */
+export function detectTenses(ru: string): TenseKey[] {
+  const tokens = tokenize(ru);
+  const found = new Set<TenseKey>();
+  let futureAux = false;
+  let weakPresent = false;
+  for (let i = 0; i < tokens.length; i++) {
+    const t = tokens[i];
+    if (FUTURE_AUX.includes(t)) { futureAux = true; found.add('tense:future'); continue; }
+    if (NOT_VERB.has(t)) continue;
+    if (PAST_RE.test(t)) { found.add('tense:past'); continue; }
+    if (PRESENT_STRONG_RE.test(t)) { found.add(futureAux ? 'tense:future' : 'tense:present'); continue; }
+    // Zayıf -у/-ю kanıtı: önünde edat varsa büyük olasılıkla isim hâlidir (в школу, на маму)
+    const prev = i > 0 ? tokens[i - 1] : '';
+    if (PRESENT_WEAK_RE.test(t) && !PREPOSITIONS.includes(prev)) weakPresent = true;
+  }
+  // Zayıf kanıt yalnızca başka hiçbir zaman bulunamadıysa sayılır
+  if (weakPresent && found.size === 0) found.add('tense:present');
+  return Array.from(found);
+}
+
+/** Cümledeki edatları döndürür. */
+export function detectPreps(ru: string): string[] {
+  const tokens = tokenize(ru);
+  const found: string[] = [];
+  for (const t of tokens) if (PREPOSITIONS.includes(t) && !found.includes(t)) found.push(t);
+  return found;
+}
+
+/** Bir cümlenin ölçtüğü beceri anahtarları: zamanlar + edatlar. */
+export function classifySentenceSkills(ru: string): string[] {
+  return [...detectTenses(ru), ...detectPreps(ru).map(p => `prep:${p}`)];
+}
+
+// ---------------------------------------------------------------------------
+// KAYIT API'Sİ — her çözülen soru buradan geçer
+// ---------------------------------------------------------------------------
+export function recordSkill(key: string, correct: boolean) {
+  const d = loadLearner();
+  const s = d.skills[key] || { correct: 0, wrong: 0, last: 0 };
+  if (correct) s.correct += 1; else s.wrong += 1;
+  s.last = Date.now();
+  d.skills[key] = s;
+  save();
+}
+
+export function recordSentenceResult(ru: string, correct: boolean) {
+  const keys = classifySentenceSkills(ru);
+  if (keys.length === 0) return;
+  const d = loadLearner();
+  for (const key of keys) {
+    const s = d.skills[key] || { correct: 0, wrong: 0, last: 0 };
+    if (correct) s.correct += 1; else s.wrong += 1;
+    s.last = Date.now();
+    d.skills[key] = s;
+  }
+  save();
+}
+
+export function recordWordResult(ru: string, tr: string, correct: boolean) {
+  if (!ru) return;
+  const d = loadLearner();
+  const w = d.words[ru] || { tr, correct: 0, wrong: 0, lastSeen: 0, lastCorrect: 0 };
+  w.tr = tr || w.tr;
+  if (correct) { w.correct += 1; w.lastCorrect = Date.now(); } else w.wrong += 1;
+  w.lastSeen = Date.now();
+  d.words[ru] = w;
+  save();
+  // Kelimenin kendisi cümle parçasıysa (edat gibi) beceriye de işle
+  const low = ru.trim().toLowerCase();
+  if (PREPOSITIONS.includes(low)) recordSkill(`prep:${low}`, correct);
+  // Kelime bir cümleyse zaman/edat becerilerini de güncelle
+  if (ru.trim().includes(' ')) recordSentenceResult(ru, correct);
+}
+
+// GRAMER TEMELİ üniteleri → beceri anahtarı eşlemesi
+export function skillKeyForGrammarUnit(unitId: string): string | null {
+  if (unitId.startsWith('tense_past')) return 'tense:past';
+  if (unitId.startsWith('tense_present')) return 'tense:present';
+  if (unitId.startsWith('tense_future')) return 'tense:future';
+  if (unitId === 'tense_aspect' || unitId === 'tense_overview' || unitId === 'tense_review') return 'tense:aspect';
+  if (unitId === 'gram_prepositions') return 'prep:в'; // genel edat çalışması ana edata işlenir
+  return null;
+}
+
+// ---------------------------------------------------------------------------
+// BECERİ HARİTASI & KİŞİSEL ROTA
+// ---------------------------------------------------------------------------
+export interface SkillSummaryRow {
+  key: string;
+  group: 'zaman' | 'edat';
+  label: string;
+  correct: number;
+  wrong: number;
+  total: number;
+  accuracy: number;        // 0-100
+  weakness: number;        // 0-1 (yüksek = zayıf)
+  status: 'strong' | 'mid' | 'weak' | 'unknown';
+}
+
+const TENSE_LABELS: Record<string, string> = {
+  'tense:present': 'Şimdiki Zaman',
+  'tense:past': 'Geçmiş Zaman (-л)',
+  'tense:future': 'Gelecek Zaman (буду...)',
+  'tense:aspect': 'Görünüş (вид) & Karma',
+};
+
+const PREP_HINTS: Record<string, string> = {
+  'в': 'içinde / -e (yön)', 'на': 'üstünde / -de', 'к': '-e doğru', 'у': '-in yanında / -de var',
+  'с': 'ile / -den beri', 'из': 'içinden / -den', 'о': 'hakkında', 'об': 'hakkında', 'по': 'boyunca / göre',
+  'за': 'arkasında / için', 'под': 'altında', 'над': 'üstünde (boşlukta)', 'от': '-den (uzaklaşma)',
+  'до': '-e kadar', 'для': 'için', 'без': '-sız', 'через': 'içinden / sonra', 'при': 'yanında / sırasında',
+  'между': 'arasında', 'перед': 'önünde', 'около': 'yakınında', 'после': '-den sonra', 'про': 'hakkında (konuşma dili)',
+};
+
+export function skillSummary(): SkillSummaryRow[] {
+  const d = loadLearner();
+  const rows: SkillSummaryRow[] = [];
+  const keys = new Set<string>([...Object.keys(TENSE_LABELS), ...Object.keys(d.skills)]);
+  keys.forEach(key => {
+    const isTense = key.startsWith('tense:');
+    const isPrep = key.startsWith('prep:');
+    if (!isTense && !isPrep) return;
+    const s = d.skills[key] || { correct: 0, wrong: 0, last: 0 };
+    const total = s.correct + s.wrong;
+    const accuracy = total > 0 ? Math.round((s.correct / total) * 100) : 0;
+    // Zayıflık: hata oranı + az veri cezası (hiç çözülmemişse "bilinmiyor")
+    const weakness = total === 0 ? 0.5 : Math.min(1, (s.wrong * 1.6) / (total + 1));
+    const prep = key.slice(5);
+    rows.push({
+      key,
+      group: isTense ? 'zaman' : 'edat',
+      label: isTense ? (TENSE_LABELS[key] || key) : `«${prep}» — ${PREP_HINTS[prep] || 'edat'}`,
+      correct: s.correct,
+      wrong: s.wrong,
+      total,
+      accuracy,
+      weakness,
+      status: total === 0 ? 'unknown' : accuracy >= 80 ? 'strong' : accuracy >= 55 ? 'mid' : 'weak',
+    });
+  });
+  return rows.sort((a, b) => b.weakness - a.weakness || b.total - a.total);
+}
+
+export interface RouteStep {
+  id: string;
+  icon: string;
+  title: string;
+  why: string;
+  action:
+    | { type: 'grammar'; grammarUnitId: string }
+    | { type: 'rescue'; skillKey: string }
+    | { type: 'rescueWord'; ru: string; tr: string }
+    | { type: 'shorts' };
+  severity: 'high' | 'mid' | 'low';
+}
+
+/**
+ * Kişiselleştirilmiş öğrenim rotası: çözülen sorulardan çıkan zayıf zaman/edat
+ * becerileri + kronik hatalı kelimelerden sıralı bir çalışma planı üretir.
+ */
+export function buildLearningRoute(errorStats: Record<string, { count: number; tr: string; last: number }>): RouteStep[] {
+  const rows = skillSummary().filter(r => r.total > 0);
+  const steps: RouteStep[] = [];
+
+  const grammarUnitFor = (key: string): string => {
+    if (key === 'tense:past') return 'tense_past';
+    if (key === 'tense:present') return 'tense_present_e';
+    if (key === 'tense:future') return 'tense_future_budu';
+    if (key === 'tense:aspect') return 'tense_aspect';
+    return 'gram_prepositions';
+  };
+
+  for (const r of rows) {
+    if (r.status === 'weak') {
+      steps.push({
+        id: `route_${r.key}`,
+        icon: r.group === 'zaman' ? '⏳' : '📍',
+        title: `${r.label} — güçlendir`,
+        why: `${r.total} soruda %${r.accuracy} isabet (${r.wrong} hata). Bu ${r.group === 'zaman' ? 'zaman' : 'edat'} şu an en zayıf halkan.`,
+        action: { type: 'grammar', grammarUnitId: grammarUnitFor(r.key) },
+        severity: 'high',
+      });
+      steps.push({
+        id: `rescue_${r.key}`,
+        icon: '⚡',
+        title: `${r.label} — 1 dk hızlı test`,
+        why: 'Kuralı okuduktan hemen sonra 60 saniyelik hedefli testle mühürle.',
+        action: { type: 'rescue', skillKey: r.key },
+        severity: 'high',
+      });
+    } else if (r.status === 'mid') {
+      steps.push({
+        id: `route_${r.key}`,
+        icon: r.group === 'zaman' ? '⏱️' : '🧭',
+        title: `${r.label} — pekiştir`,
+        why: `%${r.accuracy} isabet: fena değil ama otomatikleşmedi. Kısa bir hedefli test yeter.`,
+        action: { type: 'rescue', skillKey: r.key },
+        severity: 'mid',
+      });
+    }
+  }
+
+  // Kronik hatalı kelimeler → kelime bazlı kurtarma adımları
+  const weakWords = Object.entries(errorStats)
+    .map(([ru, v]) => ({ ru, tr: v.tr, count: v.count }))
+    .filter(w => w.count >= 2)
+    .sort((a, b) => b.count - a.count)
+    .slice(0, 4);
+  for (const w of weakWords) {
+    steps.push({
+      id: `word_${w.ru}`,
+      icon: '🩹',
+      title: `«${w.ru}» kelimesini kurtar`,
+      why: `${w.count} kez yanlışlandı — 1 dakikalık kurtarma testiyle taze tut.`,
+      action: { type: 'rescueWord', ru: w.ru, tr: w.tr },
+      severity: w.count >= 4 ? 'high' : 'mid',
+    });
+  }
+
+  if (steps.length > 0) {
+    steps.push({
+      id: 'shorts',
+      icon: '🎬',
+      title: 'Koç Akışı: hatalarına özel 15-30 sn mikro dersler',
+      why: 'Zayıf konuların dikey video/animasyon dersleri otomatik üretildi — kaydırarak izle.',
+      action: { type: 'shorts' },
+      severity: 'low',
+    });
+  }
+
+  const order = { high: 0, mid: 1, low: 2 } as const;
+  return steps.sort((a, b) => order[a.severity] - order[b.severity]).slice(0, 12);
+}
