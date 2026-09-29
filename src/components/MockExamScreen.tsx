@@ -24,7 +24,13 @@ interface Props {
   onRecordResult?: (ru: string, tr: string, ok: boolean) => void;
 }
 
-const PASS_BONUS: Record<ExamLevelId, number> = { A1: 40, A2: 55, B1: 75, B2: 100, 'C1/C2': 130, GENEL: 170 };
+const PASS_BONUS: Record<ExamLevelId, number> = { A1: 40, A2: 55, B1: 75, B2: 100, 'C1/C2': 130, GENEL: 170, GUNLUK: 60 };
+
+function shuffleArr<T>(arr: T[]): T[] {
+  const a = [...arr];
+  for (let i = a.length - 1; i > 0; i--) { const j = Math.floor(Math.random() * (i + 1)); [a[i], a[j]] = [a[j], a[i]]; }
+  return a;
+}
 
 const MockExamScreen: React.FC<Props> = ({ completedUnits, onXp, onMistake, onRecordResult }) => {
   const [attempts, setAttempts] = useState<ExamAttempt[]>(() => loadExamAttempts());
@@ -38,10 +44,21 @@ const MockExamScreen: React.FC<Props> = ({ completedUnits, onXp, onMistake, onRe
 
   const startRef = useRef<number>(0);
   const correctRef = useRef(0);
-  const skillStats = useRef<Record<ExamSkillKey, [number, number]>>({ vocab: [0, 0], production: [0, 0], listening: [0, 0], context: [0, 0], cloze: [0, 0], typing: [0, 0] });
+  const skillStats = useRef<Record<ExamSkillKey, [number, number]>>({ vocab: [0, 0], production: [0, 0], listening: [0, 0], context: [0, 0], cloze: [0, 0], typing: [0, 0], match: [0, 0] });
   const wrongRef = useRef<ExamQuestion[]>([]);
   const advanceTimer = useRef<number | null>(null);
   const q = exam?.questions[idx];
+
+  // 🔗 Eşleştirme sorusu yerel durumu (sütunlar soru başına bir kez karılır)
+  const [matchState, setMatchState] = useState<{ selRu: string | null; selTr: string | null; done: string[]; errs: number }>({ selRu: null, selTr: null, done: [], errs: 0 });
+  const [matchCols, setMatchCols] = useState<{ left: string[]; right: string[] }>({ left: [], right: [] });
+  useEffect(() => {
+    setMatchState({ selRu: null, selTr: null, done: [], errs: 0 });
+    if (q?.kind === 'match' && q.pairs) {
+      setMatchCols({ left: shuffleArr(q.pairs.map(p => p.ru)), right: shuffleArr(q.pairs.map(p => p.tr)) });
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [idx, exam]);
 
   // ---------- sınav başlat ----------
   const startExam = (level: ExamLevelId) => {
@@ -49,7 +66,7 @@ const MockExamScreen: React.FC<Props> = ({ completedUnits, onXp, onMistake, onRe
     if (!built) return;
     correctRef.current = 0;
     wrongRef.current = [];
-    skillStats.current = { vocab: [0, 0], production: [0, 0], listening: [0, 0], context: [0, 0], cloze: [0, 0], typing: [0, 0] };
+    skillStats.current = { vocab: [0, 0], production: [0, 0], listening: [0, 0], context: [0, 0], cloze: [0, 0], typing: [0, 0], match: [0, 0] };
     startRef.current = Date.now();
     setXpEarned(0);
     setExam(built);
@@ -94,6 +111,7 @@ const MockExamScreen: React.FC<Props> = ({ completedUnits, onXp, onMistake, onRe
         if (e.key === 'Enter') { e.preventDefault(); submitTyping(); }
         return;
       }
+      if (q.kind === 'match') return; // eşleştirme dokunarak oynanır
       if (e.key < '1' || e.key > '4') return;
       const t = e.target as HTMLElement | null;
       if (t && (t.tagName === 'INPUT' || t.tagName === 'TEXTAREA')) return;
@@ -156,6 +174,33 @@ const MockExamScreen: React.FC<Props> = ({ completedUnits, onXp, onMistake, onRe
     setReveal({ picked: '⏱️ Süre doldu', ok: false });
     recordAnswer(false);
     scheduleAdvance();
+  };
+
+  // 🔗 Eşleştirme sorusu etkileşimi: RU seç → TR seç; yanlışta +1 hata.
+  // 3 çift bittiğinde: 0-1 hata = doğru sayılır (süreli baskı telafisi), 2+ hata = yanlış.
+  const tryMatch = (side: 'ru' | 'tr', val: string) => {
+    if (!q || q.kind !== 'match' || !q.pairs || reveal) return;
+    const nRu = side === 'ru' ? val : matchState.selRu;
+    const nTr = side === 'tr' ? val : matchState.selTr;
+    if (side === 'ru') setMatchState(s => ({ ...s, selRu: val }));
+    else setMatchState(s => ({ ...s, selTr: val }));
+    if (!nRu || !nTr) return;
+    const hit = q.pairs.some(p => p.ru === nRu && p.tr === nTr);
+    const w = q.pairs.find(p => p.ru === nRu);
+    onRecordResult?.(nRu, w?.tr || '', hit);
+    if (hit) {
+      const done = [...matchState.done, nRu];
+      setMatchState({ selRu: null, selTr: null, done, errs: matchState.errs });
+      if (done.length >= q.pairs.length) {
+        const ok = matchState.errs <= 1;
+        setReveal({ picked: ok ? `${done.length}/${q.pairs.length} hatasız akış` : `${matchState.errs} hata yaptın`, ok });
+        recordAnswer(ok);
+        scheduleAdvance();
+      }
+    } else {
+      if (w) onMistake(w.ru, w.tr, `📝 Deneme Sınavı (${exam!.level} · 🔗 Eşleştirme)`);
+      setMatchState(s => ({ ...s, selRu: null, selTr: null, errs: s.errs + 1 }));
+    }
   };
 
   // ---------- bitiş + rapor ----------
@@ -320,6 +365,39 @@ const MockExamScreen: React.FC<Props> = ({ completedUnits, onXp, onMistake, onRe
             </div>
           )}
 
+          {q.kind === 'match' && q.pairs && (
+            <div style={{ marginTop: '14px' }}>
+              <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '11px', fontWeight: 800, color: '#94a3b8', marginBottom: '8px' }}>
+                <span>{matchState.done.length}/{q.pairs.length} çift</span>
+                <span style={{ color: matchState.errs > 0 ? '#ef4444' : '#475569' }}>hata: {matchState.errs} (hata hakkı: 1)</span>
+              </div>
+              <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '10px' }}>
+                <div style={{ display: 'grid', gap: '8px' }}>
+                  {matchCols.left.map(ru => {
+                    const isDone = matchState.done.includes(ru);
+                    return (
+                      <button key={ru} disabled={isDone || !!reveal} onClick={() => tryMatch('ru', ru)}
+                        style={{ padding: '13px 8px', borderRadius: '10px', border: `1px solid ${isDone ? '#10b98166' : matchState.selRu === ru ? '#38bdf8' : '#334155'}`, background: isDone ? 'rgba(16,185,129,0.12)' : matchState.selRu === ru ? 'rgba(56,189,248,0.18)' : '#0f172a', color: isDone ? '#10b981' : '#e2e8f0', fontWeight: 900, fontSize: '14px', cursor: isDone ? 'default' : 'pointer', opacity: isDone ? 0.6 : 1 }}>
+                        {ru}
+                      </button>
+                    );
+                  })}
+                </div>
+                <div style={{ display: 'grid', gap: '8px' }}>
+                  {matchCols.right.map(tr => {
+                    const isDone = matchState.done.some(ru => q.pairs!.find(p => p.ru === ru)?.tr === tr);
+                    return (
+                      <button key={tr} disabled={isDone || !!reveal} onClick={() => tryMatch('tr', tr)}
+                        style={{ padding: '13px 8px', borderRadius: '10px', border: `1px solid ${isDone ? '#10b98166' : matchState.selTr === tr ? '#f59e0b' : '#334155'}`, background: isDone ? 'rgba(16,185,129,0.12)' : matchState.selTr === tr ? 'rgba(245,158,11,0.15)' : '#0f172a', color: isDone ? '#10b981' : '#e2e8f0', fontWeight: 800, fontSize: '13px', cursor: isDone ? 'default' : 'pointer', opacity: isDone ? 0.6 : 1 }}>
+                        {tr}
+                      </button>
+                    );
+                  })}
+                </div>
+              </div>
+            </div>
+          )}
+
           {q.kind === 'typing' && (
             <div style={{ marginTop: '14px' }}>
               <div style={{ display: 'flex', gap: '8px' }}>
@@ -372,7 +450,7 @@ const MockExamScreen: React.FC<Props> = ({ completedUnits, onXp, onMistake, onRe
       <div style={{ background: 'linear-gradient(135deg, rgba(34,211,238,0.15), rgba(168,85,247,0.12), #1e293b)', border: '1px solid #22d3ee55', borderRadius: '16px', padding: '20px', marginBottom: '16px' }}>
         <div style={{ fontSize: '12px', fontWeight: 900, color: '#22d3ee', letterSpacing: '0.5px' }}>📝 DENEME SINAVLARI — GERÇEK SINAV PROVASI{ultra ? ' · ⚡ULTRA MOD AÇIK (baraj %85)' : ''}</div>
         <div style={{ fontSize: '16px', fontWeight: 900, marginTop: '6px', lineHeight: 1.5 }}>
-          Tamamladığın ünitelerden üretilen <b style={{ color: '#22d3ee' }}>6 bölümlü, süreli karma sınav</b>: tanıma, üretim, dinleme, bağlam, boşluk doldurma ve <b style={{ color: '#f59e0b' }}>⌨️ yazma</b>.
+          Tamamladığın ünitelerden üretilen <b style={{ color: '#22d3ee' }}>7 bölümlü, süreli karma sınav</b>: şıklı tanıma/üretim/dinleme/bağlam/boşluk + 🔗 <b style={{ color: '#ec4899' }}>eşleştirme</b> + <b style={{ color: '#f59e0b' }}>⌨️ yazma</b>.
         </div>
         <div style={{ fontSize: '12px', color: '#94a3b8', marginTop: '8px', lineHeight: 1.6 }}>
           Her sorunun süresi var; süre dolan soru yanlış sayılır. Yanlışların hata kütüğüne ve zayıf nokta antrenmanına otomatik işlenir — deneme, eksiklerini bulmanın en hızlı yoludur.
@@ -382,15 +460,23 @@ const MockExamScreen: React.FC<Props> = ({ completedUnits, onXp, onMistake, onRe
       <div style={{ display: 'grid', gap: '10px', marginBottom: '18px' }}>
         {readiness.map(({ def, ready, units, words }) => {
           const best = bestAttemptFor(def.id, attempts);
+          const isDaily = def.id === 'GUNLUK';
+          const todayDone = isDaily && attempts.some(a => a.level === 'GUNLUK' && new Date(a.date).toDateString() === new Date().toDateString());
           return (
             <button key={def.id} disabled={!ready} onClick={() => startExam(def.id)}
-              style={{ display: 'flex', alignItems: 'center', gap: '14px', padding: '15px 16px', borderRadius: '14px', border: `1px solid ${ready ? def.color + '77' : '#334155'}`, background: ready ? `linear-gradient(135deg, ${def.color}18, #1e293b)` : '#151f33', cursor: ready ? 'pointer' : 'default', opacity: ready ? 1 : 0.55, textAlign: 'left' }}>
+              style={{ display: 'flex', alignItems: 'center', gap: '14px', padding: '15px 16px', borderRadius: '14px', border: `1px solid ${ready ? def.color + '77' : '#334155'}`, background: ready ? (isDaily ? 'linear-gradient(135deg, rgba(236,72,153,0.22), rgba(168,85,247,0.14), #1e293b)' : `linear-gradient(135deg, ${def.color}18, #1e293b)`) : '#151f33', cursor: ready ? 'pointer' : 'default', opacity: ready ? 1 : 0.55, textAlign: 'left', boxShadow: isDaily && ready ? '0 0 18px rgba(236,72,153,0.15)' : 'none' }}>
               <div style={{ fontSize: '28px' }}>{def.icon}</div>
               <div style={{ flex: 1, minWidth: 0 }}>
-                <div style={{ fontWeight: 900, color: ready ? def.color : '#64748b', fontSize: '15px' }}>{def.title}</div>
+                <div style={{ fontWeight: 900, color: ready ? def.color : '#64748b', fontSize: '15px' }}>
+                  {def.title}
+                  {isDaily && todayDone && <span style={{ marginLeft: '8px', fontSize: '10px', color: '#10b981', background: 'rgba(16,185,129,0.12)', padding: '2px 8px', borderRadius: '999px', border: '1px solid #10b98166' }}>✅ bugünkü çözüldü — tekrar çözebilirsin</span>}
+                  {isDaily && !todayDone && <span style={{ marginLeft: '8px', fontSize: '10px', color: '#ec4899', background: 'rgba(236,72,153,0.12)', padding: '2px 8px', borderRadius: '999px', border: '1px solid #ec489966' }}>⏰ gece yarısı yenilenir</span>}
+                </div>
                 <div style={{ fontSize: '11px', color: '#94a3b8', marginTop: '2px' }}>
                   {ready
-                    ? `${units} üniteden ${words} kelime havuzu · ${def.questionCount} soru · baraj %${examPassPct(def)}${ultra ? ' ⚡' : ''}`
+                    ? isDaily
+                      ? `Bugüne özel ${def.questionCount} soru — herkes aynı soruları görür · baraj %${examPassPct(def)}${ultra ? ' ⚡' : ''}`
+                      : `${units} üniteden ${words} kelime havuzu · ${def.questionCount} soru (şıklı + 🔗 eşleştirmeli + ⌨️ yazma) · baraj %${examPassPct(def)}${ultra ? ' ⚡' : ''}`
                     : `Kilitli: önce bu seviyeden en az 1 ünite bitir (${units} ünite / ${words} kelime)`}
                 </div>
               </div>
