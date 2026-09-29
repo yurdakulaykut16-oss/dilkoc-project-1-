@@ -105,9 +105,31 @@ function initialChat(): ChatEntry[] {
   return [{
     id: 'welcome',
     role: 'assistant',
-    text: 'Merhaba! Bana istediğin soruyu sorabilirsin. Hangi ünitede olduğunu, öğrendiğin kelimeleri, hatalarını ve tekrar vadesi gelenleri her mesajda dikkate alacağım.',
+    text: 'Merhaba! Sorunu yazabilirsin. Türkçe anlatayım; istediğin yerde Rusça kelime, cümle ve soru kalıplarıyla birlikte çalışalım.',
     provider: 'yerel hafıza',
   }];
+}
+
+type SpeechSegment = { text: string; lang: 'tr-TR' | 'ru-RU' };
+
+/** Türkçe açıklamayı ve içindeki Rusça örnekleri aynı seçili profille ayrı dil
+ * segmentleri olarak okur. Böylece tek bir Rusça örnek, bütün cevabı Rusça
+ * aksanıyla okutmaz. */
+function splitSpeechSegments(text: string): SpeechSegment[] {
+  const segments: SpeechSegment[] = [];
+  const russianPattern = /[\u0400-\u04FF]+(?:[\s,.!?;:()[\]{}«»"'`´’‘“”\-—–]*[\u0400-\u04FF]+)*[\s!?.,;:]*/g;
+  let cursor = 0;
+  for (const match of text.matchAll(russianPattern)) {
+    const start = match.index ?? cursor;
+    const turkish = text.slice(cursor, start).trim();
+    if (turkish) segments.push({ text: turkish, lang: 'tr-TR' });
+    const russian = match[0].trim();
+    if (russian) segments.push({ text: russian, lang: 'ru-RU' });
+    cursor = start + match[0].length;
+  }
+  const remainder = text.slice(cursor).trim();
+  if (remainder) segments.push({ text: remainder, lang: 'tr-TR' });
+  return segments.length > 0 ? segments : [{ text, lang: 'tr-TR' }];
 }
 
 export default function AiChat(props: AiChatProps) {
@@ -136,11 +158,13 @@ export default function AiChat(props: AiChatProps) {
   };
 
   const speakAnswer = async (text: string) => {
-    const usedAiVoice = await speakWithBotVoice(text, 1);
-    if (!usedAiVoice) {
-      // VoiceStudio modeli henüz hazır değilse Edge'e değil, metnin diline
-      // uygun cihaz diline düş. Rusça örnekler Rusça, açıklamalar Türkçe okunur.
-      await webSpeak(text, { lang: /[а-яё]/i.test(text) ? 'ru-RU' : 'tr-TR', rate: 1 });
+    for (const segment of splitSpeechSegments(text)) {
+      const usedAiVoice = await speakWithBotVoice(segment.text, 1);
+      if (!usedAiVoice) {
+        // VoiceStudio modeli henüz hazır değilse Edge'e değil, segmentin kendi
+        // diline uygun cihaz diline düş. Türkçe anlatım Türkçe, Rusça örnekler Rusça okunur.
+        await webSpeak(segment.text, { lang: segment.lang, rate: 1 });
+      }
     }
   };
 
@@ -160,7 +184,7 @@ export default function AiChat(props: AiChatProps) {
 
     const system: AgentMessage = {
       role: 'system',
-      content: `Sen DilKoç içindeki kişisel Rusça öğrenme ajanısın. Türkçe cevap ver; gerektiğinde Rusça örnek ve Latin okunuş ekle. Kullanıcının sorusuna doğrudan cevap ver, kısa ama öğretici ol. Kullanıcı bu uygulamadaki ünitelerin tamamını öğreniyor: yerel müfredat bilgisini kaynak kabul et, ünite/kelime uydurma. Bilgi bağlamında yoksa bunu açıkça söyle ve genel dil bilgisini ayrı belirt. Kullanıcının her mesajda nerede olduğunu dikkate al; bulunduğu seviyenin üzerinde uzun ve gereksiz gramer yükleme. Yanlışlarını yargılamadan düzelt, bir sonraki küçük adımı öner.\n\n${buildKnowledgeContext(query, props)}`,
+      content: `Senin ana dilin Türkçe olan, DilKoç içindeki kişisel Rusça öğrenme ajanısın. Temel anlatım dilin doğal ve anlaşılır Türkçe olsun. Kullanıcı Rusça bir kelime, cümle veya soru kalıbı sorduğunda Rusça özgün yazımı ver; gerektiğinde Latin okunuşunu ve Türkçe anlamını ekle. Kullanıcı konuşma pratiği istediğinde Türkçe açıklamanın içinde doğal Rusça soru kalıpları kullan; örneğin «Как тебя зовут?» gibi kalıpları bağlama göre öğret. Kullanıcının yazdığı soruya doğrudan cevap ver, kısa ama öğretici ol. Kullanıcı bu uygulamadaki ünitelerin tamamını öğreniyor: yerel müfredat bilgisini kaynak kabul et, ünite/kelime uydurma. Bilgi bağlamında yoksa bunu açıkça söyle ve genel dil bilgisini ayrı belirt. Kullanıcının her mesajda nerede olduğunu dikkate al; bulunduğu seviyenin üzerinde uzun ve gereksiz gramer yükleme. Yanlışlarını yargılamadan düzelt. Kullanıcı istemedikçe günlük soru listesi, otomatik görev, telaffuz tekrarı, mikrofon alıştırması veya quiz başlatma; yalnızca kullanıcının sorusuna ve istediği Rusça kalıba göre konuş.\n\n${buildKnowledgeContext(query, props)}`,
     };
     const history: AgentMessage[] = next.slice(-12).map(item => ({ role: item.role, content: item.text }));
 
@@ -202,8 +226,8 @@ export default function AiChat(props: AiChatProps) {
     <section style={{ marginBottom: '16px', borderRadius: '20px', padding: '16px', background: 'linear-gradient(135deg, rgba(34,197,94,.12), rgba(56,189,248,.12), #0f172a)', border: '1px solid rgba(56,189,248,.52)' }}>
       <div style={{ display: 'flex', alignItems: 'flex-start', justifyContent: 'space-between', gap: '12px', flexWrap: 'wrap' }}>
         <div>
-          <div style={{ color: '#86efac', fontSize: '11px', fontWeight: 950, letterSpacing: '.6px' }}>💬 KİŞİSEL AI AJANI • ÜNİTE HAFIZASI AÇIK</div>
-          <h2 style={{ margin: '5px 0 4px', color: '#f8fafc', fontSize: '21px' }}>İstediğini sor, kaldığın yerden devam edelim</h2>
+          <div style={{ color: '#86efac', fontSize: '11px', fontWeight: 950, letterSpacing: '.6px' }}>💬 KİŞİSEL AI AJANI • TÜRKÇE ANLATIM + RUSÇA SORU KALIPLARI</div>
+          <h2 style={{ margin: '5px 0 4px', color: '#f8fafc', fontSize: '21px' }}>Sorunu yaz, Rusçayı birlikte konuşalım</h2>
           <div style={{ display: 'flex', gap: '7px', alignItems: 'center', flexWrap: 'wrap', color: '#cbd5e1', fontSize: '12px' }}>
             <span style={{ padding: '4px 8px', borderRadius: '999px', background: 'rgba(56,189,248,.14)', color: '#bae6fd', fontWeight: 800 }}>{contextPreview}</span>
             <span>{status}</span>
@@ -231,18 +255,12 @@ export default function AiChat(props: AiChatProps) {
         {busy && <div style={{ justifySelf: 'start', color: '#bae6fd', fontSize: '12px', padding: '8px 12px' }}>🧠 Bağlamını okuyorum, hızlı cevap hazırlıyorum…</div>}
       </div>
 
-      <div style={{ display: 'flex', gap: '6px', flexWrap: 'wrap', margin: '10px 0' }}>
-        {['Şu an hangi konuyu çalışıyorum?', 'Bu kelimeyi cümlede öğret', 'Hatalarımda neye odaklanayım?'].map(prompt => (
-          <button key={prompt} onClick={() => setInput(prompt)} disabled={busy} style={{ border: '1px solid #334155', background: '#111827', color: '#cbd5e1', borderRadius: '999px', padding: '7px 10px', cursor: 'pointer', fontSize: '11px' }}>{prompt}</button>
-        ))}
-      </div>
-
       <form onSubmit={send} style={{ display: 'grid', gridTemplateColumns: '1fr auto', gap: '8px' }}>
-        <textarea value={input} onChange={event => setInput(event.target.value)} onKeyDown={event => { if (event.key === 'Enter' && !event.shiftKey) { event.preventDefault(); void send(); } }} disabled={busy} rows={2} placeholder="Örn. ‘в’ ve ‘на’ edatını şu anki üniteme göre anlatır mısın?" style={{ resize: 'vertical', minWidth: 0, background: '#020617', border: '1px solid #334155', color: '#f8fafc', borderRadius: '13px', padding: '11px 12px', fontFamily: 'inherit', outline: 'none' }} />
+        <textarea value={input} onChange={event => setInput(event.target.value)} onKeyDown={event => { if (event.key === 'Enter' && !event.shiftKey) { event.preventDefault(); void send(); } }} disabled={busy} rows={2} placeholder="Sorunu yaz… Örn. ‘Как тебя зовут?’ ne demek?" style={{ resize: 'vertical', minWidth: 0, background: '#020617', border: '1px solid #334155', color: '#f8fafc', borderRadius: '13px', padding: '11px 12px', fontFamily: 'inherit', outline: 'none' }} />
         <button disabled={busy || !input.trim()} style={{ alignSelf: 'stretch', minWidth: '92px', border: 'none', borderRadius: '13px', background: busy ? '#475569' : 'linear-gradient(135deg, #22c55e, #38bdf8)', color: '#07111f', fontWeight: 950, cursor: busy ? 'wait' : 'pointer' }}>{busy ? '…' : 'Sor →'}</button>
       </form>
       <div style={{ color: '#64748b', fontSize: '10px', marginTop: '8px', lineHeight: 1.45 }}>
-        Ücretsiz bağlantı anahtarsız Puter AI ile denenir. Üniteler ve ilerlemen tarayıcıda saklanan hafızadan ilgili parçalar halinde ajana gönderilir; API anahtarı uygulama içine gömülmez.
+        Yalnızca yazdığın soruya göre konuşur. Türkçe açıklamayı, istediğin Rusça kelime/cümle ve soru kalıplarıyla birlikte ele alır. Üniteler ve ilerlemen ajanın bağlamında tutulur; API anahtarı uygulamaya gömülmez.
       </div>
     </section>
   );
