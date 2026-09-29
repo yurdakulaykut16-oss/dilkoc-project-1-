@@ -33,7 +33,14 @@ Bu uygulamayı düzenli olarak takip eden bir öğrenci aşağıdaki **kazanıml
 * **Soru-cevap ajanı (`src/components/AiChat.tsx`):** Kullanıcı artık sadece hazır görevi çözmez; istediği soruyu Türkçe veya Rusça yazıp ajana sorabilir. Ajan her istekte öğrenme yolundaki güncel konumu, tamamlanan alfabe/gramer/dinleme/ünite sayaçlarını, hataları, SRS tekrarlarını ve ilgili müfredat ünitelerini bağlamına alır. Tüm üniteler uygulamanın yerel veri kümesinde tutulur; soruya en yakın üniteler deterministik olarak seçilip çevrim içi modele gönderilir.
 * **Anahtarsız hızlı AI (`src/ai/freeAi.ts`):** Önce Puter.js üzerinden `gemini-2.5-flash-lite`, sonra hızlı yedek modeller denenir. Kullanıcıdan API anahtarı istenmez; servis yanıt vermezse yerel bağlamla güvenli bir fallback cevabı görünür. Üretimde istenirse `VITE_AI_CHAT_ENDPOINT` ile anahtarı sunucuda tutan proxy bağlanabilir.
 * **AirLearn benzeri akış:** Son konuşmalar tarayıcıda kalıcıdır, hazır soru önerileri vardır, cevaplar otomatik seslendirilebilir ve her mesajda konum etiketi görünür. Böylece “nerede kaldım?” sorusu ajanın bağlamından hiç kopmaz.
-* **VoiceStudio paleti (`src/tts/voiceStudio.ts` + `src/components/VoiceStudioPanel.tsx`):** Botun ana sesi artık Google/Edge değildir. Speechify çok dilli profilleri (Geffen, Dominic, Harper, Hugh) ve isteğe bağlı ElevenLabs/OpenAI profilleri dinlenip seçilebilir; seçim localStorage'da saklanır. Bulut ses başarısız olursa Edge/cihaz sesi yalnızca yedek olarak devreye girer. Yerel VoiceStudio ses klonlama GPU/masaüstü backend'i gerektirdiğinden web uygulamasına ağır model gömmek yerine hızlı ve ücretsiz çoklu profil entegrasyonu kullanılır.
+* **Gerçek VoiceStudio bağlantısı (`src/tts/voiceStudioLocal.ts` + `src/components/VoiceStudioPanel.tsx`):** Botun ana sesi artık Google/Edge değildir. [debpalash/VoiceStudio](https://github.com/debpalash/VoiceStudio) yerel backend'i çalışıyorsa uygulama Vite proxy üzerinden `POST /v1/audio/speech` çağırır; bilgisayardaki gerçek clone/design profilleri `GET /v1/audio/voices` ile yüklenir ve seçilen profil kullanılır. Speechify/ElevenLabs/OpenAI profilleri yalnızca VoiceStudio kapalı olduğunda anahtarsız fallback'tir. Seçim localStorage'da saklanır; Edge/cihaz sesi son fallback'tir.
+
+### VoiceStudio ile bağlama
+
+1. [VoiceStudio](https://github.com/debpalash/VoiceStudio) backend'ini kendi kurulum talimatına göre başlatın ve `3900` portunda açık bırakın.
+2. Bu projede `npm run dev` çalıştırın. `vite.config.ts`, tarayıcıdaki göreli `/voicestudio` çağrılarını VoiceStudio'nun `3900` portuna proxy'ler.
+3. DilKoç → **💬 AI Ajanı → 🎚️ Ses Stüdyosu** yolunu açın. `✅ Yerel bağlı` ve VoiceStudio profillerini gördüğünüzde clone/design seslerden birini seçin.
+4. Kendi sesinizi klonlayacaksanız VoiceStudio'nun consent/rıza akışını kullanın; uygulama yalnızca VoiceStudio'nun OpenAI uyumlu ses endpoint'ini çağırır.
 
 ## 📚🔒 ULTRA PAKET 4.0: Seviye Kilitli Denemeler + Benzer-Ünite Temizliği + 60 Gündelik Hayat Ünitesi
 

@@ -1,9 +1,10 @@
-// VoiceStudio tarzı bot ses paleti.
-// Bir ses profili seçildiğinde tercih localStorage'a yazılır; sentez için
-// anahtarsız Puter.js Speechify/ElevenLabs motorları kullanılır. Fallback'i
-// çağıran taraf Edge veya cihaz sesine bırakır.
+// debpalash/VoiceStudio destekli bot ses paleti.
+// Yerel VoiceStudio backend'i açıksa gerçek clone/design profile kullanılır;
+// bulunamazsa anahtarsız Puter profilleri fallback olarak kalır.
 
-export type BotVoiceProvider = 'speechify' | 'elevenlabs' | 'openai';
+import { speakWithLocalVoiceStudio, stopLocalVoiceStudio } from './voiceStudioLocal';
+
+export type BotVoiceProvider = 'voicestudio' | 'speechify' | 'elevenlabs' | 'openai';
 
 export interface BotVoiceProfile {
   id: string;
@@ -16,6 +17,15 @@ export interface BotVoiceProfile {
 }
 
 export const BOT_VOICE_PROFILES: BotVoiceProfile[] = [
+  {
+    id: 'voicestudio-local-default',
+    provider: 'voicestudio',
+    voice: 'default',
+    model: 'omnivoice',
+    label: 'VoiceStudio • yerel',
+    description: 'Bilgisayarındaki gerçek VoiceStudio motoru/profili',
+    emoji: '🧠',
+  },
   {
     id: 'studio-geffen',
     provider: 'speechify',
@@ -120,21 +130,33 @@ async function loadPuter(): Promise<PuterTtsApi | undefined> {
 export function getBotVoiceProfile(): BotVoiceProfile {
   try {
     const stored = localStorage.getItem(PREF_KEY);
-    const found = BOT_VOICE_PROFILES.find(profile => profile.id === stored);
-    if (found) return found;
+    if (stored) {
+      // Eski sürüm yalnızca id yazıyordu; yeni sürüm yerel VoiceStudio profilini
+      // id + isim ile birlikte saklar.
+      try {
+        const custom = JSON.parse(stored) as BotVoiceProfile;
+        if (custom.id && custom.provider && custom.voice) return custom;
+      } catch {
+        const found = BOT_VOICE_PROFILES.find(profile => profile.id === stored);
+        if (found) return found;
+      }
+    }
   } catch {
     // Tarayıcı depolaması kapalıysa varsayılan profile düş.
   }
   return BOT_VOICE_PROFILES[0];
 }
 
-export function setBotVoiceProfile(id: string): BotVoiceProfile {
-  const profile = BOT_VOICE_PROFILES.find(item => item.id === id) || BOT_VOICE_PROFILES[0];
-  try { localStorage.setItem(PREF_KEY, profile.id); } catch { /* yok say */ }
+export function setBotVoiceProfile(profileOrId: string | BotVoiceProfile): BotVoiceProfile {
+  const profile = typeof profileOrId === 'string'
+    ? BOT_VOICE_PROFILES.find(item => item.id === profileOrId) || BOT_VOICE_PROFILES[0]
+    : profileOrId;
+  try { localStorage.setItem(PREF_KEY, JSON.stringify(profile)); } catch { /* yok say */ }
   return profile;
 }
 
 export function stopBotVoice() {
+  stopLocalVoiceStudio();
   if (!currentAudio) return;
   try {
     currentAudio.pause();
@@ -145,11 +167,14 @@ export function stopBotVoice() {
   currentAudio = null;
 }
 
-/** Seçili VoiceStudio profilini anahtarsız çevrim içi TTS ile çalıştırır. */
+/** Seçili VoiceStudio profilini çalıştırır; yerel backend yoksa Puter profillerine düşer. */
 export async function speakWithBotVoice(text: string, rate = 1, onStart?: () => void): Promise<boolean> {
   const clean = text.trim();
   if (!clean) return true;
   const profile = getBotVoiceProfile();
+  if (profile.provider === 'voicestudio') {
+    return speakWithLocalVoiceStudio(clean, profile.voice, rate, onStart);
+  }
   const api = await loadPuter();
   if (!api?.ai?.txt2speech) return false;
   try {
