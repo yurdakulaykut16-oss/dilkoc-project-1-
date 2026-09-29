@@ -13,6 +13,7 @@ export interface LocalVoiceStudioVoice {
 }
 
 type VoiceListResponse = { voices?: LocalVoiceStudioVoice[] };
+type ModelCatalogResponse = { models?: Array<{ repo_id?: string; installed?: boolean }> };
 
 const ENV = ((import.meta as ImportMeta & { env?: Record<string, string | undefined> }).env || {});
 export const VOICESTUDIO_API_BASE = (ENV.VITE_VOICESTUDIO_API_BASE || '/voicestudio').replace(/\/$/, '');
@@ -22,6 +23,20 @@ let currentAudio: HTMLAudioElement | null = null;
 
 function endpoint(path: string) {
   return `${VOICESTUDIO_API_BASE}${path}`;
+}
+
+async function localOmniVoiceModelReady(signal: AbortSignal) {
+  try {
+    const response = await fetch(endpoint('/models'), { signal, cache: 'no-store' });
+    if (!response.ok) return true;
+    const data = await response.json() as ModelCatalogResponse;
+    const model = data.models?.find(item => item.repo_id === 'k2-fsa/OmniVoice');
+    // Older VoiceStudio builds may not expose the catalogue entry; in that case
+    // let /speech decide instead of blocking a compatible backend.
+    return !model || model.installed === true;
+  } catch {
+    return true;
+  }
 }
 
 export async function listLocalVoiceStudioVoices(signal?: AbortSignal): Promise<LocalVoiceStudioVoice[]> {
@@ -107,6 +122,10 @@ export async function speakWithLocalVoiceStudio(
   const controller = new AbortController();
   const timeout = window.setTimeout(() => controller.abort(), 18_000);
   try {
+    if (!(await localOmniVoiceModelReady(controller.signal))) {
+      console.warn('VoiceStudio OmniVoice modeli kurulu değil; uzun TTS isteği başlatılmadı.');
+      return false;
+    }
     const isRussian = /[а-яё]/i.test(clean);
     const response = await fetch(endpoint('/v1/audio/speech'), {
       method: 'POST',
