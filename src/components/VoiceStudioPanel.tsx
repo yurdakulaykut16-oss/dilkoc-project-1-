@@ -24,20 +24,37 @@ export default function VoiceStudioPanel() {
 
   useEffect(() => {
     const controller = new AbortController();
-    void (async () => {
+    let disposed = false;
+    let retryTimer: ReturnType<typeof setTimeout> | undefined;
+
+    const retry = () => {
+      if (!disposed) retryTimer = setTimeout(() => void check(), 1500);
+    };
+    const check = async () => {
+      if (disposed) return;
       const available = await voiceStudioIsAvailable(controller.signal);
       if (!available) {
-        setLocalStatus('offline');
+        if (!disposed) setLocalStatus('offline');
+        retry();
         return;
       }
       try {
-        setLocalVoices(await listLocalVoiceStudioVoices(controller.signal));
+        const voices = await listLocalVoiceStudioVoices(controller.signal);
+        if (disposed) return;
+        setLocalVoices(voices);
         setLocalStatus('available');
       } catch {
-        setLocalStatus('offline');
+        if (!disposed) setLocalStatus('offline');
+        retry();
       }
-    })();
-    return () => controller.abort();
+    };
+
+    void check();
+    return () => {
+      disposed = true;
+      controller.abort();
+      if (retryTimer) clearTimeout(retryTimer);
+    };
   }, []);
 
   const preview = async (profile: BotVoiceProfile) => {

@@ -285,21 +285,18 @@ function terminate(child) {
 
 async function main() {
   let backend = { child: null, owned: false };
-  try {
-    backend = await bootstrapVoiceStudio();
-  } catch (error) {
-    warn(`VoiceStudio otomatik kurulumu başarısız: ${error instanceof Error ? error.message : String(error)}`);
-    warn('DilKoç yine de açılıyor; VoiceStudio bağlantı durumunu Ses Stüdyosu panelinden görebilirsin.');
-  }
+  let shuttingDown = false;
 
+  // Vite'ı backend kurulumu/ilk açılışıyla paralel başlatıyoruz. Böylece
+  // preview portu hemen açılır; VoiceStudio birkaç saniye sonra hazır olduğunda
+  // proxy ve ses paneli otomatik olarak bağlanır.
   const frontend = spawn(commandName('npm'), ['run', 'dev:vite', '--', '--host', '0.0.0.0'], {
     cwd: ROOT,
-    env: { ...process.env, DILKOC_VOICESTUDIO_BOOTSTRAPPED: backend.owned ? 'true' : 'false' },
+    env: { ...process.env },
     stdio: 'inherit',
     shell: false,
   });
 
-  let shuttingDown = false;
   const shutdown = (code = 0) => {
     if (shuttingDown) return;
     shuttingDown = true;
@@ -311,6 +308,16 @@ async function main() {
   process.once('SIGTERM', () => shutdown(0));
   frontend.once('error', error => { warn(`DilKoç Vite başlatılamadı: ${error.message}`); shutdown(1); });
   frontend.once('exit', (code, signal) => shutdown(code ?? (signal ? 1 : 0)));
+
+  try {
+    backend = await bootstrapVoiceStudio();
+    // Vite portu kapanmışsa bootstrap'ın yeni backend child'ını orphan bırakma.
+    if (shuttingDown && backend.owned) terminate(backend.child);
+  } catch (error) {
+    warn(`VoiceStudio otomatik kurulumu başarısız: ${error instanceof Error ? error.message : String(error)}`);
+    warn('DilKoç yine de açılıyor; VoiceStudio bağlantı durumunu Ses Stüdyosu panelinden görebilirsin.');
+  }
+
   if (backend.child) backend.child.once('exit', () => {
     if (!shuttingDown) warn('VoiceStudio backend kapandı; DilKoç açık kalıyor.');
   });
