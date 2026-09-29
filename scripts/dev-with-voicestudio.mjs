@@ -288,7 +288,13 @@ async function startBackend(uv) {
 
 async function bootstrapVoiceStudio() {
   if (process.env.DILKOC_SKIP_VOICESTUDIO === 'true') return { child: null, owned: false };
-  if (await voiceStudioHealth()) return startBackend(null);
+  if (await voiceStudioHealth()) {
+    const backend = await startBackend(null);
+    // Backend may survive a previous localhost session while its model download
+    // failed. Retry the automatic model installer on every new launcher run.
+    void installVoiceModel();
+    return backend;
+  }
   await ensureSource();
   const uv = await ensureUv();
   await prepareDependencies(uv);
