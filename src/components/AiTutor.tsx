@@ -12,7 +12,7 @@ import { getBotVoiceProfile, speakWithBotVoice } from '../tts/voiceStudio';
 type CoachMistake = { id: string; ru: string; tr: string; reason: string };
 type CoachSrsItem = { ru: string; tr: string; box: number; nextReview: number; type: 'word' | 'letter' };
 type SpeechLang = 'tr-TR' | 'ru-RU';
-type TaskKind = 'tr_to_ru' | 'ru_to_tr' | 'repeat_ru' | 'sentence_to_tr' | 'sentence_repeat';
+type TaskKind = 'tr_to_ru' | 'ru_to_tr' | 'sentence_to_tr';
 type ResponseMode = 'voice' | 'text';
 
 type SpeechPart = {
@@ -364,8 +364,7 @@ function buildDailyPlan(params: {
   const tasks: AiTask[] = [];
 
   sortedWords.slice(0, 6).forEach((word, index) => {
-    const variant = index % 3;
-    if (variant === 0) {
+    if (index % 2 === 0) {
       tasks.push({
         id: `${day}-tr-to-ru-${stableHash(word.ru + word.tr)}`,
         kind: 'tr_to_ru',
@@ -379,53 +378,35 @@ function buildDailyPlan(params: {
         showRussianBeforeAnswer: false,
         shouldSpeakRussianInPrompt: false,
       });
-      return;
-    }
-    if (variant === 1) {
+    } else {
       tasks.push({
-        id: `${day}-repeat-${stableHash(word.ru + word.tr)}`,
-        kind: 'repeat_ru',
-        title: 'Telaffuz tekrarı',
-        botInstruction: 'Benden sonra Rusça tekrar et. Önce ben söyleyeceğim, sonra sıra sende.',
+        id: `${day}-ru-to-tr-${stableHash(word.ru + word.tr)}`,
+        kind: 'ru_to_tr',
+        title: 'Duyduğunu Türkçeye çevir',
+        botInstruction: 'Şimdi bir Rusça kelime söyleyeceğim. Türkçesini söyle.',
         ru: word.ru,
         tr: word.tr,
         reading: word.reading,
         source: word.source,
-        expectedLang: 'ru-RU',
-        showRussianBeforeAnswer: true,
+        expectedLang: 'tr-TR',
+        showRussianBeforeAnswer: false,
         shouldSpeakRussianInPrompt: true,
       });
-      return;
     }
-    tasks.push({
-      id: `${day}-ru-to-tr-${stableHash(word.ru + word.tr)}`,
-      kind: 'ru_to_tr',
-      title: 'Duyduğunu Türkçeye çevir',
-      botInstruction: 'Şimdi bir Rusça kelime söyleyeceğim. Türkçesini söyle.',
-      ru: word.ru,
-      tr: word.tr,
-      reading: word.reading,
-      source: word.source,
-      expectedLang: 'tr-TR',
-      showRussianBeforeAnswer: false,
-      shouldSpeakRussianInPrompt: true,
-    });
   });
 
-  dailySentences.slice(0, 3).forEach((sentence, index) => {
-    const kind: TaskKind = index % 2 === 0 ? 'sentence_to_tr' : 'sentence_repeat';
+  dailySentences.slice(0, 3).forEach((sentence) => {
+    const kind: TaskKind = 'sentence_to_tr';
     tasks.push({
       id: `${day}-${kind}-${stableHash(sentence.ru + sentence.tr)}`,
       kind,
-      title: kind === 'sentence_to_tr' ? 'Cümleyi Türkçeye çevir' : 'Cümleyi Rusça tekrar et',
-      botInstruction: kind === 'sentence_to_tr'
-        ? 'Şimdi bir Rusça cümle söyleyeceğim. Anlamını Türkçe söyle.'
-        : 'Bu Rusça cümleyi benden sonra tekrar et. Net ve akışkan söyle.',
+      title: 'Cümleyi Türkçeye çevir',
+      botInstruction: 'Şimdi bir Rusça cümle söyleyeceğim. Anlamını Türkçe söyle.',
       ru: sentence.ru,
       tr: sentence.tr,
       source: sentence.source,
-      expectedLang: kind === 'sentence_to_tr' ? 'tr-TR' : 'ru-RU',
-      showRussianBeforeAnswer: kind === 'sentence_repeat',
+      expectedLang: 'tr-TR',
+      showRussianBeforeAnswer: false,
       shouldSpeakRussianInPrompt: true,
     });
   });
@@ -537,7 +518,7 @@ function taskPromptParts(task: AiTask, index: number, total: number): SpeechPart
   const order = `${index + 1}. görev, ${total} görevden.`;
   const parts: SpeechPart[] = [{ text: `${order} ${task.botInstruction}`, lang: 'tr-TR', rate: 1 }];
   if (task.shouldSpeakRussianInPrompt) {
-    parts.push({ text: task.ru, lang: 'ru-RU', rate: task.kind === 'sentence_repeat' || task.kind === 'sentence_to_tr' ? 0.92 : 0.96 });
+    parts.push({ text: task.ru, lang: 'ru-RU', rate: task.kind === 'sentence_to_tr' ? 0.92 : 0.96 });
   }
   parts.push({ text: task.expectedLang === 'ru-RU' ? 'Şimdi Bas Konuş butonuna bas ve Rusça cevap ver.' : 'Şimdi Bas Konuş butonuna bas ve Türkçe cevap ver.', lang: 'tr-TR', rate: 1 });
   return parts;
@@ -1081,8 +1062,8 @@ export default function AiTutor({
     setAttempts((prev) => ({ ...prev, [currentTask.id]: { correct: evaluation.correct, transcript: cleanTranscript, feedback: evaluation.message } }));
     addMessage('bot', evaluation.message, evaluation.correct ? 'good' : 'bad');
     if (evaluation.correct) {
-      onEarnXp(currentTask.kind === 'sentence_to_tr' || currentTask.kind === 'sentence_repeat' ? 14 : 10);
-      if (currentTask.kind !== 'sentence_to_tr' && currentTask.kind !== 'sentence_repeat') addToSRS(currentTask.ru, currentTask.tr, 'word');
+      onEarnXp(currentTask.kind === 'sentence_to_tr' ? 14 : 10);
+      if (currentTask.kind !== 'sentence_to_tr') addToSRS(currentTask.ru, currentTask.tr, 'word');
     } else {
       addMistake(
         currentTask.ru,
