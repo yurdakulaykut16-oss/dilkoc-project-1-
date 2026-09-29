@@ -37,6 +37,25 @@ function log(message) {
   console.log(`[DilKoç] ${message}`);
 }
 
+function voiceStudioEnvironment() {
+  const env = { ...process.env, PYTHONUNBUFFERED: '1', HF_HUB_DISABLE_XET: '1' };
+  // Python/requests may otherwise use certifi instead of the OS CA bundle.
+  // VoiceStudio also injects truststore at import time; this environment
+  // fallback covers subprocesses and corporate CA installations too.
+  if (!env.SSL_CERT_FILE && !env.REQUESTS_CA_BUNDLE) {
+    const candidates = process.platform === 'win32'
+      ? [join(process.env.SYSTEMROOT || 'C:\\Windows', 'System32', 'curl-ca-bundle.crt')]
+      : ['/etc/ssl/certs/ca-certificates.crt', '/etc/pki/tls/certs/ca-bundle.crt'];
+    const systemBundle = candidates.find(path => existsSync(path));
+    if (systemBundle) {
+      env.SSL_CERT_FILE = systemBundle;
+      env.REQUESTS_CA_BUNDLE = systemBundle;
+      env.CURL_CA_BUNDLE = systemBundle;
+    }
+  }
+  return env;
+}
+
 function warn(message) {
   console.warn(`[DilKoç] ⚠ ${message}`);
 }
@@ -254,7 +273,7 @@ async function startBackend(uv) {
   }
   const child = spawn(uv, ['run', 'uvicorn', 'main:app', '--app-dir', 'backend', '--host', '127.0.0.1', '--port', String(VS_PORT)], {
     cwd: VOICESTUDIO_DIR,
-    env: { ...process.env, PYTHONUNBUFFERED: '1' },
+    env: voiceStudioEnvironment(),
     stdio: 'inherit',
     shell: false,
   });
