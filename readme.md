@@ -35,12 +35,16 @@ Bu uygulamayı düzenli olarak takip eden bir öğrenci aşağıdaki **kazanıml
 * **AirLearn benzeri akış:** Son konuşmalar tarayıcıda kalıcıdır, hazır soru önerileri vardır, cevaplar otomatik seslendirilebilir ve her mesajda konum etiketi görünür. Böylece “nerede kaldım?” sorusu ajanın bağlamından hiç kopmaz.
 * **Gerçek VoiceStudio bağlantısı (`src/tts/voiceStudioLocal.ts` + `src/components/VoiceStudioPanel.tsx`):** Botun ana sesi artık Google/Edge değildir. [debpalash/VoiceStudio](https://github.com/debpalash/VoiceStudio) yerel backend'i çalışıyorsa uygulama Vite proxy üzerinden `POST /v1/audio/speech` çağırır; bilgisayardaki gerçek clone/design profilleri `GET /v1/audio/voices` ile yüklenir ve seçilen profil kullanılır. Speechify/ElevenLabs/OpenAI profilleri yalnızca VoiceStudio kapalı olduğunda anahtarsız fallback'tir. Seçim localStorage'da saklanır; Edge/cihaz sesi son fallback'tir.
 
-### VoiceStudio ile bağlama
+### VoiceStudio otomatik kurulumu ve bağlama
 
-1. [VoiceStudio](https://github.com/debpalash/VoiceStudio) backend'ini kendi kurulum talimatına göre başlatın ve `3900` portunda açık bırakın.
-2. Bu projede `npm run dev` çalıştırın. `vite.config.ts`, tarayıcıdaki göreli `/voicestudio` çağrılarını VoiceStudio'nun `3900` portuna proxy'ler.
-3. DilKoç → **💬 AI Ajanı → 🎚️ Ses Stüdyosu** yolunu açın. `✅ Yerel bağlı` ve VoiceStudio profillerini gördüğünüzde clone/design seslerden birini seçin.
-4. Kendi sesinizi klonlayacaksanız VoiceStudio'nun consent/rıza akışını kullanın; uygulama yalnızca VoiceStudio'nun OpenAI uyumlu ses endpoint'ini çağırır.
+VoiceStudio artık ayrı bir terminal, `git clone`, `uv sync`, `bun install` veya manuel backend başlatma gerektirmez:
+
+1. Node.js 18+ ile proje bağımlılıklarını kurun: `npm install`
+2. Tek komutu çalıştırın: `npm run dev`
+3. İlk açılışta launcher gerçek [VoiceStudio](https://github.com/debpalash/VoiceStudio) kaynağını `.runtime/VoiceStudio` altına indirir, proje içindeki izole `.runtime/uv-venv` ortamına `uv` kurar, Python bağımlılıklarını hazırlar, backend'i `3900` portunda başlatır ve `k2-fsa/OmniVoice` model indirmesini arka planda başlatır.
+4. Aynı komut Vite frontend'ini açar. DilKoç → **💬 AI Ajanı → 🎚️ Ses Stüdyosu** yolunda `✅ Yerel bağlı` durumunu ve gerçek VoiceStudio clone/design profillerini görüp birini seçebilirsiniz.
+
+İlk kurulum başarısız olursa DilKoç yine açılır ve mevcut VoiceStudio → cloud → Edge → cihaz fallback zinciri çalışır. Model indirmesini kapatmak için `DILKOC_AUTO_INSTALL_VOICESTUDIO_MODEL=false`, backend portunu değiştirmek için örneğin `VOICESTUDIO_PORT=3910 npm run dev` kullanılabilir; Vite proxy bu portu otomatik kullanır. Kendi sesinizi klonlarken VoiceStudio'nun consent/rıza akışını kullanın; DilKoç yalnızca VoiceStudio'nun OpenAI uyumlu yerel endpoint'ini çağırır.
 
 ## 📚🔒 ULTRA PAKET 4.0: Seviye Kilitli Denemeler + Benzer-Ünite Temizliği + 60 Gündelik Hayat Ünitesi
 
@@ -134,19 +138,21 @@ Projenizi kendi yerel ortamınızda çalıştırmak için aşağıdaki adımlar�
 
 ### Kurulum Adımları
 
-1. **Depoyu Bilgisayarınıza İndirin / Klonlayın:**
+1. **Depoyu bilgisayarınıza indirin / klonlayın:**
    ```bash
-   git clone [https://github.com/KULLANICI_ADINIZ/dilkoc-project.git](https://github.com/KULLANICI_ADINIZ/dilkoc-project.git)
-   cd dilkoc-project
-   
-2. **Gerekli Bağımlılıkları (Paketleri) Yükleyin:**
-     npm install
-   
-4. **Geliştirici Sunucusunu Başlatın:**
+   git clone https://github.com/yurdakulaykut16-oss/dilkoc-project-1-.git
+   cd dilkoc-project-1-
+   ```
+2. **Frontend paketlerini kurun:**
+   ```bash
+   npm install
+   ```
+3. **Her şeyi tek komutla başlatın:**
+   ```bash
    npm run dev
-   
-6. **Tarayıcıda Görüntüleyin:**
-   Terminalde belirtilen adresi internet tarayıcınızda açarak uygulamayı kullanmaya başlayabilirsiniz.
+   ```
+
+İlk `npm run dev` çalıştırması VoiceStudio Python paketleri ve OmniVoice modeli nedeniyle uzun sürebilir. Kurulum ilerlemesi terminalde görünür; manuel Python ortamı, ayrı VoiceStudio terminali veya ek `git clone` gerekmez. Vite'ın yazdırdığı adresi tarayıcıda açarak uygulamayı kullanabilirsiniz. `npm run dev:vite` yalnızca VoiceStudio kurulmadan frontend'i açan düşük özellikli geliştirme komutudur.
 
 ---
 
