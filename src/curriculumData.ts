@@ -8,6 +8,9 @@
 // zorluk (kelime düzeyi, cümle karmaşıklığı, gramer derinliği) artar.
 // ==========================================================
 import { EXTRA_UNITS } from './extraUnits';
+import { createMirrorUnits } from './extraUnits/mirrorPack';
+import { createRestaurantService50 } from './extraUnits/restaurantService50';
+import { createDailyLife90 } from './extraUnits/dailyLife90';
 
 export interface WordDetail {
   id: string;
@@ -3164,14 +3167,30 @@ Bir metinde her kelimeyi bilmesen bile, cümleleri birbirine bağlayan kelimeler
 ];
 
 // ==========================================================
-// GENİŞLEME PAKETİ BİRLEŞTİRME: src/extraUnits içindeki 50 yeni
-// ünite (A2 +8, B1 +16, B2 +14, C1/C2 +12) temel müfredatla
-// birleştirilir ve tüm yol unitNumber'a göre sıralanır.
-// Seviye blokları: A1 1-6, A2 7-26, B1 27-67, B2 68-102, C1/C2 103-132.
+// GENİŞLEME PAKETİ BİRLEŞTİRME:
+// BASE_UNITS + src/extraUnits içindeki paketler önce ORIGINAL_UNITS olarak toplanır.
+// Ardından aşçılık/garsonluk/lokanta servisi için 50 uzmanlık ünitesi ve
+// birbirinden farklı gündelik hayat konuları için 90 ünite eklenir.
+// Son olarak mirrorPack, ana müfredatın benzer/pekiştirme varyantlarını üretir.
+// Tüm yol unitNumber'a göre sıralanır.
 // ==========================================================
-export const UNITS_DATA: UnitModule[] = [...BASE_UNITS, ...EXTRA_UNITS].sort(
-  (a, b) => a.unitNumber - b.unitNumber
+const ORIGINAL_UNITS: UnitModule[] = [...BASE_UNITS, ...EXTRA_UNITS];
+const nextWholeUnitNumber = (units: UnitModule[]): number => Math.ceil(Math.max(...units.map((u) => u.unitNumber))) + 1;
+const RESTAURANT_SERVICE_UNITS: UnitModule[] = createRestaurantService50(nextWholeUnitNumber(ORIGINAL_UNITS));
+const DAILY_LIFE_90_UNITS: UnitModule[] = createDailyLife90(
+  nextWholeUnitNumber([...ORIGINAL_UNITS, ...RESTAURANT_SERVICE_UNITS]),
 );
+const MIRROR_UNITS: UnitModule[] = createMirrorUnits(
+  ORIGINAL_UNITS,
+  nextWholeUnitNumber([...ORIGINAL_UNITS, ...RESTAURANT_SERVICE_UNITS, ...DAILY_LIFE_90_UNITS]),
+);
+
+export const UNITS_DATA: UnitModule[] = [
+  ...ORIGINAL_UNITS,
+  ...RESTAURANT_SERVICE_UNITS,
+  ...DAILY_LIFE_90_UNITS,
+  ...MIRROR_UNITS,
+].sort((a, b) => a.unitNumber - b.unitNumber);
 
 export const ALL_WORDS = UNITS_DATA.flatMap(m => m.words);
 
