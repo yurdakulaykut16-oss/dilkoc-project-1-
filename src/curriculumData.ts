@@ -8,7 +8,7 @@
 // zorluk (kelime düzeyi, cümle karmaşıklığı, gramer derinliği) artar.
 // ==========================================================
 import { EXTRA_UNITS } from './extraUnits';
-import { createMirrorUnits } from './extraUnits/mirrorPack';
+import { createDailyLifePlus } from './extraUnits/dailyLifePlus';
 import { createRestaurantService50 } from './extraUnits/restaurantService50';
 import { createDailyLife90 } from './extraUnits/dailyLife90';
 
@@ -3170,9 +3170,10 @@ Bir metinde her kelimeyi bilmesen bile, cümleleri birbirine bağlayan kelimeler
 // GENİŞLEME PAKETİ BİRLEŞTİRME:
 // BASE_UNITS + src/extraUnits içindeki paketler önce ORIGINAL_UNITS olarak toplanır.
 // Ardından aşçılık/garsonluk/lokanta servisi için 50 uzmanlık ünitesi ve
-// birbirinden farklı gündelik hayat konuları için 90 ünite eklenir.
-// Son olarak mirrorPack, ana müfredatın benzer/pekiştirme varyantlarını üretir.
-// Tüm yol unitNumber'a göre sıralanır.
+// birbirinden farklı gündelik hayat konuları için 90 ünite + 60 yeni PLUS ünite eklenir.
+// NOT (2026-09): 517 adet "Benzer Konu: ..." mirror ünitesi (mirrorPack) kullanıcı
+// isteğiyle müfredattan SİLİNDİ — aynı konunun ısıtılmış kopyaları yol uzunluğunu
+// şişiriyor, öğrenme değeri katmıyordu.
 // ==========================================================
 const ORIGINAL_UNITS: UnitModule[] = [...BASE_UNITS, ...EXTRA_UNITS];
 const nextWholeUnitNumber = (units: UnitModule[]): number => Math.ceil(Math.max(...units.map((u) => u.unitNumber))) + 1;
@@ -3180,17 +3181,51 @@ const RESTAURANT_SERVICE_UNITS: UnitModule[] = createRestaurantService50(nextWho
 const DAILY_LIFE_90_UNITS: UnitModule[] = createDailyLife90(
   nextWholeUnitNumber([...ORIGINAL_UNITS, ...RESTAURANT_SERVICE_UNITS]),
 );
-const MIRROR_UNITS: UnitModule[] = createMirrorUnits(
-  ORIGINAL_UNITS,
+const DAILY_LIFE_PLUS_UNITS: UnitModule[] = createDailyLifePlus(
   nextWholeUnitNumber([...ORIGINAL_UNITS, ...RESTAURANT_SERVICE_UNITS, ...DAILY_LIFE_90_UNITS]),
 );
 
-export const UNITS_DATA: UnitModule[] = [
+// ==========================================================
+// ÇİFT/BENZER ÜNİTE AYIKLAMA (otomatik, deterministik):
+// Aynı seviyede, birebir aynı başlığa sahip ve kelime dağarcığı %35+ örtüşen
+// ünitelerden yalnızca İÇERİĞİ ZENGİN olanı tutulur. "Hayvanlar 1/2" gibi
+// isimli serilere dokunulmaz (rakam son eki sıralı müfredat sayılır).
+// ==========================================================
+const normalizeTitle = (t: string): string =>
+  t.toLocaleLowerCase('tr').replace(/[^a-zçğıöşüæøåâêîôû]+/gi, ' ').replace(/\s+/g, ' ').trim();
+
+const contentScore = (u: UnitModule): number =>
+  u.words.length + u.sentences.length * 2 + (u.dialogue?.length || 0) * 2;
+
+function dedupeSimilarUnits(units: UnitModule[]): UnitModule[] {
+  const groups = new Map<string, UnitModule[]>();
+  for (const u of units) {
+    const key = `${u.levelGroup}|${normalizeTitle(u.title)}`;
+    if (!groups.has(key)) groups.set(key, []);
+    groups.get(key)!.push(u);
+  }
+  const dropped = new Set<string>();
+  groups.forEach(arr => {
+    if (arr.length < 2) return;
+    const richer = [...arr].sort((a, b) => contentScore(b) - contentScore(a) || a.id.localeCompare(b.id))[0];
+    for (const other of arr) {
+      if (other === richer) continue;
+      // BİREBİR aynı başlık + aynı seviye → kullanıcı bunu "aynı konunun tekrarı" olarak görür, sil.
+      // (Seri üniteler "… 1/2" gibi farklı başlık taşıdığı için etkilenmez.)
+      if (other.title === richer.title) {
+        dropped.add(other.id);
+      }
+    }
+  });
+  return units.filter(u => !dropped.has(u.id));
+}
+
+export const UNITS_DATA: UnitModule[] = dedupeSimilarUnits([
   ...ORIGINAL_UNITS,
   ...RESTAURANT_SERVICE_UNITS,
   ...DAILY_LIFE_90_UNITS,
-  ...MIRROR_UNITS,
-].sort((a, b) => a.unitNumber - b.unitNumber);
+  ...DAILY_LIFE_PLUS_UNITS,
+]).sort((a, b) => a.unitNumber - b.unitNumber);
 
 export const ALL_WORDS = UNITS_DATA.flatMap(m => m.words);
 
