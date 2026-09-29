@@ -7,6 +7,8 @@ import type { UnitModule, WordDetail } from '../curriculumData';
 // Rusça telaffuzları ru-RU-Svetlana/DmitryNeural ile okunur (Rotam ekranından seçilir).
 import { edgeSpeak, edgeTtsLooksHealthy, getVoicePrefs } from '../tts/edgeTts';
 import { webSpeak, webSpeechSupported } from '../tts/webSpeech';
+import AiChat from './AiChat';
+import { getBotVoiceProfile, speakWithBotVoice } from '../tts/voiceStudio';
 
 type CoachMistake = { id: string; ru: string; tr: string; reason: string };
 type CoachSrsItem = { ru: string; tr: string; box: number; nextReview: number; type: 'word' | 'letter' };
@@ -801,7 +803,18 @@ async function speakOne(text: string, lang: SpeechLang, rate: number, onChunkSta
       }
       onChunkEnd?.();
     }
-    // 1) MICROSOFT EDGE TTS: TR = Emel/Ahmet, RU = Svetlana/Dmitry
+    // 1) VOICESTUDIO PALETİ: seçilen ücretsiz AI profili (Speechify/ElevenLabs/OpenAI).
+    // Botun ana sesi artık Google veya Edge değildir; onlar yalnızca güvenli yedektir.
+    try {
+      if (PUTER_TTS_ENABLED && await speakWithBotVoice(chunk, rate, () => onChunkStart?.(chunk))) {
+        onChunkEnd?.();
+        continue;
+      }
+    } catch (error) {
+      onChunkEnd?.();
+      console.warn('VoiceStudio AI TTS fallback:', error);
+    }
+    // 2) MICROSOFT EDGE TTS: TR = Emel/Ahmet, RU = Svetlana/Dmitry (yedek)
     try {
       const prefs = getVoicePrefs();
       onChunkStart?.(chunk);
@@ -893,15 +906,18 @@ export default function AiTutor({
   const tasks = useMemo(() => buildDailyPlan(planData.current), [planKey]);
   const focus = learningFocus;
   const elevenLabsEnabled = Boolean(ELEVENLABS_PROXY_URL || ELEVENLABS_API_KEY);
-  // Ses motoru rozetinin gerçeği yansıtması için Edge servisinin sağlık durumu okunur.
+  // Botun ana sesi VoiceStudio paletindeki seçili AI sesidir. Edge/tarayıcı yalnızca fallback'tir.
   const ttsBadge = useMemo(() => {
+    if (PUTER_TTS_ENABLED) {
+      const profile = getBotVoiceProfile();
+      return { label: `🎚️ ${profile.label}`, hint: 'VoiceStudio paletindeki ücretsiz AI sesi kullanılıyor; Edge ve cihaz sesi yalnızca yedek.' };
+    }
     if (!edgeTtsLooksHealthy()) {
       return webSpeechSupported()
-        ? { label: '🔊 Tarayıcı sesi (Edge kapalı)', hint: 'Microsoft Edge/Bing ses servisi kimlik doğrulamayı reddetti; konuşmalar tarayıcının yerleşik sesiyle okunuyor.' }
-        : { label: '🔇 Ses motoru yok', hint: 'Edge servisi kapalı ve tarayıcıda yerleşik ses motoru bulunamadı.' };
+        ? { label: '🔊 Tarayıcı sesi (AI kapalı)', hint: 'Bulut AI ses kapalı; tarayıcının yerleşik sesi kullanılıyor.' }
+        : { label: '🔇 Ses motoru yok', hint: 'AI ses ve tarayıcı sesi kapalı.' };
     }
     if (elevenLabsEnabled) return { label: '🎙️ ElevenLabs proxy aktif', hint: 'ElevenLabs proxy yapılandırılmış.' };
-    if (PUTER_TTS_ENABLED) return { label: '☁️ Edge + bulut AI ses', hint: 'Önce Microsoft Edge TTS, olmazsa bulut sağlayıcıları ve tarayıcı sesi denenir.' };
     return { label: ALLOW_DEVICE_TTS_FALLBACK ? '🔊 Cihaz sesi açık' : '🔇 AI ses bekleniyor', hint: '' };
   }, [elevenLabsEnabled]);
   const [attempts, setAttempts] = useState<Record<string, AttemptRecord>>(() => loadStoredAttempts(day));
@@ -1298,6 +1314,15 @@ export default function AiTutor({
 
   return (
     <div>
+      <AiChat
+        completedUnits={completedUnits}
+        completedTopics={completedTopics}
+        completedAlpha={completedAlpha}
+        completedGrammar={completedGrammar}
+        learningFocus={learningFocus}
+        mistakes={mistakes}
+        srsBank={srsBank}
+      />
       <style>{`
         @keyframes planetIntro { 0% { transform: translateY(42px) scale(.72) rotate(-9deg); opacity: 0; } 55% { transform: translateY(-18px) scale(1.08) rotate(5deg); opacity: 1; } 78% { transform: translateY(7px) scale(.98) rotate(-2deg); } 100% { transform: translateY(0) scale(1) rotate(0); opacity: 1; } }
         @keyframes planetFloat { 0%, 100% { transform: translateY(0) rotate(-1deg); } 50% { transform: translateY(-14px) rotate(1deg); } }

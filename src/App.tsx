@@ -1976,6 +1976,7 @@ export default function App() {
           <button onClick={() => { setActiveTab('MAP'); setScreen('ROUTE'); }} style={{ background: 'transparent', border: 'none', color: '#38bdf8', cursor: 'pointer', fontWeight: 800, fontSize: '13px' }} title="Çözdüğün sorulardan çıkarılan zaman/edat eksik haritası ve kişisel rota">🧭 Rotam</button>
           <button onClick={() => { setActiveTab('MAP'); setScreen('GRAPH'); }} style={{ background: 'transparent', border: 'none', color: '#22d3ee', cursor: 'pointer', fontWeight: 800, fontSize: '13px' }} title="Bildiğin kelimelerin 3D ağı — unutulmak üzere olanlar kırmızı yanar">🕸️ Kelime Ağı</button>
           <button onClick={() => { setActiveTab('MAP'); setScreen('SHORTS'); }} style={{ background: 'transparent', border: 'none', color: '#fb923c', cursor: 'pointer', fontWeight: 800, fontSize: '13px' }} title="Hatalarına özel AI üretimi 15-30 saniyelik dikey mikro dersler">🎬 Koç Akışı</button>
+          <button onClick={() => { setFeedback(null); setActiveTab('MAP'); setScreen('AI_TUTOR'); }} style={{ background: 'transparent', border: 'none', color: '#86efac', cursor: 'pointer', fontWeight: 900, fontSize: '13px' }} title="Ünitelerini ve bulunduğun yeri bilen çevrim içi AI ajanına soru sor">💬 AI Ajanı</button>
           <button onClick={() => { setActiveTab('METHODS'); setScreen('MAP'); }} style={{ background: 'transparent', border: 'none', color: '#a78bfa', cursor: 'pointer', fontWeight: 800, fontSize: '13px' }}>📚 Yöntemler</button>
           <button onClick={() => { setActiveTab('CONNECTIONS'); setScreen('MAP'); }} style={{ background: 'transparent', border: 'none', color: '#f472b6', cursor: 'pointer', fontWeight: 800, fontSize: '13px' }}>🕸️ Hikaye Bağları</button>
           <span style={{ color: '#f59e0b', display: 'flex', alignItems: 'center', gap: '4px' }}>🔥 {streak}</span>
@@ -2086,13 +2087,13 @@ export default function App() {
                     🪐
                   </div>
                   <div>
-                    <div style={{ fontSize: '12px', color: '#7dd3fc', fontWeight: 900 }}>YENİ • GEZEGEN KOÇ • SESLİ TÜRKÇE AI</div>
-                    <div style={{ fontSize: '20px', fontWeight: 950, marginTop: '2px' }}>Bulunduğun üniteye göre günlük konuşma</div>
-                    <div style={{ fontSize: '12px', color: '#cbd5e1', marginTop: '4px', lineHeight: 1.5 }}>Öğrenme Yolu Ünite 1 → {PATH.length} içinde kaldığın karta göre; Rusça söyleme, dinlediğini çevirme ve telaffuz kontrolü.</div>
+                    <div style={{ fontSize: '12px', color: '#7dd3fc', fontWeight: 900 }}>YENİ • AI AJANI + GEZEGEN KOÇ • ÜNİTE HAFIZASI</div>
+                    <div style={{ fontSize: '20px', fontWeight: 950, marginTop: '2px' }}>İstediğini sor, bulunduğun yerden devam et</div>
+                    <div style={{ fontSize: '12px', color: '#cbd5e1', marginTop: '4px', lineHeight: 1.5 }}>Çevrim içi ücretsiz AI; tüm ünite kataloğundan ilgili bilgiyi bulur, ilerlemeni/hatalarını görür ve cevaplarını seçtiğin farklı AI sesiyle okur.</div>
                   </div>
                 </div>
                 <button onClick={() => { setFeedback(null); setActiveTab('MAP'); setScreen('AI_TUTOR'); }} style={{ background: 'linear-gradient(135deg, #38bdf8, #22c55e)', border: 'none', color: '#07111f', padding: '13px 18px', borderRadius: '12px', fontWeight: 950, cursor: 'pointer', boxShadow: '0 10px 25px rgba(34,197,94,0.22)' }}>
-                  🪐 Sesli Koça Git
+                  💬 AI Ajanına Git
                 </button>
               </div>
             </div>
