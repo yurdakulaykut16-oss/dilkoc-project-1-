@@ -2,6 +2,7 @@ import { useEffect, useState } from 'react';
 import { BOT_VOICE_PROFILES, getBotVoiceProfile, setBotVoiceProfile, speakWithBotVoice } from '../tts/voiceStudio';
 import type { BotVoiceProfile } from '../tts/voiceStudio';
 import { listLocalVoiceStudioVoices, voiceStudioIsAvailable } from '../tts/voiceStudioLocal';
+import { webSpeak } from '../tts/webSpeech';
 import type { LocalVoiceStudioVoice } from '../tts/voiceStudioLocal';
 
 function localProfile(voice: LocalVoiceStudioVoice): BotVoiceProfile {
@@ -62,7 +63,11 @@ export default function VoiceStudioPanel() {
     setSelectedId(profile.id);
     setPlaying(true);
     try {
-      await speakWithBotVoice('Merhaba! Ben senin Rusça öğrenme ajanınım. Nerede kaldığını biliyorum ve sorularını birlikte çözeceğiz.', 1);
+      const text = 'Merhaba! Ben senin Rusça öğrenme ajanınım. Nerede kaldığını biliyorum ve sorularını birlikte çözeceğiz.';
+      const played = await speakWithBotVoice(text, 1);
+      // Model henüz indirilirken veya yerel profil üretim yapamazken ses
+      // önizlemesi sessiz kalmasın; seçimi koruyup anahtarsız tarayıcı sesine düş.
+      if (!played) await webSpeak(text, { lang: 'tr-TR', rate: 1 });
     } finally {
       setPlaying(false);
     }
