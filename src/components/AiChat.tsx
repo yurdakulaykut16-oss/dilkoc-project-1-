@@ -257,8 +257,10 @@ export default function AiChat(props: AiChatProps) {
   const appendTranscript = (transcript: string) => {
     const clean = transcript.trim();
     if (!clean) return;
-    setInput(current => current ? `${current} ${clean}` : clean);
-    setStatus('Mikrofonun duyuldu. Göndermek için Sor → düğmesine bas.');
+    setIsListening(false);
+    setInput(clean);
+    setStatus('Mikrofonun duyuldu. AI yanıt hazırlıyor…');
+    window.setTimeout(() => { void send(undefined, clean); }, 0);
   };
 
   const openChatInNewTab = () => {
@@ -367,9 +369,9 @@ export default function AiChat(props: AiChatProps) {
     }
   };
 
-  const send = async (event?: React.FormEvent) => {
+  const send = async (event?: React.FormEvent, forcedQuery?: string) => {
     event?.preventDefault();
-    const query = input.trim();
+    const query = (forcedQuery || input).trim();
     if (!query || busy) return;
     abortRef.current?.abort();
     stopSpeech();
