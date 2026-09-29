@@ -15,6 +15,7 @@ export interface BotVoiceProfile {
   description: string;
   emoji: string;
   previewUrl?: string;
+  instruct?: string;
 }
 
 export const BOT_VOICE_PROFILES: BotVoiceProfile[] = [
@@ -175,7 +176,7 @@ export async function speakWithBotVoice(text: string, rate = 1, onStart?: () => 
   if (!clean) return true;
   let profile = getBotVoiceProfile();
   if (profile.provider === 'voicestudio') {
-    const localPlayed = await speakWithLocalVoiceStudio(clean, profile.voice, rate, onStart);
+    const localPlayed = await speakWithLocalVoiceStudio(clean, profile.voice, rate, onStart, profile.instruct);
     if (localPlayed) return true;
     // OmniVoice modeli ilk kez indirilirken uygulama susmasın. Edge'e değil,
     // anahtarsız Puter içindeki sabit cloud fallback profiline geç.

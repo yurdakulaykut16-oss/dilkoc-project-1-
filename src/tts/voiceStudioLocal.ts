@@ -9,6 +9,7 @@ export interface LocalVoiceStudioVoice {
   language?: string;
   description?: string;
   preview_url?: string;
+  instruct?: string;
 }
 
 type VoiceListResponse = { voices?: LocalVoiceStudioVoice[] };
@@ -99,6 +100,7 @@ export async function speakWithLocalVoiceStudio(
   voice = 'default',
   rate = 1,
   onStart?: () => void,
+  instruct?: string,
 ): Promise<boolean> {
   const clean = text.trim();
   if (!clean) return true;
@@ -114,6 +116,7 @@ export async function speakWithLocalVoiceStudio(
         response_format: 'mp3',
         speed: Math.min(4, Math.max(0.25, rate)),
         language: isRussian ? 'ru' : 'tr',
+        ...(instruct ? { instruct } : {}),
       }),
     });
     if (!response.ok) throw new Error(`VoiceStudio speech ${response.status}`);

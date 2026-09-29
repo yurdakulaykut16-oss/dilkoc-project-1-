@@ -6,13 +6,13 @@ import type { LocalVoiceStudioVoice } from '../tts/voiceStudioLocal';
 
 const BUNDLED_VOICESTUDIO_VOICES: LocalVoiceStudioVoice[] = [
   { voice_id: 'demo0001', name: 'VoiceStudio Demo Voice', type: 'profile', language: 'English', description: 'VoiceStudio ile birlikte gelen yerel demo sesi', preview_url: '/dilkoc-voices/demo_voice.wav' },
-  { voice_id: 'audiobook_uk_narrator', name: 'The Librarian', type: 'voice_design', language: 'English', description: 'Sıcak İngiliz aksanlı kitap anlatıcısı', preview_url: '/dilkoc-voices/demo_voice_design_audiobook_uk_narrator.wav' },
-  { voice_id: 'us_news_anchor', name: 'The Anchor', type: 'voice_design', language: 'English', description: 'Net Amerikan haber spikeri', preview_url: '/dilkoc-voices/demo_voice_design_us_news_anchor.wav' },
-  { voice_id: 'indian_support_agent', name: 'The Helpdesk', type: 'voice_design', language: 'English', description: 'Sabırlı müşteri destek sesi', preview_url: '/dilkoc-voices/demo_voice_design_indian_support_agent.wav' },
-  { voice_id: 'gravelly_villain', name: 'Captain Crusty', type: 'voice_design', language: 'English', description: 'Kalın, çizgi film karakteri sesi', preview_url: '/dilkoc-voices/demo_voice_design_gravelly_villain.wav' },
-  { voice_id: 'aussie_podcaster', name: 'The Podcaster', type: 'voice_design', language: 'English', description: 'Enerjik Avustralya aksanlı podcast sesi', preview_url: '/dilkoc-voices/demo_voice_design_aussie_podcaster.wav' },
-  { voice_id: 'bedtime_storyteller', name: 'Junior Quacks', type: 'voice_design', language: 'English', description: 'Çizgi film tarzı hikâye sesi', preview_url: '/dilkoc-voices/demo_voice_design_bedtime_storyteller.wav' },
-  { voice_id: 'mandarin_sichuan', name: 'The Sichuan Friend', type: 'voice_design', language: 'Chinese', description: 'VoiceStudio Sichuan Çincesi demo sesi', preview_url: '/dilkoc-voices/demo_voice_design_mandarin_sichuan.wav' },
+  { voice_id: 'audiobook_uk_narrator', name: 'The Librarian', type: 'voice_design', language: 'English', description: 'Sıcak İngiliz aksanlı kitap anlatıcısı', instruct: 'female, middle-aged, low pitch, british accent', preview_url: '/dilkoc-voices/demo_voice_design_audiobook_uk_narrator.wav' },
+  { voice_id: 'us_news_anchor', name: 'The Anchor', type: 'voice_design', language: 'English', description: 'Net Amerikan haber spikeri', instruct: 'male, middle-aged, moderate pitch, american accent', preview_url: '/dilkoc-voices/demo_voice_design_us_news_anchor.wav' },
+  { voice_id: 'indian_support_agent', name: 'The Helpdesk', type: 'voice_design', language: 'English', description: 'Sabırlı müşteri destek sesi', instruct: 'female, young adult, moderate pitch, indian accent', preview_url: '/dilkoc-voices/demo_voice_design_indian_support_agent.wav' },
+  { voice_id: 'gravelly_villain', name: 'Captain Crusty', type: 'voice_design', language: 'English', description: 'Kalın, çizgi film karakteri sesi', instruct: 'male, elderly, very low pitch', preview_url: '/dilkoc-voices/demo_voice_design_gravelly_villain.wav' },
+  { voice_id: 'aussie_podcaster', name: 'The Podcaster', type: 'voice_design', language: 'English', description: 'Enerjik Avustralya aksanlı podcast sesi', instruct: 'female, young adult, high pitch, australian accent', preview_url: '/dilkoc-voices/demo_voice_design_aussie_podcaster.wav' },
+  { voice_id: 'bedtime_storyteller', name: 'Junior Quacks', type: 'voice_design', language: 'English', description: 'Çizgi film tarzı hikâye sesi', instruct: 'young adult, high pitch', preview_url: '/dilkoc-voices/demo_voice_design_bedtime_storyteller.wav' },
+  { voice_id: 'mandarin_sichuan', name: 'The Sichuan Friend', type: 'voice_design', language: 'Chinese', description: 'VoiceStudio Sichuan Çincesi demo sesi', instruct: 'female, young adult, moderate pitch, 四川话', preview_url: '/dilkoc-voices/demo_voice_design_mandarin_sichuan.wav' },
 ];
 
 function localProfile(voice: LocalVoiceStudioVoice): BotVoiceProfile {
@@ -25,6 +25,7 @@ function localProfile(voice: LocalVoiceStudioVoice): BotVoiceProfile {
     description: voice.description || (voice.type === 'profile' ? 'Bilgisayarındaki clone/design profili' : 'Yerel VoiceStudio sesi'),
     emoji: voice.type === 'voice_design' ? '🎭' : '🎛️',
     previewUrl: voice.preview_url,
+    instruct: voice.instruct,
   };
 }
 
