@@ -32,9 +32,9 @@ type PuterChatApi = {
 const ENV = ((import.meta as ImportMeta & { env?: Record<string, string | undefined> }).env || {});
 const PUTER_SCRIPT = 'https://js.puter.com/v2/';
 const PREFERRED_MODELS = [
-  ENV.VITE_AI_MODEL || 'gemini-2.5-flash-lite',
-  'qwen/qwen3.8-flash',
-  'gpt-5-nano',
+  ENV.VITE_AI_MODEL || 'gpt-5-nano',
+  'gemini-3.1-flash-lite',
+  'gemini-2.5-flash-lite',
 ].filter((model, index, all) => Boolean(model) && all.indexOf(model) === index);
 
 let puterScriptPromise: Promise<void> | null = null;
@@ -125,16 +125,19 @@ export async function askFreeAgent(
   const puter = await loadPuter();
   if (puter?.ai?.chat) {
     let lastError: unknown;
-    for (const model of PREFERRED_MODELS) {
+    for (const model of [...PREFERRED_MODELS, undefined]) {
       try {
-        const result = await puter.ai.chat(messages, {
-          model,
+        const chatOptions: Record<string, unknown> = {
           stream: false,
           temperature: 0.35,
           max_tokens: 700,
-        });
+        };
+        // Son denemede model seçimini Puter'a bırak; böylece model kataloğu
+        // değişse bile ücretsiz varsayılan model çalışmaya devam eder.
+        if (model) chatOptions.model = model;
+        const result = await puter.ai.chat(messages, chatOptions);
         const text = await readStream(result, options.onDelta);
-        if (text) return { text, provider: 'puter', model };
+        if (text) return { text, provider: 'puter', model: model || 'default' };
       } catch (error) {
         lastError = error;
       }

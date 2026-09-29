@@ -107,18 +107,24 @@ function buildKnowledgeContext(query: string, props: AiChatProps) {
 }
 
 function offlineAnswer(query: string, props: AiChatProps) {
-  const related = [...UNITS_DATA]
-    .map(unit => ({ unit, score: scoreUnit(unit, query, props.learningFocus.title) }))
-    .filter(item => item.score > 0)
-    .sort((a, b) => b.score - a.score)
-    .slice(0, 2)
-    .map(item => `${item.unit.title}: ${item.unit.words.slice(0, 4).map(word => `${word.ru} (${word.tr})`).join(', ')}`)
-    .join(' | ');
-  const whereQuestion = /nerede|hangi ünite|konum|kaldım/i.test(query);
-  if (whereQuestion) {
-    return `Şu an öğrenme yolunda ${props.learningFocus.pathPosition}/${props.learningFocus.pathTotal} konumundasın: ${props.learningFocus.title}. Çevrim içi AI kısa süreliğine yanıt vermiyor; bu konum bilgisi uygulamanın yerel hafızasından geliyor.`;
+  const normalized = normalize(query);
+  if (/rusça|rusca/.test(normalized) && /merhaba|selam/.test(normalized)) {
+    return 'Rusçada “Привет!” samimi merhaba, “Здравствуйте!” ise resmî merhaba demektir. İstersen soru kalıbı olarak “Как дела?” yani “Nasılsın?” da kullanabilirsin.';
   }
-  return `Çevrim içi AI şu an yanıt vermedi; yerel öğrenme hafızası yine de açık. Şu an ${props.learningFocus.title} konumundasın.${related ? ` Soruna en yakın kartlar: ${related}.` : ''} Biraz sonra tekrar gönderirsen çevrim içi ajan bu konuyu örneklerle açıklayacak.`;
+  if (/nasılsın|nasilsin|naber/.test(normalized)) {
+    return 'Rusçada “Как дела?” denir. Türkçesi “Nasılsın?”dır. Daha resmî bir konuşmada da aynı kalıbı kullanabilirsin.';
+  }
+  if (/teşekkür|tesekkur/.test(normalized)) {
+    return 'Rusçada “Спасибо” teşekkür ederim demektir. Daha güçlü bir ifade için “Большое спасибо” yani “Çok teşekkür ederim” diyebilirsin.';
+  }
+  if (/adın|adin|ismin/.test(normalized)) {
+    return 'Rusçada “Как тебя зовут?” samimi, “Как вас зовут?” resmî olarak “Adın ne?” demektir. Cevap: “Меня зовут …” yani “Benim adım …”.';
+  }
+  const whereQuestion = /nerede|hangi ünite|hangi unite|konum|kaldım|kaldim/.test(normalized);
+  if (whereQuestion) {
+    return `Şu an öğrenme yolunda ${props.learningFocus.pathPosition}/${props.learningFocus.pathTotal} konumundasın: ${props.learningFocus.title}.`;
+  }
+  return 'Çevrim içi AI bağlantısı şu an yanıt vermedi. Sorunu tekrar gönder; Türkçe açıklama ve istediğin Rusça soru kalıbıyla devam edelim.';
 }
 
 function initialChat(): ChatEntry[] {
@@ -190,15 +196,9 @@ function splitSpeechSegments(text: string): SpeechSegment[] {
 }
 
 export default function AiChat(props: AiChatProps) {
-  const [messages, setMessages] = useState<ChatEntry[]>(() => {
-    try {
-      const raw = localStorage.getItem(CHAT_KEY);
-      const parsed = raw ? JSON.parse(raw) as ChatEntry[] : [];
-      return parsed.length > 0 ? parsed.slice(-24) : initialChat();
-    } catch {
-      return initialChat();
-    }
-  });
+  // Sohbet geçmişi artık localStorage'a yazılmaz. Böylece her yeni localhost
+  // oturumunda kullanıcı eski/bozuk offline cevapları görmez.
+  const [messages, setMessages] = useState<ChatEntry[]>(initialChat);
   const [input, setInput] = useState('');
   const [busy, setBusy] = useState(false);
   const [autoSpeak, setAutoSpeak] = useState(() => localStorage.getItem(AUTO_SPEAK_KEY) !== '0');
@@ -341,7 +341,9 @@ export default function AiChat(props: AiChatProps) {
   const persist = (next: ChatEntry[]) => {
     const trimmed = next.slice(-24);
     setMessages(trimmed);
-    try { localStorage.setItem(CHAT_KEY, JSON.stringify(trimmed)); } catch { /* depolama isteğe bağlı */ }
+    // Eski sürümlerde kaydedilmiş sohbeti de temizle; yeni oturumlar yalnızca
+    // o sayfada yazılan konuşmayı taşır.
+    try { localStorage.removeItem(CHAT_KEY); } catch { /* depolama isteğe bağlı */ }
   };
 
   const speakAnswer = async (text: string) => {
