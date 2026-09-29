@@ -330,8 +330,23 @@ export function buildMockExam(level: ExamLevelId, completedIds: string[], seed?:
 }
 
 /** Bir seviye denemesi için minimum içerik durumu — butonu kilitlemek/açmak için. */
-export function examReadiness(level: ExamLevelId, completedIds: string[]): { ready: boolean; units: number; words: number } {
+/**
+ * Seviye denemesi KİLİT KURALI (kullanıcı isteği, 2026-09):
+ * "tüm b1 seviyesi yapılmadan b1 denemesi açılmasın" → bir seviyenin denemesi, o seviyenin
+ * TÜM üniteleri bitmeden açılmaz. GENEL için tüm müfredat şart; GUNLUK muaf (öğrendiklerinle oynanır).
+ * Deneme içeriği tamamen tamamlanan ünitelerin kelime/cümle/diyaloglarından kurulduğu için,
+ * bu kural aynı zamanda "deneme = benim ünitelerimin içeriği" garantisini de verir.
+ */
+export function examReadiness(level: ExamLevelId, completedIds: string[]): {
+  ready: boolean; units: number; words: number; doneUnits: number; totalUnits: number;
+} {
   const pool = buildPool(level, completedIds);
   const uniqWords = new Set(pool.words.map(w => w.ru)).size;
-  return { ready: pool.unitsUsed >= 1 && uniqWords >= 8 && pool.sentences.length >= 4, units: pool.unitsUsed, words: uniqWords };
+  if (level === 'GUNLUK') {
+    return { ready: pool.unitsUsed >= 1 && uniqWords >= 8, units: pool.unitsUsed, words: uniqWords, doneUnits: pool.unitsUsed, totalUnits: pool.unitsUsed };
+  }
+  const scope = level === 'GENEL' ? UNITS_DATA : UNITS_DATA.filter(u => u.levelGroup === level);
+  const totalUnits = scope.length;
+  const doneUnits = scope.filter(u => completedIds.includes(u.id)).length;
+  return { ready: totalUnits > 0 && doneUnits >= totalUnits, units: pool.unitsUsed, words: uniqWords, doneUnits, totalUnits };
 }

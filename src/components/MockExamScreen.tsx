@@ -455,12 +455,16 @@ const MockExamScreen: React.FC<Props> = ({ completedUnits, onXp, onMistake, onRe
         <div style={{ fontSize: '12px', color: '#94a3b8', marginTop: '8px', lineHeight: 1.6 }}>
           Her sorunun süresi var; süre dolan soru yanlış sayılır. Yanlışların hata kütüğüne ve zayıf nokta antrenmanına otomatik işlenir — deneme, eksiklerini bulmanın en hızlı yoludur.
         </div>
+        <div style={{ marginTop: '10px', padding: '10px 12px', borderRadius: '10px', background: 'rgba(16,185,129,0.08)', border: '1px solid #10b98144', fontSize: '12px', color: '#6ee7b7', lineHeight: 1.6 }}>
+          🔓 <b>Yeni kural:</b> Bir seviyenin denemesi, o seviyenin <b>tüm üniteleri</b> bitmeden açılmaz (ör. B1 denemesi için B1'in hepsini bitir). Böylece her soru birebir senin ünitelerinin kelime, cümle ve diyaloglarından üretilir. 🌅 <b>Günlük deneme</b> her zaman açık ve öğrendiğin her şeyden hazırlanır.
+        </div>
       </div>
 
       <div style={{ display: 'grid', gap: '10px', marginBottom: '18px' }}>
-        {readiness.map(({ def, ready, units, words }) => {
+        {readiness.map(({ def, ready, units, words, doneUnits, totalUnits }) => {
           const best = bestAttemptFor(def.id, attempts);
           const isDaily = def.id === 'GUNLUK';
+          const isGeneral = def.id === 'GENEL';
           const todayDone = isDaily && attempts.some(a => a.level === 'GUNLUK' && new Date(a.date).toDateString() === new Date().toDateString());
           return (
             <button key={def.id} disabled={!ready} onClick={() => startExam(def.id)}
@@ -475,9 +479,11 @@ const MockExamScreen: React.FC<Props> = ({ completedUnits, onXp, onMistake, onRe
                 <div style={{ fontSize: '11px', color: '#94a3b8', marginTop: '2px' }}>
                   {ready
                     ? isDaily
-                      ? `Bugüne özel ${def.questionCount} soru — herkes aynı soruları görür · baraj %${examPassPct(def)}${ultra ? ' ⚡' : ''}`
-                      : `${units} üniteden ${words} kelime havuzu · ${def.questionCount} soru (şıklı + 🔗 eşleştirmeli + ⌨️ yazma) · baraj %${examPassPct(def)}${ultra ? ' ⚡' : ''}`
-                    : `Kilitli: önce bu seviyeden en az 1 ünite bitir (${units} ünite / ${words} kelime)`}
+                      ? `Bugüne özel ${def.questionCount} soru — bitirdiğin ${units} ünitenin içeriğinden · baraj %${examPassPct(def)}${ultra ? ' ⚡' : ''}`
+                      : `📚 SADECE ÜNİTELERİNDEN: ${units} ünitenin tamamı · ${words} kelime havuzu · ${def.questionCount} soru (şıklı + 🔗 eşleştirme + ⌨️ yazma) · baraj %${examPassPct(def)}${ultra ? ' ⚡' : ''}`
+                    : isDaily
+                      ? `Kilitli: önce en az 1 ünite bitir (${units} ünite / ${words} kelime)`
+                      : `🔒 ${isGeneral ? 'TÜM müfredatı bitirmeden' : `${def.id} seviyesinin TÜM ünitelerini bitirmeden`} açılmaz — ${doneUnits}/${totalUnits} ünite · kalan ${Math.max(0, totalUnits - doneUnits)}`}
                 </div>
               </div>
               {best && (
