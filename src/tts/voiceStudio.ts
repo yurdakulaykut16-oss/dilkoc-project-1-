@@ -184,6 +184,7 @@ export async function speakWithBotVoice(text: string, rate = 1, onStart?: () => 
       provider: profile.provider,
       model: profile.model,
       voice: profile.voice,
+      language: /[а-яё]/i.test(clean) ? 'ru-RU' : 'tr-TR',
       output_format: profile.provider === 'speechify' ? 'mp3' : 'mp3_44100_128',
     };
     if (profile.provider === 'openai') options.instructions = 'Warm, clear, encouraging language coach. Speak Turkish naturally.';

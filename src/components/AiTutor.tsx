@@ -5,8 +5,7 @@ import { ALL_WORDS, UNITS_DATA } from '../curriculumData';
 import type { UnitModule, WordDetail } from '../curriculumData';
 // MICROSOFT EDGE TTS — BİRİNCİL SES: botun Türkçe konuşmaları tr-TR-Emel/AhmetNeural,
 // Rusça telaffuzları ru-RU-Svetlana/DmitryNeural ile okunur (Rotam ekranından seçilir).
-import { edgeSpeak, edgeTtsLooksHealthy, getVoicePrefs } from '../tts/edgeTts';
-import { webSpeak, webSpeechSupported } from '../tts/webSpeech';
+import { webSpeak } from '../tts/webSpeech';
 import AiChat from './AiChat';
 import { getBotVoiceProfile, speakWithBotVoice } from '../tts/voiceStudio';
 
@@ -687,33 +686,39 @@ async function speakWithPuter(text: string, _lang: SpeechLang, rate: number, onS
   const puterWindow = window as Window & { puter?: PuterAudioApi };
   // Puter sağlayıcılarında bilinmeyen opsiyonlar bazen çağrıyı düşürebiliyor.
   // Bu yüzden PC'de konuşmanın kesin başlaması için dokümantasyondaki sade parametreleri kullanıyoruz.
+  const language = _lang;
   const cloudVoices: Record<string, unknown>[] = [
     // 1) Ana ses: kullanıcının verdiği ElevenLabs voice ID.
     {
       provider: 'elevenlabs',
+      language,
       voice: ELEVENLABS_VOICE_ID,
       model: ELEVENLABS_MODEL_ID,
     },
     // 2) Yedek: ElevenLabs v3 desteklenirse daha performanslı/karakterli okuma verir.
     {
       provider: 'elevenlabs',
+      language,
       voice: ELEVENLABS_VOICE_ID,
       model: 'eleven_v3',
     },
     // 3) Google/device değil; internet AI ses yedeği olarak Speechify kullan.
     {
       provider: 'speechify',
+      language,
       model: 'simba-multilingual',
       voice: 'hugh_32',
     },
     {
       provider: 'speechify',
+      language,
       model: 'simba-multilingual',
       voice: 'dominic_32',
     },
     // 4) Son internet AI yedeği: xAI. Google TTS bilerek bulut yedeği yapılmıyor.
     {
       provider: 'xai',
+      language,
       voice: 'leo',
       output_format: 'mp3',
     },
@@ -794,17 +799,8 @@ async function speakWithWebSpeech(text: string, lang: SpeechLang, rate: number, 
 async function speakOne(text: string, lang: SpeechLang, rate: number, onChunkStart?: (chunk: string) => void, onChunkEnd?: () => void) {
   const chunks = splitSpeechText(text);
   for (const chunk of chunks) {
-    // 0) EDGE SERVİSİ REDDEDİYORSA (Sec-MS-GEC kimlik hatası) boşuna websocket
-    //    açıp saniyelerce beklemeyelim: doğrudan tarayıcının yerleşik sesine geç.
-    if (!edgeTtsLooksHealthy() && webSpeechSupported()) {
-      if (await speakWithWebSpeech(chunk, lang, rate, () => onChunkStart?.(chunk))) {
-        onChunkEnd?.();
-        continue;
-      }
-      onChunkEnd?.();
-    }
-    // 1) VOICESTUDIO PALETİ: seçilen ücretsiz AI profili (Speechify/ElevenLabs/OpenAI).
-    // Botun ana sesi artık Google veya Edge değildir; onlar yalnızca güvenli yedektir.
+    // 1) Önce gerçek VoiceStudio yerel profil/modeli; model henüz hazır değilse
+    // seçili cloud AI profili denenir. Hiçbir aşamada Edge websocket TTS yoktur.
     try {
       if (PUTER_TTS_ENABLED && await speakWithBotVoice(chunk, rate, () => onChunkStart?.(chunk))) {
         onChunkEnd?.();
@@ -814,27 +810,8 @@ async function speakOne(text: string, lang: SpeechLang, rate: number, onChunkSta
       onChunkEnd?.();
       console.warn('VoiceStudio AI TTS fallback:', error);
     }
-    // 2) MICROSOFT EDGE TTS: TR = Emel/Ahmet, RU = Svetlana/Dmitry (yedek)
-    try {
-      const prefs = getVoicePrefs();
-      onChunkStart?.(chunk);
-      if (await edgeSpeak(chunk, {
-        voice: lang === 'ru-RU' ? prefs.ru : prefs.tr,
-        prosodyRate: rate < 0.85 ? '-20%' : '+0%',
-        playbackRate: Math.min(1.1, Math.max(0.85, rate)),
-        // Bu ekranın kendi sağlayıcı zinciri var; edgeTts kendi içinde yedeklemesin.
-        fallbackToBrowser: false,
-      })) {
-        onChunkEnd?.();
-        continue;
-      }
-      // Edge sessiz döndüyse ağız animasyonunu durdur; sıradaki sağlayıcı kendi
-      // onChunkStart'ını tetikleyecek. Aksi hâlde ağız boşa oynamaya devam ediyordu.
-      onChunkEnd?.();
-    } catch (error) {
-      onChunkEnd?.();
-      console.warn('Edge TTS fallback:', error);
-    }
+    // 2) Yerel/cloud AI sağlayıcıları başarısızsa aşağıda Puter proxy ve
+    // cihazın diline göre seçilen Web Speech son çare olarak kullanılır.
     try {
       if (await speakWithPuter(chunk, lang, rate, () => onChunkStart?.(chunk))) {
         onChunkEnd?.();
@@ -906,19 +883,15 @@ export default function AiTutor({
   const tasks = useMemo(() => buildDailyPlan(planData.current), [planKey]);
   const focus = learningFocus;
   const elevenLabsEnabled = Boolean(ELEVENLABS_PROXY_URL || ELEVENLABS_API_KEY);
-  // Botun ana sesi VoiceStudio paletindeki seçili AI sesidir. Edge/tarayıcı yalnızca fallback'tir.
+  // Botun ana sesi VoiceStudio paletindeki seçili AI sesidir; Edge websocket
+  // TTS kullanılmaz. Yerel model hazır değilse seçili cloud, sonra cihaz dili.
   const ttsBadge = useMemo(() => {
+    const profile = getBotVoiceProfile();
     if (PUTER_TTS_ENABLED) {
-      const profile = getBotVoiceProfile();
-      return { label: `🎚️ ${profile.label}`, hint: 'VoiceStudio paletindeki ücretsiz AI sesi kullanılıyor; Edge ve cihaz sesi yalnızca yedek.' };
-    }
-    if (!edgeTtsLooksHealthy()) {
-      return webSpeechSupported()
-        ? { label: '🔊 Tarayıcı sesi (AI kapalı)', hint: 'Bulut AI ses kapalı; tarayıcının yerleşik sesi kullanılıyor.' }
-        : { label: '🔇 Ses motoru yok', hint: 'AI ses ve tarayıcı sesi kapalı.' };
+      return { label: `🎚️ ${profile.label}`, hint: 'VoiceStudio yerel profili öncelikli; Edge TTS kullanılmıyor.' };
     }
     if (elevenLabsEnabled) return { label: '🎙️ ElevenLabs proxy aktif', hint: 'ElevenLabs proxy yapılandırılmış.' };
-    return { label: ALLOW_DEVICE_TTS_FALLBACK ? '🔊 Cihaz sesi açık' : '🔇 AI ses bekleniyor', hint: '' };
+    return { label: ALLOW_DEVICE_TTS_FALLBACK ? '🔊 Cihaz dili fallback açık' : '🔇 AI ses bekleniyor', hint: 'VoiceStudio modeli hazır olduğunda seçili profil kullanılacak.' };
   }, [elevenLabsEnabled]);
   const [attempts, setAttempts] = useState<Record<string, AttemptRecord>>(() => loadStoredAttempts(day));
   const [currentIndex, setCurrentIndex] = useState(0);

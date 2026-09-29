@@ -1,7 +1,7 @@
 import React, { useMemo, useRef, useState } from 'react';
 import { askFreeAgent, activeFreeAiLabel } from '../ai/freeAi';
 import type { AgentMessage } from '../ai/freeAi';
-import { edgeSpeak } from '../tts/edgeTts';
+import { webSpeak } from '../tts/webSpeech';
 import { speakWithBotVoice, stopBotVoice } from '../tts/voiceStudio';
 import VoiceStudioPanel from './VoiceStudioPanel';
 import { UNITS_DATA } from '../curriculumData';
@@ -137,7 +137,11 @@ export default function AiChat(props: AiChatProps) {
 
   const speakAnswer = async (text: string) => {
     const usedAiVoice = await speakWithBotVoice(text, 1);
-    if (!usedAiVoice) await edgeSpeak(text, { prosodyRate: '-3%' });
+    if (!usedAiVoice) {
+      // VoiceStudio modeli henüz hazır değilse Edge'e değil, metnin diline
+      // uygun cihaz diline düş. Rusça örnekler Rusça, açıklamalar Türkçe okunur.
+      await webSpeak(text, { lang: /[а-яё]/i.test(text) ? 'ru-RU' : 'tr-TR', rate: 1 });
+    }
   };
 
   const send = async (event?: React.FormEvent) => {

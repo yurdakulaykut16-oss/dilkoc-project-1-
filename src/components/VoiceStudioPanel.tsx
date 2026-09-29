@@ -77,9 +77,9 @@ export default function VoiceStudioPanel() {
       if (profile.provider === 'voicestudio') {
         // VoiceStudio repo'sundan projeye gömülen gerçek demo/design WAV'ını
         // çal. Böylece model indirme/TLS beklenirken Edge'e yönlenmez.
-        const played = profile.previewUrl
-          ? await previewLocalVoiceStudioAudio(profile.previewUrl)
-          : false;
+        const previewUrl = profile.previewUrl
+          || `/voicestudio/profiles/${encodeURIComponent(profile.voice)}/audio`;
+        const played = await previewLocalVoiceStudioAudio(previewUrl);
         if (!played) console.warn('VoiceStudio yerel önizleme dosyası oynatılamadı');
         return;
       }
