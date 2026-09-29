@@ -95,6 +95,10 @@ type PuterTtsApi = {
 
 let scriptPromise: Promise<void> | null = null;
 let currentAudio: HTMLAudioElement | null = null;
+// OmniVoice modeli ilk açılışta eksikse backend her isteği uzun süre bekletip
+// 503 döndürebilir. Aynı oturumda her Rusça/Türkçe parçada bunu yeniden denemek
+// yerine kısa süreliğine ücretsiz cloud yedeğine geç; model hazır olduğunda tekrar dene.
+let localVoiceRetryAt = 0;
 
 function puter(): PuterTtsApi | undefined {
   if (typeof window === 'undefined') return undefined;
@@ -176,10 +180,16 @@ export async function speakWithBotVoice(text: string, rate = 1, onStart?: () => 
   if (!clean) return true;
   let profile = getBotVoiceProfile();
   if (profile.provider === 'voicestudio') {
-    const localPlayed = await speakWithLocalVoiceStudio(clean, profile.voice, rate, onStart, profile.instruct);
-    if (localPlayed) return true;
-    // OmniVoice modeli ilk kez indirilirken uygulama susmasın. Edge'e değil,
-    // anahtarsız Puter içindeki sabit cloud fallback profiline geç.
+    if (Date.now() >= localVoiceRetryAt) {
+      const localPlayed = await speakWithLocalVoiceStudio(clean, profile.voice, rate, onStart, profile.instruct);
+      if (localPlayed) {
+        localVoiceRetryAt = 0;
+        return true;
+      }
+      localVoiceRetryAt = Date.now() + 60_000;
+    }
+    // OmniVoice modeli ilk kez indirilirken uygulama susmasın. Edge/browser
+    // sesine değil, anahtarsız Puter içindeki ücretsiz cloud fallback profiline geç.
     profile = BOT_VOICE_PROFILES[1];
   }
   const api = await loadPuter();

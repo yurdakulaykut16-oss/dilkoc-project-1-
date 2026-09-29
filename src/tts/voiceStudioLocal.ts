@@ -104,10 +104,13 @@ export async function speakWithLocalVoiceStudio(
 ): Promise<boolean> {
   const clean = text.trim();
   if (!clean) return true;
+  const controller = new AbortController();
+  const timeout = window.setTimeout(() => controller.abort(), 18_000);
   try {
     const isRussian = /[а-яё]/i.test(clean);
     const response = await fetch(endpoint('/v1/audio/speech'), {
       method: 'POST',
+      signal: controller.signal,
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({
         model: VOICESTUDIO_MODEL,
@@ -127,5 +130,7 @@ export async function speakWithLocalVoiceStudio(
     stopLocalVoiceStudio();
     console.warn('VoiceStudio yerel backend kullanılamadı:', error);
     return false;
+  } finally {
+    window.clearTimeout(timeout);
   }
 }

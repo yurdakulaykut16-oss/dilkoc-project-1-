@@ -2,7 +2,6 @@ import { SpeechRecognition as NativeSpeechRecognition } from '@capacitor-communi
 import React, { useEffect, useMemo, useRef, useState } from 'react';
 import { askFreeAgent, activeFreeAiLabel } from '../ai/freeAi';
 import type { AgentMessage } from '../ai/freeAi';
-import { webSpeak } from '../tts/webSpeech';
 import { speakWithBotVoice, stopBotVoice } from '../tts/voiceStudio';
 import VoiceStudioPanel from './VoiceStudioPanel';
 import { UNITS_DATA } from '../curriculumData';
@@ -356,9 +355,9 @@ export default function AiChat(props: AiChatProps) {
         animateMouth(segment.text, segment.lang);
         const usedAiVoice = await speakWithBotVoice(segment.text, 1);
         if (!usedAiVoice) {
-          // VoiceStudio modeli henüz hazır değilse Edge'e değil, segmentin kendi
-          // diline uygun cihaz diline düş. Türkçe anlatım Türkçe, Rusça örnekler Rusça okunur.
-          await webSpeak(segment.text, { lang: segment.lang, rate: 1 });
+          // Tarayıcı/Edge sesine düşme: gerçek VoiceStudio veya ücretsiz cloud
+          // sesi yoksa bunu açıkça bildir; yanlış ses tonuyla sessizce okumayız.
+          setStatus('VoiceStudio sesi hazır değil; tarayıcı sesi kullanılmadı.');
         }
       }
     } finally {
