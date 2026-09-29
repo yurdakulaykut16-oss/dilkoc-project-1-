@@ -173,9 +173,13 @@ export function stopBotVoice() {
 export async function speakWithBotVoice(text: string, rate = 1, onStart?: () => void): Promise<boolean> {
   const clean = text.trim();
   if (!clean) return true;
-  const profile = getBotVoiceProfile();
+  let profile = getBotVoiceProfile();
   if (profile.provider === 'voicestudio') {
-    return speakWithLocalVoiceStudio(clean, profile.voice, rate, onStart);
+    const localPlayed = await speakWithLocalVoiceStudio(clean, profile.voice, rate, onStart);
+    if (localPlayed) return true;
+    // OmniVoice modeli ilk kez indirilirken uygulama susmasın. Edge'e değil,
+    // anahtarsız Puter içindeki sabit cloud fallback profiline geç.
+    profile = BOT_VOICE_PROFILES[1];
   }
   const api = await loadPuter();
   if (!api?.ai?.txt2speech) return false;

@@ -4,9 +4,11 @@ import AiTutor from './components/AiTutor';
 // 🔥 GERÇEK SERİ TAKİBİ: XP kazanılan günler sayılır, gün atlanırsa seri sıfırlanır
 import { effectiveStreak, loadStats, recordXpGain, todayStr } from './statsStore';
 
-// MICROSOFT EDGE TTS: Rusça = ru-RU-Svetlana/DmitryNeural, Türkçe = tr-TR-Emel/AhmetNeural.
-// Dinleme ekranlarındaki hız düğmesi perde korumalı (preservesPitch) çalışır — kelime bozulmaz.
-import { edgeSpeak, getVoicePrefs, stopEdgeSpeech } from './tts/edgeTts';
+// Ses yolu: seçili VoiceStudio profili → cloud AI → metnin diline uygun cihaz sesi.
+// Microsoft Edge websocket TTS kullanılmaz.
+import { stopEdgeSpeech } from './tts/edgeTts';
+import { speakWithBotVoice } from './tts/voiceStudio';
+import { stopWebSpeech, webSpeak } from './tts/webSpeech';
 // ÖĞRENEN MODELİ: çözülen sorulardan zaman/edat eksik haritası + kişisel rota
 import { recordWordResult, recordSkill, recordSentenceResult, skillKeyForGrammarUnit, resetLearner } from './learnerModel';
 // ANLAMSAL FARK ANALİZİ: cümle egzersizlerinde "doğru/yanlış" yerine anlam farkı raporu
@@ -801,25 +803,22 @@ export default function App() {
       (screen === 'QUIZ' && quizContext === 'LISTENING');
   }, [screen, quizContext]);
 
-  // Ekran değişince çalan Edge TTS sesini kes (yarım kalmış uzun dinlemeler sürmesin)
-  useEffect(() => { stopEdgeSpeech(); }, [screen]);
+  // Ekran değişince çalan sesleri kes (yarım kalmış uzun dinlemeler sürmesin).
+  useEffect(() => { stopEdgeSpeech(); stopWebSpeech(); }, [screen]);
 
-  // SESLENDİRME — ÖNCE MICROSOFT EDGE TTS (Rusça: Svetlana/Dmitry, Türkçe: Emel/Ahmet).
-  // rate parametresiyle yavaş (0.55) veya normal (0.85) tempoda okuma.
-  // Dinleme ekranlarında ek olarak perde korumalı hız çarpanı (listenSpeed) uygulanır:
-  // ses YAVAŞLARKEN/HIZLANIRKEN kelimenin perdesi BOZULMAZ (preservesPitch).
-  // Edge TTS erişilemezse eski native/web TTS zinciri devreye girer.
+  // SESLENDİRME — seçili VoiceStudio profili ve metnin dili korunur.
+  // Türkçe açıklamalar Türkçe, Rusça tekrar kelimeleri Rusça okunur.
   const speak = async (txt: string, rate = 0.85, onEnd?: () => void, onError?: () => void) => {
     const isRussian = /[а-яё]/i.test(txt);
-    const prefs = getVoicePrefs();
     const playbackRate = listenContextRef.current ? listenSpeedRef.current : 1;
-    const edgeOk = await edgeSpeak(txt, {
-      voice: isRussian ? prefs.ru : prefs.tr,
-      // rate < 0.7 → "Yavaşça Dinle": sentez temposu da düşürülür (heceler ayrışır)
-      prosodyRate: rate < 0.7 ? '-35%' : rate < 0.83 ? '-12%' : '-5%',
-      playbackRate,
+    const selectedVoiceOk = await speakWithBotVoice(txt, rate * playbackRate);
+    if (selectedVoiceOk) { onEnd?.(); return; }
+    const deviceVoiceOk = await webSpeak(txt, {
+      lang: isRussian ? 'ru-RU' : 'tr-TR',
+      rate: rate * playbackRate,
+      pitch: isRussian ? 1 : 0.95,
     });
-    if (edgeOk) { onEnd?.(); return; }
+    if (deviceVoiceOk) { onEnd?.(); return; }
 
     const chunks: string[] = [];
     let rest = txt.trim();
@@ -1855,6 +1854,7 @@ export default function App() {
   // 3D ağda kırmızı/zayıf düğüme tıklanınca: 1 dakikalık hedefli kurtarma testi
   const startRescue = (t: RescueTarget) => {
     stopEdgeSpeech();
+    stopWebSpeech();
     setRescueTarget(t);
     setActiveTab('MAP');
     setScreen('RESCUE');
