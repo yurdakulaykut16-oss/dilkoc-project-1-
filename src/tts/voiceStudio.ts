@@ -14,17 +14,19 @@ export interface BotVoiceProfile {
   label: string;
   description: string;
   emoji: string;
+  previewUrl?: string;
 }
 
 export const BOT_VOICE_PROFILES: BotVoiceProfile[] = [
   {
-    id: 'voicestudio-local-default',
+    id: 'voicestudio:demo0001',
     provider: 'voicestudio',
-    voice: 'default',
+    voice: 'demo0001',
     model: 'omnivoice',
-    label: 'VoiceStudio • yerel',
-    description: 'Bilgisayarındaki gerçek VoiceStudio motoru/profili',
+    label: 'VoiceStudio • Demo Voice',
+    description: 'VoiceStudio deposundan gelen yerel demo profili',
     emoji: '🧠',
+    previewUrl: '/dilkoc-voices/demo_voice.wav',
   },
   {
     id: 'studio-geffen',

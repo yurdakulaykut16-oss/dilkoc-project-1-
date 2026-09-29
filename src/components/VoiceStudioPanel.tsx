@@ -1,9 +1,19 @@
 import { useEffect, useState } from 'react';
 import { BOT_VOICE_PROFILES, getBotVoiceProfile, setBotVoiceProfile, speakWithBotVoice } from '../tts/voiceStudio';
 import type { BotVoiceProfile } from '../tts/voiceStudio';
-import { listLocalVoiceStudioVoices, voiceStudioIsAvailable } from '../tts/voiceStudioLocal';
-import { webSpeak } from '../tts/webSpeech';
+import { listLocalVoiceStudioVoices, previewLocalVoiceStudioAudio, voiceStudioIsAvailable } from '../tts/voiceStudioLocal';
 import type { LocalVoiceStudioVoice } from '../tts/voiceStudioLocal';
+
+const BUNDLED_VOICESTUDIO_VOICES: LocalVoiceStudioVoice[] = [
+  { voice_id: 'demo0001', name: 'VoiceStudio Demo Voice', type: 'profile', language: 'English', description: 'VoiceStudio ile birlikte gelen yerel demo sesi', preview_url: '/dilkoc-voices/demo_voice.wav' },
+  { voice_id: 'audiobook_uk_narrator', name: 'The Librarian', type: 'voice_design', language: 'English', description: 'Sıcak İngiliz aksanlı kitap anlatıcısı', preview_url: '/dilkoc-voices/demo_voice_design_audiobook_uk_narrator.wav' },
+  { voice_id: 'us_news_anchor', name: 'The Anchor', type: 'voice_design', language: 'English', description: 'Net Amerikan haber spikeri', preview_url: '/dilkoc-voices/demo_voice_design_us_news_anchor.wav' },
+  { voice_id: 'indian_support_agent', name: 'The Helpdesk', type: 'voice_design', language: 'English', description: 'Sabırlı müşteri destek sesi', preview_url: '/dilkoc-voices/demo_voice_design_indian_support_agent.wav' },
+  { voice_id: 'gravelly_villain', name: 'Captain Crusty', type: 'voice_design', language: 'English', description: 'Kalın, çizgi film karakteri sesi', preview_url: '/dilkoc-voices/demo_voice_design_gravelly_villain.wav' },
+  { voice_id: 'aussie_podcaster', name: 'The Podcaster', type: 'voice_design', language: 'English', description: 'Enerjik Avustralya aksanlı podcast sesi', preview_url: '/dilkoc-voices/demo_voice_design_aussie_podcaster.wav' },
+  { voice_id: 'bedtime_storyteller', name: 'Junior Quacks', type: 'voice_design', language: 'English', description: 'Çizgi film tarzı hikâye sesi', preview_url: '/dilkoc-voices/demo_voice_design_bedtime_storyteller.wav' },
+  { voice_id: 'mandarin_sichuan', name: 'The Sichuan Friend', type: 'voice_design', language: 'Chinese', description: 'VoiceStudio Sichuan Çincesi demo sesi', preview_url: '/dilkoc-voices/demo_voice_design_mandarin_sichuan.wav' },
+];
 
 function localProfile(voice: LocalVoiceStudioVoice): BotVoiceProfile {
   return {
@@ -12,8 +22,9 @@ function localProfile(voice: LocalVoiceStudioVoice): BotVoiceProfile {
     voice: voice.voice_id,
     model: 'omnivoice',
     label: `VoiceStudio • ${voice.name}`,
-    description: voice.type === 'profile' ? 'Bilgisayarındaki clone/design profili' : 'Yerel VoiceStudio sesi',
-    emoji: '🎛️',
+    description: voice.description || (voice.type === 'profile' ? 'Bilgisayarındaki clone/design profili' : 'Yerel VoiceStudio sesi'),
+    emoji: voice.type === 'voice_design' ? '🎭' : '🎛️',
+    previewUrl: voice.preview_url,
   };
 }
 
@@ -63,17 +74,28 @@ export default function VoiceStudioPanel() {
     setSelectedId(profile.id);
     setPlaying(true);
     try {
-      const text = 'Merhaba! Ben senin Rusça öğrenme ajanınım. Nerede kaldığını biliyorum ve sorularını birlikte çözeceğiz.';
-      const played = await speakWithBotVoice(text, 1);
-      // Model henüz indirilirken veya yerel profil üretim yapamazken ses
-      // önizlemesi sessiz kalmasın; seçimi koruyup anahtarsız tarayıcı sesine düş.
-      if (!played) await webSpeak(text, { lang: 'tr-TR', rate: 1 });
+      if (profile.provider === 'voicestudio') {
+        // VoiceStudio repo'sundan projeye gömülen gerçek demo/design WAV'ını
+        // çal. Böylece model indirme/TLS beklenirken Edge'e yönlenmez.
+        const played = profile.previewUrl
+          ? await previewLocalVoiceStudioAudio(profile.previewUrl)
+          : false;
+        if (!played) console.warn('VoiceStudio yerel önizleme dosyası oynatılamadı');
+        return;
+      }
+      // Cloud kartları da yalnızca seçilen Puter provider'ını dener; başarısız
+      // olursa sessiz kalır, Edge/browser sesine gizlice geçmez.
+      await speakWithBotVoice('Merhaba! Ben senin Rusça öğrenme ajanınım.', 1);
     } finally {
       setPlaying(false);
     }
   };
 
-  const localProfiles = [BOT_VOICE_PROFILES[0], ...localVoices.map(localProfile)];
+  const bundledIds = new Set(BUNDLED_VOICESTUDIO_VOICES.map(voice => voice.voice_id));
+  const localProfiles = [
+    ...BUNDLED_VOICESTUDIO_VOICES.map(localProfile),
+    ...localVoices.filter(voice => !bundledIds.has(voice.voice_id)).map(localProfile),
+  ];
   const cloudProfiles = BOT_VOICE_PROFILES.slice(1);
 
   const card = (profile: BotVoiceProfile) => {
@@ -103,7 +125,7 @@ export default function VoiceStudioPanel() {
           </p>
         </div>
         <span style={{ color: localStatus === 'available' ? '#86efac' : '#fbbf24', fontSize: '11px', fontWeight: 900, padding: '6px 9px', borderRadius: '999px', background: localStatus === 'available' ? 'rgba(34,197,94,.12)' : 'rgba(245,158,11,.12)', border: `1px solid ${localStatus === 'available' ? 'rgba(34,197,94,.35)' : 'rgba(245,158,11,.35)'}` }}>
-          {localStatus === 'checking' ? '⏳ VoiceStudio aranıyor…' : localStatus === 'available' ? `✅ Yerel bağlı${localVoices.length ? ` • ${localVoices.length} profil` : ''}` : '⚠️ Yerel servis kapalı'}
+          {localStatus === 'checking' ? '⏳ VoiceStudio aranıyor…' : localStatus === 'available' ? `✅ Yerel bağlı • ${BUNDLED_VOICESTUDIO_VOICES.length + localVoices.filter(voice => !BUNDLED_VOICESTUDIO_VOICES.some(item => item.voice_id === voice.voice_id)).length} gömülü/yerel ses` : '⚠️ Yerel servis kapalı'}
         </span>
       </div>
 

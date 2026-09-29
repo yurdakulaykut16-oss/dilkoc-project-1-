@@ -8,6 +8,7 @@ export interface LocalVoiceStudioVoice {
   type?: string;
   language?: string;
   description?: string;
+  preview_url?: string;
 }
 
 type VoiceListResponse = { voices?: LocalVoiceStudioVoice[] };
@@ -49,6 +50,49 @@ export function stopLocalVoiceStudio() {
   currentAudio = null;
 }
 
+async function playVoiceStudioAudio(
+  blob: Blob,
+  rate: number,
+  onStart?: () => void,
+): Promise<boolean> {
+  if (!blob.size) return false;
+  stopLocalVoiceStudio();
+  const audio = new Audio(URL.createObjectURL(blob));
+  currentAudio = audio;
+  (audio as HTMLAudioElement & { preservesPitch?: boolean }).preservesPitch = true;
+  audio.playbackRate = Math.min(1.35, Math.max(0.75, rate));
+  audio.onended = () => {
+    URL.revokeObjectURL(audio.src);
+    if (currentAudio === audio) currentAudio = null;
+  };
+  audio.onerror = () => {
+    URL.revokeObjectURL(audio.src);
+    if (currentAudio === audio) currentAudio = null;
+  };
+  onStart?.();
+  try {
+    await audio.play();
+    return true;
+  } catch {
+    stopLocalVoiceStudio();
+    return false;
+  }
+}
+
+/** VoiceStudio repository's bundled voice-design/demo clipini önizler. */
+export async function previewLocalVoiceStudioAudio(
+  previewUrl: string,
+  rate = 1,
+): Promise<boolean> {
+  try {
+    const response = await fetch(previewUrl, { cache: 'force-cache' });
+    if (!response.ok) return false;
+    return playVoiceStudioAudio(await response.blob(), rate);
+  } catch {
+    return false;
+  }
+}
+
 /** VoiceStudio'nun gerçek yerel /v1/audio/speech endpoint'inden ses üretir. */
 export async function speakWithLocalVoiceStudio(
   text: string,
@@ -73,23 +117,8 @@ export async function speakWithLocalVoiceStudio(
       }),
     });
     if (!response.ok) throw new Error(`VoiceStudio speech ${response.status}`);
-    const blob = await response.blob();
-    if (!blob.size) throw new Error('VoiceStudio boş ses döndürdü');
-    stopLocalVoiceStudio();
-    const audio = new Audio(URL.createObjectURL(blob));
-    currentAudio = audio;
-    (audio as HTMLAudioElement & { preservesPitch?: boolean }).preservesPitch = true;
-    audio.playbackRate = Math.min(1.35, Math.max(0.75, rate));
-    audio.onended = () => {
-      URL.revokeObjectURL(audio.src);
-      if (currentAudio === audio) currentAudio = null;
-    };
-    audio.onerror = () => {
-      URL.revokeObjectURL(audio.src);
-      if (currentAudio === audio) currentAudio = null;
-    };
-    onStart?.();
-    await audio.play();
+    const played = await playVoiceStudioAudio(await response.blob(), rate, onStart);
+    if (!played) throw new Error('VoiceStudio ses oynatılamadı');
     return true;
   } catch (error) {
     stopLocalVoiceStudio();
