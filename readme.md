@@ -28,6 +28,25 @@ Bu uygulamayı düzenli olarak takip eden bir öğrenci aşağıdaki **kazanıml
 * **🎙️ Microsoft Edge TTS (`src/tts/edgeTts.ts`):** Tüm seslendirme artık öncelikle Edge'in nöral sesleriyle yapılır — **Rusça: `ru-RU-SvetlanaNeural` / `ru-RU-DmitryNeural`**, **Türkçe (bot/koç konuşmaları): `tr-TR-EmelNeural` / `tr-TR-AhmetNeural`** (Rotam ekranından seçilir, localStorage'da saklanır). Anahtar gerektirmez; MP3 önbelleğiyle tekrar dinlemeler anında çalar; servis erişilemezse eski native/web TTS zinciri otomatik devreye girer.
 * **🎚️ Perde Korumalı Dinleme Hızı:** Rusça ünitelerin **sadece dinleme olan yerlerinde** (dinleme konuları, dinle&seç testleri, dizi sahnesi/diyalog, ünite dinleme sınavı) 0.5×–1.5× hız düğmesi vardır; `preservesPitch` sayesinde ses yavaşlarken/hızlanırken **kelime bozulmaz** (incelme/kalınlaşma olmaz).
 
+## ⚡⚡ ULTRA PAKET 2.0: Deneme Sınavları + Kart Evi + Ultra Zorluk Modu
+
+Kalıcı öğrenme seviyesini "ultra"ya çıkaran üçlü paket (`src/ultra/` + `src/components/MockExamScreen.tsx` + `src/components/FlashcardArena.tsx`):
+
+* **📝 Deneme Sınavları (üst bar + haritadaki Ultra Merkezi):** Bitirdiğin ünitelerin kelime/cümle havuzundan üretilen **süreli, 6 bölümlü karma sınavlar** — her seviye için ayrı (A1, A2, B1, B2, C1/C2) + tüm müfredatı karıştıran **🌪️ GENEL ULTRA DENEME (30 soru)**. Bölümler: 📖 kelime tanıma (RU→TR), ✍️ üretim (TR→RU), 🎧 dinleme (yalnız ses), 💬 bağlam (cümle anlama), 🧩 boşluk doldurma ve **⌨️ YAZMA** (Türkçesi verilir, Rusçası ekran Kiril klavyesiyle YAZILIR — en zor bölüm). Her sorunun geri sayımı vardır; süre dolan soru yanlış sayılır. Yanlışlar **hata kütüğüne + zayıf nokta istatistiğine + öğrenen modeline** otomatik işlenir; sınav sonunda beceri karnesi (bölüm bazında bar grafik), yanlış kartelası (🔊 tekrar dinleme) ve puan raporu verilir. Tüm denemeler `dilkoc_exams_v1` deposunda saklanır: seviye başına EN İYİ puan, son denemeler listesi, geçti/kaldı durumu. Sıfırlamada geçmiş de temizlenir.
+* **🃏 Kart Evi (4 modlu flashcard arenası):** Desteler: 📅 vadesi gelen SRS kelimeleri → 🎓 öğrendiğim kelimeler → 🌍 tüm müfredattan rastgele 40.
+  * **📇 Klasik Kartlar:** çevir-çalış; "Biliyorum/Bilmiyorum" oyu Leitner kutunu doğrudan günceller; bilinmeyen kart deste sonuna bir kez geri döner.
+  * **⚡ Yıldırım 60 sn:** kronometreye karşı arka arkaya doğru cevaplar SERİni büyütür; yanlışta seri sıfırlanır (skor = doğrular + en iyi seri bonusu).
+  * **✍️ Üretim Kartları (ZOR):** Türkçesi gösterilir, Rusçası **Kiril ekran klavyesiyle** yazılır; ё/е katlamalı normalizasyonla değerlendirilir. Üretim kanalı kalıcı öğrenmenin en güçlü antrenmanıdır — doğrular yüksek XP verir, yanlışlar kutu 1'e düşer.
+  * **🔗 Eşleştirme Sprinti:** 6 RU–TR çifti kronometreye karşı; hata sayısı ve süre puana işlenir.
+* **⚡ Ultra Zorluk Modu (üst barda turuncu ⚡ rozet — tek tıkla aç/kapat, `dilkoc_ultra_v1`'de saklanır):** Açıkken TÜM uygulama zorlaşır:
+  * Türkçeleştirme sınavı barajı **%85 → %95**, dinleme konusu testi **%75 → %90**, bölüm finali kapı sınavı **7/10 → 9/10**, deneme sınavı barajı **%70 → %85**.
+  * Yanlışlanan sınav sorusu sınav sonunda 1 değil **2 KEZ** tekrar sorulur.
+  * 🔁 Kalıcı tekrar enjeksiyonu dozu artar: ünite sınavı 10 → **16**, dinleme testi 6 → **9** soru.
+  * SRS (Leitner) tekrar aralıkları sıkılaşır: 1-3-7-16-35 gün → **1-2-4-8-14 gün** (daha sık tekrar = daha kalıcı iz).
+  * Ödül: **tüm XP kazanımları ×1.5** (üst barda "ULTRA AKTİF" rozeti).
+
+İlgili dosyalar: `src/ultra/ultraMode.ts` (mod + dinamik barajlar), `src/ultra/examStore.ts` (deneme geçmişi), `src/ultra/mockExam.ts` (deterministik olmayan, tekleştirilmiş şık üretimiyle 6 bölümlü sınav üreteci; `normalizeRu`/`typingMatches` yazma değerlendirmesi), `src/components/CyrillicPad.tsx` (ЙЦУКЕН dizilimli ekran Kiril klavyesi), `src/components/MockExamScreen.tsx`, `src/components/FlashcardArena.tsx`.
+
 ## 🚀 Ultra Paket: İstatistik Merkezi + 10 Yeni Özellik
 
 * **🔥 Gerçek Seri (Streak) Takibi (`src/statsStore.ts`):** Üst bardaki 🔥 sayısı artık sabit değil — XP kazanılan her gün seri +1 artar, gün atlanırsa 1'e döner; en iyi seri de saklanır (`dilkoc_stats_v1`).

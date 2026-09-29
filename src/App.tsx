@@ -18,6 +18,11 @@ import type { RescueTarget } from './components/WordGraph3D';
 import RescueTest from './components/RescueTest';
 import type { RescueResult } from './components/RescueTest';
 import CoachShorts from './components/CoachShorts';
+// ⚡ ULTRA PAKET: deneme sınavları + kart evi + ultra zorluk modu
+import MockExamScreen from './components/MockExamScreen';
+import FlashcardArena from './components/FlashcardArena';
+import { isUltraMode, setUltraMode, subscribeUltra, storyPassRatio, topicPassPct, gatePassNeed, retentionDose, srsIntervalFor, xpGain } from './ultra/ultraMode';
+import { clearExamAttempts } from './ultra/examStore';
 import { TOPICS_100, TOPICS_100_TOTAL, topicCatInfo, buildTopicDrills, topicFullText, LEVELS, topicSourceUnits, sourceUnitInfo } from './topics100';
 import type { Topic100, Topic100Question, CefrTag } from './topics100';
 
@@ -444,8 +449,8 @@ export interface SRSItem {
   type: 'word' | 'letter';
 }
 
-// Leitner kutu aralıkları (gün cinsinden): kutu 1 = ertesi gün, kutu 5 = 35 gün sonra (uzun süreli hafıza)
-const SRS_INTERVALS_DAYS = [1, 3, 7, 16, 35];
+  // Leitner kutu aralıkları artık src/ultra/ultraMode.ts içindeki srsIntervalFor(box) ile hesaplanır:
+// normalde 1-3-7-16-35 gün; ⚡ ULTRA MOD açıkken 1-2-4-8-14 güne SIKILAŞIR (daha sık tekrar = daha kalıcı).
 const DAY_MS = 24 * 60 * 60 * 1000;
 
 // ==========================================
@@ -624,7 +629,7 @@ const LEVEL_ANCHORS: Record<CefrTag, number> = (() => {
 
 export default function App() {
   const [activeTab, setActiveTab] = useState<'MAP' | 'PROFILE' | 'MISTAKES' | 'METHODS' | 'CONNECTIONS'>('MAP');
-  const [screen, setScreen] = useState<'MAP' | 'AI_TUTOR' | 'ALPHA' | 'ALPHA_CHECK' | 'ALPHA_READING' | 'GRAMMAR' | 'TOPIC' | 'TOPIC_TEST' | 'STORY' | 'DIALOG' | 'SMESHARIKI' | 'FLASHCARD' | 'MATCH' | 'TYPING' | 'SENTENCE' | 'QUIZ' | 'UNIT_STORY' | 'STORY_TEST' | 'STORY_RESULT' | 'CHECKPOINT_STORY' | 'ROUTE' | 'GRAPH' | 'SHORTS' | 'RESCUE'>('MAP');
+  const [screen, setScreen] = useState<'MAP' | 'AI_TUTOR' | 'ALPHA' | 'ALPHA_CHECK' | 'ALPHA_READING' | 'GRAMMAR' | 'TOPIC' | 'TOPIC_TEST' | 'STORY' | 'DIALOG' | 'SMESHARIKI' | 'FLASHCARD' | 'MATCH' | 'TYPING' | 'SENTENCE' | 'QUIZ' | 'UNIT_STORY' | 'STORY_TEST' | 'STORY_RESULT' | 'CHECKPOINT_STORY' | 'ROUTE' | 'GRAPH' | 'SHORTS' | 'RESCUE' | 'MOCK' | 'CARDS'>('MAP');
   // Sınav/test motorunun hangi bağlamda çalıştığını belirtir: her biri bittiğinde farklı bir sonraki adıma geçer
   const [quizContext, setQuizContext] = useState<'ALPHA_FINAL' | 'GRAMMAR_FOUNDATION' | 'LISTENING' | 'UNIT_FINAL' | 'REVIEW' | 'SRS_REVIEW' | 'MARATHON' | 'WEAKSPOT'>('UNIT_FINAL');
   // Harf bazlı anlık tanıma testi
@@ -651,6 +656,9 @@ export default function App() {
   const prevXpRef = useRef<number | null>(null);
   // 🔊 KELİME KARTI OTOMATİK SESLENDİRME tercihi (localStorage'da saklanır)
   const [autoSpeak, setAutoSpeak] = useState(() => localStorage.getItem('dilkoc_autospeak') !== '0');
+  // ⚡ ULTRA MOD: tüm barajlar yükselir, SRS aralıkları sıkılaşır, XP ×1.5
+  const [ultra, setUltra] = useState(isUltraMode());
+  useEffect(() => subscribeUltra(() => setUltra(isUltraMode())), []);
 
   // KULAĞI ALIŞTIR — 100 KONU (sesli dinleme + "dinle & seç" test) durumu
   const [topicIdx, setTopicIdx] = useState(0);              // seçili 100'lük konu (TOPICS_100 indeksi)
@@ -876,13 +884,14 @@ export default function App() {
   const addToSRS = (ru: string, tr: string, type: 'word' | 'letter') => {
     setSrsBank(prev => {
       if (prev.some(x => x.ru === ru)) return prev;
-      return [...prev, { ru, tr, box: 1, nextReview: Date.now() + SRS_INTERVALS_DAYS[0] * DAY_MS, type }];
+      return [...prev, { ru, tr, box: 1, nextReview: Date.now() + srsIntervalFor(1) * DAY_MS, type }];
     });
   };
 
   // TÜM İLERLEMEYİ BAŞA SARAR: XP, seri, elmas, tamamlanan üniteler, hatalar ve tekrar havuzu — hepsi sıfırlanır.
   const resetProgress = () => {
     localStorage.removeItem(SAVE_KEY);
+    clearExamAttempts(); // deneme sınavı geçmişi de temizlenir
     resetLearner(); // zaman/edat beceri haritası ve kelime hafıza modeli de sıfırlanır
     setXp(0);
     setStreak(1);
@@ -1124,9 +1133,9 @@ export default function App() {
       if (topicQIdx + 1 < topicQs.length) {
         setTopicQIdx(topicQIdx + 1);
       } else {
-        // Test bitti
+        // Test bitti — ⚡ ultra modda baraj %90, normalde %75
         const percent = Math.round((correctSoFar / topicQs.length) * 100);
-        const passed = percent >= 75;
+        const passed = percent >= topicPassPct();
         setTopicQDone(true);
         if (passed && !completedTopics.includes(currentTopic.id)) {
           setCompletedTopics(prev => [...prev, currentTopic.id]);
@@ -1232,8 +1241,8 @@ export default function App() {
       options: shuffle([w.tr, ...shuffle(ALL_WORDS.filter(x => x.tr !== w.tr)).slice(0, 3).map(x => x.tr)]),
       ru: w.ru, tr: w.tr, audioOnly: true
     }));
-    // KALICI ÖĞRENME TÜM PROJEDE: dinleme testine de eski ünitelerden 6 tekrar sorusu karışır.
-    const reviewQ = buildReviewInjection(mod, 6);
+    // KALICI ÖĞRENME TÜM PROJEDE: dinleme testine de eski ünitelerden 6 tekrar sorusu karışır (⚡ ultra modda 9).
+    const reviewQ = buildReviewInjection(mod, retentionDose(6));
     setQuizContext('LISTENING');
     setQuizQuestions(shuffle([...q, ...reviewQ]));
     setQuizIdx(0);
@@ -1318,8 +1327,8 @@ export default function App() {
       options: shuffle([s.tr, ...shuffle(ALL_SENTENCES.filter(x => x.tr !== s.tr)).slice(0, 3).map(x => x.tr)]),
       ru: s.ru, tr: s.tr
     }));
-    // 5) KALICI TEKRAR: eski ünitelerden 10 soru (genişleyen aralık + SRS öncelikli)
-    const reviewQ = buildReviewInjection(mod, 10);
+    // 5) KALICI TEKRAR: eski ünitelerden 10 soru (⚡ ultra modda 16) — genişleyen aralık + SRS öncelikli
+    const reviewQ = buildReviewInjection(mod, retentionDose(10));
     setQuizContext('UNIT_FINAL');
     setQuizQuestions(shuffle([...q, ...reviewQ]));
     setQuizIdx(0);
@@ -1330,7 +1339,8 @@ export default function App() {
   // ÜNİTE HİKAYESİ & TÜRKÇELEŞTİRME SINAVI (A1 hariç)
   // ==========================================
 
-  const STORY_PASS_THRESHOLD = 0.85; // Geçmek için gereken minimum başarı oranı: %85
+  // Geçmek için gereken minimum başarı: normalde %85, ⚡ ULTRA modda %95 (src/ultra/ultraMode.ts)
+  const STORY_PASS_THRESHOLD = storyPassRatio();
 
   // O ünitede zaten yazılmış olan dizi sahnesi (dialogue) ve örnek cümlelerden (sentences),
   // ünitenin kelime dağarcığıyla doğrudan bağlantılı, akıcı okunan kısa bir "hikaye/sahne" kurar.
@@ -1481,7 +1491,7 @@ export default function App() {
           return;
         }
         if (!storyQuizPassed) {
-          setFeedback({ isError: true, message: '🚧 Bölüm finali kapısı: Seviye Tekrar Sınavı\'ndan en az 7/10 alman gerekiyor!' });
+          setFeedback({ isError: true, message: `🚧 Bölüm finali kapısı: Seviye Tekrar Sınavı'ndan en az ${gatePassNeed()}/10 alman gerekiyor!${isUltraMode() ? ' (⚡ ULTRA barajı)' : ''}` });
           return;
         }
       }
@@ -1532,7 +1542,7 @@ export default function App() {
     if (levelQuiz.idx + 1 < levelQuiz.questions.length) {
       setLevelQuiz(lq => lq ? { ...lq, idx: lq.idx + 1, picked: null } : null);
     } else {
-      const passed = levelQuiz.correctCount >= 7;
+      const passed = levelQuiz.correctCount >= gatePassNeed(); // ⚡ ultra modda baraj 9/10
       if (passed) setStoryQuizPassed(true);
       setLevelQuiz(lq => lq ? { ...lq, finished: true } : null);
     }
@@ -1725,7 +1735,7 @@ export default function App() {
       if (sk) recordSkill(sk, ans === q.correct);
     }
     if (ans === q.correct) {
-      setXp(x => x + (quizContext === 'REVIEW' ? 5 : quizContext === 'SRS_REVIEW' ? 8 : 20));
+      setXp(x => x + xpGain(quizContext === 'REVIEW' ? 5 : quizContext === 'SRS_REVIEW' ? 8 : 20)); // ⚡ ultra modda XP ×1.5
       setFeedback(null);
       if (quizContext === 'WEAKSPOT') {
         // İyileşme: zayıf nokta testinde doğru cevap sayacı 1 azaltır (0'a inince kelime panelden düşer)
@@ -1742,12 +1752,12 @@ export default function App() {
         setMistakes(prev => prev.filter(m => !(m.ru === q.ru && m.tr === q.tr)));
       }
       if (quizContext === 'SRS_REVIEW' || (q as any).review) {
-        // Doğru bilindi: bir sonraki kutuya terfi eder, tekrar aralığı büyür (1→3→7→16→35 gün)
-        // (🔁 KALICI TEKRAR soruları da SRS kutusunu ilerletir — sınav içi tekrar boşa gitmez.)
+        // Doğru bilindi: bir sonraki kutuya terfi eder, tekrar aralığı büyür (1→3→7→16→35 gün;
+        // ⚡ ultra modda 1→2→4→8→14). (🔁 KALICI TEKRAR soruları da kutuyu ilerletir.)
         setSrsBank(prev => prev.map(item => {
           if (item.ru !== q.ru) return item;
-          const newBox = Math.min(item.box + 1, SRS_INTERVALS_DAYS.length);
-          return { ...item, box: newBox, nextReview: Date.now() + SRS_INTERVALS_DAYS[newBox - 1] * DAY_MS };
+          const newBox = Math.min(item.box + 1, 5);
+          return { ...item, box: newBox, nextReview: Date.now() + srsIntervalFor(newBox) * DAY_MS };
         }));
       }
       if (quizIdx + 1 < quizQuestions.length) {
@@ -1806,15 +1816,18 @@ export default function App() {
       addMistake(q.ru, q.tr, reason);
       if (quizContext === 'SRS_REVIEW' || quizContext === 'MARATHON' || (q as any).review) {
         // Unutulan kelime kutu 1'e geri düşer: yarın tekrar sorulacak (kalıcı hafıza mantığının kalbi)
-        setSrsBank(prev => prev.map(item => item.ru === q.ru ? { ...item, box: 1, nextReview: Date.now() + SRS_INTERVALS_DAYS[0] * DAY_MS } : item));
+        setSrsBank(prev => prev.map(item => item.ru === q.ru ? { ...item, box: 1, nextReview: Date.now() + srsIntervalFor(1) * DAY_MS } : item));
       }
       // KALICI ÖĞRENME — YENİDEN SORMA KURALI: yanlışlanan soru sınavın SONUNA
       // (şıkları yeniden karılarak) bir kez daha eklenir. "Doğrusu buymuş" deyip
       // geçmek yetmez; aynı bilgi sınav bitmeden bir kez daha GERİ ÇAĞRILMALIDIR.
-      if (!(q as any).requeued && (quizContext === 'UNIT_FINAL' || quizContext === 'LISTENING' || quizContext === 'ALPHA_FINAL' || quizContext === 'GRAMMAR_FOUNDATION')) {
-        setQuizQuestions(prev => [...prev, { ...q, options: shuffle([...(q.options as string[])]), requeued: true }]);
+      // ⚡ ULTRA MOD: soru 1 değil 2 KEZ geri gelir — kaybetmek yok, öğrenmek var.
+      const maxRequeue = isUltraMode() ? 2 : 1;
+      const rqCount = (q as any).requeueCount || 0;
+      if (rqCount < maxRequeue && (quizContext === 'UNIT_FINAL' || quizContext === 'LISTENING' || quizContext === 'ALPHA_FINAL' || quizContext === 'GRAMMAR_FOUNDATION')) {
+        setQuizQuestions(prev => [...prev, { ...q, options: shuffle([...(q.options as string[])]), requeued: true, requeueCount: rqCount + 1 }]);
       }
-      setFeedback({ isError: true, message: `❌ Yanlış cevap. Doğrusu: "${q.correct}" — bu soru sınav sonunda TEKRAR gelecek!` });
+      setFeedback({ isError: true, message: `❌ Yanlış cevap. Doğrusu: "${q.correct}" — bu soru sınav sonunda TEKRAR gelecek!${isUltraMode() ? ' (⚡ ULTRA: 2 kez)' : ''}` });
     }
   };
 
@@ -1848,8 +1861,8 @@ export default function App() {
       if (r.passed) {
         setSrsBank(prev => prev.map(item => {
           if (item.ru !== ru) return item;
-          const newBox = Math.min(item.box + 1, SRS_INTERVALS_DAYS.length);
-          return { ...item, box: newBox, nextReview: Date.now() + SRS_INTERVALS_DAYS[newBox - 1] * DAY_MS };
+          const newBox = Math.min(item.box + 1, 5);
+          return { ...item, box: newBox, nextReview: Date.now() + srsIntervalFor(newBox) * DAY_MS };
         }));
         setErrorStats(prev => {
           const cur = prev[ru];
@@ -1862,7 +1875,7 @@ export default function App() {
         setXp(x => x + 15);
         setGems(g => g + 5);
       } else {
-        setSrsBank(prev => prev.map(item => item.ru === ru ? { ...item, box: 1, nextReview: Date.now() + SRS_INTERVALS_DAYS[0] * DAY_MS } : item));
+        setSrsBank(prev => prev.map(item => item.ru === ru ? { ...item, box: 1, nextReview: Date.now() + srsIntervalFor(1) * DAY_MS } : item));
       }
     } else if (t?.kind === 'skill' && r.passed) {
       setXp(x => x + 15);
@@ -1870,6 +1883,22 @@ export default function App() {
     }
     setRescueTarget(null);
     setScreen('GRAPH');
+  };
+
+  // 🃏 KART EVİ — kart modlarından gelen Leitner oyları: bildi → kutu yükselir,
+  // bilemedi → kutu 1'e düşer (yarın geri döner). Havuzda olmayan kelime önce eklenir.
+  const handleSrsGrade = (ru: string, tr: string, good: boolean) => {
+    setSrsBank(prev => {
+      const box1 = good ? 2 : 1;
+      if (!prev.some(i => i.ru === ru)) {
+        return [...prev, { ru, tr, box: box1, nextReview: Date.now() + srsIntervalFor(box1) * DAY_MS, type: 'word' as const }];
+      }
+      return prev.map(item => {
+        if (item.ru !== ru) return item;
+        const box = good ? Math.min(item.box + 1, 5) : 1;
+        return { ...item, box, nextReview: Date.now() + srsIntervalFor(box) * DAY_MS };
+      });
+    });
   };
 
   // ⌨️ KLAVYE KISAYOLLARI: 1-4 tuşları test ekranlarındaki şıkları seçer
@@ -1933,6 +1962,8 @@ export default function App() {
         </div>
 
         <div style={{ display: 'flex', gap: '12px', alignItems: 'center', fontWeight: 800, fontSize: '14px', flexWrap: 'wrap', justifyContent: 'flex-end' }}>
+          <button onClick={() => { setActiveTab('MAP'); setScreen('MOCK'); }} style={{ background: 'transparent', border: 'none', color: '#22d3ee', cursor: 'pointer', fontWeight: 800, fontSize: '13px' }} title="Seviye denemeleri — süreli 6 bölümlü karma sınav (tanıma/üretim/dinleme/bağlam/boşluk/yazma)">📝 Denemeler</button>
+          <button onClick={() => { setActiveTab('MAP'); setScreen('CARDS'); }} style={{ background: 'transparent', border: 'none', color: '#f59e0b', cursor: 'pointer', fontWeight: 800, fontSize: '13px' }} title="Kart Evi — klasik çevir-çalış, yıldırım 60sn, üretim (yazma) ve eşleştirme kartları">🃏 Kartlar</button>
           <button onClick={() => { setActiveTab('MAP'); setScreen('ROUTE'); }} style={{ background: 'transparent', border: 'none', color: '#38bdf8', cursor: 'pointer', fontWeight: 800, fontSize: '13px' }} title="Çözdüğün sorulardan çıkarılan zaman/edat eksik haritası ve kişisel rota">🧭 Rotam</button>
           <button onClick={() => { setActiveTab('MAP'); setScreen('GRAPH'); }} style={{ background: 'transparent', border: 'none', color: '#22d3ee', cursor: 'pointer', fontWeight: 800, fontSize: '13px' }} title="Bildiğin kelimelerin 3D ağı — unutulmak üzere olanlar kırmızı yanar">🕸️ Kelime Ağı</button>
           <button onClick={() => { setActiveTab('MAP'); setScreen('SHORTS'); }} style={{ background: 'transparent', border: 'none', color: '#fb923c', cursor: 'pointer', fontWeight: 800, fontSize: '13px' }} title="Hatalarına özel AI üretimi 15-30 saniyelik dikey mikro dersler">🎬 Koç Akışı</button>
@@ -1941,6 +1972,19 @@ export default function App() {
           <span style={{ color: '#f59e0b', display: 'flex', alignItems: 'center', gap: '4px' }}>🔥 {streak}</span>
           <span style={{ color: '#38bdf8', display: 'flex', alignItems: 'center', gap: '4px' }}>💎 {gems}</span>
           <span style={{ color: '#10b981', display: 'flex', alignItems: 'center', gap: '4px' }}>⚡ {xp} XP</span>
+          <button
+            onClick={() => setUltraMode(!ultra)}
+            title={ultra
+              ? '⚡ ULTRA MOD AÇIK — barajlar: çeviri %95, dinleme %90, kapı 9/10; kalıcı tekrar dozu ×1.6; yanlış soru 2 kez geri gelir; SRS aralıkları sıkı (1-2-4-8-14 gün); XP ×1.5. Kapatmak için tıkla.'
+              : 'ULTRA MOD kapalı — açınca tüm sınavlar zorlaşır ama XP ×1.5 olur. Açmak için tıkla.'}
+            style={{
+              padding: '5px 10px', borderRadius: '999px', cursor: 'pointer', fontWeight: 900, fontSize: '11px',
+              border: ultra ? '1px solid #f97316' : '1px solid #475569',
+              background: ultra ? 'linear-gradient(135deg, #f97316, #ef4444)' : 'transparent',
+              color: ultra ? '#fff' : '#64748b',
+              boxShadow: ultra ? '0 0 14px rgba(249,115,22,0.5)' : 'none',
+            }}
+          >{ultra ? '⚡ ULTRA' : 'ultra kapalı'}</button>
         </div>
       </div>
 
@@ -1988,6 +2032,27 @@ export default function App() {
                   <div style={{ fontWeight: 900, fontSize: '14px' }}>{aiLearningFocus.icon} Sıradaki adım</div>
                   <div style={{ fontSize: '12px', color: '#94a3b8', marginTop: '2px' }}>{aiLearningFocus.title} <span style={{ color: '#64748b' }}>({aiLearningFocus.pathPosition}/{aiLearningFocus.pathTotal})</span> — haritada seni bekliyor ⬇️</div>
                 </div>
+              </div>
+            </div>
+
+            {/* ⚡ ULTRA ÖĞRENME MERKEZİ — 📝 deneme sınavları + 🃏 kart evi + ultra zorluk modu */}
+            <div style={{ ...cardBox, marginBottom: '16px', border: `1px solid ${ultra ? '#f97316' : '#22d3ee'}55`, background: ultra ? 'linear-gradient(135deg, rgba(249,115,22,0.14), #1e293b)' : 'linear-gradient(135deg, rgba(34,211,238,0.1), rgba(245,158,11,0.06), #1e293b)' }}>
+              <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: '10px', flexWrap: 'wrap', marginBottom: '10px' }}>
+                <div style={{ fontWeight: 900 }}>⚡ Ultra Öğrenme Merkezi {ultra && <span style={{ fontSize: '10px', fontWeight: 900, color: '#fff', background: 'linear-gradient(135deg,#f97316,#ef4444)', padding: '3px 8px', borderRadius: '999px', marginLeft: '6px' }}>ULTRA AKTİF · XP ×1.5</span>}</div>
+              </div>
+              <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))', gap: '10px' }}>
+                <button onClick={() => { setActiveTab('MAP'); setScreen('MOCK'); }} style={{ padding: '12px', borderRadius: '12px', border: '1px solid #22d3ee55', background: 'rgba(34,211,238,0.12)', color: '#e2e8f0', cursor: 'pointer', textAlign: 'left' }}>
+                  <div style={{ fontWeight: 900, fontSize: '14px', color: '#22d3ee' }}>📝 Deneme Sınavları</div>
+                  <div style={{ fontSize: '12px', color: '#94a3b8', marginTop: '2px' }}>A1→C1/C2 + GENEL: süreli 6 bölümlü karma sınav — ⌨️ yazma bölümü dahil</div>
+                </button>
+                <button onClick={() => { setActiveTab('MAP'); setScreen('CARDS'); }} style={{ padding: '12px', borderRadius: '12px', border: '1px solid #f59e0b55', background: 'rgba(245,158,11,0.1)', color: '#e2e8f0', cursor: 'pointer', textAlign: 'left' }}>
+                  <div style={{ fontWeight: 900, fontSize: '14px', color: '#f59e0b' }}>🃏 Kart Evi</div>
+                  <div style={{ fontSize: '12px', color: '#94a3b8', marginTop: '2px' }}>4 mod: klasik çevir-çalış · ⚡ yıldırım 60sn · ✍️ üretim yazma (ZOR) · 🔗 eşleştirme</div>
+                </button>
+                <button onClick={() => setUltraMode(!ultra)} style={{ padding: '12px', borderRadius: '12px', border: `1px solid ${ultra ? '#f97316' : '#475569'}`, background: ultra ? 'linear-gradient(135deg, rgba(249,115,22,0.25), rgba(239,68,68,0.15))' : '#0f172a', color: '#e2e8f0', cursor: 'pointer', textAlign: 'left' }}>
+                  <div style={{ fontWeight: 900, fontSize: '14px', color: ultra ? '#fb923c' : '#94a3b8' }}>⚡ Ultra Mod: {ultra ? 'AÇIK' : 'KAPALI'}</div>
+                  <div style={{ fontSize: '12px', color: '#94a3b8', marginTop: '2px' }}>{ultra ? 'Barajlar yükseldi (%95/%90/9-10), tekrarlar sıkılaştı, yanlış soru 2 kez geri geliyor — karşılığında XP ×1.5!' : 'Açınca tüm sınavlar zorlaşır, tekrarlar sıklaşır, XP ×1.5 olur'}</div>
+                </button>
               </div>
             </div>
 
@@ -2439,6 +2504,28 @@ export default function App() {
               />
             )}
 
+            {/* 📝 DENEME SINAVLARI — tamamlanan ünitelerden süreli, 6 bölümlü karma sınav */}
+            {screen === 'MOCK' && (
+              <MockExamScreen
+                completedUnits={completedUnits}
+                onXp={n => setXp(x => x + n)}
+                onMistake={addMistake}
+                onRecordResult={recordWordResult}
+              />
+            )}
+
+            {/* 🃏 KART EVİ — klasik / yıldırım / üretim-yazma / eşleştirme kart modları */}
+            {screen === 'CARDS' && (
+              <FlashcardArena
+                completedUnits={completedUnits}
+                dueSrs={dueSRS}
+                onXp={n => setXp(x => x + n)}
+                onMistake={addMistake}
+                onSrsGrade={handleSrsGrade}
+                onRecordResult={recordWordResult}
+              />
+            )}
+
             {screen === 'AI_TUTOR' && (
               <AiTutor
                 completedUnits={completedUnits}
@@ -2725,12 +2812,12 @@ export default function App() {
               const q = topicQs[topicQIdx];
               if (topicQDone) {
                 const percent = topicQs.length ? Math.round((topicQCorrect / topicQs.length) * 100) : 0;
-                const passed = percent >= 75;
+                const passed = percent >= topicPassPct();
                 return (
                   <div style={{ textAlign: 'center' }}>
                     <SceneBanner icon={passed ? '🏆' : '🎧'} color={passed ? '#10b981' : '#f59e0b'} label={`Ünite ${TOPIC_PATH_POS[topicIdx]} — Test Sonucu`} />
                     <div style={{ fontSize: '52px', fontWeight: 900, color: passed ? '#10b981' : '#f59e0b', margin: '24px 0 8px' }}>%{percent}</div>
-                    <p style={{ color: '#cbd5e1', fontSize: '14px' }}>{topicQs.length} sorudan {topicQCorrect} tanesini doğru yanıtladın. Geçmek için en az %75 gerekiyor.</p>
+                    <p style={{ color: '#cbd5e1', fontSize: '14px' }}>{topicQs.length} sorudan {topicQCorrect} tanesini doğru yanıtladın. Geçmek için en az %{topicPassPct()} gerekiyor{isUltraMode() ? ' (⚡ ULTRA barajı)' : ''}.</p>
                     {passed && (
                       <p style={{ color: '#94a3b8', fontSize: '12px', marginTop: '6px' }}>📅 Konudaki {Math.min(currentTopic.items.length, 8)} kelime otomatik olarak Aralıklı Tekrar havuzuna eklendi.</p>
                     )}
@@ -3202,7 +3289,7 @@ export default function App() {
                       <span style={{ fontSize: '11px', fontWeight: 900, background: '#0f172a', color: mod.color, padding: '2px 8px', borderRadius: '4px' }}>📖 ÜNİTE HİKAYESİ</span>
                       <h2 style={{ marginTop: '8px', marginBottom: '2px', fontSize: '22px' }}>Bu Ünitenin Kelimeleriyle Kısa Bir Hikaye</h2>
                       <p style={{ color: '#94a3b8', fontSize: '13px', marginTop: 0 }}>
-                        Önce hikayeyi oku ve dinle (Türkçesi bilerek gösterilmiyor). Sonra her cümleyi Türkçeleştirmen istenecek — geçmek için en az <strong style={{ color: '#f8fafc' }}>%85</strong> doğru gerekiyor. Geçemezsen ünitenin kelimeleri karıştırılıp baştan tekrar ettirilecek.
+                        Önce hikayeyi oku ve dinle (Türkçesi bilerek gösterilmiyor). Sonra her cümleyi Türkçeleştirmen istenecek — geçmek için en az <strong style={{ color: '#f8fafc' }}>%{Math.round(STORY_PASS_THRESHOLD * 100)}</strong> doğru gerekiyor{isUltraMode() ? ' (⚡ ULTRA barajı)' : ''}. Geçemezsen ünitenin kelimeleri karıştırılıp baştan tekrar ettirilecek.
                       </p>
 
                       <div style={{ display: 'flex', flexDirection: 'column', gap: '12px', margin: '16px 0' }}>
@@ -3235,7 +3322,7 @@ export default function App() {
                     <div>
                       <SceneBanner icon={mod.icon} color={mod.color} label={`${mod.title} — Türkçeleştirme Sınavı`} />
                       <div style={{ fontSize: '12px', color: '#38bdf8', fontWeight: 800 }}>
-                        📝 TÜRKÇELEŞTİRME SINAVI — CÜMLE {storyTestIdx + 1} / {storyTestQuestions.length} (Geçme notu: %85)
+                        📝 TÜRKÇELEŞTİRME SINAVI — CÜMLE {storyTestIdx + 1} / {storyTestQuestions.length} (Geçme notu: %{Math.round(STORY_PASS_THRESHOLD * 100)}{isUltraMode() ? ' ⚡' : ''})
                       </div>
                       <div style={{ background: '#0f172a', padding: '24px', borderRadius: '14px', border: '1px solid #334155', textAlign: 'center', margin: '16px 0' }}>
                         <div style={{ fontSize: '19px', fontWeight: 900 }}>{q.prompt}</div>
@@ -3284,7 +3371,7 @@ export default function App() {
                       <h2 style={{ fontSize: '26px', margin: '8px 0' }}>{storyResult.passed ? 'Tebrikler, Geçtin! 🎉' : 'Bu Sefer Olmadı 😕'}</h2>
                       <div style={{ fontSize: '48px', fontWeight: 900, color: storyResult.passed ? '#10b981' : '#ef4444', margin: '12px 0' }}>%{storyResult.percent}</div>
                       <p style={{ color: '#94a3b8', fontSize: '14px' }}>
-                        {storyResult.total} cümleden {storyResult.correctCount} tanesini doğru Türkçeleştirdin. Geçmek için en az %85 gerekiyor.
+                        {storyResult.total} cümleden {storyResult.correctCount} tanesini doğru Türkçeleştirdin. Geçmek için en az %{Math.round(STORY_PASS_THRESHOLD * 100)} gerekiyor.
                       </p>
                       {storyResult.passed ? (
                         <>
@@ -3295,7 +3382,7 @@ export default function App() {
                         </>
                       ) : (
                         <>
-                          <p style={{ color: '#ef4444', fontWeight: 800 }}>❌ %85 barajını geçemedin. Kelimeler karıştırılıp ünite baştan tekrar ettirilecek — böylece daha iyi ezberleyeceksin.</p>
+                          <p style={{ color: '#ef4444', fontWeight: 800 }}>❌ %{Math.round(STORY_PASS_THRESHOLD * 100)} barajını geçemedin. Kelimeler karıştırılıp ünite baştan tekrar ettirilecek — böylece daha iyi ezberleyeceksin.</p>
                           <button onClick={retryUnitShuffled} style={{ ...primaryBtn, background: '#ef4444', boxShadow: '0 4px 14px rgba(239,68,68,0.4)' }}>🔀 Üniteyi Karıştırıp Tekrar Et</button>
                         </>
                       )}
@@ -3355,8 +3442,8 @@ export default function App() {
                       <div style={{ fontSize: '13px', fontWeight: 900, color: '#fbbf24' }}>🚧 BÖLÜM FİNALİ KAPISI</div>
                       <div style={{ fontSize: '12.5px', color: '#e2e8f0', marginTop: '6px', lineHeight: 1.6 }}>
                         {story.levelId === 'C1/C2'
-                          ? 'Bu, DİZİ FİNALİDİR: özetin TAMAMEN doğru olmalı ve Seviye Tekrar Sınavı\'ndan en az 7/10 almalısın. Mezuniyet ancak böyle! 🎓'
-                          : `Sonraki bölüme (${story.nextLevelId}) geçmek için: ① özetin TAMAMEN doğru olmalı (tüm ana noktalar, yanlış anlama yok) ② Seviye Tekrar Sınavı'ndan en az 7/10 almalısın.`}
+                          ? `Bu, DİZİ FİNALİDİR: özetin TAMAMEN doğru olmalı ve Seviye Tekrar Sınavı'ndan en az ${gatePassNeed()}/10 almalısın${isUltraMode() ? ' (⚡ ULTRA barajı)' : ''}. Mezuniyet ancak böyle! 🎓`
+                          : `Sonraki bölüme (${story.nextLevelId}) geçmek için: ① özetin TAMAMEN doğru olmalı (tüm ana noktalar, yanlış anlama yok) ② Seviye Tekrar Sınavı'ndan en az ${gatePassNeed()}/10 almalısın${isUltraMode() ? ' (⚡ ULTRA)' : ''}.`}
                       </div>
                       <div style={{ display: 'flex', gap: '8px', marginTop: '10px', flexWrap: 'wrap' }}>
                         <span style={{ fontSize: '11px', fontWeight: 800, padding: '4px 10px', borderRadius: '999px', background: summaryPerfect ? 'rgba(16,185,129,0.2)' : '#1e293b', border: `1px solid ${summaryPerfect ? '#10b981' : '#334155'}`, color: summaryPerfect ? '#10b981' : '#94a3b8' }}>
@@ -3619,7 +3706,7 @@ export default function App() {
                           <div style={{ fontSize: '13px', fontWeight: 800, color: levelQuiz.correctCount >= 7 ? '#10b981' : '#ef4444', margin: '4px 0 12px', lineHeight: 1.6 }}>
                             {levelQuiz.correctCount >= 7
                               ? '✅ SINAVI GEÇTİN! Artık bölümü tamamlayıp sonraki bölüme geçebilirsin.'
-                              : '❌ Yeterli değil (en az 7/10 gerekiyor). Yanlışların "Unutulanlar" havuzuna eklendi — yeni sorularla tekrar dene!'}
+                              : `❌ Yeterli değil (en az ${gatePassNeed()}/10 gerekiyor${isUltraMode() ? ' ⚡' : ''}). Yanlışların "Unutulanlar" havuzuna eklendi — yeni sorularla tekrar dene!`}
                           </div>
                           {levelQuiz.correctCount < 7 && (
                             <button onClick={() => buildLevelQuiz(story)} style={primaryBtn}>🔁 Yeni Kelimelerle Tekrar Dene</button>
