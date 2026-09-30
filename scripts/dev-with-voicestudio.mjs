@@ -181,6 +181,12 @@ function patchVoiceStudioForBootstrap() {
   let source = readFileSync(pyprojectPath, 'utf8');
   const before = source;
 
+  // Git may leave this file with CRLF endings on Windows, and interrupted or
+  // external tooling can also introduce bare CR characters. TOML parsers reject
+  // a bare CR with "carriage return must be followed by newline", so normalize
+  // both forms before uv reads pyproject.toml.
+  source = source.replace(/\r\n?/g, '\n');
+
   // These two optional engines are shipped as GitHub release assets by
   // VoiceStudio. Release URLs are time-limited behind the GitHub CDN and can
   // make an otherwise usable OmniVoice install fail much later in the solve.
