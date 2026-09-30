@@ -4,9 +4,11 @@ import AiTutor from './components/AiTutor';
 // 🔥 GERÇEK SERİ TAKİBİ: XP kazanılan günler sayılır, gün atlanırsa seri sıfırlanır
 import { effectiveStreak, loadStats, recordXpGain, todayStr } from './statsStore';
 
-// MICROSOFT EDGE TTS: Rusça = ru-RU-Svetlana/DmitryNeural, Türkçe = tr-TR-Emel/AhmetNeural.
-// Dinleme ekranlarındaki hız düğmesi perde korumalı (preservesPitch) çalışır — kelime bozulmaz.
-import { edgeSpeak, getVoicePrefs, stopEdgeSpeech } from './tts/edgeTts';
+// Ses yolu: seçili VoiceStudio profili → cloud AI → metnin diline uygun cihaz sesi.
+// Microsoft Edge websocket TTS kullanılmaz.
+import { stopEdgeSpeech } from './tts/edgeTts';
+import { speakWithBotVoice } from './tts/voiceStudio';
+import { stopWebSpeech, webSpeak } from './tts/webSpeech';
 // ÖĞRENEN MODELİ: çözülen sorulardan zaman/edat eksik haritası + kişisel rota
 import { recordWordResult, recordSkill, recordSentenceResult, skillKeyForGrammarUnit, resetLearner } from './learnerModel';
 // ANLAMSAL FARK ANALİZİ: cümle egzersizlerinde "doğru/yanlış" yerine anlam farkı raporu
@@ -801,25 +803,22 @@ export default function App() {
       (screen === 'QUIZ' && quizContext === 'LISTENING');
   }, [screen, quizContext]);
 
-  // Ekran değişince çalan Edge TTS sesini kes (yarım kalmış uzun dinlemeler sürmesin)
-  useEffect(() => { stopEdgeSpeech(); }, [screen]);
+  // Ekran değişince çalan sesleri kes (yarım kalmış uzun dinlemeler sürmesin).
+  useEffect(() => { stopEdgeSpeech(); stopWebSpeech(); }, [screen]);
 
-  // SESLENDİRME — ÖNCE MICROSOFT EDGE TTS (Rusça: Svetlana/Dmitry, Türkçe: Emel/Ahmet).
-  // rate parametresiyle yavaş (0.55) veya normal (0.85) tempoda okuma.
-  // Dinleme ekranlarında ek olarak perde korumalı hız çarpanı (listenSpeed) uygulanır:
-  // ses YAVAŞLARKEN/HIZLANIRKEN kelimenin perdesi BOZULMAZ (preservesPitch).
-  // Edge TTS erişilemezse eski native/web TTS zinciri devreye girer.
+  // SESLENDİRME — seçili VoiceStudio profili ve metnin dili korunur.
+  // Türkçe açıklamalar Türkçe, Rusça tekrar kelimeleri Rusça okunur.
   const speak = async (txt: string, rate = 0.85, onEnd?: () => void, onError?: () => void) => {
     const isRussian = /[а-яё]/i.test(txt);
-    const prefs = getVoicePrefs();
     const playbackRate = listenContextRef.current ? listenSpeedRef.current : 1;
-    const edgeOk = await edgeSpeak(txt, {
-      voice: isRussian ? prefs.ru : prefs.tr,
-      // rate < 0.7 → "Yavaşça Dinle": sentez temposu da düşürülür (heceler ayrışır)
-      prosodyRate: rate < 0.7 ? '-35%' : rate < 0.83 ? '-12%' : '-5%',
-      playbackRate,
+    const selectedVoiceOk = await speakWithBotVoice(txt, rate * playbackRate);
+    if (selectedVoiceOk) { onEnd?.(); return; }
+    const deviceVoiceOk = await webSpeak(txt, {
+      lang: isRussian ? 'ru-RU' : 'tr-TR',
+      rate: rate * playbackRate,
+      pitch: isRussian ? 1 : 0.95,
     });
-    if (edgeOk) { onEnd?.(); return; }
+    if (deviceVoiceOk) { onEnd?.(); return; }
 
     const chunks: string[] = [];
     let rest = txt.trim();
@@ -1855,6 +1854,7 @@ export default function App() {
   // 3D ağda kırmızı/zayıf düğüme tıklanınca: 1 dakikalık hedefli kurtarma testi
   const startRescue = (t: RescueTarget) => {
     stopEdgeSpeech();
+    stopWebSpeech();
     setRescueTarget(t);
     setActiveTab('MAP');
     setScreen('RESCUE');
@@ -1976,6 +1976,7 @@ export default function App() {
           <button onClick={() => { setActiveTab('MAP'); setScreen('ROUTE'); }} style={{ background: 'transparent', border: 'none', color: '#38bdf8', cursor: 'pointer', fontWeight: 800, fontSize: '13px' }} title="Çözdüğün sorulardan çıkarılan zaman/edat eksik haritası ve kişisel rota">🧭 Rotam</button>
           <button onClick={() => { setActiveTab('MAP'); setScreen('GRAPH'); }} style={{ background: 'transparent', border: 'none', color: '#22d3ee', cursor: 'pointer', fontWeight: 800, fontSize: '13px' }} title="Bildiğin kelimelerin 3D ağı — unutulmak üzere olanlar kırmızı yanar">🕸️ Kelime Ağı</button>
           <button onClick={() => { setActiveTab('MAP'); setScreen('SHORTS'); }} style={{ background: 'transparent', border: 'none', color: '#fb923c', cursor: 'pointer', fontWeight: 800, fontSize: '13px' }} title="Hatalarına özel AI üretimi 15-30 saniyelik dikey mikro dersler">🎬 Koç Akışı</button>
+          <button onClick={() => { setFeedback(null); setActiveTab('MAP'); setScreen('AI_TUTOR'); }} style={{ background: 'transparent', border: 'none', color: '#86efac', cursor: 'pointer', fontWeight: 900, fontSize: '13px' }} title="Ünitelerini ve bulunduğun yeri bilen çevrim içi AI ajanına soru sor">💬 AI Ajanı</button>
           <button onClick={() => { setActiveTab('METHODS'); setScreen('MAP'); }} style={{ background: 'transparent', border: 'none', color: '#a78bfa', cursor: 'pointer', fontWeight: 800, fontSize: '13px' }}>📚 Yöntemler</button>
           <button onClick={() => { setActiveTab('CONNECTIONS'); setScreen('MAP'); }} style={{ background: 'transparent', border: 'none', color: '#f472b6', cursor: 'pointer', fontWeight: 800, fontSize: '13px' }}>🕸️ Hikaye Bağları</button>
           <span style={{ color: '#f59e0b', display: 'flex', alignItems: 'center', gap: '4px' }}>🔥 {streak}</span>
@@ -2086,13 +2087,13 @@ export default function App() {
                     🪐
                   </div>
                   <div>
-                    <div style={{ fontSize: '12px', color: '#7dd3fc', fontWeight: 900 }}>YENİ • GEZEGEN KOÇ • SESLİ TÜRKÇE AI</div>
-                    <div style={{ fontSize: '20px', fontWeight: 950, marginTop: '2px' }}>Bulunduğun üniteye göre günlük konuşma</div>
-                    <div style={{ fontSize: '12px', color: '#cbd5e1', marginTop: '4px', lineHeight: 1.5 }}>Öğrenme Yolu Ünite 1 → {PATH.length} içinde kaldığın karta göre; Rusça söyleme, dinlediğini çevirme ve telaffuz kontrolü.</div>
+                    <div style={{ fontSize: '12px', color: '#7dd3fc', fontWeight: 900 }}>YENİ • AI AJANI + GEZEGEN KOÇ • ÜNİTE HAFIZASI</div>
+                    <div style={{ fontSize: '20px', fontWeight: 950, marginTop: '2px' }}>İstediğini sor, bulunduğun yerden devam et</div>
+                    <div style={{ fontSize: '12px', color: '#cbd5e1', marginTop: '4px', lineHeight: 1.5 }}>Çevrim içi ücretsiz AI; tüm ünite kataloğundan ilgili bilgiyi bulur, ilerlemeni/hatalarını görür ve cevaplarını seçtiğin farklı AI sesiyle okur.</div>
                   </div>
                 </div>
                 <button onClick={() => { setFeedback(null); setActiveTab('MAP'); setScreen('AI_TUTOR'); }} style={{ background: 'linear-gradient(135deg, #38bdf8, #22c55e)', border: 'none', color: '#07111f', padding: '13px 18px', borderRadius: '12px', fontWeight: 950, cursor: 'pointer', boxShadow: '0 10px 25px rgba(34,197,94,0.22)' }}>
-                  🪐 Sesli Koça Git
+                  💬 AI Ajanına Git
                 </button>
               </div>
             </div>

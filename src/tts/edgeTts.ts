@@ -302,6 +302,12 @@ export async function edgeSpeak(text: string, opts: EdgeSpeakOptions = {}): Prom
   const clean = (text || '').trim();
   if (!clean) return true;
 
+  // DilKoç'un ses politikası: Microsoft Edge websocket TTS kullanılmaz.
+  // Gerçek yerel VoiceStudio başarısızsa çağıran zincir önce Puter/cloud,
+  // burada ise anahtarsız tarayıcı sesine düşer. Böylece Edge kimlik/TLS
+  // hataları ses üretimini ve önizlemeyi bloke edemez.
+  const browserOnly = true;
+
   const voice = opts.voice || detectVoiceForText(clean);
   const prosodyRate = opts.prosodyRate || '+0%';
   const playbackRate = opts.playbackRate ?? 1;
@@ -319,7 +325,7 @@ export async function edgeSpeak(text: string, opts: EdgeSpeakOptions = {}): Prom
   };
 
   // Servis kapalıysa/desteklenmiyorsa websocket açmaya hiç kalkışma: doğrudan yedeğe geç.
-  if (!edgeTtsLooksHealthy() || typeof WebSocket === 'undefined' || !crypto?.subtle) {
+  if (browserOnly || !edgeTtsLooksHealthy() || typeof WebSocket === 'undefined' || !crypto?.subtle) {
     return speakWithBrowser();
   }
 

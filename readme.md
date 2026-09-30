@@ -22,11 +22,29 @@ Bu uygulamayı düzenli olarak takip eden bir öğrenci aşağıdaki **kazanıml
 
 * **🧭 Kişisel Rota (`src/learnerModel.ts` + `src/components/LearningRoute.tsx`):** Çözülen HER soru (ünite sınavları, cümle kurma, dinleme testleri, gramer quizleri, hikaye Türkçeleştirme) yerel öğrenen modeline işlenir. Cümlelerden **zamanlar** (şimdiki/geçmiş/gelecek, morfolojik ipuçlarıyla) ve **edatlar** (в, на, к, у, с, из…) deterministik olarak tespit edilir; üst bardaki **"🧭 Rotam"** ekranı her zaman ve her edat için ayrı isabet çubuğu gösterir ve zayıf halkalardan sıralı bir **kişiselleştirilmiş öğrenim rotası** üretir (ilgili gramer ünitesine atlama + 1 dakikalık hedefli test + mikro ders akışı). Ses seçimi de bu ekrandadır.
 * **🔬 Anlamsal Fark Analizi (`src/semanticFeedback.ts`):** Cümle kurma egzersizlerinde yanlış cevaba artık salt "yanlış" denmez; kullanıcının cümlesi ile ideal cümle **anlam düzeyinde** karşılaştırılır: zaman kayması, eksik/fazla edat, hâl eki (çekim) farkı, eksik/fazla kelime ve dizilim/vurgu farkı madde madde raporlanır + anlamsal yakınlık yüzdesi gösterilir.
-* **🎬 Koç Akışı (`src/components/CoachShorts.tsx`):** Üst bardaki ayrı **"🎬 Koç Akışı"** butonuyla açılan bölüm: kullanıcının hata yaptığı kelime ve gramer (zaman/edat) konularından **AI ile üretilmiş 15-30 saniyelik dikey (9:16) video/animasyon mikro dersler** oluşturur — story tarzı sahne çubukları, animasyonlu sahneler, Edge TTS seslendirmesi ve Reels tarzı ▲▼ gezinme ile.
+* **🎬 Koç Akışı (`src/components/CoachShorts.tsx`):** Üst bardaki ayrı **"🎬 Koç Akışı"** butonuyla açılan bölüm: kullanıcının hata yaptığı kelime ve gramer (zaman/edat) konularından **AI ile üretilmiş 15-30 saniyelik dikey (9:16) video/animasyon mikro dersler** oluşturur — story tarzı sahne çubukları, animasyonlu sahneler, tarayıcı yerleşik ses fallback'i ve Reels tarzı ▲▼ gezinme ile.
 * **🕸️ 3D Kelime Ağı (`src/components/WordGraph3D.tsx`):** Bildiğin tüm kelimeleri; geldikleri **bölümlere (üniteler)**, **tekniklere** (dinleme, SRS, alfabe, zamanlar, edatlar) ve **seviyelere** (A1→C1/C2) bağlayan, sürükle-döndür + yakınlaştırmalı, kütüphanesiz 3D kuvvet-yönlendirmeli ağ grafiği. **Unutulmaya yüz tutan kelimeler (SRS vadesi geçen / kronik hatalılar) ağ üzerinde KIRMIZILAŞIR** ve nabız gibi atar.
 * **⚡ Hızlı Kurtarma Testi (`src/components/RescueTest.tsx`):** 3D ağda kırmızılaşan veya zayıf bağlanan bir kelime/gramer düğümüne tıklayınca **60 saniyelik geri sayımlı, doğrudan o noktayı hedefleyen test** başlar (tanıma + üretim + dinleme + bağlam soruları). Geçilirse kelimenin SRS kutusu yükselir ve düğüm yeşile döner; geçilemezse kutu 1'e iner.
-* **🎙️ Microsoft Edge TTS (`src/tts/edgeTts.ts`):** Tüm seslendirme artık öncelikle Edge'in nöral sesleriyle yapılır — **Rusça: `ru-RU-SvetlanaNeural` / `ru-RU-DmitryNeural`**, **Türkçe (bot/koç konuşmaları): `tr-TR-EmelNeural` / `tr-TR-AhmetNeural`** (Rotam ekranından seçilir, localStorage'da saklanır). Anahtar gerektirmez; MP3 önbelleğiyle tekrar dinlemeler anında çalar; servis erişilemezse eski native/web TTS zinciri otomatik devreye girer.
+* **🎙️ Anahtarsız tarayıcı ses fallback'i (`src/tts/webSpeech.ts`):** Yerel VoiceStudio veya seçili cloud provider anlık olarak hazır değilse metin, ağ kimlik doğrulamasına bağlı olmayan tarayıcı yerleşik TTS motoruna düşer. Microsoft Edge websocket TTS kullanılmaz; böylece Edge kimlik/TLS hataları ses akışını bozmaz.
 * **🎚️ Perde Korumalı Dinleme Hızı:** Rusça ünitelerin **sadece dinleme olan yerlerinde** (dinleme konuları, dinle&seç testleri, dizi sahnesi/diyalog, ünite dinleme sınavı) 0.5×–1.5× hız düğmesi vardır; `preservesPitch` sayesinde ses yavaşlarken/hızlanırken **kelime bozulmaz** (incelme/kalınlaşma olmaz).
+
+## 🤖💬 Kişisel AI Ajanı + VoiceStudio ses paleti (ücretsiz)
+
+* **Soru-cevap ajanı (`src/components/AiChat.tsx`):** Kullanıcı artık sadece hazır görevi çözmez; istediği soruyu Türkçe veya Rusça yazıp ajana sorabilir. Ajan her istekte öğrenme yolundaki güncel konumu, tamamlanan alfabe/gramer/dinleme/ünite sayaçlarını, hataları, SRS tekrarlarını ve ilgili müfredat ünitelerini bağlamına alır. Tüm üniteler uygulamanın yerel veri kümesinde tutulur; soruya en yakın üniteler deterministik olarak seçilip çevrim içi modele gönderilir.
+* **Anahtarsız hızlı AI (`src/ai/freeAi.ts`):** Önce Puter.js üzerinden `gemini-2.5-flash-lite`, sonra hızlı yedek modeller denenir. Kullanıcıdan API anahtarı istenmez; servis yanıt vermezse yerel bağlamla güvenli bir fallback cevabı görünür. Üretimde istenirse `VITE_AI_CHAT_ENDPOINT` ile anahtarı sunucuda tutan proxy bağlanabilir.
+* **AirLearn benzeri akış:** Son konuşmalar tarayıcıda kalıcıdır, hazır soru önerileri vardır, cevaplar otomatik seslendirilebilir ve her mesajda konum etiketi görünür. Böylece “nerede kaldım?” sorusu ajanın bağlamından hiç kopmaz.
+* **Gerçek VoiceStudio bağlantısı (`src/tts/voiceStudioLocal.ts` + `src/components/VoiceStudioPanel.tsx`):** Botun ana sesi Google/Edge değildir. [debpalash/VoiceStudio](https://github.com/debpalash/VoiceStudio) yerel backend'i çalışıyorsa uygulama Vite proxy üzerinden `POST /v1/audio/speech` çağırır; bilgisayardaki gerçek clone/design profilleri `GET /v1/audio/voices` ile yüklenir ve seçilen profil kullanılır. Speechify/ElevenLabs/OpenAI profilleri yalnızca VoiceStudio kapalı olduğunda anahtarsız fallback'tir; bunlar da başarısız olursa tarayıcı yerleşik TTS'i kullanılır. Seçim localStorage'da saklanır.
+
+### VoiceStudio otomatik kurulumu ve bağlama
+
+VoiceStudio artık ayrı bir terminal, `git clone`, `uv sync`, `bun install` veya manuel backend başlatma gerektirmez:
+
+1. Node.js 18+ ile proje bağımlılıklarını kurun: `npm install`
+2. Tek komutu çalıştırın: `npm run dev`
+3. İlk açılışta launcher gerçek [VoiceStudio](https://github.com/debpalash/VoiceStudio) kaynağını `.runtime/VoiceStudio` altına indirir, proje içindeki izole `.runtime/uv-venv` ortamına `uv` kurar, Python bağımlılıklarını hazırlar, backend'i `3900` portunda başlatır ve `k2-fsa/OmniVoice` model indirmesini arka planda başlatır.
+4. Aynı komut Vite frontend'ini açar. DilKoç → **💬 AI Ajanı → 🎚️ Ses Stüdyosu** yolunda `✅ Yerel bağlı` durumunu ve gerçek VoiceStudio clone/design profillerini görüp birini seçebilirsiniz.
+
+İlk kurulum başarısız olursa DilKoç yine açılır ve mevcut VoiceStudio → cloud → tarayıcı cihaz sesi fallback zinciri çalışır. Model indirmesini kapatmak için `DILKOC_AUTO_INSTALL_VOICESTUDIO_MODEL=false`, backend portunu değiştirmek için örneğin `VOICESTUDIO_PORT=3910 npm run dev` kullanılabilir; Vite proxy bu portu otomatik kullanır. Kendi sesinizi klonlarken VoiceStudio'nun consent/rıza akışını kullanın; DilKoç yalnızca VoiceStudio'nun OpenAI uyumlu yerel endpoint'ini çağırır.
 
 ## 📚🔒 ULTRA PAKET 4.0: Seviye Kilitli Denemeler + Benzer-Ünite Temizliği + 60 Gündelik Hayat Ünitesi
 
@@ -120,19 +138,21 @@ Projenizi kendi yerel ortamınızda çalıştırmak için aşağıdaki adımlar�
 
 ### Kurulum Adımları
 
-1. **Depoyu Bilgisayarınıza İndirin / Klonlayın:**
+1. **Depoyu bilgisayarınıza indirin / klonlayın:**
    ```bash
-   git clone [https://github.com/KULLANICI_ADINIZ/dilkoc-project.git](https://github.com/KULLANICI_ADINIZ/dilkoc-project.git)
-   cd dilkoc-project
-   
-2. **Gerekli Bağımlılıkları (Paketleri) Yükleyin:**
-     npm install
-   
-4. **Geliştirici Sunucusunu Başlatın:**
+   git clone https://github.com/yurdakulaykut16-oss/dilkoc-project-1-.git
+   cd dilkoc-project-1-
+   ```
+2. **Frontend paketlerini kurun:**
+   ```bash
+   npm install
+   ```
+3. **Her şeyi tek komutla başlatın:**
+   ```bash
    npm run dev
-   
-6. **Tarayıcıda Görüntüleyin:**
-   Terminalde belirtilen adresi internet tarayıcınızda açarak uygulamayı kullanmaya başlayabilirsiniz.
+   ```
+
+İlk `npm run dev` çalıştırması VoiceStudio Python paketleri ve OmniVoice modeli nedeniyle uzun sürebilir. Kurulum ilerlemesi terminalde görünür; manuel Python ortamı, ayrı VoiceStudio terminali veya ek `git clone` gerekmez. Vite'ın yazdırdığı adresi tarayıcıda açarak uygulamayı kullanabilirsiniz. `npm run dev:vite` yalnızca VoiceStudio kurulmadan frontend'i açan düşük özellikli geliştirme komutudur.
 
 ---
 
