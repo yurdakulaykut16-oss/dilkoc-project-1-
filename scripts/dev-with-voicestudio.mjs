@@ -33,6 +33,21 @@ const AUTO_MODEL = process.env.DILKOC_AUTO_INSTALL_VOICESTUDIO_MODEL !== 'false'
 const sleep = (ms) => new Promise(resolve => setTimeout(resolve, ms));
 const commandName = (name) => process.platform === 'win32' && name === 'npm' ? 'npm.cmd' : name;
 
+function spawnCommand(command, args = [], options = {}) {
+  const safeArgs = args
+    .filter(arg => arg !== undefined && arg !== null && String(arg).trim() !== '')
+    .map(String);
+
+  // Windows cannot reliably launch npm.cmd and other command shims directly;
+  // depending on the Node version it may fail with spawn EINVAL. Use cmd.exe
+  // through Node's shell handling there, while retaining direct spawning on
+  // POSIX so signals continue to reach the child process normally.
+  return spawn(commandName(command), safeArgs, {
+    ...options,
+    shell: process.platform === 'win32',
+  });
+}
+
 function log(message) {
   console.log(`[DilKoç] ${message}`);
 }
@@ -62,11 +77,10 @@ function warn(message) {
 
 async function run(command, args, options = {}) {
   const result = await new Promise((resolve, reject) => {
-    const child = spawn(commandName(command), args, {
+    const child = spawnCommand(command, args, {
       cwd: options.cwd || ROOT,
       env: options.env || process.env,
       stdio: options.stdio || 'inherit',
-      shell: false,
     });
     child.on('error', reject);
     child.on('close', code => resolve(code ?? 1));
@@ -277,11 +291,10 @@ async function startBackend(uv) {
     log('VoiceStudio zaten çalışıyor; mevcut backend kullanılacak.');
     return { child: null, owned: false };
   }
-  const child = spawn(uv, ['run', 'uvicorn', 'main:app', '--app-dir', 'backend', '--host', '127.0.0.1', '--port', String(VS_PORT)], {
+  const child = spawnCommand(uv, ['run', 'uvicorn', 'main:app', '--app-dir', 'backend', '--host', '127.0.0.1', '--port', String(VS_PORT)], {
     cwd: VOICESTUDIO_DIR,
     env: voiceStudioEnvironment(),
     stdio: 'inherit',
-    shell: false,
   });
   child.once('error', error => warn(`VoiceStudio backend başlatılamadı: ${error.message}`));
   const ready = await waitForVoiceStudio();
@@ -321,11 +334,10 @@ async function main() {
   // Vite'ı backend kurulumu/ilk açılışıyla paralel başlatıyoruz. Böylece
   // preview portu hemen açılır; VoiceStudio birkaç saniye sonra hazır olduğunda
   // proxy ve ses paneli otomatik olarak bağlanır.
-  const frontend = spawn(commandName('npm'), ['run', 'dev:vite', '--', '--host', '0.0.0.0'], {
+  const frontend = spawnCommand('npm', ['run', 'dev:vite', '--', '--host', '0.0.0.0'], {
     cwd: ROOT,
     env: { ...process.env },
     stdio: 'inherit',
-    shell: false,
   });
 
   const shutdown = (code = 0) => {
