@@ -44,6 +44,7 @@ import { COOKING30 } from './cooking30';
 import { DAILY60_A1 } from './daily60a1';
 import { DAILY60_A2 } from './daily60a2';
 import { DAILY60_B1, DAILY60_B2 } from './daily60b';
+import { RETENTION_SPRINT_UNITS } from './retentionSprint';
 
 export const EXTRA_UNITS: UnitModule[] = [
   ...EXTRA_A1_GRAM,  // Ünite 2-6 (A1 — cümle anahtarı, müfredatın en başı)
@@ -92,5 +93,7 @@ export const EXTRA_UNITS: UnitModule[] = [
   // yalnızca yemek yapma, baharatlar, mutfak malzemeleri,
   // teknikler, pastacılık, profesyonel mutfak dili.
   // ========================================================
-  ...COOKING30       // Ünite 40.9701-40.9710, 95.9701-95.9710, 143.9701-143.9705, 180.9701-180.9705
+  ...COOKING30,      // Ünite 40.9701-40.9710, 95.9701-95.9710, 143.9701-143.9705, 180.9701-180.9705
+  // KALICILIK SPRINTLERİ — aktif hatırlama, karışık pratik ve 1-3-7 gün protokolü
+  ...RETENTION_SPRINT_UNITS // A1 ×4, A2 ×3, B1 ×3, B2 ×2
 ];

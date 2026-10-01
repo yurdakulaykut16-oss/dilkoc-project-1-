@@ -454,11 +454,24 @@ export interface SRSItem {
   box: number; // 1-5 arası "kutu" (Leitner sistemi): kutu arttıkça tekrar aralığı büyür
   nextReview: number; // bir sonraki tekrarın yapılacağı zaman (timestamp)
   type: 'word' | 'letter';
+  // Eski kayıtlarla uyumlu opsiyonel hafıza sinyalleri:
+  correctStreak?: number; // terfi için art arda iki başarılı geri çağırma gerekir
+  lapses?: number;       // kaç kez unutuldu; sonraki aralığı kişiselleştirir
+  reviews?: number;      // RU→TR ve TR→RU yönünü dönüşümlü seçmek için
+  lastReview?: number;
 }
 
-  // Leitner kutu aralıkları artık src/ultra/ultraMode.ts içindeki srsIntervalFor(box) ile hesaplanır:
-// normalde 1-3-7-16-35 gün; ⚡ ULTRA MOD açıkken 1-2-4-8-14 güne SIKILAŞIR (daha sık tekrar = daha kalıcı).
+// Leitner kutu aralıkları artık src/ultra/ultraMode.ts içindeki srsIntervalFor(box) ile hesaplanır:
+// normalde 1-3-7-16-35 gün; ⚡ ULTRA MOD açıkken 1-2-4-8-14 güne SIKILAŞIR.
 const DAY_MS = 24 * 60 * 60 * 1000;
+const TEN_MINUTES_MS = 10 * 60 * 1000;
+
+// Kronik unutulan kelimeler daha kısa aralıklarla geri gelir. Böylece herkes için aynı
+// takvim yerine, kelimenin gerçek unutma geçmişine göre uyarlanan bir tekrar planı oluşur.
+const adaptiveReviewMs = (box: number, lapses = 0) => {
+  const lapsePenalty = Math.max(0.35, 1 / (1 + lapses * 0.22));
+  return Math.max(TEN_MINUTES_MS, srsIntervalFor(box) * DAY_MS * lapsePenalty);
+};
 
 // ==========================================
 // 4. ANA UYGULAMA BİLEŞENİ
@@ -936,7 +949,8 @@ export default function App() {
   const addToSRS = (ru: string, tr: string, type: 'word' | 'letter') => {
     setSrsBank(prev => {
       if (prev.some(x => x.ru === ru)) return prev;
-      return [...prev, { ru, tr, box: 1, nextReview: Date.now() + srsIntervalFor(1) * DAY_MS, type }];
+      // İlk tekrar aynı gün yapılır: yeni bilginin ilk 10 dakikadaki hızlı kaybını yakalar.
+      return [...prev, { ru, tr, box: 1, nextReview: Date.now() + TEN_MINUTES_MS, type, correctStreak: 0, lapses: 0, reviews: 0 }];
     });
   };
 
@@ -1665,6 +1679,22 @@ export default function App() {
   // ARALIKLI TEKRAR (SPACED REPETITION) OTURUMU: Sadece bugün "vadesi gelmiş" kelimeler sorulur.
   // Bu, kalıcı hafızanın bilimsel temelidir — beyin bir bilgiyi unutmaya en yakın olduğu anda tekrar hatırlarsa iz kalıcılaşır.
   const dueSRS = srsBank.filter(i => i.nextReview <= Date.now());
+  const matureSRS = srsBank.filter(i => i.box >= 5 && (i.correctStreak || 0) >= 1).length;
+  const fragileSRS = srsBank.filter(i => (i.lapses || 0) >= 3).length;
+
+  // Aynı ünite/seviye ve benzer uzunluktaki seçenekler daha güçlü çeldiricidir.
+  // Rastgele, bariz biçimde alakasız seçenekler yerine gerçek ayrım yapmayı ölçer.
+  const smartWordDistractors = (ru: string, field: 'ru' | 'tr'): string[] => {
+    const home = UNITS_DATA.find(u => u.words.some(w => w.ru === ru));
+    const target = ALL_WORDS.find(w => w.ru === ru);
+    const ranked = ALL_WORDS.filter(w => w.ru !== ru).map(w => {
+      const sameUnit = home?.words.some(x => x.ru === w.ru) ? 5 : 0;
+      const sameLevel = target && w.level === target.level ? 3 : 0;
+      const lengthNear = target ? Math.max(0, 3 - Math.abs(w[field].length - target[field].length) / 3) : 0;
+      return { value: w[field], score: sameUnit + sameLevel + lengthNear + Math.random() * 0.5 };
+    }).sort((a, b) => b.score - a.score);
+    return Array.from(new Set(ranked.map(x => x.value))).slice(0, 3);
+  };
 
   // 🗣️ GÜNLÜK AĞIZ ÖDEVİ durumu (haritadaki günlük plan kartı bunu okur)
   const todaysSpeechDrills = useMemo(() => buildDailyDrills(completedUnits), [completedUnits]);
@@ -1728,12 +1758,29 @@ export default function App() {
 
   const startSRSReview = () => {
     if (dueSRS.length === 0) return;
-    const q = shuffle(dueSRS).map(item => ({
-      prompt: `"${item.ru}" ne anlama gelir? (Kutu ${item.box}/5)`,
-      correct: item.tr,
-      options: shuffle([item.tr, ...shuffle(ALL_WORDS.filter(x => x.tr !== item.tr)).slice(0, 3).map(x => x.tr)]),
-      ru: item.ru, tr: item.tr
-    }));
+    // Oturumu 30 kartla sınırla: bilişsel yorgunluk yerine her gün sürdürülebilir tekrar.
+    // Öncelik: çok unutulanlar → en fazla gecikenler → diğerleri.
+    const session = [...dueSRS].sort((a, b) =>
+      (b.lapses || 0) - (a.lapses || 0) || a.nextReview - b.nextReview
+    ).slice(0, 30);
+    const q = session.map(item => {
+      // Tanıma tek başına yanıltıcıdır. Her gelişte yön değişir: bir oturumda RU→TR,
+      // sonrakinde daha zor olan aktif üretim TR→RU sorulur.
+      const production = ((item.reviews || 0) % 2) === 1;
+      const context = ALL_SENTENCES.find(s => s.ru.toLocaleLowerCase('ru').includes(item.ru.toLocaleLowerCase('ru')));
+      const leech = (item.lapses || 0) >= 3 ? '🩹 ZOR KELİME — ' : '';
+      return production ? {
+        prompt: `${leech}🧠 AKTİF HATIRLAMA — "${item.tr}" ifadesinin RUSÇASI hangisi?${context ? `\nBağlam: ${context.ru}` : ''} (Kutu ${item.box}/5)`,
+        correct: item.ru,
+        options: shuffle([item.ru, ...smartWordDistractors(item.ru, 'ru')]),
+        ru: item.ru, tr: item.tr, production: true
+      } : {
+        prompt: `${leech}"${item.ru}" ne anlama gelir?${context ? `\nBağlam: ${context.ru}` : ''} (Kutu ${item.box}/5)`,
+        correct: item.tr,
+        options: shuffle([item.tr, ...smartWordDistractors(item.ru, 'tr')]),
+        ru: item.ru, tr: item.tr, production: false
+      };
+    });
     setQuizContext('SRS_REVIEW');
     setQuizQuestions(q);
     setQuizIdx(0);
@@ -1801,12 +1848,21 @@ export default function App() {
         setMistakes(prev => prev.filter(m => !(m.ru === q.ru && m.tr === q.tr)));
       }
       if (quizContext === 'SRS_REVIEW' || (q as any).review) {
-        // Doğru bilindi: bir sonraki kutuya terfi eder, tekrar aralığı büyür (1→3→7→16→35 gün;
-        // ⚡ ultra modda 1→2→4→8→14). (🔁 KALICI TEKRAR soruları da kutuyu ilerletir.)
+        // Tek bir şanslı doğru cevap terfi ettirmez: aynı kelime iki ayrı zamanda art arda
+        // hatırlanınca kutu yükselir. Unutma geçmişi yüksekse aralık otomatik kısalır.
         setSrsBank(prev => prev.map(item => {
           if (item.ru !== q.ru) return item;
-          const newBox = Math.min(item.box + 1, 5);
-          return { ...item, box: newBox, nextReview: Date.now() + srsIntervalFor(newBox) * DAY_MS };
+          const streak = (item.correctStreak || 0) + 1;
+          const promote = streak >= 2;
+          const newBox = promote ? Math.min(item.box + 1, 5) : item.box;
+          return {
+            ...item,
+            box: newBox,
+            correctStreak: promote ? 0 : streak,
+            reviews: (item.reviews || 0) + 1,
+            lastReview: Date.now(),
+            nextReview: Date.now() + adaptiveReviewMs(newBox, item.lapses || 0),
+          };
         }));
       }
       if (quizIdx + 1 < quizQuestions.length) {
@@ -1864,8 +1920,17 @@ export default function App() {
       const reason = (q as any).review ? 'Kalıcı Tekrarda Unutuldu (eski ünite)' : quizContext === 'LISTENING' ? 'Dinleme Hatası' : quizContext === 'REVIEW' ? 'Tekrar Testinde Yine Yanlış' : quizContext === 'ALPHA_FINAL' ? 'Alfabe Sınavı Hatası' : quizContext === 'GRAMMAR_FOUNDATION' ? 'Cümle Temeli Hatası' : quizContext === 'SRS_REVIEW' ? 'Aralıklı Tekrarda Unutuldu' : quizContext === 'MARATHON' ? 'Karma Maratonda Unutuldu' : quizContext === 'WEAKSPOT' ? 'Zayıf Nokta Testinde Yine Yanlış' : 'Sınav Hatası';
       addMistake(q.ru, q.tr, reason);
       if (quizContext === 'SRS_REVIEW' || quizContext === 'MARATHON' || (q as any).review) {
-        // Unutulan kelime kutu 1'e geri düşer: yarın tekrar sorulacak (kalıcı hafıza mantığının kalbi)
-        setSrsBank(prev => prev.map(item => item.ru === q.ru ? { ...item, box: 1, nextReview: Date.now() + srsIntervalFor(1) * DAY_MS } : item));
+        // Unutulan kelime yalnız yarına bırakılmaz: 10 dakika sonra yeniden öğrenme kuyruğuna
+        // girer; hata geçmişi tutulur ve sonraki uzun aralıklar da kişiye göre kısalır.
+        setSrsBank(prev => prev.map(item => item.ru === q.ru ? {
+          ...item,
+          box: 1,
+          correctStreak: 0,
+          lapses: (item.lapses || 0) + 1,
+          reviews: (item.reviews || 0) + 1,
+          lastReview: Date.now(),
+          nextReview: Date.now() + TEN_MINUTES_MS,
+        } : item));
       }
       // KALICI ÖĞRENME — YENİDEN SORMA KURALI: yanlışlanan soru sınavın SONUNA
       // (şıkları yeniden karılarak) bir kez daha eklenir. "Doğrusu buymuş" deyip
@@ -1873,7 +1938,7 @@ export default function App() {
       // ⚡ ULTRA MOD: soru 1 değil 2 KEZ geri gelir — kaybetmek yok, öğrenmek var.
       const maxRequeue = isUltraMode() ? 2 : 1;
       const rqCount = (q as any).requeueCount || 0;
-      if (rqCount < maxRequeue && (quizContext === 'UNIT_FINAL' || quizContext === 'LISTENING' || quizContext === 'ALPHA_FINAL' || quizContext === 'GRAMMAR_FOUNDATION')) {
+      if (rqCount < maxRequeue && (quizContext === 'UNIT_FINAL' || quizContext === 'LISTENING' || quizContext === 'ALPHA_FINAL' || quizContext === 'GRAMMAR_FOUNDATION' || quizContext === 'SRS_REVIEW')) {
         setQuizQuestions(prev => [...prev, { ...q, options: shuffle([...(q.options as string[])]), requeued: true, requeueCount: rqCount + 1 }]);
       }
       setFeedback({ isError: true, message: `❌ Yanlış cevap. Doğrusu: "${q.correct}" — bu soru sınav sonunda TEKRAR gelecek!${isUltraMode() ? ' (⚡ ULTRA: 2 kez)' : ''}` });
@@ -2147,7 +2212,8 @@ export default function App() {
                   <div>
                     <div style={{ fontSize: '12px', color: '#f59e0b', fontWeight: 800 }}>📅 BUGÜNÜN ARALIKLI TEKRARLARI</div>
                     <div style={{ fontSize: '20px', fontWeight: 900, marginTop: '2px' }}>{dueSRS.length > 0 ? `${dueSRS.length} kelime/harf hatırlanmayı bekliyor!` : 'Bugün için tekrar yok, harika gidiyorsun! ✅'}</div>
-                    <div style={{ fontSize: '12px', color: '#94a3b8', marginTop: '4px' }}>Toplam {srsBank.length} kelime/harf uzun süreli hafıza takibinde.</div>
+                    <div style={{ fontSize: '12px', color: '#94a3b8', marginTop: '4px' }}>Toplam {srsBank.length} kelime/harf takipte · <span style={{ color: '#34d399' }}>{matureSRS} kalıcılaştı</span> · <span style={{ color: fragileSRS ? '#fb7185' : '#94a3b8' }}>{fragileSRS} zor kelime</span></div>
+                    {dueSRS.length > 30 && <div style={{ fontSize: '11px', color: '#fbbf24', marginTop: '4px' }}>Bugün en öncelikli 30 kart çalışılacak; kalan {dueSRS.length - 30} kart sonraki kısa oturuma bırakılacak.</div>}
                   </div>
                   <div style={{ display: 'flex', gap: '10px', flexWrap: 'wrap' }}>
                     {dueSRS.length > 0 && (
@@ -2160,7 +2226,7 @@ export default function App() {
                 </div>
                 {completedUnits.length > 0 && (
                   <div style={{ fontSize: '11px', color: '#94a3b8', marginTop: '10px', borderTop: '1px dashed #334155', paddingTop: '8px' }}>
-                    🧠 <b>Kalıcı öğrenme motoru açık:</b> Bir üniteyi %100 bitirsen bile kelimeleri emekli olmaz — sonraki her ünitenin sınavına "🔁 KALICI TEKRAR" soruları olarak karışır (1-2-3-5-8-13-21 ünite geriden + tüm geçmişten rastgele) ve yarısı ters yönde (TR → RU) sorulur.
+                    🧠 <b>Uyarlanabilir hafıza motoru açık:</b> 10 dakikalık ilk pekiştirme, çift doğruyla kutu yükseltme, RU↔TR dönüşümlü aktif hatırlama, bağlam cümlesi ve benzer güçlü çeldiriciler kullanılır. Sık unutulan kelimeler önceliklenir; hiçbir kelime kalıcı doğrulama olmadan emekli edilmez.
                   </div>
                 )}
               </div>
