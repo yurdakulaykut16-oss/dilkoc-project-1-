@@ -1,0 +1,70 @@
+import type { UnitModule, WordDetail } from '../curriculumData';
+
+type Level = UnitModule['levelGroup'];
+type Entry = [ru: string, reading: string, tr: string, note?: string];
+
+type Sprint = {
+  id: string; unitNumber: number; level: Level; title: string; description: string;
+  icon: string; color: string; focus: string; words: Entry[];
+  sentences: [ru: string, tr: string][];
+};
+
+/**
+ * Kalıcılık Sprintleri aynı kelimeyi yalnız kartta değil; hatırlama, cümle ve
+ * mini diyalog kanallarında yeniden kullandırır. Ünitenin sonundaki mevcut
+ * dinleme/yazma/bağlam sınavları ve SRS motoru da bu içerikleri otomatik alır.
+ */
+function makeSprint(s: Sprint): UnitModule {
+  const words: WordDetail[] = s.words.map((w, i) => ({
+    id: `ret_${s.id}_${i + 1}`,
+    ru: w[0], reading: w[1], tr: w[2], level: s.level,
+    usageNote: w[3] || 'Önce Türkçeyi kapatıp Rusçasını sesli hatırla; sonra örnek cümlede kullan.',
+  }));
+  const sentences = s.sentences.map(([ru, tr]) => {
+    const correct = ru.split(' ');
+    return { ru, tr, correct, scrambled: [...correct].reverse() };
+  });
+  return {
+    id: `retention_${s.id}`, unitNumber: s.unitNumber, levelGroup: s.level,
+    title: `Kalıcılık Sprinti: ${s.title}`,
+    description: `${s.description} • Aktif hatırlama + karışık alıştırma + 1-3-7 günlük tekrar`,
+    category: 'Kalıcı Öğrenme', color: s.color, icon: s.icon,
+    grammarExplain: `🧠 KALICI ÖĞRENME PROTOKOLÜ\n1. BAKMADAN HATIRLA: Kartı çevirmeden Rusça karşılığı sesli söyle.\n2. ÜRET: Her kalıbı kendinle ilgili yeni bir cümlede kullan.\n3. KARIŞTIR: Benzer yapıları peş peşe değil, karışık sırada ayırt et.\n4. ARALIKLI TEKRAR: Bugün kısa test; 1, 3 ve 7 gün sonra tekrar.\n\n🎯 BU ÜNİTENİN ODAĞI\n${s.focus}`,
+    words, sentences,
+    sceneTitle: `${s.title} — Hızlı Canlandırma`,
+    sceneContext: 'Öğrenci ipucu görmeden kalıbı geri çağırır ve gündelik bir konuşmada kullanır.',
+    dialogue: sentences.slice(0, 4).map((x, i) => ({
+      speaker: i % 2 ? 'Arkadaş' : 'Öğrenci', ru: x.ru,
+      reading: 'Önce kendin oku, ardından ses düğmesiyle kontrol et.', tr: x.tr,
+    })),
+  };
+}
+
+const SPRINTS: Sprint[] = [
+  { id:'a1_survival', unitNumber:10.9751, level:'A1', title:'Hayatta Kalma Kalıpları', description:'İlk günden konuşmayı sürdüren kurtarıcı ifadeler', icon:'🛟', color:'#14b8a6', focus:'Anlamadığında durdurma, tekrar isteme ve yardım alma.', words:[
+    ['Я не понимаю','Ya ne panimáyu','Anlamıyorum'],['Повторите, пожалуйста','Paftarítye, pazhálusta','Tekrar edin lütfen'],['Говорите медленнее','Gavarítye myédlennye','Daha yavaş konuşun'],['Что это значит?','Şto éta znáchit?','Bu ne demek?'],['Как сказать...?','Kak skazát?','... nasıl söylenir?'],['Помогите','Pamagítye','Yardım edin'],['Можно?','Mózhna?','Olur mu? / Mümkün mü?'],['Нельзя','Nelzyá','Yasak / Olmaz'],['Ещё раз','Yişçó raz','Bir kez daha'],['Я учу русский','Ya uçú rússkiy','Rusça öğreniyorum']], sentences:[['Я не понимаю, повторите, пожалуйста.','Anlamıyorum, tekrar edin lütfen.'],['Говорите медленнее, пожалуйста.','Daha yavaş konuşun lütfen.'],['Что это значит по-турецки?','Bu Türkçede ne demek?'],['Я учу русский язык.','Rusça öğreniyorum.']] },
+  { id:'a1_questions', unitNumber:10.9752, level:'A1', title:'Soru Refleksi', description:'Soru kelimelerini düşünmeden seçme', icon:'❓', color:'#8b5cf6', focus:'Кто/что, где/куда ve когда ayrımını hızlı yapmak.', words:[
+    ['Кто?','Kto','Kim?'],['Что?','Şto','Ne?'],['Где?','Gde','Nerede?'],['Куда?','Kudá','Nereye?'],['Откуда?','Atkúda','Nereden?'],['Когда?','Kagdá','Ne zaman?'],['Почему?','Paçimú','Neden?'],['Как?','Kak','Nasıl?'],['Сколько?','Skólka','Kaç / Ne kadar?'],['Какой?','Kakóy','Hangi / Nasıl?']], sentences:[['Где находится метро?','Metro nerede?'],['Куда ты идёшь?','Nereye gidiyorsun?'],['Когда начинается урок?','Ders ne zaman başlıyor?'],['Сколько это стоит?','Bu ne kadar?']] },
+  { id:'a1_routine', unitNumber:10.9753, level:'A1', title:'Günlük Rutin Zinciri', description:'Fiilleri zaman sırasına bağlayarak hatırlama', icon:'🌅', color:'#f59e0b', focus:'Sabah-akşam olay zinciriyle fiilleri tek tek değil bağlam içinde tutmak.', words:[
+    ['просыпаться','prasypát\'sya','uyanmak'],['вставать','fstavát','kalkmak'],['умываться','umyvát\'sya','yıkanmak'],['завтракать','záftrakat','kahvaltı etmek'],['работать','rabótat','çalışmak'],['обедать','abyédat','öğle yemeği yemek'],['возвращаться','vazvraşçát\'sya','geri dönmek'],['ужинать','újinat','akşam yemeği yemek'],['отдыхать','atdyhát','dinlenmek'],['ложиться спать','lajít\'sya spat','yatmak']], sentences:[['Я встаю в семь часов.','Saat yedide kalkıyorum.'],['Утром я завтракаю дома.','Sabah evde kahvaltı ediyorum.'],['Вечером я возвращаюсь домой.','Akşam eve dönüyorum.'],['После ужина я отдыхаю.','Akşam yemeğinden sonra dinleniyorum.']] },
+  { id:'a1_contrast', unitNumber:10.9754, level:'A1', title:'Karıştırılan Küçük Kelimeler', description:'Benzer temel sözcükleri karşılaştırmalı öğrenme', icon:'⚖️', color:'#ef4444', focus:'тоже/также, ещё/уже ve здесь/там çiftlerini karşılaştırmak.', words:[
+    ['тоже','tóje','de / da (aynı şekilde)'],['также','tákje','ayrıca'],['ещё','yişçó','daha / henüz'],['уже','ujé','artık / çoktan'],['здесь','zdes','burada'],['там','tam','orada'],['сейчас','siyçás','şimdi'],['потом','patóm','sonra'],['всегда','fsigdá','her zaman'],['никогда','nikagdá','asla']], sentences:[['Я тоже учу русский.','Ben de Rusça öğreniyorum.'],['Он уже дома, а я ещё на работе.','O çoktan evde, ben hâlâ işteyim.'],['Сейчас я здесь, потом буду там.','Şimdi buradayım, sonra orada olacağım.'],['Я никогда не опаздываю.','Asla geç kalmam.']] },
+  { id:'a2_motion', unitNumber:40.9831, level:'A2', title:'Hareket Fiili Pusulası', description:'Gitmek-gelmek fiillerini bağlamla ayırma', icon:'🧭', color:'#0ea5e9', focus:'идти/ходить ile ехать/ездить ayrımı; tek yön ve alışkanlık.', words:[
+    ['идти','idtí','yürüyerek gitmek (şimdi/tek yön)'],['ходить','hadít','yürüyerek gidip gelmek'],['ехать','yéhat','araçla gitmek (şimdi/tek yön)'],['ездить','yézdit','araçla gidip gelmek'],['приходить','prihadít','yürüyerek gelmek'],['приезжать','priyezzhát','araçla gelmek'],['уходить','uhadít','yürüyerek ayrılmak'],['уезжать','uyezzhát','araçla ayrılmak'],['входить','fhadít','içeri girmek'],['выходить','vyhadít','dışarı çıkmak']], sentences:[['Сейчас я иду в магазин.','Şimdi markete yürüyorum.'],['Каждый день я езжу на работу.','Her gün işe araçla giderim.'],['Поезд уезжает вечером.','Tren akşam ayrılıyor.'],['Она выходит из дома.','O evden çıkıyor.']] },
+  { id:'a2_cases', unitNumber:40.9832, level:'A2', title:'Hâl Ekleri Hız Turu', description:'Altı hâli işlev ipuçlarıyla geri çağırma', icon:'🧩', color:'#6366f1', focus:'Sorudan doğru hâle ulaşmak: kimi, kimin, kime, kimle ve kim hakkında.', words:[
+    ['кто? что?','kto? şto?','yalın hâl sorusu'],['кого? чего?','kavó? çivó?','-in hâli sorusu'],['кому? чему?','kamú? çimú?','-e hâli sorusu'],['кого? что?','kavó? şto?','-i hâli sorusu'],['кем? чем?','kyem? çem?','ile hâli sorusu'],['о ком? о чём?','a kom? a çyom?','hakkında hâli sorusu'],['без','byez','-siz (genitif)'],['к','k','-e doğru (datif)'],['с','s','ile (araç hâli)'],['о','a','hakkında (edat hâli)']], sentences:[['У меня нет времени.','Vaktim yok.'],['Я звоню другу.','Arkadaşıma telefon ediyorum.'],['Мы говорим о работе.','İş hakkında konuşuyoruz.'],['Она пьёт чай с лимоном.','O limonlu çay içiyor.']] },
+  { id:'a2_aspect', unitNumber:40.9833, level:'A2', title:'Fiil Görünüşü Refleksi', description:'Süreç ve sonucu anında ayırt etme', icon:'🎯', color:'#ec4899', focus:'Bitmemiş süreç ile tamamlanmış tek sonucu zaman işaretleriyle seçmek.', words:[
+    ['делать','dyélat','yapmak (süreç)'],['сделать','zdyélat','yapıp bitirmek'],['читать','çitát','okumak (süreç)'],['прочитать','praçitát','okuyup bitirmek'],['писать','pisát','yazmak (süreç)'],['написать','napisát','yazıp bitirmek'],['учить','uçít','öğrenmek / çalışmak'],['выучить','výuçit','öğrenip ezberlemek'],['покупать','pakupát','satın almak (süreç/tekrar)'],['купить','kupít','satın almak (sonuç)']], sentences:[['Вчера я читал книгу два часа.','Dün iki saat kitap okuyordum.'],['Я прочитал эту книгу.','Bu kitabı okuyup bitirdim.'],['Она уже написала письмо.','O mektubu çoktan yazdı.'],['Завтра я куплю билет.','Yarın bileti satın alacağım.']] },
+  { id:'b1_connectors', unitNumber:95.9821, level:'B1', title:'Akıcı Konuşma Bağlaçları', description:'Kısa cümleleri doğal bir anlatıya dönüştürme', icon:'🔗', color:'#f97316', focus:'Neden, karşıtlık, sonuç ve örnek bağlarını otomatikleştirmek.', words:[
+    ['потому что','patamú şto','çünkü'],['поэтому','paétamu','bu yüzden'],['хотя','hatyá','-e rağmen / gerçi'],['однако','adnáka','ancak'],['кроме того','krómye tavó','bunun dışında'],['например','naprimér','örneğin'],['с одной стороны','s adnóy staraný','bir yandan'],['с другой стороны','s drugóy staraný','öte yandan'],['в результате','v rizultátye','sonuç olarak'],['несмотря на','nismatryá na','-e rağmen']], sentences:[['Я устал, поэтому останусь дома.','Yorgunum, bu yüzden evde kalacağım.'],['Хотя было холодно, мы гуляли.','Hava soğuk olmasına rağmen gezdik.'],['Кроме того, это очень полезно.','Bunun dışında bu çok yararlı.'],['Например, можно учить слова в контексте.','Örneğin kelimeler bağlamda öğrenilebilir.']] },
+  { id:'b1_opinion', unitNumber:95.9822, level:'B1', title:'Görüş Bildirme Merdiveni', description:'Fikri yumuşak veya güçlü biçimde savunma', icon:'💬', color:'#a855f7', focus:'Kesinlik derecesini seçmek ve karşı görüşe nazikçe cevap vermek.', words:[
+    ['по-моему','pa-móyemu','bence'],['на мой взгляд','na moy vzglyad','bana göre'],['я считаю, что','ya şitáyu şto','şunu düşünüyorum ki'],['я уверен, что','ya uvéren şto','eminim ki'],['возможно','vazmójna','muhtemelen / olabilir'],['вряд ли','vryad li','pek olası değil'],['я согласен','ya saglásen','katılıyorum'],['я не совсем согласен','ya ne safsém saglásen','tam olarak katılmıyorum'],['дело в том, что','dyéla f tom şto','mesele şu ki'],['это зависит от','éta zavísit at','bu ...-e bağlı']], sentences:[['По-моему, это хорошая идея.','Bence bu iyi bir fikir.'],['Я не совсем согласен с вами.','Size tam olarak katılmıyorum.'],['Возможно, встречу перенесут.','Toplantı ertelenebilir.'],['Это зависит от ситуации.','Bu duruma bağlı.']] },
+  { id:'b1_paraphrase', unitNumber:95.9823, level:'B1', title:'Bilmediğin Kelimeyi Açıklama', description:'Kelime unutunca konuşmayı kesmeden tarif etme', icon:'🗣️', color:'#10b981', focus:'Tanım, işlev, benzetme ve zıtlıkla eksik kelimeyi telafi etmek.', words:[
+    ['это то, что...','éta to şto','bu ... olan şey'],['это человек, который...','éta çilavyék katóriy','bu ... yapan kişi'],['это место, где...','éta mésta gde','bu ... olan yer'],['это значит...','éta znáçit','bu ... demek'],['другими словами','drugími slavámi','başka bir deyişle'],['похоже на','pahóje na','...-e benziyor'],['в отличие от','v atlíçiye at','...-den farklı olarak'],['используется для','ispólzuyetsya dlya','... için kullanılır'],['я забыл слово','ya zabýl slóva','kelimeyi unuttum'],['как это называется?','kak éta nazyváyetsya','buna ne deniyor?']], sentences:[['Я забыл слово, но могу объяснить.','Kelimeyi unuttum ama açıklayabilirim.'],['Это место, где продают лекарства.','Bu ilaç satılan bir yer.'],['Другими словами, нам нужно подождать.','Başka bir deyişle beklememiz gerekiyor.'],['Как это называется по-русски?','Buna Rusçada ne deniyor?']] },
+  { id:'b2_nuance', unitNumber:143.9821, level:'B2', title:'Nüans ve Kesinlik', description:'İddiayı güçlendirme veya temkinli hâle getirme', icon:'🎚️', color:'#e11d48', focus:'Akademik ve profesyonel konuşmada kesinlik dozunu ayarlamak.', words:[
+    ['безусловно','bezuslówna','kuşkusuz'],['очевидно','açivídna','açıkça / belli ki'],['вероятно','viroyátna','büyük olasılıkla'],['предположительно','pridpalajítelna','tahminen'],['в некоторой степени','f nikatóray stépeni','bir dereceye kadar'],['как правило','kak právila','kural olarak / genellikle'],['по всей видимости','pa fsey vídimasti','görünüşe göre'],['нельзя исключать','nelzyá isklyuçát','ihtimal dışı bırakılamaz'],['едва ли','yedvá li','pek mümkün değil'],['несомненно','nisamnyénna','şüphesiz']], sentences:[['По всей видимости, решение изменится.','Görünüşe göre karar değişecek.'],['Нельзя исключать такой сценарий.','Böyle bir senaryo ihtimal dışı bırakılamaz.'],['Это верно лишь в некоторой степени.','Bu yalnızca bir dereceye kadar doğru.'],['Как правило, процесс занимает неделю.','Süreç genellikle bir hafta sürer.']] },
+  { id:'b2_repair', unitNumber:143.9822, level:'B2', title:'Konuşmayı Onarma', description:'Yanlış anlaşılmayı zarifçe düzeltme ve netleştirme', icon:'🛠️', color:'#0891b2', focus:'Sözünü yeniden kurmak, vurgu yapmak ve karşı tarafı doğru anladığını kontrol etmek.', words:[
+    ['позвольте уточнить','pazvóltye utoçnít','açıklığa kavuşturmama izin verin'],['я хотел сказать','ya hatél skazát','demek istediğim'],['точнее говоря','toçnyéye gavaryá','daha doğrusu'],['если я правильно понял','yésli ya právilna pónyal','doğru anladıysam'],['вы имеете в виду...?','vy imyéyete v vidú','... mı demek istiyorsunuz?'],['речь идёт о','reç idyót a','söz konusu olan'],['иными словами','inými slavámi','başka bir deyişle'],['не совсем так','ne safsém tak','tam olarak öyle değil'],['главное, что','glávnaye şto','asıl önemli olan'],['прошу прощения за неточность','praşú praşçéniya za netóçnast','belirsizlik için özür dilerim']], sentences:[['Позвольте уточнить один момент.','Bir noktayı açıklığa kavuşturmama izin verin.'],['Я хотел сказать, что срок изменился.','Demek istediğim, sürenin değiştiğiydi.'],['Если я правильно понял, вы согласны.','Doğru anladıysam kabul ediyorsunuz.'],['Речь идёт не о цене, а о качестве.','Söz konusu olan fiyat değil kalite.']] },
+];
+
+export const RETENTION_SPRINT_UNITS: UnitModule[] = SPRINTS.map(makeSprint);
