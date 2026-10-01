@@ -1,10 +1,10 @@
 import { SpeechRecognition as NativeSpeechRecognition } from '@capacitor-community/speech-recognition';
 import React, { useEffect, useMemo, useRef, useState } from 'react';
-import { askFreeAgent, activeFreeAiLabel } from '../ai/freeAi';
-import type { AgentMessage } from '../ai/freeAi';
+import { answerWithLocalRussianAgent } from '../ai/localRussianAgent';
+import { getLocalAnswerCache, LOCAL_INTELLIGENCE_MAX_LABEL, putLocalAnswerCache } from '../ai/localIntelligenceStore';
+import { LOCAL_RUSSIAN_FACT_COUNT, RUSSIAN_KNOWLEDGE_BASE } from '../ai/russianExpertise';
 import { speakWithBotVoice, stopBotVoice } from '../tts/voiceStudio';
 import VoiceStudioPanel from './VoiceStudioPanel';
-import { UNITS_DATA } from '../curriculumData';
 
 type LearningWord = { ru: string; tr: string; reading?: string };
 type LearningSentence = { ru: string; tr: string };
@@ -62,81 +62,11 @@ export interface AiChatProps {
 const CHAT_KEY = 'dilkoc_ai_agent_chat_v1';
 const AUTO_SPEAK_KEY = 'dilkoc_ai_agent_autospeak_v1';
 
-function normalize(text: string) {
-  return text.toLocaleLowerCase('tr-TR').replace(/[.,!?;:()[\]{}"'`´’‘“”\-—]/g, ' ');
-}
-
-function scoreUnit(unit: typeof UNITS_DATA[number], query: string, focusTitle: string) {
-  const haystack = normalize(`${unit.unitNumber} ${unit.levelGroup} ${unit.title} ${unit.description} ${unit.category} ${unit.grammarExplain} ${unit.words.map(word => `${word.ru} ${word.tr}`).join(' ')}`);
-  const tokens = normalize(query).split(/\s+/).filter(token => token.length > 2);
-  let score = unit.title === focusTitle ? 12 : 0;
-  for (const token of tokens) {
-    if (haystack.includes(token)) score += unit.title.toLocaleLowerCase('tr-TR').includes(token) ? 5 : 1;
-  }
-  return score;
-}
-
-function unitPathNumber(unit: typeof UNITS_DATA[number]) {
-  const idx = UNITS_DATA.findIndex(item => item.id === unit.id);
-  return idx >= 0 ? idx + 1 : unit.unitNumber;
-}
-
-function compactUnit(unit: typeof UNITS_DATA[number]) {
-  const words = unit.words.slice(0, 10).map(word => `${word.ru}=${word.tr}`).join(', ');
-  const sentences = unit.sentences.slice(0, 3).map(sentence => `${sentence.ru} → ${sentence.tr}`).join(' | ');
-  return `Ünite ${unitPathNumber(unit)} [${unit.levelGroup}] ${unit.title} (${unit.category}). Gramer: ${unit.grammarExplain.slice(0, 320)}. Kelimeler: ${words}. Örnekler: ${sentences}`;
-}
-
-function buildKnowledgeContext(query: string, props: AiChatProps) {
-  const ranked = [...UNITS_DATA]
-    .map((unit, order) => ({ unit, order, score: scoreUnit(unit, query, props.learningFocus.title) }))
-    .sort((a, b) => b.score - a.score || a.order - b.order);
-  const relevant = ranked.filter(item => item.score > 0).slice(0, 4).map(item => item.unit);
-  const current = UNITS_DATA.find(unit => unit.title === props.learningFocus.title);
-  if (current && !relevant.some(unit => unit.id === current.id)) relevant.unshift(current);
-
-  const currentWords = props.learningFocus.words.slice(0, 14).map(word => `${word.ru}=${word.tr}`).join(', ');
-  const currentSentences = props.learningFocus.sentences.slice(0, 5).map(sentence => `${sentence.ru} → ${sentence.tr}`).join(' | ');
-  const mistakes = props.mistakes.slice(0, 8).map(item => `${item.ru}=${item.tr} (${item.reason})`).join(', ') || 'yok';
-  const due = props.srsBank.filter(item => item.nextReview <= Date.now()).slice(0, 8).map(item => `${item.ru}=${item.tr}`).join(', ') || 'yok';
-  const catalog = UNITS_DATA.map((unit, idx) => `${idx + 1}:${unit.title}`).join(' • ');
-
-  return [
-    `ÖĞRENENİN KONUMU: öğrenme yolu ${props.learningFocus.pathPosition}/${props.learningFocus.pathTotal}; ${props.learningFocus.icon} ${props.learningFocus.title}. Açıklama: ${props.learningFocus.description || 'yok'}.`,
-    `İLERLEME: ${props.completedUnits.length} müfredat ünitesi, ${props.completedTopics.length} dinleme konusu, ${props.completedAlpha.length} alfabe/okuma dersi, ${props.completedGrammar.length} gramer temeli tamamlandı.`,
-    `ŞU ANKİ KARTIN KELİMELERİ: ${currentWords || 'yok'}. ÖRNEKLER: ${currentSentences || 'yok'}.`,
-    `ZAYIF NOKTALAR: ${mistakes}. BUGÜN VADESİ GELENLER: ${due}.`,
-    `SORUYA EN YAKIN MÜFREDAT KARTLARI:\n${relevant.map(compactUnit).join('\n') || 'Eşleşen kart bulunamadı.'}`,
-    `KURS KATALOĞU İNDEKSİ (kısa görünüm; tüm üniteler uygulamanın yerel veri tabanında mevcut): ${catalog}`,
-  ].join('\n');
-}
-
-function offlineAnswer(query: string, props: AiChatProps) {
-  const normalized = normalize(query);
-  if (/rusça|rusca/.test(normalized) && /merhaba|selam/.test(normalized)) {
-    return 'Rusçada “Привет!” samimi merhaba, “Здравствуйте!” ise resmî merhaba demektir. İstersen soru kalıbı olarak “Как дела?” yani “Nasılsın?” da kullanabilirsin.';
-  }
-  if (/nasılsın|nasilsin|naber/.test(normalized)) {
-    return 'Rusçada “Как дела?” denir. Türkçesi “Nasılsın?”dır. Daha resmî bir konuşmada da aynı kalıbı kullanabilirsin.';
-  }
-  if (/teşekkür|tesekkur/.test(normalized)) {
-    return 'Rusçada “Спасибо” teşekkür ederim demektir. Daha güçlü bir ifade için “Большое спасибо” yani “Çok teşekkür ederim” diyebilirsin.';
-  }
-  if (/adın|adin|ismin/.test(normalized)) {
-    return 'Rusçada “Как тебя зовут?” samimi, “Как вас зовут?” resmî olarak “Adın ne?” demektir. Cevap: “Меня зовут …” yani “Benim adım …”.';
-  }
-  const whereQuestion = /nerede|hangi ünite|hangi unite|konum|kaldım|kaldim/.test(normalized);
-  if (whereQuestion) {
-    return `Şu an öğrenme yolunda ${props.learningFocus.pathPosition}/${props.learningFocus.pathTotal} konumundasın: ${props.learningFocus.title}.`;
-  }
-  return 'Çevrim içi AI bağlantısı şu an yanıt vermedi. Sorunu tekrar gönder; Türkçe açıklama ve istediğin Rusça soru kalıbıyla devam edelim.';
-}
-
 function initialChat(): ChatEntry[] {
   return [{
     id: 'welcome',
     role: 'assistant',
-    text: 'Merhaba! Sorunu yazabilirsin. Türkçe anlatayım; istediğin yerde Rusça kelime, cümle ve soru kalıplarıyla birlikte çalışalım.',
+    text: 'Merhaba! Rusça hakkında istediğini sorabilirsin. Çeviri, cümle düzeltme, hâller, fiil görünüşleri, telaffuz ve doğal konuşma farklarını soruna göre düşünüp Türkçe açıklayabilirim.',
     provider: 'yerel hafıza',
   }];
 }
@@ -208,7 +138,7 @@ export default function AiChat(props: AiChatProps) {
   const [busy, setBusy] = useState(false);
   const [autoSpeak, setAutoSpeak] = useState(() => localStorage.getItem(AUTO_SPEAK_KEY) !== '0');
   const [showVoiceStudio, setShowVoiceStudio] = useState(false);
-  const [status, setStatus] = useState(`${activeFreeAiLabel()} hazır`);
+  const [status, setStatus] = useState('🧠 Yerel Rusça zekası hazır • 0 token');
   const [isSpeaking, setIsSpeaking] = useState(false);
   const [isListening, setIsListening] = useState(false);
   const [mouthViseme, setMouthViseme] = useState<MouthViseme>('rest');
@@ -388,38 +318,43 @@ export default function AiChat(props: AiChatProps) {
     persist(next);
     setInput('');
     setBusy(true);
-    setStatus('Hızlı AI düşünüyor…');
+    setStatus('Yerel Rusça motoru bilgi bankasını tarıyor…');
 
-    const system: AgentMessage = {
-      role: 'system',
-      content: `Senin ana dilin Türkçe olan, DilKoç içindeki kişisel Rusça öğrenme ajanısın. Temel anlatım dilin doğal ve anlaşılır Türkçe olsun. Kullanıcı Rusça bir kelime, cümle veya soru kalıbı sorduğunda Rusça özgün yazımı ver; gerektiğinde Latin okunuşunu ve Türkçe anlamını ekle. Kullanıcı konuşma pratiği istediğinde Türkçe açıklamanın içinde doğal Rusça soru kalıpları kullan; örneğin «Как тебя зовут?» gibi kalıpları bağlama göre öğret. Kullanıcının yazdığı soruya doğrudan cevap ver, kısa ama öğretici ol. Kullanıcı bu uygulamadaki ünitelerin tamamını öğreniyor: yerel müfredat bilgisini kaynak kabul et, ünite/kelime uydurma. Bilgi bağlamında yoksa bunu açıkça söyle ve genel dil bilgisini ayrı belirt. Kullanıcının her mesajda nerede olduğunu dikkate al; bulunduğu seviyenin üzerinde uzun ve gereksiz gramer yükleme. Yanlışlarını yargılamadan düzelt. Kullanıcı istemedikçe günlük soru listesi, otomatik görev, telaffuz tekrarı, mikrofon alıştırması veya quiz başlatma; yalnızca kullanıcının sorusuna ve istediği Rusça kalıba göre konuş.\n\n${buildKnowledgeContext(query, props)}`,
+    // Tamamen yerel motor: ağ isteği, API anahtarı, LLM ve token kullanmaz.
+    // Daha önce sorulan sorular 1 GB sınırındaki yerel önbellekten anında gelir.
+    const cacheable = !/nerede kald|seviyem|ilerlemem|hangi ünite|hangi unite|konumum/i.test(query);
+    const cached = cacheable ? await getLocalAnswerCache(query, props.learningFocus.title) : null;
+    if (controller.signal.aborted) return;
+    const answer = cached || answerWithLocalRussianAgent(query, {
+      pathPosition: props.learningFocus.pathPosition,
+      pathTotal: props.learningFocus.pathTotal,
+      focusTitle: props.learningFocus.title,
+      completedUnits: props.completedUnits.length,
+      completedTopics: props.completedTopics.length,
+      completedAlpha: props.completedAlpha.length,
+      completedGrammar: props.completedGrammar.length,
+      recentUserQueries: messages.filter(message => message.role === 'user').slice(-3).map(message => message.text),
+    });
+    if (!cached && cacheable) void putLocalAnswerCache(query, props.learningFocus.title, answer);
+    const sourceLabel = answer.sources.slice(0, 2).join(' • ');
+    const assistantEntry: ChatEntry = {
+      id: `local-${Date.now()}`,
+      role: 'assistant',
+      text: answer.text,
+      provider: `yerel zeka • ${answer.confidence} güven${sourceLabel ? ` • ${sourceLabel}` : ''}`,
     };
-    const history: AgentMessage[] = next.slice(-12).map(item => ({ role: item.role, content: item.text }));
-
-    try {
-      const reply = await askFreeAgent([system, ...history], { signal: controller.signal });
-      const assistantEntry: ChatEntry = { id: `assistant-${Date.now()}`, role: 'assistant', text: reply.text, provider: `${reply.provider} • ${reply.model}` };
-      persist([...next, assistantEntry]);
-      setStatus(`${reply.provider === 'puter' ? '☁️ Puter AI' : '🌐 Proxy'} yanıtladı • ${reply.model}`);
-      if (autoSpeak) void speakAnswer(reply.text);
-    } catch (error) {
-      if ((error as { name?: string }).name === 'AbortError') return;
-      const fallback = offlineAnswer(query, props);
-      const assistantEntry: ChatEntry = { id: `offline-${Date.now()}`, role: 'assistant', text: fallback, provider: 'yerel hafıza' };
-      persist([...next, assistantEntry]);
-      setStatus('Çevrim içi AI bekleniyor; yerel öğrenme hafızası açık');
-      if (autoSpeak) void speakAnswer(fallback);
-    } finally {
-      if (abortRef.current === controller) abortRef.current = null;
-      setBusy(false);
-    }
+    persist([...next, assistantEntry]);
+    setStatus(`🧠 ${cached ? 'Önbellekten anında' : 'Yerel zeka'} yanıtladı • ${answer.confidence} güven • 0 token`);
+    if (autoSpeak) void speakAnswer(answer.text);
+    if (abortRef.current === controller) abortRef.current = null;
+    setBusy(false);
   };
 
   const clearChat = () => {
     abortRef.current?.abort();
     stopSpeech();
     persist(initialChat());
-    setStatus(`${activeFreeAiLabel()} hazır`);
+    setStatus('🧠 Yerel Rusça zekası hazır • 0 token');
   };
 
   const toggleAutoSpeak = () => {
@@ -460,10 +395,11 @@ export default function AiChat(props: AiChatProps) {
       `}</style>
       <div style={{ display: 'flex', alignItems: 'flex-start', justifyContent: 'space-between', gap: '12px', flexWrap: 'wrap' }}>
         <div>
-          <div style={{ color: '#86efac', fontSize: '11px', fontWeight: 950, letterSpacing: '.6px' }}>💬 KİŞİSEL AI AJANI • TÜRKÇE ANLATIM + RUSÇA SORU KALIPLARI</div>
+          <div style={{ color: '#86efac', fontSize: '11px', fontWeight: 950, letterSpacing: '.6px' }}>🧠 YEREL RUSÇA ZEKASI • API YOK • TOKEN YOK</div>
           <h2 style={{ margin: '5px 0 4px', color: '#f8fafc', fontSize: '21px' }}>Sorunu yaz, Rusçayı birlikte konuşalım</h2>
           <div style={{ display: 'flex', gap: '7px', alignItems: 'center', flexWrap: 'wrap', color: '#cbd5e1', fontSize: '12px' }}>
             <span style={{ padding: '4px 8px', borderRadius: '999px', background: 'rgba(56,189,248,.14)', color: '#bae6fd', fontWeight: 800 }}>{contextPreview}</span>
+            <span style={{ padding: '4px 8px', borderRadius: '999px', background: 'rgba(34,197,94,.14)', color: '#86efac', fontWeight: 800 }}>📚 {RUSSIAN_KNOWLEDGE_BASE.length} bölüm • {LOCAL_RUSSIAN_FACT_COUNT.toLocaleString('tr-TR')} bilgi • ≤ {LOCAL_INTELLIGENCE_MAX_LABEL}</span>
             <span>{status}</span>
           </div>
         </div>

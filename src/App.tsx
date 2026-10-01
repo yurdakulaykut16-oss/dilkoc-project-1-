@@ -20,7 +20,6 @@ import type { RescueTarget } from './components/WordGraph3D';
 import RescueTest from './components/RescueTest';
 import type { RescueResult } from './components/RescueTest';
 import CoachShorts from './components/CoachShorts';
-import StoryVideo2D from './components/StoryVideo2D';
 // ⚡ ULTRA PAKET: deneme sınavları + kart evi + ultra zorluk modu
 import MockExamScreen from './components/MockExamScreen';
 import FlashcardArena from './components/FlashcardArena';
@@ -677,10 +676,8 @@ function nextLevelLabel(story: CheckpointStory): string {
   return story.nextLevelId || 'sonraki';
 }
 
-const STORY_VIDEO_DURATION_MS = 38_000; // kullanıcı isteği: 30-40 sn arası sinematik final videosu
-
 export default function App() {
-  const [activeTab, setActiveTab] = useState<'MAP' | 'PROFILE' | 'MISTAKES' | 'METHODS' | 'CONNECTIONS' | 'VIDEOS'>('MAP');
+  const [activeTab, setActiveTab] = useState<'MAP' | 'PROFILE' | 'MISTAKES' | 'METHODS' | 'CONNECTIONS'>('MAP');
   const [screen, setScreen] = useState<'MAP' | 'AI_TUTOR' | 'ALPHA' | 'ALPHA_CHECK' | 'ALPHA_READING' | 'GRAMMAR' | 'TOPIC' | 'TOPIC_TEST' | 'STORY' | 'DIALOG' | 'SMESHARIKI' | 'FLASHCARD' | 'MATCH' | 'TYPING' | 'SENTENCE' | 'QUIZ' | 'UNIT_STORY' | 'STORY_TEST' | 'STORY_RESULT' | 'CHECKPOINT_STORY' | 'ROUTE' | 'GRAPH' | 'SHORTS' | 'RESCUE' | 'MOCK' | 'CARDS' | 'SPEAK'>('MAP');
   // Sınav/test motorunun hangi bağlamda çalıştığını belirtir: her biri bittiğinde farklı bir sonraki adıma geçer
   const [quizContext, setQuizContext] = useState<'ALPHA_FINAL' | 'GRAMMAR_FOUNDATION' | 'LISTENING' | 'UNIT_FINAL' | 'REVIEW' | 'SRS_REVIEW' | 'MARATHON' | 'WEAKSPOT'>('UNIT_FINAL');
@@ -787,25 +784,6 @@ export default function App() {
   const [storyEvalResult, setStoryEvalResult] = useState<SummaryEvaluation | null>(null); // analiz sonucu
   const [storyQuizPassed, setStoryQuizPassed] = useState(false); // bölüm finali: isteğe bağlı seviye tekrar sınavı geçildi mi
   const [levelQuiz, setLevelQuiz] = useState<{ questions: { ru: string; tr: string; options: string[] }[]; idx: number; correctCount: number; picked: string | null; finished: boolean } | null>(null); // bölüm finali seviye tekrar sınavı
-  const [storyVideoIdx, setStoryVideoIdx] = useState(0);
-  const [storyVideoPlaying, setStoryVideoPlaying] = useState(false);
-
-  useEffect(() => {
-    const story = STORIES[storyCheckpointIdx];
-    if (!storyVideoPlaying || screen !== 'CHECKPOINT_STORY' || story?.kind !== 'levelFinal') return;
-    const frameMs = Math.max(1800, Math.round(STORY_VIDEO_DURATION_MS / Math.max(1, story.paragraphs.length)));
-    const timer = window.setInterval(() => {
-      setStoryVideoIdx(idx => {
-        if (idx >= story.paragraphs.length - 1) {
-          setStoryVideoPlaying(false);
-          return idx;
-        }
-        return idx + 1;
-      });
-    }, frameMs);
-    return () => window.clearInterval(timer);
-  }, [storyVideoPlaying, screen, storyCheckpointIdx]);
-
   // KAYIT YÜKLE
   useEffect(() => {
     const raw = localStorage.getItem(SAVE_KEY);
@@ -876,21 +854,7 @@ export default function App() {
   };
 
   // Ekran değişince çalan sesleri kes (yarım kalmış uzun dinlemeler sürmesin).
-  useEffect(() => { stopAllSpeech(); setStoryVideoPlaying(false); }, [screen]);
-
-  // Final videosu oynarken ses satır satır altyazıyla senkron gider; duraklatınca kesilir.
-  useEffect(() => {
-    const story = STORIES[storyCheckpointIdx];
-    if (!storyVideoPlaying || screen !== 'CHECKPOINT_STORY' || story?.kind !== 'levelFinal') {
-      stopAllSpeech();
-      return;
-    }
-    const line = story.paragraphs[Math.min(storyVideoIdx, story.paragraphs.length - 1)];
-    if (line?.ru) {
-      stopAllSpeech();
-      void speak(line.ru, 0.9);
-    }
-  }, [storyVideoPlaying, storyVideoIdx, storyCheckpointIdx, screen]);
+  useEffect(() => { stopAllSpeech(); }, [screen]);
 
   // SESLENDİRME — seçili VoiceStudio profili ve metnin dili korunur.
   // Türkçe açıklamalar Türkçe, Rusça tekrar kelimeleri Rusça okunur.
@@ -1522,7 +1486,7 @@ export default function App() {
   // HİKAYE MODÜLÜ (Story & Summary) — HER 10 ÜNİTEDE BİR OTOMATİK AÇILIR
   // Kullanıcı 10 müfredat ünitesini (kelime/cümle içerikli) tamamlayınca sistem,
   // o 10 ünitenin kelimeleriyle yazılmış HIMYM tarzı bir hikaye modülü açar.
-  // Hikayede en fazla 5-6 yeni kelime vardır; anlamları sözlük kartı olarak gösterilir.
+  // Hikayede en fazla 3 yeni kelime vardır; anlamları sözlük kartı olarak gösterilir.
   // Kullanıcı Rusça metni okur → Türkçe özetini yazar → analiz motoru
   // "X doğru nokta / Y eksik-yanlış" şeklinde yapıcı geri bildirim üretir.
   // ==========================================
@@ -1543,8 +1507,6 @@ export default function App() {
     setStoryEvalResult(null);
     setStoryQuizPassed(false);
     setLevelQuiz(null);
-    setStoryVideoIdx(0);
-    setStoryVideoPlaying(false);
     setFeedback(null);
     setScreen('CHECKPOINT_STORY');
   };
@@ -1559,7 +1521,7 @@ export default function App() {
 
   const LEVEL_FINAL_SUMMARY_PASS_PERCENT = 70;
 
-  // Bölüm finali kapısı: kullanıcı video + metinden sonra Türkçe özet/çeviri yazar;
+  // Bölüm finali kapısı: kullanıcı konuşma metninden sonra Türkçe özet/çeviri yazar;
   // analiz skoru %70 ve üstündeyse sonraki seviyeye geçebilir.
   const isSummaryPassing = (ev: SummaryEvaluation | null): boolean =>
     !!ev && !ev.tooShort && !ev.wrongLanguage && ev.scorePercent >= LEVEL_FINAL_SUMMARY_PASS_PERCENT;
@@ -2056,7 +2018,6 @@ export default function App() {
           <button onClick={() => { setActiveTab('MAP'); setScreen('ROUTE'); }} style={{ background: 'transparent', border: 'none', color: '#38bdf8', cursor: 'pointer', fontWeight: 800, fontSize: '13px' }} title="Çözdüğün sorulardan çıkarılan zaman/edat eksik haritası ve kişisel rota">🧭 Rotam</button>
           <button onClick={() => { setActiveTab('MAP'); setScreen('GRAPH'); }} style={{ background: 'transparent', border: 'none', color: '#22d3ee', cursor: 'pointer', fontWeight: 800, fontSize: '13px' }} title="Bildiğin kelimelerin 3D ağı — unutulmak üzere olanlar kırmızı yanar">🕸️ Kelime Ağı</button>
           <button onClick={() => { setActiveTab('MAP'); setScreen('SHORTS'); }} style={{ background: 'transparent', border: 'none', color: '#fb923c', cursor: 'pointer', fontWeight: 800, fontSize: '13px' }} title="Hatalarına özel AI üretimi 15-30 saniyelik dikey mikro dersler">🎬 Koç Akışı</button>
-          <button onClick={() => { setActiveTab('VIDEOS'); setScreen('MAP'); }} style={{ background: 'transparent', border: 'none', color: '#fbbf24', cursor: 'pointer', fontWeight: 900, fontSize: '13px' }} title="A1, A2, B1, B2 ve final hikayesi videolarını kilit beklemeden izle">🎥 Final Videoları</button>
           <button onClick={() => { setFeedback(null); setActiveTab('MAP'); setScreen('AI_TUTOR'); }} style={{ background: 'transparent', border: 'none', color: '#86efac', cursor: 'pointer', fontWeight: 900, fontSize: '13px' }} title="Ünitelerini ve bulunduğun yeri bilen çevrim içi AI ajanına soru sor">💬 AI Ajanı</button>
           <button onClick={() => { setActiveTab('METHODS'); setScreen('MAP'); }} style={{ background: 'transparent', border: 'none', color: '#a78bfa', cursor: 'pointer', fontWeight: 800, fontSize: '13px' }}>📚 Yöntemler</button>
           <button onClick={() => { setActiveTab('CONNECTIONS'); setScreen('MAP'); }} style={{ background: 'transparent', border: 'none', color: '#f472b6', cursor: 'pointer', fontWeight: 800, fontSize: '13px' }}>🕸️ Hikaye Bağları</button>
@@ -2215,8 +2176,8 @@ export default function App() {
                     <div style={{ fontSize: '19px', fontWeight: 900, marginTop: '2px' }}>{pendingCheckpointStory.icon} {pendingCheckpointStory.titleTr}</div>
                     <div style={{ fontSize: '12px', color: '#cbd5e1', marginTop: '4px' }}>
                       {pendingCheckpointStory.kind === 'levelFinal'
-                        ? `🎬 BÖLÜM FİNALİ (${pendingCheckpointStory.levelId} sonu): video + konuşma metnini çalışıp Türkçe özet/çeviri analizinden en az %${LEVEL_FINAL_SUMMARY_PASS_PERCENT} almalısın. Altında kalırsa ${nextLevelLabel(pendingCheckpointStory)} bölümü kilitli kalır!`
-                        : 'Son 10 ünitede öğrendiğin kelimelerle yazılmış hikaye + 6 yeni kelime + Türkçe özet sınavı. Skorun kadar XP kazanılır!'}
+                        ? `📖 BÖLÜM FİNALİ (${pendingCheckpointStory.levelId} sonu): konuşma metnini okuyup Türkçe özet/çeviri analizinden en az %${LEVEL_FINAL_SUMMARY_PASS_PERCENT} almalısın. Altında kalırsa ${nextLevelLabel(pendingCheckpointStory)} bölümü kilitli kalır!`
+                        : 'Son 10 ünitede öğrendiğin kelimelerle yazılmış konuşma + en fazla 3 yeni kelime + Türkçe özet sınavı. Skorun kadar XP kazanılır!'}
                     </div>
                   </div>
                   <button onClick={() => openCheckpointStory(pendingCheckpointStory)} style={{ background: '#f59e0b', border: 'none', color: '#0f172a', padding: '12px 18px', borderRadius: '10px', fontWeight: 900, cursor: 'pointer', fontSize: '14px' }}>
@@ -2365,12 +2326,12 @@ export default function App() {
                         }}>
                           <div style={{ display: 'flex', gap: '16px', alignItems: 'center' }}>
                             <div style={{ width: '56px', height: '56px', borderRadius: '14px', background: sDone ? '#10b981' : sUnl ? (isFinal ? 'linear-gradient(135deg, #fbbf24, #ef4444)' : 'linear-gradient(135deg, #f59e0b, #d946ef)') : '#334155', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '26px', flexShrink: 0 }}>
-                              {sDone ? '✅' : sUnl ? (isFinal ? '🎬' : '📖') : '🔒'}
+                              {sDone ? '✅' : sUnl ? '📖' : '🔒'}
                             </div>
                             <div style={{ flex: 1, minWidth: 0 }}>
                               <div style={{ display: 'flex', gap: '6px', alignItems: 'center', marginBottom: '4px', flexWrap: 'wrap' }}>
                                 <span style={{ fontSize: '10px', fontWeight: 900, background: '#0f172a', color: sDone ? '#10b981' : sUnl ? (isFinal ? '#fbbf24' : '#f59e0b') : '#64748b', padding: '2px 6px', borderRadius: '4px' }}>
-                                  {isFinal ? `🎬 ${cpStory.levelId} BÖLÜM FİNALİ` : `KONTROL NOKTASI ${cpStory.checkpoint}`}
+                                  {isFinal ? `📖 ${cpStory.levelId} BÖLÜM FİNALİ` : `KONTROL NOKTASI ${cpStory.checkpoint}`}
                                 </span>
                                 <span style={{ fontSize: '10px', fontWeight: 800, color: '#64748b' }}>{isFinal ? '🔒 KAPILI: özet %100 + seviye sınavı' : '📖 HİKAYE & ÖZET'}</span>
                               </div>
@@ -2398,51 +2359,6 @@ export default function App() {
         )}
 
         {/* KALICI HAFIZA YÖNTEMLERİ — BİLİMSEL AÇIKLAMA VE UYGULAMA REHBERİ */}
-        {screen === 'MAP' && activeTab === 'VIDEOS' && (
-          <div style={cardBox}>
-            <button onClick={() => setActiveTab('MAP')} style={{ background: 'transparent', border: 'none', color: '#94a3b8', fontWeight: 700, cursor: 'pointer', marginBottom: '12px' }}>← Haritaya Dön</button>
-            <SceneBanner icon="🎥" color="#fbbf24" label="Bölüm Sonu Video Galerisi" />
-            <h2 style={{ marginTop: 0, color: '#fbbf24' }}>Final videoları — hangi bölümün videosu?</h2>
-            <p style={{ color: '#cbd5e1', fontSize: '13px', lineHeight: 1.7, marginTop: 0 }}>
-              Buradan bütün bölüm sonu hikaye videolarını kilit beklemeden önizleyebilirsin. Her final için yaklaşık 38 saniyelik sinematik 2.5D/3D görünümlü animasyon sahnesi var; konuşmalar altyazıda görünür ve açınca tam ekran yapılabilir. Asıl öğrenme akışında videodan sonra alttaki konuşma metnini Türkçeleştirip özetlemen gerekir; %70 altı sonraki seviyeyi açmaz.
-            </p>
-            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(245px, 1fr))', gap: '14px', marginTop: '16px' }}>
-              {STORIES.filter(story => story.kind === 'levelFinal').map((story, idx) => {
-                const range = storyDynamicRange(story);
-                const episodeLabel = story.levelId === 'C1/C2' ? 'Dizi finali' : `${story.levelId} bölüm finali`;
-                const nextLabel = story.levelId === 'C1/C2' ? 'Mezuniyet' : `${nextLevelLabel(story)} kilidi`;
-                return (
-                  <div key={story.id} style={{ background: 'linear-gradient(135deg, rgba(15,23,42,0.96), rgba(30,41,59,0.92))', border: `1px solid ${story.color}88`, borderRadius: '16px', padding: '16px', boxShadow: `0 12px 30px ${story.color}18` }}>
-                    <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', gap: '10px' }}>
-                      <div>
-                        <div style={{ fontSize: '10px', color: story.color, fontWeight: 950, letterSpacing: '0.08em' }}>38 SN VİDEO {idx + 1} · {episodeLabel.toUpperCase()}</div>
-                        <h3 style={{ margin: '6px 0 2px', fontSize: '18px' }}>{story.icon} {story.titleTr}</h3>
-                        <div style={{ fontSize: '12px', color: '#94a3b8' }}>{story.titleRu}</div>
-                      </div>
-                      <div style={{ width: '44px', height: '44px', borderRadius: '14px', background: story.color, display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '22px', color: '#0f172a', flexShrink: 0 }}>▶️</div>
-                    </div>
-                    <div style={{ marginTop: '12px' }}>
-                      <StoryVideo2D story={story} frameIndex={idx % story.paragraphs.length} playing={true} compact />
-                    </div>
-                    <div style={{ marginTop: '12px', display: 'flex', gap: '6px', flexWrap: 'wrap' }}>
-                      <span style={{ fontSize: '11px', fontWeight: 900, padding: '4px 9px', borderRadius: '999px', background: '#0f172a', border: '1px solid #334155', color: '#e2e8f0' }}>📌 {episodeLabel}</span>
-                      <span style={{ fontSize: '11px', fontWeight: 900, padding: '4px 9px', borderRadius: '999px', background: '#0f172a', border: '1px solid #334155', color: '#e2e8f0' }}>Ünite {range.from}-{range.to}</span>
-                      <span style={{ fontSize: '11px', fontWeight: 900, padding: '4px 9px', borderRadius: '999px', background: '#0f172a', border: '1px solid #334155', color: '#e2e8f0' }}>🔒 {nextLabel}</span>
-                    </div>
-                    <p style={{ color: '#cbd5e1', fontSize: '12px', lineHeight: 1.6, margin: '12px 0 14px' }}>{story.framingTr}</p>
-                    <button
-                      onClick={() => { setActiveTab('MAP'); openCheckpointStory(story); }}
-                      style={{ width: '100%', padding: '12px', borderRadius: '12px', border: 'none', background: `linear-gradient(135deg, ${story.color}, #fbbf24)`, color: '#0f172a', fontWeight: 950, cursor: 'pointer', fontSize: '14px' }}
-                    >
-                      ▶️ 38 sn {episodeLabel} videosunu aç
-                    </button>
-                  </div>
-                );
-              })}
-            </div>
-          </div>
-        )}
-
         {activeTab === 'METHODS' && (
           <div style={cardBox}>
             <button onClick={() => setActiveTab('MAP')} style={{ background: 'transparent', border: 'none', color: '#94a3b8', fontWeight: 700, cursor: 'pointer', marginBottom: '12px' }}>← Haritaya Dön</button>
@@ -2465,7 +2381,7 @@ export default function App() {
                 { icon: '🔁', title: '9. Aynı İçeriği Tekrar İzleme (Repeated Viewing)', text: 'Bir Смешарики bölümünü bir kez izlemek yetmez. Aynı bölümü 2-3 gün arayla tekrar izlediğinde, ilk seferde kaçırdığın kelimeleri fark edersin — çünkü artık o kelimeler uygulamada öğrendiğin kelimeler haline geldi. Bu, pasif izlemeyi aktif bir "tanıma tatmini"ne çevirir ve kalıcılığı ciddi şekilde artırır.' },
                 { icon: '😴', title: '10. Uyku ve Hafıza Pekiştirmesi', text: 'Kısa süreli hafızadaki bilginin uzun süreli hafızaya "kaydedilmesi" büyük ölçüde UYKU sırasında gerçekleşir. Yeni bir üniteyi akşam bitirip hemen ardından uyumak, o bilgiyi sabaha kalıcılaştırma ihtimalini belirgin şekilde artırır.' },
                 { icon: '🎧', title: `11. Kulağı Alıştırma — ${TOPICS_100_TOTAL} Dinleme Konusu (yolun içinde)`, text: `Gözden önce KULAK öğrenir: Rusçaya maruz kalmak (exposure) beynin ses örüntülerini tanımasını sağlar. Öğrenme yolundaki önce 🧩 cümle temeli kartları (özne-yüklem-edat), sonra 🎧 rozetli kartlar bunu yapar — 33 harf + 8 fonetik konusu ve müfredat ön-hazırlık konuları (ilgili ünitenin hemen öncesinde, yani konuyu duyduktan saniyeler sonra ünitesine girersin). Toplam ${TOPICS_100_TOTAL} konunun her biri kelime kartları odaklıdır: tek tek 🔊 dinle, "Konuyu Dinle" / "Yavaşça Dinle" ile akışa bat, sonra 5 soruluk "dinle & seç" testiyle kanıtla. Günde 3-5 konu dinlemek, 2-3 hafta içinde doğal konuşma hızını kavraman için yeterlidir.` },
-                { icon: '📖', title: '12. Hikaye & Özet — Okuma Anlama + Üretici Çıktı (10\'lu kontrol noktaları + bölüm finalleri)', text: 'İki tür hikaye var: (1) Her 10 müfredat ünitesinin sonunda bir HİKAYE KONTROL NOKTASI açılır: o 10 ünitede öğrendiğin kelimelerle yazılmış, içinde en fazla 5-6 yeni kelime olan bir sit-com hikayesi. (2) Her bölümün (A1, A2, B1, B2, C1, C2) sonunda bir BÖLÜM FİNALİ açılır — burada hikayeyi video gibi sahne sahne izler, konuşma metnini altında okur, sonra Türkçe çeviri/özet yazarsın. Analiz skoru en az %70 olursa sonraki seviye açılır; %70 altıysa kilitli kalır. Hikayeler iki tarzda: Dima\'nın 2035\'te çocuklarına anlattığı HIMYM tadında bölümler VE «Кухня» dizisinden esinlenen mutfak komedileri (Şef Pyotr, garson Lyosha, Nina, Semyon — «Ван Гог» restoranı). Okurken istediğin satırın çevirisini açabilir, yeni kelimeleri sözlük kartlarından, ESKİ kelimeleri "Eski Kelimeler" bölümünden tekrar edersin — çünkü B\'deyken A kelimeleri unutulmasın diye finallere bilerek serpiştirildiler (kalıcı öğrenme!). Ardından en önemli adım: konuşmaları TÜRKÇELEŞTİRİP ÖZETLE — okuduğunu kendi cümlelerinle yeniden kurmak "üretici çıktı"dır ve pasif tanımadan çok daha güçlü kalıcılaşır. Analiz motoru özetini ana fikirlerle karşılaştırır: kaç doğru nokta yakaladığını, neyi kaçırdığını ve neleri yanlış anladığını söyler. İstersen finalden sonra 10 soruluk seviye tekrar pratiği de çözebilirsin: 6 soru bitirilen bölümden, 4 soru önceki bölümlerden gelir.' },
+                { icon: '📖', title: '12. Hikaye & Özet — Okuma Anlama + Üretici Çıktı (10\'lu kontrol noktaları + bölüm finalleri)', text: 'İki tür hikaye var: (1) Her 10 müfredat ünitesinin sonunda bir HİKAYE KONTROL NOKTASI açılır: o 10 ünitede öğrendiğin kelimelerle yazılmış, içinde en fazla 3 yeni kelime olan kısa bir konuşma. (2) Her bölümün (A1, A2, B1, B2, C1, C2) sonunda bir BÖLÜM FİNALİ açılır — burada yalnızca konuşma metnini okur, sonra Türkçe çeviri/özet yazarsın. Analiz skoru en az %70 olursa sonraki seviye açılır; %70 altıysa kilitli kalır. Hikayeler iki tarzda: Dima\'nın 2035\'te çocuklarına anlattığı HIMYM tadında bölümler VE «Кухня» dizisinden esinlenen mutfak komedileri (Şef Pyotr, garson Lyosha, Nina, Semyon — «Ван Гог» restoranı). Okurken istediğin satırın çevirisini açabilir, yeni kelimeleri sözlük kartlarından, ESKİ kelimeleri "Eski Kelimeler" bölümünden tekrar edersin — çünkü B\'deyken A kelimeleri unutulmasın diye finallere bilerek serpiştirildiler (kalıcı öğrenme!). Ardından en önemli adım: konuşmaları TÜRKÇELEŞTİRİP ÖZETLE — okuduğunu kendi cümlelerinle yeniden kurmak "üretici çıktı"dır ve pasif tanımadan çok daha güçlü kalıcılaşır. Analiz motoru özetini ana fikirlerle karşılaştırır: kaç doğru nokta yakaladığını, neyi kaçırdığını ve neleri yanlış anladığını söyler. İstersen finalden sonra 10 soruluk seviye tekrar pratiği de çözebilirsin: 6 soru bitirilen bölümden, 4 soru önceki bölümlerden gelir.' },
                 { icon: '♾️', title: '13. Hiçbir Kelime Emekli Olmaz — Sınav İçi Karma Tekrar (YENİ, OTOMATİK)', text: 'Bir üniteyi %100 doğru bitirsen bile o ünitenin kelimeleri seninle yolculuğa devam eder: SONRAKİ HER ünitenin bitiş sınavına, önceki ünitelerden seçilen 5 adet "🔁 KALICI TEKRAR" sorusu otomatik karışır. Seçim genişleyen aralık ilkesine göre yapılır: 1, 2, 3, 5, 8, 13 ve 21 ünite geriden kelimeler + TÜM geçmişten rastgele örnekler. Araştırmalar (spaced/expanding retrieval) bunun, bilgiyi tam unutma eşiğinde yakalayıp kalıcılaştırdığını gösteriyor. Bu sorularda yanılırsan kelime Aralıklı Tekrar kutusunda 1. kutuya düşer ve ertesi gün yeniden sorulur.' },
                 { icon: '🔄', title: '14. Üretim Etkisi (Production Effect) — Ters Yön Soruları (YENİ, OTOMATİK)', text: 'Rusça kelimeyi görüp Türkçesini TANIMAK kolaydır; zor ve asıl kalıcı olan, Türkçesinden Rusçasını GERİ ÇAĞIRMAKTIR. Bu yüzden karma tekrar ve maraton sorularının yarısı ters yönde sorulur: "Tuz kelimesinin Rusçası hangisi?" Beynin cevabı üretmek için harcadığı ekstra çaba (desirable difficulty), izi çok daha derin kazır.' },
                 { icon: '🔀', title: '15. Karma Maraton — Kümülatif Rastgele Örnekleme Sınavı (YENİ, İSTEĞE BAĞLI)', text: 'Ana ekrandaki "🔀 Karma Maraton" butonu, tamamladığın TÜM ünitelerin kelime havuzundan rastgele 15 soru çeker — vadesi gelmemiş, çoktan "öğrenilmiş" kelimeler bile her an sorulabilir. Araştırmalar, rastgele örneklenmiş kümülatif testlerin (RST) tüm kelimeleri dengeli biçimde canlı tuttuğunu ve sınav kapsamı büyüdükçe zayıf kelimelerin kendiliğinden ortaya çıktığını gösteriyor. Haftada 2-3 maraton, "eskiden biliyordum" cümlesini sözlüğünden siler.' },
@@ -3554,7 +3470,7 @@ export default function App() {
             {/* ============================================================
                 HİKAYE MODÜLÜ (STORY & SUMMARY) — HER 10 ÜNİTEDE BİR AÇILIR
                 1) Rusça hikaye (satır çevirileri tıklanınca açılır) + 🔊 dinleme
-                2) Sözlük kartları: hikayedeki en fazla 5-6 YENİ kelime
+                2) Sözlük kartları: hikayedeki en fazla 3 YENİ kelime
                 3) Türkçe özet alanı + analiz: "X doğru nokta / Y eksik-yanlış"
                 ============================================================ */}
             {screen === 'CHECKPOINT_STORY' && (() => {
@@ -3568,32 +3484,9 @@ export default function App() {
               return (
                 <div>
                   <SceneBanner icon={story.icon} color={story.color} label={isFinal ? `Bölüm Finali — ${story.levelId} Sonu` : `Hikaye Modülü — Kontrol Noktası ${story.checkpoint}`} />
-                  <span style={{ fontSize: '11px', fontWeight: 900, background: '#0f172a', color: story.color, padding: '2px 8px', borderRadius: '4px' }}>{(() => { const range = storyDynamicRange(story); return isFinal ? `🎬 ${story.levelId} BÖLÜM FİNALİ — ÜNİTE ${range.from}-${range.to}` : `📖 ÜNİTE ${range.from}-${range.to} KELİMELERİYLE YAZILDI`; })()}</span>
+                  <span style={{ fontSize: '11px', fontWeight: 900, background: '#0f172a', color: story.color, padding: '2px 8px', borderRadius: '4px' }}>{(() => { const range = storyDynamicRange(story); return isFinal ? `📖 ${story.levelId} BÖLÜM FİNALİ — ÜNİTE ${range.from}-${range.to}` : `📖 ÜNİTE ${range.from}-${range.to} KELİMELERİYLE YAZILDI`; })()}</span>
                   <h2 style={{ marginTop: '8px', marginBottom: '2px', fontSize: '22px' }}>{story.titleTr} <span style={{ color: story.color, fontSize: '16px' }}>— {story.titleRu}</span></h2>
                   <p style={{ color: '#cbd5e1', fontSize: '13px', marginTop: 0, lineHeight: '1.6', fontStyle: 'italic' }}>{story.framingTr}</p>
-
-                  {/* AI ile üretilmiş sahne görseli (telifsiz benzer sahne) */}
-                  {story.banner && (
-                    <div style={{ borderRadius: '14px', overflow: 'hidden', border: `1px solid ${story.color}55`, marginBottom: '14px', position: 'relative' }}>
-                      <img src={story.banner} alt={`${story.titleTr} sahnesi`} style={{ width: '100%', maxHeight: '220px', objectFit: 'cover', display: 'block' }} />
-                      <div style={{ position: 'absolute', bottom: 0, left: 0, right: 0, background: 'linear-gradient(transparent, rgba(2,6,23,0.92))', padding: '18px 14px 10px', fontSize: '11px', color: '#e2e8f0' }}>
-                        🤖 Bu sahne görseli yapay zeka ile üretilmiştir — dizinin ruhuna yazılmış benzer bir sahnedir.
-                      </div>
-                    </div>
-                  )}
-
-                  {/* Gerçek sahne kesitleri: YouTube arama linki (bu tarz sahneleri orijinal dizide izle) */}
-                  {story.searchQuery && (
-                    <a href={`https://www.youtube.com/results?search_query=${encodeURIComponent(story.searchQuery)}`} target="_blank" rel="noopener noreferrer" style={{ textDecoration: 'none' }}>
-                      <div style={{ background: 'linear-gradient(135deg, rgba(239,68,68,0.14), rgba(239,68,68,0.04))', border: '1px solid #ef444455', borderRadius: '12px', padding: '13px 16px', margin: '0 0 14px', display: 'flex', alignItems: 'center', gap: '12px', cursor: 'pointer' }}>
-                        <div style={{ fontSize: '26px' }}>🎬</div>
-                        <div>
-                          <div style={{ fontWeight: 800, color: '#f87171', fontSize: '14px' }}>Bu tarz sahneyi gerçek dizide izle</div>
-                          <div style={{ fontSize: '12px', color: '#cbd5e1' }}>Hikayenin ilham aldığı tarzda sahneleri YouTube'da ara: «{story.searchQuery}»</div>
-                        </div>
-                      </div>
-                    </a>
-                  )}
 
                   {/* Bölüm finali kapısı — kurallar */}
                   {isFinal && (
@@ -3601,8 +3494,8 @@ export default function App() {
                       <div style={{ fontSize: '13px', fontWeight: 900, color: '#fbbf24' }}>🚧 BÖLÜM FİNALİ KAPISI</div>
                       <div style={{ fontSize: '12.5px', color: '#e2e8f0', marginTop: '6px', lineHeight: 1.6 }}>
                         {story.levelId === 'C1/C2'
-                          ? `Bu, DİZİ FİNALİDİR: videoyu ve konuşma metnini çalış; Türkçe özet/çeviri analizinden en az %${LEVEL_FINAL_SUMMARY_PASS_PERCENT} almalısın. %70 altıysa mezuniyet kilitli kalır. 🎓`
-                          : `Sonraki bölüme (${nextLevelLabel(story)}) geçmek için: videoyu ve konuşma metnini çalış; Türkçe özet/çeviri analizinden en az %${LEVEL_FINAL_SUMMARY_PASS_PERCENT} almalısın. %70 altıysa sonraki seviye kilitli kalır.`}
+                          ? `Bu, DİZİ FİNALİDİR: konuşma metnini oku; Türkçe özet/çeviri analizinden en az %${LEVEL_FINAL_SUMMARY_PASS_PERCENT} almalısın. %70 altıysa mezuniyet kilitli kalır. 🎓`
+                          : `Sonraki bölüme (${nextLevelLabel(story)}) geçmek için konuşma metnini oku; Türkçe özet/çeviri analizinden en az %${LEVEL_FINAL_SUMMARY_PASS_PERCENT} almalısın. %70 altıysa sonraki seviye kilitli kalır.`}
                       </div>
                       <div style={{ display: 'flex', gap: '8px', marginTop: '10px', flexWrap: 'wrap' }}>
                         <span style={{ fontSize: '11px', fontWeight: 800, padding: '4px 10px', borderRadius: '999px', background: summaryPassed ? 'rgba(16,185,129,0.2)' : '#1e293b', border: `1px solid ${summaryPassed ? '#10b981' : '#334155'}`, color: summaryPassed ? '#10b981' : '#94a3b8' }}>
@@ -3612,29 +3505,6 @@ export default function App() {
                           🔁 Seviye tekrar sınavı: isteğe bağlı pratik
                         </span>
                       </div>
-                    </div>
-                  )}
-
-                  {/* BÖLÜM SONU VİDEOSU — AI tasarımlı hareketli 2D animasyon */}
-                  {isFinal && (
-                    <div style={{ marginBottom: '16px' }}>
-                      <StoryVideo2D
-                        story={story}
-                        frameIndex={storyVideoIdx}
-                        playing={storyVideoPlaying}
-                        onPrev={() => setStoryVideoIdx(i => Math.max(0, i - 1))}
-                        onNext={() => setStoryVideoIdx(i => (i + 1) % story.paragraphs.length)}
-                        onToggle={() => {
-                          if (storyVideoPlaying) {
-                            setStoryVideoPlaying(false);
-                            stopAllSpeech();
-                          } else {
-                            if (storyVideoIdx >= story.paragraphs.length - 1) setStoryVideoIdx(0);
-                            setStoryVideoPlaying(true);
-                          }
-                        }}
-                        onSpeakFrame={() => { stopAllSpeech(); speak((story.paragraphs[Math.min(storyVideoIdx, story.paragraphs.length - 1)] || story.paragraphs[0])?.ru || '', 0.8); }}
-                      />
                     </div>
                   )}
 
@@ -3685,7 +3555,7 @@ export default function App() {
                     })}
                   </div>
 
-                  {/* SÖZLÜK KARTLARI — hikayedeki yeni kelimeler (maks. 5-6) */}
+                  {/* SÖZLÜK KARTLARI — hikaye başına en fazla 3 yeni kelime */}
                   <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', gap: '10px', marginBottom: '8px', flexWrap: 'wrap' }}>
                     <div style={{ fontSize: '12px', color: '#f59e0b', fontWeight: 800 }}>🃏 SÖZLÜK KARTLARI — bu hikayedeki <u>{story.newWords.length} yeni kelime</u>:</div>
                   </div>
@@ -3907,7 +3777,7 @@ export default function App() {
                   )}
                   {!ev && isFinal && (
                     <div style={{ ...primaryBtn, background: 'transparent', border: '1px dashed #fbbf2455', color: '#fbbf24', marginTop: '12px', textAlign: 'center', fontSize: '13px', cursor: 'default' }}>
-                      🚧 Bu bir bölüm finali: videoyu ve konuşma metnini çalış; Türkçe özet/çeviri analizinden en az %70 almadan geçiş yok!
+                      🚧 Bu bir bölüm finali: konuşma metnini oku; Türkçe özet/çeviri analizinden en az %70 almadan geçiş yok!
                     </div>
                   )}
                 </div>
