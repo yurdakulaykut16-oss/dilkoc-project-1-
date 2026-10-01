@@ -4,7 +4,7 @@
 // Kullanıcı her 10 müfredat ünitesini (kelime/cümle içerikli) tamamladığında
 // açılan "kontrol noktası hikayesi"nin veri modeli:
 //   • Hikaye, son 10 ünitede öğrenilen kelimelerle kurulur.
-//   • İçinde en fazla 5-6 YENİ kelime bulunur; anlamları sözlük kartı olarak
+//   • İçinde en fazla 3 YENİ kelime bulunur; anlamları sözlük kartı olarak
 //     hikayenin altında gösterilir.
 //   • Kullanıcı Rusça metni okur, Türkçe özetini yazar; analiz motoru
 //     (summaryEvaluation.ts) özeti ana fikirlerle karşılaştırıp yapıcı geri
@@ -71,10 +71,8 @@ export interface CheckpointStory {
   framingTr: string;  // HIMYM / Кухня tarzı çerçeve anlatımı (Türkçe kurgu notu)
   icon: string;
   color: string;
-  banner?: string;    // AI ile üretilmiş sahne görseli (public/ altında yol) — isteğe bağlı
-  searchQuery?: string; // "Bu tarz sahneyi izle" YouTube arama sorgusu (gerçek sahne kesitleri)
   paragraphs: StoryLine[];
-  newWords: StoryNewWord[];   // maksimum 5-6 yeni kelime
+  newWords: StoryNewWord[];   // maksimum 3 yeni kelime
   keyPoints: StoryKeyPoint[]; // özet analizinin ana fikirleri
   misleading: StoryMislead[]; // yanlış anlama dedektörleri
   recycleWords?: { ru: string; tr: string; from: string }[]; // önceki bölümlerden tekrar edilen kelimeler (kalıcı öğrenme)

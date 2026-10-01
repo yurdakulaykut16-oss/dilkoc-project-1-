@@ -4,7 +4,7 @@
 // Her 10 müfredat ünitesi tamamlandığında bir kontrol noktası hikayesi açılır.
 // Hikayeler:
 //   • O 10 ünitede öğrenilen kelimelerle kurulur (tek tek kontrol edilmiştir),
-//   • en fazla 5-6 YENİ kelime içerir (sözlük kartı olarak gösterilir),
+//   • en fazla 3 YENİ kelime içerir (sözlük kartı olarak gösterilir),
 //   • How I Met Your Mother tarzı sit-com mizahıyla yazılır: 2035'te Dima
 //     çocuklarına hikayeyi anlatır; tekrarlayan karakter kadrosu absürt
 //     durum komedileri üretir.
@@ -50,7 +50,6 @@ const STORY_1: CheckpointStory = {
     'Yıl 2035. Dima, çocuklarına anneleriyle nasıl tanıştığını anlatmaya devam ediyor — tıpkı eski bir sitcom gibi. Bu bölümde: yağmur, bir kafe ve bir telefon numarası.',
   icon: '🌧️',
   color: '#38bdf8',
-  searchQuery: 'How I Met Your Mother yellow umbrella scene',
   paragraphs: [
     { speaker: 'Anlatıcı (2035)', narrator: true, ru: 'Дети, сегодня я расскажу вам одну историю. Она называется: «Как я встретил вашу маму».', reading: 'Dyéti, sivódnya ya rasskazhú vam adnú istóriyu. Aná nazývayetsya: «Kak ya vstrétil váshu mámu».', tr: 'Çocuklar, bugün size bir hikaye anlatacağım. Adı: "Annenizle nasıl tanıştım".' },
     { speaker: 'Anlatıcı', narrator: true, ru: 'Двенадцать лет назад. Кофейня. На улице дождь. Я пил кофе и в пятый раз читал меню.', reading: 'Dvyénadtsat\' lyet nazád. Kafyéynya. Na úlitse dózhd\'. Ya pil kófe i f pyátyy ras chitál menyú.', tr: 'On iki yıl önce. Bir kafe. Dışarıda yağmur var. Kahve içiyordum ve menüyü beşinci kez okuyordum.' },
@@ -68,9 +67,6 @@ const STORY_1: CheckpointStory = {
     { ru: 'История', reading: 'Istóriya', tr: 'Hikaye', note: 'Dima\'nın çocuklarına anlattığı her şeyin adı: "история".' },
     { ru: 'Только', reading: 'Tól\'ka', tr: 'Sadece; ama', note: 'Cümle başında nazik bir uyarı getirir: "Только не говорите про погоду".' },
     { ru: 'Самый', reading: 'Sámyy', tr: 'En (üstünlük eki)', note: '"самый длинный день" — en uzun gün.' },
-    { ru: 'Вдруг', reading: 'Vdrug', tr: 'Birden, birdenbire', note: 'Anlatıda sürpriz anlarını işaret eder.' },
-    { ru: 'Вероятно', reading: 'Veróyatna', tr: 'Herhalde, muhtemelen', note: 'Kibar tahmin zarfı; "наверное" ile eş anlamlıdır.' },
-    { ru: 'Наконец-то', reading: 'Kanéts-ta', tr: 'Sonunda', note: 'Uzun bir bekleyişin sonunda duyulan rahatlama.' },
   ],
   keyPoints: [
     { id: 'cp1_k1', textTr: 'Hikaye, Dima\'nın (2035\'te) çocuklarına anneleriyle nasıl tanıştığını anlatmasıyla başlar.', hintTr: 'Hikayeyi kim, kime anlatıyor?', keywordGroups: [['çocuk'], ['anlat']] },
@@ -106,7 +102,6 @@ const STORY_2: CheckpointStory = {
     'Yıl 2035. Dima anlatmaya devam ediyor: "Annenizle tanıştıktan sonraki ilk grup yemeği... ve neredeyse yanan bir tavuk." Jenya ile Lena\'nın evinde bir akşam yemeği.',
   icon: '🔥',
   color: '#f97316',
-  searchQuery: 'How I Met Your Mother funny dinner scene',
   paragraphs: [
     { speaker: 'Anlatıcı (2035)', narrator: true, ru: 'Дети, после первого свидания была вторая проблема: ужин у Жени и Лены.', reading: 'Dyéti, pósle pérvava svidániya býla vtaráya prabléma: úzhin u Zhéni i Lyény.', tr: 'Çocuklar, ilk buluşmadan sonra ikinci bir sorun geldi: Jenya ve Lena\'da akşam yemeği.' },
     { speaker: 'Zhenya', ru: 'Лена, гости приходят в семь! Соус готов? Курица готова?', reading: 'Lyéna, gósti prikhódyat f syém! Sus gótav? Kurítsa gótava?', tr: 'Lena, konuklar yedide geliyor! Sos hazır? Tavuk hazır?' },
@@ -123,9 +118,6 @@ const STORY_2: CheckpointStory = {
     { ru: 'Ужин', reading: 'Úzhin', tr: 'Akşam yemeği', note: 'Обед öğle yemeği, ужин akşam yemeğidir.' },
     { ru: 'Почти', reading: 'Pachti', tr: 'Neredeyse, az kalsın', note: '"Готов? — Почти!" — "Hazır mı? — Neredeyse!"' },
     { ru: 'Гореть', reading: 'Garét\'', tr: 'Yanmak', note: '"Курица горела" — tavuk yanıyordu.' },
-    { ru: 'К сожалению', reading: 'K sazhályéniyu', tr: 'Ne yazık ki', note: 'Kötü haber verirken kullanılan kalıp.' },
-    { ru: 'К счастью', reading: 'K schást\'yu', tr: 'İyi ki, neyse ki', note: 'İyi haber verirken kullanılan kalıp.' },
-    { ru: 'Любовь', reading: 'Lyubóf\'', tr: 'Aşk', note: 'Dişil; Rusçanın en meşhur kelimesi.' },
   ],
   keyPoints: [
     { id: 'cp2_k1', textTr: 'Akşam yemeği, grup olarak Jenya ve Lena\'nın evinde yenir.', hintTr: 'Akşam yemeği nerede ve kimlerle yeniyordu?', keywordGroups: [['jenya', 'zhenya'], ['lena'], ['akşam yemeği', 'yemek']] },
@@ -160,7 +152,6 @@ const STORY_3: CheckpointStory = {
     'Yıl 2035. Dima: "Yeni işim, ilk gerçek randevum... ve kulağımda bir Tyoma." Bu bölümde: bir iş görüşmesi, bir restoran ve tarihin en kötü kulaklık operasyonu.',
   icon: '🎧',
   color: '#a78bfa',
-  searchQuery: 'How I Met Your Mother best funny moments',
   paragraphs: [
     { speaker: 'Anlatıcı (2035)', narrator: true, ru: 'Сначала — работа. У Димы было собеседование в большой компании.', reading: 'Snachála — rabóta. U Dímy býla sabesyédavaniye v bal\'shóy kampaníi.', tr: 'Önce iş. Dima büyük bir şirkette iş görüşmesine girdi.' },
     { speaker: 'Patron', ru: 'Ваше резюме отличное. Зарплата — вот такая. Когда можете начать?', reading: 'Váshe razyumyé atlíchwaye. Zarpláta — vot takáya. Kagdá mózhete nachát\'?', tr: 'Özgeçmişiniz harika. Maaş şu kadar. Ne zaman başlayabilirsiniz?' },
@@ -178,9 +169,6 @@ const STORY_3: CheckpointStory = {
     { ru: 'Наушник', reading: 'Naúshnik', tr: 'Kulaklık (tek kulak)', note: 'Eril; ajan filmlerinin ve kötü planların vazgeçilmezi.' },
     { ru: 'Заказать', reading: 'Zakazát\'', tr: 'Sipariş etmek', note: 'Restoranda sipariş fiili: "Я заказал столик" — masa ayırttım/sipariş verdim.' },
     { ru: 'Паника', reading: 'Paníka', tr: 'Panik', note: 'Dişil; ani korku ve kafa karışıklığı.' },
-    { ru: 'Совет', reading: 'Svét', tr: 'Tavsiye, öğüt', note: '"Мой совет" — benim tavsiyem. (Dikkat: "весь" ile karıştırma!)' },
-    { ru: 'Шёпотом', reading: 'Shópatam', tr: 'Fısıltıyla', note: 'Utanınca ya da sır paylaşırken konuşma biçimi.' },
-    { ru: 'Легендарно', reading: 'Lyendárna', tr: 'Efsanevi (biçimde)', note: 'Tyoma\'nın efsane repliği: «Это будет легендарно!»' },
   ],
   keyPoints: [
     { id: 'cp3_k1', textTr: 'Dima büyük bir şirkette iş görüşmesine girer ve işi alır.', hintTr: 'Randevudan önce Dima\'nın hangi büyük gelişmesi oldu?', keywordGroups: [['iş görüşmesi', 'görüşme', 'mülakat'], ['iş', 'başlar', 'alar', 'kazan']] },
@@ -214,7 +202,6 @@ const STORY_4: CheckpointStory = {
     'Yıl 2035. Dima: "Aşk, çocuklar, sadece bayramlarda değil — sıradan bir salıdadır." İşte Dima ve Marina\'nın bir günü: alarm, sinema, sızan bir musluk ve gece yarısı komşusu.',
   icon: '☕',
   color: '#10b981',
-  searchQuery: 'How I Met Your Mother ordinary day moments',
   paragraphs: [
     { speaker: 'Anlatıcı (2035)', narrator: true, ru: 'Дети, любовь — это не только праздники. Любовь — это обычный вторник.', reading: 'Dyéti, lyubóf\' — éta ne tól\'ka prázniki. Lyubóf\' — éta obýchnyy ftórnik.', tr: 'Çocuklar, aşk sadece bayramlar değildir. Aşk, sıradan bir salıdır.' },
     { speaker: 'Anlatıcı', narrator: true, ru: 'Семь утра. Будильник. Дима обычно встаёт первым и готовит кофе.', reading: 'Syém útra. Budíl\'nik. Díma obýchna vstayót pérvym i gatóvit kófe.', tr: 'Sabahın yedisi. Alarm. Dima genellikle ilk kalkar ve kahve yapar.' },
@@ -233,9 +220,6 @@ const STORY_4: CheckpointStory = {
     { ru: 'Будильник', reading: 'Budíl\'nik', tr: 'Alarm (saat)', note: 'Eril; sabahların kâbusu, sıradan salıların başlangıcı.' },
     { ru: 'Обычный / обычно', reading: 'Obýchnyy / obýchna', tr: 'Sıradan / genellikle', note: 'Sıfat-zarf çifti: обычный вторник (sıradan salı), он обычно встаёт (o genellikle kalkar).' },
     { ru: 'Причина', reading: 'Prichína', tr: 'Sebep, neden', note: 'Dişil; "Причина ясна" — sebep belli.' },
-    { ru: 'Терпение', reading: 'Tyrpéniye', tr: 'Sabır', note: 'Orta cinsiyet; sızan muslukların kelimesi.' },
-    { ru: 'Случайно', reading: 'Slucháyna', tr: 'Yanlışlıkla, tesadüfen', note: '"Специально" (kasten) kelimesinin tam zıddı.' },
-    { ru: 'Зато', reading: 'Záto', tr: 'Ama buna karşılık', note: 'Olumsuzluk sonrası avuntu getiren bağlaç.' },
   ],
   keyPoints: [
     { id: 'cp4_k1', textTr: 'Ana fikir: gerçek aşk, sıradan bir günde (sıradan bir salıda) gizlidir.', hintTr: 'Hikayenin açılış fikri neydi?', keywordGroups: [['sıradan', 'normal', 'basit'], ['aşk', 'salı']] },
@@ -269,7 +253,6 @@ const STORY_5: CheckpointStory = {
     'Yıl 2035. Dima: "Her büyük aşkın bir kıskançlık bölümü vardır. Bizimki kırmızı bir zarfla başladı." Bu bölümde: bir Sevgililer Günü kartı, gözyaşları ve bir içini dökme gecesi.',
   icon: '💌',
   color: '#f43f5e',
-  searchQuery: 'How I Met Your Mother romantic moments',
   paragraphs: [
     { speaker: 'Anlatıcı (2035)', narrator: true, ru: 'Дети, эта глава — про ревность. И про конверт.', reading: 'Dyéti, éta glavá — pra rivnast\'. I pra kanvért.', tr: 'Çocuklar, bu bölüm kıskançlık hakkındadır. Ve bir zarf hakkında.' },
     { speaker: 'Anlatıcı', narrator: true, ru: 'Дима нашёл валентинку. Не свою — чужую. В куртке Марины.', reading: 'Díma nashól valentínku. Ne svayú — chuzhúyu. F kúrtkye Maríny.', tr: 'Dima bir Sevgililer Günü kartı buldu. Kendisi değil — bir başkasının. Marina\'nın ceketinde.' },
@@ -288,9 +271,6 @@ const STORY_5: CheckpointStory = {
     { ru: 'Конверт', reading: 'Kanvért', tr: 'Zarf', note: 'Eril; bu hikayenin asıl suçlusu.' },
     { ru: 'Шутка', reading: 'Shutka', tr: 'Şaka', note: 'Dişil; "Это шутка?" — Şaka mı bu?' },
     { ru: 'Слёзы', reading: 'Slyózy', tr: 'Gözyaşları', note: 'Çoğul; tekili "слеза".' },
-    { ru: 'Настоящий', reading: 'Nastayáshchiy', tr: 'Gerçek, hakiki', note: 'Eril; "настоящий друг" — gerçek dost, "настоящий детектив" — gerçek dedektif.' },
-    { ru: 'Спрятать', reading: 'Spryátat\'', tr: 'Saklamak', note: 'Tamamlanmış (perfective) mastar.' },
-    { ru: 'Записка', reading: 'Zapíska', tr: 'Not', note: 'Dişil; kısa el yazısı mesaj.' },
   ],
   keyPoints: [
     { id: 'cp5_k1', textTr: 'Dima, Marina\'nın ceketinde yabancı bir Sevgililer Günü kartı (kırmızı zarf) bulur.', hintTr: 'Dima ne buldu ve nerede?', keywordGroups: [['valentine', 'sevgililer', 'kart', 'zarf'], ['marina', 'ceket', 'mont']] },
@@ -326,7 +306,6 @@ const STORY_6: CheckpointStory = {
     'Yıl 2035. Dima: "Evet çocuklar, o akşam... bir terfi, çizik bir araba ve çorabın içinde bir yüzük. Nasıl evlendiğimin tam hikayesi."',
   icon: '💍',
   color: '#d946ef',
-  searchQuery: 'How I Met Your Mother proposal scene',
   paragraphs: [
     { speaker: 'Anlatıcı (2035)', narrator: true, ru: 'Дети, сегодня — глава про кольцо. Сначала — работа.', reading: 'Dyéti, sivódnya — glavá pra kal\'tsó. Snachála — rabóta.', tr: 'Çocuklar, bugünkü bölüm yüzük hakkında. Önce — iş.' },
     { speaker: 'Patron', ru: 'Дима! Повышение, премия, новый кабинет. Поздравляю!', reading: 'Díma! Pavyshéniye, prémiya, nóvıy kabinét. Pazdravlyáyú!', tr: 'Dima! Terfi, ikramiye, yeni ofis. Tebrikler!' },
@@ -345,9 +324,6 @@ const STORY_6: CheckpointStory = {
     { ru: 'Успех', reading: 'Uspyekh', tr: 'Başarı', note: 'Eril; terfi gününün kelimesi.' },
     { ru: 'Отпраздновать', reading: 'Atprazdnavát\'', tr: 'Kutlamak (bir olayı)', note: '"Праздник" (bayram) kelimesinden türemiştir.' },
     { ru: 'Ответить', reading: 'Atvétit\'', tr: 'Cevaplamak', note: '"Мой ответ" — benim cevabım; fiil hali: ответить.' },
-    { ru: 'Миллион', reading: 'Millión', tr: 'Milyon', note: 'Mecazi abartı için de kullanılır: "миллион мыслей" — bir milyon düşünce.' },
-    { ru: 'Достать', reading: 'Dastát\'', tr: 'Çıkarmak, elde etmek', note: 'Saklı bir şeyi ortaya çıkarmak.' },
-    { ru: 'Мечта', reading: 'Mechtá', tr: 'Hayal, rüya', note: 'Dişil; "работа мечты" — hayalindeki iş.' },
   ],
   keyPoints: [
     { id: 'cp6_k1', textTr: 'Dima işte terfi ve ikramiye alır (yeni ofis).', hintTr: 'O gün Dima\'nın iş hayatında ne oldu?', keywordGroups: [['terfi', 'ikramiye', 'prim', 'yükselme']] },
@@ -382,7 +358,6 @@ const STORY_7: CheckpointStory = {
     'Yıl 2035. Dima: "Ve şimdi... Tyoma\'nın bölümü. Evet çocuklar: Tyoma\'nın da bir kalbi vardı." Bir tanışma uygulaması, ironi seven bir kadın ve son bekârın teslimiyeti.',
   icon: '💙',
   color: '#3b82f6',
-  searchQuery: 'How I Met Your Mother Barney legendary moments',
   paragraphs: [
     { speaker: 'Anlatıcı (2035)', narrator: true, ru: 'А теперь — глава про Тёму. Да, дети: даже у Тёмы было сердце.', reading: 'A tipér\' — glavá pra Tyómu. Da, dyéti: dázhe u Tyómy býla sértse.', tr: 'Ve şimdi — Tyoma\'nın bölümü. Evet çocuklar: Tyoma\'nın bile bir kalbi vardı.' },
     { speaker: 'Anlatıcı', narrator: true, ru: 'Приложение. Её анкета: «Люблю иронию, сарказм и честность. Без игр».', reading: 'Prialazhéniye. Yeyó ankéta: «Lyublyú ironíyu, sarkázm i chésnast\'. Byez igr».', tr: 'Uygulama. Onun profili: "İroni, iğneleme ve dürüstlük severim. Oyunlar yok."' },
@@ -399,9 +374,6 @@ const STORY_7: CheckpointStory = {
     { ru: 'Флирт', reading: 'Flirt', tr: 'Flört', note: 'Eril; fiili "флиртовать" — flörtleşmek.' },
     { ru: 'Холостяк', reading: 'Khalastyák', tr: 'Bekâr (erkek)', note: 'Eril; "последний холостяк" — son bekâr.' },
     { ru: 'Победа', reading: 'Pabyéda', tr: 'Zafer, galibiyet', note: 'Dişil; mecazi kullanımı çok yaygındır.' },
-    { ru: 'Сдаться', reading: 'Sdát\'sya', tr: 'Teslim olmak', note: 'Dönüşlü fiil; "Я сдаюсь!" — Teslim oluyorum!' },
-    { ru: 'Смелость', reading: 'Smélast\'', tr: 'Cesaret', note: 'Dişil; "evet" demek için gereken şey.' },
-    { ru: 'Вечность', reading: 'Vyéchnast\'', tr: 'Sonsuzluk, ebediyet', note: 'Dişil; son satırın kelimesi.' },
   ],
   keyPoints: [
     { id: 'cp7_k1', textTr: 'Bu bölüm Tyoma\'nın aşk hikayesini anlatır (Tyoma\'nın da bir kalbi vardır).', hintTr: 'Bu bölüm kimin hikayesi?', keywordGroups: [['töma', 'tyoma'], ['aşk', 'sevgi', 'kalp']] },
@@ -435,7 +407,6 @@ const STORY_8: CheckpointStory = {
     'Yıl 2035. Dima: "Ve son bölüm çocuklar: düğün. Pastayı buzdolabında saklayan bir gelin, ağlayan bir fotoğrafçı, müzik kavgası ve masanın altından çıkan bir sağdıç."',
   icon: '🥂',
   color: '#f59e0b',
-  searchQuery: 'How I Met Your Mother wedding scene',
   paragraphs: [
     { speaker: 'Anlatıcı (2035)', narrator: true, ru: 'И вот — свадьба. Но сначала, конечно, кризис. Куда без него.', reading: 'I vot — svádb\'a. No snachála, kanyéchna, krízis. Kudá byez nyevó.', tr: 'Ve işte — düğün. Ama önce, elbette, kriz. Krizsiz olur mu.' },
     { speaker: 'Anlatıcı', narrator: true, ru: 'Тёща Марины приехала за неделю до свадьбы. И осталась... на месяц.', reading: 'Tyóshcha Maríny priyékhala za nidyélyu da svádb\'i. I astálas\'... na mésyats.', tr: 'Marina\'nın kayınvalidesi düğünden bir hafta önce geldi. Ve kaldı... bir ay.' },
@@ -454,9 +425,6 @@ const STORY_8: CheckpointStory = {
     { ru: 'Торт', reading: 'Tort', tr: '(Düğün) pastası', note: 'Eril; buzdolabının en değerli misafiri.' },
     { ru: 'Фотограф', reading: 'Fatágraf', tr: 'Fotoğrafçı', note: 'Eril; düğünlerde en çok ağlayan kişi (bu hikayede).' },
     { ru: 'Вальс', reading: 'Val\'s', tr: 'Vals', note: 'Eril; ilk dans klasiği.' },
-    { ru: 'Счастливый', reading: 'Schastlívy', tr: 'Mutlu', note: 'Eril; dişil: счастливая. "Счастье" — mutluluk.' },
-    { ru: 'Подружка невесты', reading: 'Padródzhka nyevrésty', tr: 'Gelinin nedimesi', note: 'Düğün töreninin klasik rolü.' },
-    { ru: 'Забавно', reading: 'Zabáwna', tr: 'Komik / eğlenceli (bulmak)', note: 'Zarf; "bu çok komik" hissi verir.' },
   ],
   keyPoints: [
     { id: 'cp8_k1', textTr: 'Düğünden önce Marina\'nın kayınvalidesi gelir ve uzun süre (bir ay) kalır; bir kriz yaşanır.', hintTr: 'Düğünden önce eve kim geldi ve ne kadar kaldı?', keywordGroups: [['kayınvalide'], ['kriz', 'ay', 'kaldı']] },
@@ -493,8 +461,6 @@ const STORY_LF_A1: CheckpointStory = {
     'Yıl 2035. Dima çocuklarına EN İLK hikayeyi anlatıyor: sarı bir şemsiye, berbat bir hava ve dünyanın en sıkıcı akşamı. How I Met Your Mother tarzı bir "pilot bölüm" — sondaki cliffhanger ise tam 76 ünite sonra çözülecek.',
   icon: '☂️',
   color: '#facc15',
-  banner: 'scene/yellow-umbrella.jpg',
-  searchQuery: 'How I Met Your Mother yellow umbrella scene',
   paragraphs: [
     { speaker: 'Anlatıcı (2035)', narrator: true, ru: 'Дети, сегодня — первая история. Самая первая. Про... зонт. Жёлтый зонт.', reading: 'Dyéti, sivódnya — pyérvaya istóriya. Samáya pyérvaya. Pra... zont. Zhólty zont.', tr: 'Çocuklar, bugün — ilk hikaye. En ilk hikaye. Konusu... bir şemsiye. Sarı bir şemsiye.' },
     { speaker: 'Anlatıcı', narrator: true, ru: 'Утро. На улице — дождь, ветер и туман. Погода? Хм.', reading: 'Útra. Na úlitse — dózhd\', vyéter i tumán. Pagóda? Hm.', tr: 'Sabah. Dışarıda — yağmur, rüzgar ve sis. Hava? Hımm.' },
@@ -513,9 +479,6 @@ const STORY_LF_A1: CheckpointStory = {
     { ru: 'Жёлтый', reading: 'Zhólty', tr: 'Sarı', note: 'Eril; bu hikayenin (ve tüm maceranın) resmi rengi.' },
     { ru: 'Зонт', reading: 'Zont', tr: 'Şemsiye', note: 'Eril; жёлтый зонт = sarı şemsiye. HIMYM\'in en ikonik objesi.' },
     { ru: 'Мокрый', reading: 'Mókry', tr: 'Islak', note: 'Eril; весь мокрый = sırılsıklam.' },
-    { ru: 'Весь', reading: 'Ves\'', tr: 'Bütün, tüm', note: 'Eril (весь/вся/всё); "hepsi, tamamı" anlamında.' },
-    { ru: 'Наверное', reading: 'Navérnaye', tr: 'Herhalde, galiba', note: 'Zarf; "sanırım"dan daha yumuşak bir tahmin.' },
-    { ru: 'Скучный', reading: 'Skúchny', tr: 'Sıkıcı', note: 'Eril; bu akşamın resmi tanımı.' },
   ],
   keyPoints: [
     { id: 'lf_a1_k1', textTr: 'Hikaye, Dima\'nın çocuklarına anlattığı İLK hikayedir ve konusu sarı bir şemsiyedir.', hintTr: 'Bu, çocuklara anlatılan kaçıncı hikayeydi ve konusu neydi?', keywordGroups: [['ilk', 'birinci', 'en başta', 'pilot'], ['şemsiye']] },
@@ -553,8 +516,6 @@ const STORY_LF_A2: CheckpointStory = {
     'Sahne değişiyor: Moskova, «Ван Гог» restoranı. Bağırarak seven bir şef, kuralcı bir başgarson ve ilk iş gününde kıyameti yaşayan bir garson — tıpkı «Кухня» dizisi gibi, sadece daha fazla kırık tabakla.',
   icon: '🍳',
   color: '#ef4444',
-  banner: 'scene/kuhnya-kitchen.jpg',
-  searchQuery: 'Кухня сериал смешные сцены на кухне',
   paragraphs: [
     { speaker: 'Anlatıcı', narrator: true, ru: 'Москва. Ресторан «Ван Гог». Утро. Шеф Пётр на кухне: «Быстро! Заказ! Соус — где?!»', reading: 'Maskvá. Ristarán «Van Gók». Útra. Shef Pyótr na kúkhnye: «Býstra! Zakáz! Saús — gdye?!»', tr: 'Moskova. "Van Gogh" restoranı. Sabah. Şef Pyotr mutfakta: "Çabuk! Sipariş! Sos nerede?!"' },
     { speaker: 'Anlatıcı', narrator: true, ru: 'Сегодня — новый официант. Лёша. Первый день. Он очень нервный.', reading: 'Sivódnya — nówyy  afitsiánt. Lyósha. Pyérwy den\'. On óchen\' nyérwny.', tr: 'Bugün — yeni garson. Lyosha. İlk gün. Çok gergin.' },
@@ -574,9 +535,6 @@ const STORY_LF_A2: CheckpointStory = {
     { ru: 'Повар', reading: 'Pavár', tr: 'Aşçı', note: 'Eril; шеф = şef, повар = aşçı. Mutfak hiyerarşisinin temeli.' },
     { ru: 'Блюдо', reading: 'Blyúda', tr: 'Yemek (tabak)', note: 'Orta cins; hem yemeği hem tabağı ifade eder.' },
     { ru: 'Ошибка', reading: 'Ashýbka', tr: 'Hata', note: 'Dişil; Lyosha\'nın uzmanlık alanı.' },
-    { ru: 'Поднос', reading: 'Padnós', tr: 'Tepsi', note: 'Eril; garsonun en yakın dostu ve en büyük düşmanı.' },
-    { ru: 'Нервный', reading: 'Nyérwny', tr: 'Gergin, sinirli', note: 'Eril; dişil: нервная. Первый день = нервный день.' },
-    { ru: 'Фартук', reading: 'Fartúk', tr: 'Önlük', note: 'Eril; mutfak üniformasının yarısı.' },
   ],
   keyPoints: [
     { id: 'lf_a2_k1', textTr: 'Hikaye Moskova\'daki «Ван Гог» restoranında geçer; şef Pyotr mutfakta "çabuk, sipariş, sos" diye bağırarak günü açar.', hintTr: 'Hikaye hangi şehirdeki hangi restoranda geçiyor ve mutfakta kim bağırıyordu?', keywordGroups: [['restoran', 'van gogh', 'moskova'], ['şef', 'pyotr']] },
@@ -624,8 +582,6 @@ const STORY_LF_B1: CheckpointStory = {
     'Ve şimdi çocuklar, bir CROSSOVER bölümü: Dima ve Marina «Ван Гог» restoranında... ve tabii ki Tyoma da orada. Aynı restoran, aynı akşam — tıpkı bir sitcom\'da olduğu gibi. Mutfakta ise gerçek bir yıldız var: şef Pyotr.',
   icon: '🍽️',
   color: '#e879f9',
-  banner: 'scene/vangog.jpg',
-  searchQuery: 'Кухня сериал ресторан смешные моменты',
   paragraphs: [
     { speaker: 'Anlatıcı (2035)', narrator: true, ru: 'Дети, это — история про ресторан «Ван Гог». Да, тот самый. Всё началось со столика...', reading: 'Dyéti, éta — istóriya pra ristarán «Van Gók». Da, tot sámыy. Fsyó nachalós\' sa stólika...', tr: 'Çocuklar, bu — "Van Gogh" restoranının hikayesi. Evet, o meşhur restoran. Her şey bir masayla başladı...' },
     { speaker: 'Anlatıcı', narrator: true, ru: 'Дима и Марина. Вечер. Романтика: букет, свечи, столик у окна.', reading: 'Díma i Marína. Vyéchar. Ramántika: bakyét, svyéchi, stólik u akná.', tr: 'Dima ve Marina. Akşam. Romantizm: buket, mumlar, pencere kenarında bir masa.' },
@@ -647,9 +603,6 @@ const STORY_LF_B1: CheckpointStory = {
     { ru: 'Десерт', reading: 'Dyesért', tr: 'Tatlı (restoran tabağı)', note: 'Eril; yemekten sonra gelen mutluluk.' },
     { ru: 'Скатерть', reading: 'Skatyért\'', tr: 'Masa örtüsü', note: 'Dişil; çatal kaşığın iniş pisti.' },
     { ru: 'Столик', reading: 'Stólik', tr: '(Ayırtılmış) masa', note: 'Eril; стол\'un küçüğü. Заказать столик = masa ayırtmak.' },
-    { ru: 'Ложка', reading: 'Lózhka', tr: 'Kaşık', note: 'Dişil; bu hikayede yerle buluşan kahraman.' },
-    { ru: 'Вилка', reading: 'Vílka', tr: 'Çatal', note: 'Dişil; ложка\'nın uçuş ortağı.' },
-    { ru: 'Официантка', reading: 'Afitsiántka', tr: 'Garson (kadın)', note: 'Dişil; официант (eril) kelimesinin dişil hali. Nina bu rolün efsanesi.' },
   ],
   keyPoints: [
     { id: 'lf_b1_k1', textTr: 'Dima ve Marina «Ван Гог»ta romantik bir akşam yemeği yer; Dima masayı bir hafta önce, Marina için özel ayırtmıştır.', hintTr: 'Çift nerede yemek yiyordu ve masa ne zaman, kimin için ayırtılmıştı?', keywordGroups: [['masa', 'ayırt', 'restoran', 'van gogh'], ['marina', 'romantik', 'özel', 'hafta']] },
@@ -697,8 +650,6 @@ const STORY_LF_B2: CheckpointStory = {
     'Sahne yine «Ван Гог» — ama bu kez romantizmi masaya koyan şef Pyotr: 12 yıllık sağ kolu Nina\'ya evlilik teklifi edecek. Plan: mükemmel. Ekip: Lyosha ve Semyon. Müzik: tek bir şarkı. Sonuç: izleyelim.',
   icon: '🌹',
   color: '#f472b6',
-  banner: 'scene/kuhnya-kitchen.jpg',
-  searchQuery: 'Кухня сериал лучшие романтические моменты',
   paragraphs: [
     { speaker: 'Anlatıcı', narrator: true, ru: 'Ресторан «Ван Гог». Ночь. Ресторан закрыт... но кухня — нет.', reading: 'Ristarán «Van Gók». Noch\'. Ristarán zakrýt... no kúkhnya — nyet.', tr: '"Van Gogh" restoranı. Gece. Restoran kapalı... ama mutfak — değil.' },
     { speaker: 'Шеф Пётр', ru: 'Лёша! Семён! План! Сегодня вечером я предлагаю Нине руку и сердце.', reading: 'Lyósha! Semyón! Plan! Sivódnya vyécharam ya pridlagáyu Nínye rúku i sérdtse.', tr: 'Lyosha! Semyon! Plan! Bu akşam Nina\'ya evlilik teklifi ediyorum.' },
@@ -719,9 +670,6 @@ const STORY_LF_B2: CheckpointStory = {
     { ru: 'Ночь', reading: 'Noch\'', tr: 'Gece', note: 'Dişil; bu teklifin resmi saati.' },
     { ru: 'Тёмно', reading: 'Tyómna', tr: 'Karanlık', note: 'Zarf; " burada karanlık" hissi verir (durum bildirir, şekil değiştirmez).' },
     { ru: 'Музыка', reading: 'Múzyka', tr: 'Müzik', note: 'Dişil; bu hikayede tek şarkılık bir müzik.' },
-    { ru: 'Гитара', reading: 'Gitára', tr: 'Gitar', note: 'Dişil; Lyosha\'nın repertuvarının tamamı.' },
-    { ru: 'Роза', reading: 'Róza', tr: 'Gül', note: 'Dişil; розы (çoğul) = güller. Teklif klasiklerinden.' },
-    { ru: 'Тишина', reading: 'Tishýna', tr: 'Sessizlik', note: 'Dişil; "evet" kelimesinden önceki en sessiz an.' },
   ],
   keyPoints: [
     { id: 'lf_b2_k1', textTr: 'Hikaye gece, kapanmış «Ван Гог» restoranının mutfağında geçer; şef Pyotr ekibi (Lyosha ve Semyon) toplayıp planını açıklar: o akşam Nina\'ya evlilik teklifi edecektir.', hintTr: 'Hikaye nerede, ne zaman geçiyor ve şefin planı ne?', keywordGroups: [['gece', 'restoran', 'van gogh'], ['şef', 'pyotr', 'teklif', 'nina']] },
@@ -769,8 +717,6 @@ const STORY_LF_C1: CheckpointStory = {
     'VE DİZİ FİNALİ çocuklar: 2035\'te çocukların sabrı tükendi — "Baba, yeter, GERÇEK hikayeyi anlat!" Dima anlatıyor: sarı şemsiyenin asla anlatılmamış devamı; internette viral olan bir gazete yazısı, bir yorum, bir "boşver" ve kafedeki o masanın gizli bağlamı dahil.',
   icon: '☂️',
   color: '#eab308',
-  banner: 'scene/yellow-umbrella.jpg',
-  searchQuery: 'How I Met Your Mother the yellow umbrella final scene',
   paragraphs: [
     { speaker: 'Дети (2035)', ru: 'Папа! Хватит! Скажи правду: где вы с мамой ВПЕРВЫЕ встретились? Контекст, нюансы — всё!', reading: 'Papá! Khvatít! Skazhí právdu: gdye vy s mámay fpyérvыe vstryétilis\'? Kantékst, nyyánsы — fsyó!', tr: 'Baba! Yeter! Gerçeği söyle: annemle İLK KEZ nerede tanıştınız? Bağlam, nüanslar — hepsi!' },
     { speaker: 'Anlatıcı', narrator: true, ru: 'Дети стали скептиками. Ну, какими они и должны быть в 2035 году.', reading: 'Dyéti stáli skeptíkami. Nu, kakími oni i dólzhny byt\' f dvé tyísyachi trídtsat pyátom gadú.', tr: 'Çocuklar şüpheci olmuşlar. Eh, 2035\'te olmaları gereken de buydu zaten.' },
@@ -792,9 +738,6 @@ const STORY_LF_C1: CheckpointStory = {
     { ru: 'Легенда', reading: 'Lyégenda', tr: 'Efsane', note: 'Dişil; Tyoma\'nın hayat felsefesi: легендарно = efsanevi.' },
     { ru: 'Скептик', reading: 'Skeptík', tr: 'Şüpheci', note: 'Eril; her hikayeye "gerçekten mi?" diyen kişi.' },
     { ru: 'Поверить', reading: 'Pavyérit\'', tr: 'İnanmak', note: 'Fiil; верить = inanmak, поверить = (sonunda/tam olarak) inanmak.' },
-    { ru: 'Правда', reading: 'Právda', tr: 'Gerçek, hakikat', note: 'Dişil; "сказать правду" = gerçeği söylemek.' },
-    { ru: 'Статья', reading: 'Stat\'yá', tr: 'Makale / yazı', note: 'Dişil; internette ve gazetede yayımlanan metin.' },
-    { ru: 'Суть', reading: 'Sut\'', tr: 'Öz, asıl mesele', note: 'Dişil; "суть проста" = özü basit. Bir hikayenin kalbi.' },
   ],
   keyPoints: [
     { id: 'lf_c1_k1', textTr: '2035\'te çocuklar gerçek ilk tanışma hikayesini ister (bağlam ve nüanslar dahil); Dima sonunda gerçeği anlatmayı kabul eder.', hintTr: 'Çocuklar babadan ne istedi ve Dima nasıl cevap verdi?', keywordGroups: [['çocuklar', 'gerçek', 'ilk'], ['nüans', 'bağlam', 'sordu', 'istedi']] },
