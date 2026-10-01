@@ -1,6 +1,6 @@
 // ==========================================================
 // A SEVİYESİ BÜYÜK GENİŞLEME — BÖLÜM 2/3 (18 ünite, A1 iletişim & şehir)
-// unitNumber 10.9619-10.9636 — A1 finali (HIMYM hikâyesi) öncesi.
+// unitNumber 10.9619-10.9636 — A1 finali (A1 kelime paketi) öncesi.
 // ==========================================================
 import type { UnitModule } from '../curriculumData';
 import { S, W } from './expansion50a';
@@ -13,13 +13,13 @@ export const A_BOOST_2: UnitModule[] = [
     grammarExplain: `📌 HAVA DEVAM:
 1. На улице ветер. = Dışarıda rüzgâr var. (на улице = dışarıda!)
 2. жарко = çok sıcak (bunaltıcı), мороз = dondurucu ayaz.
-3. Возьми зонт! = Şemsiye al! (hikâyedeki sarı şemsiyeyi hatırla ☂️)`,
+3. Возьми зонт! = Şemsiye al! (metindeki sarı şemsiyeyi hatırla ☂️)`,
     words: [
       W('xa1_w2_1', 'Ветер', 'Vyétir', 'Rüzgâr', 'A1', 'сильный ветер = güçlü rüzgâr.'),
       W('xa1_w2_2', 'Жарко', 'Járka', 'Çok sıcak', 'A1', 'Yaz bunaltısı; тепло\'dan bir derece üstün.'),
       W('xa1_w2_3', 'Мороз', 'Marós', 'Ayaz / Dondurucu soğuk', 'A1', 'Дед Мороз (Ayaz Dede) buradan!'),
       W('xa1_w2_4', 'Гроза', 'Grazá', 'Fırtına / Gök gürültülü sağanak', 'A1', 'гром = gök gürültüsü.'),
-      W('xa1_w2_5', 'Зонт', 'Zont', 'Şemsiye', 'A1', 'Hikâyedeki sarı şemsiye: жёлтый зонт!'),
+      W('xa1_w2_5', 'Зонт', 'Zont', 'Şemsiye', 'A1', 'Metindeki sarı şemsiye: жёлтый зонт!'),
       W('xa1_w2_6', 'Туман', 'Tumán', 'Sis', 'A1', 'Türkçe "duman"la akraba!')
     ],
     sentences: [
@@ -83,7 +83,7 @@ export const A_BOOST_2: UnitModule[] = [
       W('xa1_di_3', 'Прямо', 'Pryáma', 'Düz / Dosdoğru', 'A1', 'Идите прямо! = Düz gidin!'),
       W('xa1_di_4', 'Рядом', 'Ryádam', 'Yakında / Yanında', 'A1', 'рядом с домом = evin yanında.'),
       W('xa1_di_5', 'Далеко', 'Daliká', 'Uzak', 'A1', 'Это далеко? = Uzak mı?'),
-      W('xa1_di_6', 'Здесь', 'Zdyes', 'Burada', 'A1', 'Hikâyede: Можно сесть здесь? (Buraya oturabilir miyim?)')
+      W('xa1_di_6', 'Здесь', 'Zdyes', 'Burada', 'A1', 'Metinde: Можно сесть здесь? (Buraya oturabilir miyim?)')
     ],
     sentences: [
       S('Кафе рядом, идите прямо.', 'Kafe yakında, düz gidin.'),
@@ -157,12 +157,12 @@ export const A_BOOST_2: UnitModule[] = [
     id: 'xa1_cafe1', unitNumber: 10.9626, levelGroup: 'A1',
     title: 'Kafede 1: Sipariş', description: 'Masa, garson, sipariş: kafe dilinin temeli',
     category: 'Gündelik Yaşam', color: '#a16207', icon: '☕',
-    grammarExplain: `📌 KAFE KALIPLARI (hikâyeye doğrudan hazırlık!):
+    grammarExplain: `📌 KAFE KALIPLARI:
 1. Можно меню? = Menü alabilir miyim?
 2. Я буду кофе. = Ben kahve alayım. (kelimesi kelimesine "kahve olacağım"!)
 3. заказывать = sipariş etmek: Вы уже заказали? (Sipariş verdiniz mi?)`,
     words: [
-      W('xa1_k1_1', 'Кафе', 'Kafé', 'Kafe', 'A1', 'Değişmez nötr; hikâyemizin sahnesi!'),
+      W('xa1_k1_1', 'Кафе', 'Kafé', 'Kafe', 'A1', 'Değişmeyen nötr kelimedir; kafede sipariş bağlamında kullanılır.'),
       W('xa1_k1_2', 'Столик', 'Stólik', 'Masa (kafede)', 'A1', 'стол + küçültme: kafede hep столик denir.'),
       W('xa1_k1_3', 'Официант', 'Afitsiánt', 'Garson', 'A1', 'Kadın garson: официантка.'),
       W('xa1_k1_4', 'Заказ', 'Zakás', 'Sipariş', 'A1', 'заказывать = sipariş etmek.'),
@@ -241,13 +241,13 @@ export const A_BOOST_2: UnitModule[] = [
     id: 'xa1_phone1', unitNumber: 10.963, levelGroup: 'A1',
     title: 'Telefonda 1: Alo!', description: 'Aramak, duymak, konuşmak: telefon fiilleri',
     category: 'Gündelik Yaşam', color: '#7c3aed', icon: '📞',
-    grammarExplain: `📌 TELEFON DİLİ (hikâyenin kalbi!):
+    grammarExplain: `📌 TELEFON DİLİ:
 1. звонить + kime (-у/-е): звонить маме (anneyi aramak).
 2. Алло! = Alo! Я вас слушаю. = Sizi dinliyorum.
 3. слышать (duymak) ≠ слушать (dinlemek): Вас плохо слышно! (Sesiniz kötü geliyor!)`,
     words: [
       W('xa1_p1_1', 'Алло', 'Alló', 'Alo', 'A1', 'Telefonda ilk kelime.'),
-      W('xa1_p1_2', 'Звонить', 'Zvanít', 'Aramak (telefonla)', 'A1', 'звонок = zil/arama. Hikâyede Marina İLK arayan!'),
+      W('xa1_p1_2', 'Звонить', 'Zvanít', 'Aramak (telefonla)', 'A1', 'звонок = zil/arama. Metinde Anna İLK arayan!'),
       W('xa1_p1_3', 'Слушать', 'Slúşat', 'Dinlemek', 'A1', 'Я вас слушаю = buyurun, dinliyorum.'),
       W('xa1_p1_4', 'Слышать', 'Slışat', 'Duymak', 'A1', 'Плохо слышно = kötü duyuluyor.'),
       W('xa1_p1_5', 'Говорить', 'Gavarít', 'Konuşmak', 'A1', 'Кто говорит? = Kim arıyor/konuşuyor?'),
@@ -307,7 +307,7 @@ export const A_BOOST_2: UnitModule[] = [
     grammarExplain: `📌 ZAMAN ÇİZGİSİ:
 1. вчера (dün) ← сегодня (bugün) → завтра (yarın).
 2. сейчас = şimdi; потом = sonra; уже = artık/çoktan.
-3. Hikâyedeki kritik replik: "Звоните завтра — сегодня я занята!"`,
+3. Metindeki kritik replik: "Звоните завтра — сегодня я занята!"`,
     words: [
       W('xa1_tw_1', 'Сейчас', 'Siçás', 'Şimdi', 'A1', 'Kelimesi kelimesine "bu saat".'),
       W('xa1_tw_2', 'Потом', 'Patóm', 'Sonra', 'A1', 'Сначала..., потом... = önce..., sonra...'),

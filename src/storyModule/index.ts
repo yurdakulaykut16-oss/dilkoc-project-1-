@@ -43,6 +43,26 @@ export function gateStoryForUnitNumber(unitNumber: number): CheckpointStory | un
   return gates.length > 0 ? gates[gates.length - 1] : undefined;
 }
 
+/**
+ * CEFR seviyesine göre bölüm kapısı. Ünite numaraları genişleme paketlerinde
+ * sonradan üretilebildiği için (ör. yeni A2 üniteleri C1 numaralarından büyük
+ * olabilir) kilit mantığında mutlak unitNumber yerine gerçek seviye sırası
+ * kullanılır: A1 → A2 → B1 → B2 → C1 → C2.
+ */
+export function gateStoryForLevel(level: 'A1' | 'A2' | 'B1' | 'B2' | 'C1' | 'C2' | 'C1/C2'): CheckpointStory | undefined {
+  const previousLevel: Record<typeof level, CheckpointStory['levelId'] | null> = {
+    A1: null,
+    A2: 'A1',
+    B1: 'A2',
+    B2: 'B1',
+    C1: 'B2',
+    C2: 'B2',
+    'C1/C2': 'B2',
+  };
+  const neededFinal = previousLevel[level];
+  return neededFinal ? STORIES.find((s) => s.kind === 'levelFinal' && s.levelId === neededFinal) : undefined;
+}
+
 /** Bir ünite numarasının ait olduğu müfredat bölümünü (A1..C1/C2) döndürür. */
 export function levelOfUnitNumber(unitNumber: number): 'A1' | 'A2' | 'B1' | 'B2' | 'C1/C2' {
   if (unitNumber <= 11) return 'A1';

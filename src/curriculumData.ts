@@ -17,7 +17,7 @@ export interface WordDetail {
   ru: string;
   reading: string;
   tr: string;
-  level: 'A1' | 'A2' | 'B1' | 'B2' | 'C1/C2';
+  level: 'A1' | 'A2' | 'B1' | 'B2' | 'C1' | 'C2' | 'C1/C2';
   usageNote: string;
 }
 
@@ -54,7 +54,7 @@ export interface SmesharikiScene {
 export interface UnitModule {
   id: string;
   unitNumber: number;
-  levelGroup: 'A1' | 'A2' | 'B1' | 'B2' | 'C1/C2';
+  levelGroup: 'A1' | 'A2' | 'B1' | 'B2' | 'C1' | 'C2' | 'C1/C2';
   title: string;
   description: string;
   category: string;
@@ -3220,12 +3220,43 @@ function dedupeSimilarUnits(units: UnitModule[]): UnitModule[] {
   return units.filter(u => !dropped.has(u.id));
 }
 
+// Kullanıcının istediği ana sıralama: önce A1 ve A2, sonra B1 ve B2,
+// en sonda C1/C2. Yeni genişleme paketleri unitNumber olarak sonradan
+// üretildiği için yalnızca unitNumber'a göre sıralamak A2/B1 ünitelerini
+// C1/C2'nin arkasına atabiliyordu. Bu sıra CEFR seviyesini mutlak öncelik yapar.
+const LEVEL_ORDER: Record<UnitModule['levelGroup'], number> = {
+  A1: 0,
+  A2: 1,
+  B1: 2,
+  B2: 3,
+  C1: 4,
+  C2: 5,
+  'C1/C2': 5,
+};
+
+const C2_START_UNIT_NUMBER = 185;
+
+function splitAdvancedLevel(unit: UnitModule): UnitModule {
+  if (unit.levelGroup !== 'C1/C2') return unit;
+  const level: 'C1' | 'C2' = unit.unitNumber >= C2_START_UNIT_NUMBER ? 'C2' : 'C1';
+  return {
+    ...unit,
+    levelGroup: level,
+    words: unit.words.map((word) => (word.level === 'C1/C2' ? { ...word, level } : word)),
+  };
+}
+
 export const UNITS_DATA: UnitModule[] = dedupeSimilarUnits([
   ...ORIGINAL_UNITS,
   ...RESTAURANT_SERVICE_UNITS,
   ...DAILY_LIFE_90_UNITS,
   ...DAILY_LIFE_PLUS_UNITS,
-]).sort((a, b) => a.unitNumber - b.unitNumber);
+]).map(splitAdvancedLevel).sort((a, b) =>
+  LEVEL_ORDER[a.levelGroup] - LEVEL_ORDER[b.levelGroup] ||
+  a.unitNumber - b.unitNumber ||
+  a.title.localeCompare(b.title, 'tr') ||
+  a.id.localeCompare(b.id),
+);
 
 export const ALL_WORDS = UNITS_DATA.flatMap(m => m.words);
 

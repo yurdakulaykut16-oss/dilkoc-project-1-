@@ -41,7 +41,7 @@ interface GNode {
 interface GEdge { a: number; b: number; weak: boolean }
 
 const LEVEL_COLORS: Record<string, string> = {
-  A1: '#10b981', A2: '#38bdf8', B1: '#f59e0b', B2: '#f43f5e', 'C1/C2': '#a78bfa',
+  A1: '#10b981', A2: '#38bdf8', B1: '#f59e0b', B2: '#f43f5e', C1: '#a78bfa', C2: '#c084fc', 'C1/C2': '#a78bfa',
 };
 
 function strengthColor(s: number): string {
@@ -105,7 +105,7 @@ export default function WordGraph3D({ srsBank, errorStats, completedUnits, onSta
 
     // Seviye düğümleri
     const levelIdx = new Map<string, number>();
-    (['A1', 'A2', 'B1', 'B2', 'C1/C2'] as const).forEach(lv => {
+    (['A1', 'A2', 'B1', 'B2', 'C1', 'C2'] as const).forEach(lv => {
       const i = add({ id: `lv_${lv}`, kind: 'level', label: lv, sub: 'Seviye', color: LEVEL_COLORS[lv], size: 11, strength: 1, weak: false });
       levelIdx.set(lv, i);
       link(hub, i);

@@ -76,16 +76,21 @@ function scoreUnit(unit: typeof UNITS_DATA[number], query: string, focusTitle: s
   return score;
 }
 
+function unitPathNumber(unit: typeof UNITS_DATA[number]) {
+  const idx = UNITS_DATA.findIndex(item => item.id === unit.id);
+  return idx >= 0 ? idx + 1 : unit.unitNumber;
+}
+
 function compactUnit(unit: typeof UNITS_DATA[number]) {
   const words = unit.words.slice(0, 10).map(word => `${word.ru}=${word.tr}`).join(', ');
   const sentences = unit.sentences.slice(0, 3).map(sentence => `${sentence.ru} → ${sentence.tr}`).join(' | ');
-  return `Ünite ${unit.unitNumber} [${unit.levelGroup}] ${unit.title} (${unit.category}). Gramer: ${unit.grammarExplain.slice(0, 320)}. Kelimeler: ${words}. Örnekler: ${sentences}`;
+  return `Ünite ${unitPathNumber(unit)} [${unit.levelGroup}] ${unit.title} (${unit.category}). Gramer: ${unit.grammarExplain.slice(0, 320)}. Kelimeler: ${words}. Örnekler: ${sentences}`;
 }
 
 function buildKnowledgeContext(query: string, props: AiChatProps) {
   const ranked = [...UNITS_DATA]
-    .map(unit => ({ unit, score: scoreUnit(unit, query, props.learningFocus.title) }))
-    .sort((a, b) => b.score - a.score || a.unit.unitNumber - b.unit.unitNumber);
+    .map((unit, order) => ({ unit, order, score: scoreUnit(unit, query, props.learningFocus.title) }))
+    .sort((a, b) => b.score - a.score || a.order - b.order);
   const relevant = ranked.filter(item => item.score > 0).slice(0, 4).map(item => item.unit);
   const current = UNITS_DATA.find(unit => unit.title === props.learningFocus.title);
   if (current && !relevant.some(unit => unit.id === current.id)) relevant.unshift(current);
@@ -94,7 +99,7 @@ function buildKnowledgeContext(query: string, props: AiChatProps) {
   const currentSentences = props.learningFocus.sentences.slice(0, 5).map(sentence => `${sentence.ru} → ${sentence.tr}`).join(' | ');
   const mistakes = props.mistakes.slice(0, 8).map(item => `${item.ru}=${item.tr} (${item.reason})`).join(', ') || 'yok';
   const due = props.srsBank.filter(item => item.nextReview <= Date.now()).slice(0, 8).map(item => `${item.ru}=${item.tr}`).join(', ') || 'yok';
-  const catalog = UNITS_DATA.map(unit => `${unit.unitNumber}:${unit.title}`).join(' • ');
+  const catalog = UNITS_DATA.map((unit, idx) => `${idx + 1}:${unit.title}`).join(' • ');
 
   return [
     `ÖĞRENENİN KONUMU: öğrenme yolu ${props.learningFocus.pathPosition}/${props.learningFocus.pathTotal}; ${props.learningFocus.icon} ${props.learningFocus.title}. Açıklama: ${props.learningFocus.description || 'yok'}.`,

@@ -35,13 +35,15 @@ import { LETTER_INFO, THIN_LETTER_SUPPLEMENT, SYLLABLE_TOPICS } from './letterNo
 
 // KOLAY-ÖNCELİKLİ skor: harf ve fonetik konuları yolun EN BAŞINDA, alfabe
 // aşamasında dinlenir. Öğrenci henüz hiçbir üniteye başlamadığı için buradaki
-// kelimeler A1'den başlamalı; B2/C1 kelimeleri ancak havuz yetersizse girer.
+// kelimeler A1'den başlamalı; B2/C1/C2 kelimeleri ancak havuz yetersizse girer.
 const LEVEL_SCORE_EASY: Record<CefrTag, number> = {
   A1: 40,
   A2: 30,
   B1: 20,
   B2: 10,
-  'C1/C2': 5,
+  C1: 5,
+  C2: 3,
+  'C1/C2': 4,
 };
 
 // ---------------------------------------------------------------------------
@@ -57,7 +59,10 @@ interface FlatLine extends Topic100Line {
   unitNum: number;
 }
 
-const UNITS: UnitModule[] = [...UNITS_DATA].sort((a, b) => a.unitNumber - b.unitNumber);
+// UNITS_DATA zaten CEFR önceliğine göre sıralı: A1 → A2 → B1 → B2 → C1 → C2.
+// Burada tekrar unitNumber'a göre sıralamak, sonradan eklenen A2 paketlerini
+// yanlışlıkla C1/C2 arkasına atardı.
+const UNITS: UnitModule[] = [...UNITS_DATA];
 
 const FLAT_WORDS: FlatWord[] = (() => {
   // Aynı kelime birkaç ünitede geçebilir: EN DÜŞÜK seviyeli (sonra en erken)
@@ -115,7 +120,7 @@ const FLAT_LINES: FlatLine[] = UNITS.flatMap((u) =>
 // ---------------------------------------------------------------------------
 /**
  * KOLAY-ÖNCELİKLİ seçim (harf/fonetik konuları için): önce A1, sonra A2;
- * B1 ancak 1 taneyle sınırlı, B2/C1 hiç girmez. Havuz yetersiz kalırsa
+ * B1 ancak 1 taneyle sınırlı, B2/C1/C2 hiç girmez. Havuz yetersiz kalırsa
  * (nadir harfler: Щ, Ъ...) kalan kelimeler kolaydan zora doğru eklenir.
  */
 const EASY_CAPS: [CefrTag, number][] = [
@@ -123,6 +128,8 @@ const EASY_CAPS: [CefrTag, number][] = [
   ['A2', 4],
   ['B1', 1],
   ['B2', 0],
+  ['C1', 0],
+  ['C2', 0],
   ['C1/C2', 0],
 ];
 
@@ -452,7 +459,7 @@ export function buildSyllableTopic(s: (typeof SYLLABLE_TOPICS)[number], num: num
 }
 
 // ---------------------------------------------------------------------------
-// 3) MÜFREDAT ÖN-HAZIRLIK (59): 5 A2 + 22 B1 + 17 B2 + 15 C1/C2
+// 3) MÜFREDAT ÖN-HAZIRLIK: 5 A2 + tüm B1 + tüm B2 + C1 + C2
 // ---------------------------------------------------------------------------
 const A2_PREVIEW_IDS = ['mod_a2_1', 'mod_a2_2', 'mod_a2_6', 'mod_a2_7', 'mod_a2_10'];
 
@@ -460,8 +467,9 @@ export function previewUnits(): UnitModule[] {
   const a2 = UNITS.filter((u) => A2_PREVIEW_IDS.includes(u.id));
   const b1 = UNITS.filter((u) => u.levelGroup === 'B1');
   const b2 = UNITS.filter((u) => u.levelGroup === 'B2');
-  const c1 = UNITS.filter((u) => u.levelGroup === 'C1/C2');
-  return [...a2, ...b1, ...b2, ...c1];
+  const c1 = UNITS.filter((u) => u.levelGroup === 'C1');
+  const c2 = UNITS.filter((u) => u.levelGroup === 'C2' || u.levelGroup === 'C1/C2');
+  return [...a2, ...b1, ...b2, ...c1, ...c2];
 }
 
 export function buildPreviewTopic(u: UnitModule, num: number): Topic100 {
