@@ -38,8 +38,8 @@ export interface GrammarFoundationUnit {
   quiz: GrammarFoundationQuizQuestion[];
 }
 
-export const GRAMMAR_FOUNDATION_UNITS: GrammarFoundationUnit[] = [
-  // SAYILAR PAKETİ — alfabeden hemen sonra: 0-20, onluklar/yüzler + yaş/fiyat kullanımı
+const GRAMMAR_FOUNDATION_UNITS_RAW: GrammarFoundationUnit[] = [
+  // SAYILAR PAKETİ — A1 başlangıcında özne/yüklem temelinden hemen sonra: 0-20, onluklar/yüzler + yaş/fiyat kullanımı
   {
     id: 'num_0_20',
     levelGroup: 'A1',
@@ -115,9 +115,9 @@ export const GRAMMAR_FOUNDATION_UNITS: GrammarFoundationUnit[] = [
       { prompt: '“1000” Rusça nedir?', correct: 'тысяча', options: ['тысяча', 'миллион', 'сто', 'десять'] }
     ]
   },
-  // ZAMANLAR (TENSES) PAKETİ — alfabeden hemen sonra: şimdiki, geçmiş, gelecek zaman + görünüş (вид)
+  // ZAMANLAR (TENSES) PAKETİ — sayılardan sonra: şimdiki, geçmiş, gelecek zaman + görünüş (вид)
   ...TENSE_UNITS,
-  // CÜMLE TEMELLERİ — zamanlardan sonra: özne, yüklem, edat vb.
+  // CÜMLE TEMELLERİ — sıralamada en başa alınır: özne, yüklem, edat vb.
   {
     id: 'gram_sentence_core',
     levelGroup: 'A1',
@@ -300,5 +300,24 @@ export const GRAMMAR_FOUNDATION_UNITS: GrammarFoundationUnit[] = [
     ]
   }
 ];
+
+// A1'in en başı kullanıcı isteğine göre kesin sıra: önce cümleyi okuma
+// iskeleti (özne + yüklem), sonra sayılar, zamanlar/fiiller ve en son
+// edatlarla cümle laboratuvarı. Ham veri yukarıda içerik yakınlığına göre
+// durabilir; uygulamaya çıkan sıra burada tek merkezden sabitlenir.
+const FOUNDATION_ORDER = new Map<string, number>([
+  ['gram_sentence_core', 0],
+  ['gram_subject', 1],
+  ['gram_predicate', 2],
+  ['num_0_20', 3],
+  ['num_big', 4],
+  ...TENSE_UNITS.map((u, i) => [u.id, 10 + i] as const),
+  ['gram_prepositions', 30],
+  ['gram_sentence_lab', 31],
+]);
+
+export const GRAMMAR_FOUNDATION_UNITS: GrammarFoundationUnit[] = [...GRAMMAR_FOUNDATION_UNITS_RAW].sort((a, b) =>
+  (FOUNDATION_ORDER.get(a.id) ?? 999) - (FOUNDATION_ORDER.get(b.id) ?? 999),
+);
 
 export const ALL_GRAMMAR_FOUNDATION_QUESTIONS = GRAMMAR_FOUNDATION_UNITS.flatMap((u) => u.quiz);

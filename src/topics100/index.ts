@@ -37,7 +37,7 @@ export function topicCatInfo(id: Topic100Cat) {
   return TOPIC_100_CATS.find((c) => c.id === id)!;
 }
 
-export const LEVELS: CefrTag[] = ['A1', 'A2', 'B1', 'B2', 'C1/C2'];
+export const LEVELS: CefrTag[] = ['A1', 'A2', 'B1', 'B2', 'C1', 'C2'];
 
 // ---------------------------------------------------------------------------
 // Dinleme konularının tam dizilişi: 33 harf + 8 fonetik + N müfredat ön-hazırlık.

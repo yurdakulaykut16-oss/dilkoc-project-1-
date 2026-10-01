@@ -28,6 +28,8 @@ const COLORS: Record<Level, string> = {
   A2: '#06b6d4',
   B1: '#f97316',
   B2: '#8b5cf6',
+  C1: '#a78bfa',
+  C2: '#c084fc',
   'C1/C2': '#ef4444',
 };
 

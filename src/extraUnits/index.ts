@@ -12,7 +12,7 @@
 //   C1/C2 +12     : Ünite 163-174 (yöneticilik, ortaklık, ihale, gümrük, müzakere, derin ilişki)
 //   C1 aşçılık +9 : Ünite 175-183 (şef dili, sunum, degüstasyon, restoran açmak, moleküler, tarladan sofraya, Michelin, mentorluk, medya)
 // curriculumData.ts bu diziyi BASE_UNITS ile birleştirip
-// unitNumber'a göre sıralayarak UNITS_DATA'yı üretir.
+// önce CEFR seviyesine (A1 → A2 → B1 → B2 → C1 → C2), sonra unitNumber'a göre sıralayarak UNITS_DATA'yı üretir.
 // ==========================================================
 import type { UnitModule } from '../curriculumData';
 import { EXTRA_A1_GRAM } from './a1gram';
@@ -68,10 +68,10 @@ export const EXTRA_UNITS: UnitModule[] = [
   ...EXPANSION_B1,   // Ünite 95.1-95.95 (B1 ×10: CV, ofis, araba, tamir, telefon, sosyal medya, kütüphane, konser, kamp, acil)
   ...EXPANSION_B2,   // Ünite 143.1-143.95 (B2 ×10: hastane, hukuk, startup, pazarlama, sunum, çevre, psikoloji, tadilat, spor, medya)
   ...EXPANSION_C1,   // Ünite 180.1-180.95 (C1 ×10: diplomasi, borsa, bilim, edebiyat, felsefe, tıp, mahkeme, sanat, YZ, kriz)
-  // A SEVİYESİ BÜYÜK GENİŞLEME — 54 ünite, HİKÂYEDEN HEMEN ÖNCE (10.9601-10.9654 < 11)
+  // A SEVİYESİ BÜYÜK GENİŞLEME — 54 A1 ünite (10.9601-10.9654 < 11)
   ...A_BOOST_1,      // Ünite 10.9601-10.9618 (A1 ×18: selamlaşma, aile, para, saat, okul, ev, sağlık...)
   ...A_BOOST_2,      // Ünite 10.9619-10.9636 (A1 ×18: hava, ulaşım, kafe, market, telefon, hobiler...)
-  ...A_BOOST_3,      // Ünite 10.9637-10.9654 (A1 ×18: HİKÂYEYE HAZIRLIK — HIMYM kelime hazinesi)
+  ...A_BOOST_3,      // Ünite 10.9637-10.9654 (A1 ×18: günlük kelime ve anlatı dili)
   // ========================================================
   // BÜYÜK PAKET 100 — her seviyeye 20 ünite: temel/ileri gramer,
   // CÜMLEDE ANLAM (olumsuzluk, tonlama, mecaz, deyim, atasözü,

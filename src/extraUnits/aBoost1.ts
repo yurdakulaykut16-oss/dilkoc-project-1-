@@ -1,9 +1,7 @@
 // ==========================================================
 // A SEVİYESİ BÜYÜK GENİŞLEME — BÖLÜM 1/3 (18 ünite, A1 temel)
-// unitNumber 10.9601-10.9618: tümü A1 bölüm finalinden ("Annenizle
-// Nasıl Tanıştım" hikâyesi, ünite 11'de tetiklenir) ÖNCE gelir.
-// Böylece hikâye A'nın EN SONUNA itilmiş olur ve öğrenci hikâyeye
-// çok daha geniş bir kelime dağarcığıyla ulaşır.
+// unitNumber 10.9601-10.9618: temel A1 günlük kelime genişlemesi.
+// Selamlaşma, zaman, hava, alışveriş ve basit günlük kalıplar içerir.
 // ==========================================================
 import type { UnitModule } from '../curriculumData';
 import { S, W } from './expansion50a';
@@ -42,7 +40,7 @@ export const A_BOOST_1: UnitModule[] = [
       W('xa1_by_1', 'До свидания', 'Da svidániya', 'Hoşça kalın', 'A1', 'Resmî veda; свидание = buluşma/randevu.'),
       W('xa1_by_2', 'Пока', 'Paká', 'Bay bay / Görüşürüz', 'A1', 'Sadece samimi ortamda.'),
       W('xa1_by_3', 'До завтра', 'Da záftra', 'Yarın görüşürüz', 'A1', 'до + zaman = "...e kadar" kalıbı.'),
-      W('xa1_by_4', 'До встречи', 'Da fstryéçi', 'Görüşmek üzere', 'A1', 'встреча = buluşma; hikâyemizin anahtar kelimesi!'),
+      W('xa1_by_4', 'До встречи', 'Da fstryéçi', 'Görüşmek üzere', 'A1', 'встреча = buluşma; vedalaşırken kullanılır.'),
       W('xa1_by_5', 'Спокойной ночи', 'Spakóynay nóçi', 'İyi geceler', 'A1', '"Sakin gece" demektir; yatmadan önce.'),
       W('xa1_by_6', 'Счастливо', 'Şşislíva', 'İyi şanslar / Hoşça kal', 'A1', 'Günlük, sıcak bir veda.')
     ],
@@ -190,7 +188,7 @@ export const A_BOOST_1: UnitModule[] = [
       W('xa1_ti_2', 'Минута', 'Minúta', 'Dakika', 'A1', 'Одну минуту! = Bir dakika!'),
       W('xa1_ti_3', 'Утро', 'Útra', 'Sabah', 'A1', 'Доброе утро buradan gelir.'),
       W('xa1_ti_4', 'День', 'Dyen', 'Gün / Gündüz', 'A1', 'Добрый день = iyi günler.'),
-      W('xa1_ti_5', 'Вечер', 'Vyéçir', 'Akşam', 'A1', 'вечером = akşamleyin (hikâyemizin saati!).'),
+      W('xa1_ti_5', 'Вечер', 'Vyéçir', 'Akşam', 'A1', 'вечером = akşamleyin.'),
       W('xa1_ti_6', 'Ночь', 'Noç', 'Gece', 'A1', 'Dişildir; спокойной ночи buradan.')
     ],
     sentences: [
@@ -376,7 +374,7 @@ export const A_BOOST_1: UnitModule[] = [
 3. Сегодня тепло/холодно. = Bugün hava sıcak/soğuk. (özne yok, zarf yeter.)`,
     words: [
       W('xa1_w1_1', 'Солнце', 'Sóntse', 'Güneş', 'A1', 'Л okunmaz: sóntse.'),
-      W('xa1_w1_2', 'Дождь', 'Doşt', 'Yağmur', 'A1', 'Hikâyemizin baş kahramanı! ЖДЬ sonda ŞT gibi okunur.'),
+      W('xa1_w1_2', 'Дождь', 'Doşt', 'Yağmur', 'A1', 'Metinmizin baş kahramanı! ЖДЬ sonda ŞT gibi okunur.'),
       W('xa1_w1_3', 'Снег', 'Snyek', 'Kar', 'A1', 'Sondaki Г sedasızlaşıp K okunur.'),
       W('xa1_w1_4', 'Тепло', 'Tipló', 'Sıcak (hava)', 'A1', 'Мне тепло = bana sıcak/üşümüyorum.'),
       W('xa1_w1_5', 'Холодно', 'Hóladna', 'Soğuk (hava)', 'A1', 'Rus kışının bir numaralı kelimesi.'),

@@ -156,7 +156,11 @@ interface Pool {
 
 function buildPool(level: ExamLevelId, completedIds: string[]): Pool {
   const done = UNITS_DATA.filter(u => completedIds.includes(u.id));
-  const inLevel = (u: UnitModule) => (level === 'GENEL' || level === 'GUNLUK' ? true : u.levelGroup === level);
+  const inLevel = (u: UnitModule) => {
+    if (level === 'GENEL' || level === 'GUNLUK') return true;
+    if (level === 'C1/C2') return u.levelGroup === 'C1' || u.levelGroup === 'C2' || u.levelGroup === 'C1/C2';
+    return u.levelGroup === level;
+  };
   const from = done.filter(inLevel);
   const words = from.flatMap(u => u.words);
   const sentences = from.flatMap(u => [
@@ -345,7 +349,11 @@ export function examReadiness(level: ExamLevelId, completedIds: string[]): {
   if (level === 'GUNLUK') {
     return { ready: pool.unitsUsed >= 1 && uniqWords >= 8, units: pool.unitsUsed, words: uniqWords, doneUnits: pool.unitsUsed, totalUnits: pool.unitsUsed };
   }
-  const scope = level === 'GENEL' ? UNITS_DATA : UNITS_DATA.filter(u => u.levelGroup === level);
+  const scope = level === 'GENEL'
+    ? UNITS_DATA
+    : level === 'C1/C2'
+      ? UNITS_DATA.filter(u => u.levelGroup === 'C1' || u.levelGroup === 'C2' || u.levelGroup === 'C1/C2')
+      : UNITS_DATA.filter(u => u.levelGroup === level);
   const totalUnits = scope.length;
   const doneUnits = scope.filter(u => completedIds.includes(u.id)).length;
   return { ready: totalUnits > 0 && doneUnits >= totalUnits, units: pool.unitsUsed, words: uniqWords, doneUnits, totalUnits };

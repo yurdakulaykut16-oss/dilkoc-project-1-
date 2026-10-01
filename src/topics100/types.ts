@@ -11,7 +11,7 @@
 
 export type Topic100Cat = 'harf' | 'fonetik' | 'mufredat';
 
-export type CefrTag = 'A1' | 'A2' | 'B1' | 'B2' | 'C1/C2';
+export type CefrTag = 'A1' | 'A2' | 'B1' | 'B2' | 'C1' | 'C2' | 'C1/C2';
 
 /** Kelime kartı — ünite WordDetail yapısıyla aynı alanlar + kaynak. */
 export interface Topic100Item {

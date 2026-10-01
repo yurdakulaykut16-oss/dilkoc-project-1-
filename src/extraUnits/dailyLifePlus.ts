@@ -29,6 +29,8 @@ const COLORS: Record<Level, string> = {
   A2: '#06b6d4',
   B1: '#f97316',
   B2: '#8b5cf6',
+  C1: '#a78bfa',
+  C2: '#c084fc',
   'C1/C2': '#ef4444',
 };
 
@@ -115,6 +117,8 @@ const TEMPLATES_BY_LEVEL: Record<Level, Template[]> = {
   A2: A2_TEMPLATES,
   B1: B1_TEMPLATES,
   B2: B2_TEMPLATES,
+  C1: C_TEMPLATES,
+  C2: C_TEMPLATES,
   'C1/C2': C_TEMPLATES,
 };
 
