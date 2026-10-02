@@ -1,0 +1,597 @@
+// DilKoç © 2026 — Bu kaynak kod telif hakkıyla korunur. İzinsiz kopyalama,
+// dağıtma ve türev çalışma üretme yasaktır (bkz. LICENSE).
+// ============================================================================
+// 🛂 VISA & PASSPORT / CITIZENSHIP / MIGRATION PACK — ENGLISH (1/2: units 1-25)
+// ----------------------------------------------------------------------------
+// Rusça paketinin aynası: aynı 50 ünite / numara / seviye / başlık; hedef dil
+// İngilizce. Rusça kardeşi: content/citizenship/citRuA.ts
+// ============================================================================
+
+import type { UnitModule } from '../../curriculumData';
+import { makeCitUnit, type CitWord, type CitSent, type CitLine } from '../citizenship/makeCitUnit';
+
+const U = (
+  id: string, n: number, lv: UnitModule['levelGroup'], icon: string,
+  title: string, desc: string, cat: string, color: string, grammar: string,
+  words: CitWord[], sents: CitSent[], dlg: CitLine[],
+): UnitModule => makeCitUnit({ id, unitNumber: n, level: lv, icon, title, desc, category: cat, color, grammar, words, sents, dlg });
+
+const VIZE = "Vize & Pasaport";
+const VAT = "Vatandaşlık";
+
+export const EN_CIT_A: UnitModule[] = [
+  U("en_cit_01", 600, "A2", "🛂", "Pasaport ve Temel Belgeler",
+    "Pasaport, vize ve resmî işlemlerin temel belgeleri",
+    VIZE, "#0ea5e9",
+    "📌 \"apply FOR + isim\" — başvurmak: apply for a visa.\n\"fill IN a form\" — formu doldurmak (fill out da olur).",
+    [
+      ["passport", "PASport", "pasaport", "Seyahat ve kimlik için ana belgedir."],
+      ["visa", "VİZı", "vize", "Bir ülkeye giriş izni veren belgedir."],
+      ["document", "DOKyument", "belge", "Resmî evrakların genel adıdır."],
+      ["application form", "apliKAYşın FORM", "başvuru formu", "İşlemler formla başlar."],
+      ["photo", "FOWtow", "fotoğraf", "Başvuru fotoğrafı biyometrik olmalıdır."],
+      ["fee", "FİY", "resmî ücret", "Devlet işlemlerinin bedelidir."],
+    ],
+    [
+      ["A passport is a citizen's main document.", "Pasaport, vatandaşın en önemli belgesidir."],
+      ["I need to get a visa.", "Vize almam gerekiyor."],
+      ["Please fill in this application form.", "Lütfen bu formu doldurun."],
+    ],
+    [
+      ["Officer", "Your passport, please.", "yör PASport, pliiz", "Pasaportunuz, lütfen."],
+      ["Applicant", "Here is my passport and the form.", "hiır iz may PASport and dı FORM", "İşte pasaportum ve formum."],
+      ["Officer", "Thank you. The fee is two thousand.", "tenk yu. dı FİY iz tu THAWzend", "Teşekkürler. Ücret iki bin."],
+    ]),
+
+  U("en_cit_02", 601, "A2", "📝", "Pasaport Başvurusu",
+    "Pasaport çıkarmak için başvuru adımları ve evraklar",
+    VIZE, "#0ea5e9",
+    "📌 \"How long does it take?\" — ne kadar sürer?\n\"apply for\" edatına dikkat: apply FOR a passport.",
+    [
+      ["application", "apliKAYşın", "başvuru", "Resmî istemin adıdır."],
+      ["to submit documents", "sıbMİT DOKyuments", "evrak vermek", "Başvuruyu teslim etmektir."],
+      ["to issue", "İŞyuu", "vermek (kurum)", "Kurum belgeyi düzenler."],
+      ["processing time", "PROUsesing TAYm", "hazırlanma süresi", "Belgenin çıkma süresidir."],
+      ["passport office", "PASport OFis", "pasaport bürosu", "İşlemlerin yapıldığı yerdir."],
+      ["birth certificate", "BYÖRTH sertifiKEYt", "doğum belgesi", "Başvuruda istenir."],
+    ],
+    [
+      ["I want to apply for a passport.", "Pasaport için başvuru yapmak istiyorum."],
+      ["Which documents do I need?", "Hangi belgelere ihtiyacım var?"],
+      ["The passport will be ready in ten days.", "Pasaport on gün içinde hazır olacak."],
+    ],
+    [
+      ["Applicant", "I'd like to apply for a passport.", "ayd LAYK tu ıPLAY for ı PASport", "Pasaport başvurusu yapmak istiyorum."],
+      ["Officer", "Please submit the application and your birth certificate.", "pliiz sıbMİT di apliKAYşın and yör BYÖRTH sertifiKEYt", "Başvuru formunu ve doğum belgenizi verin."],
+      ["Applicant", "How long does it take?", "hau LONG daz it TEYK", "Ne kadar sürüyor?"],
+    ]),
+
+  U("en_cit_03", 602, "A2", "📅", "Pasaport Yenileme ve Süre Bitişi",
+    "Süresi dolan pasaportun yenilenmesi ve uzatma",
+    VIZE, "#0ea5e9",
+    "📌 Present perfect: \"has expired\" — süresi yeni doldu.\n\"valid for + süre\": valid for five years — beş yıl geçerli.",
+    [
+      ["to renew", "riNYUU", "yenilemek", "Süre bitiminde yapılır."],
+      ["to expire", "ikSPAYır", "süresi dolmak", "Belge geçersiz kalır."],
+      ["expired", "ikSPAYırd", "süresi geçmiş", "Yenilenmesi gerekir."],
+      ["new version", "NYUU VÖrjın", "yeni örnek", "Yeni model pasaport."],
+      ["valid", "VALid", "geçerli", "Belgenin yürürlükte olması."],
+      ["extension", "ikSTENşın", "uzatma", "Süre uzatma işlemidir."],
+    ],
+    [
+      ["My passport has expired.", "Pasaportumun süresi doldu."],
+      ["I need to renew my passport.", "Pasaportumu yenilemem gerekiyor."],
+      ["The passport is valid for five more years.", "Pasaport beş yıl daha geçerli."],
+    ],
+    [
+      ["Citizen", "My passport is expired.", "may PASport iz ikSPAYırd", "Pasaportumun süresi geçmiş."],
+      ["Officer", "You need to renew it and pay the fee.", "yu NİID tu riNYUU it and PEY dı FİY", "Yenilemeniz ve ücreti ödemeniz gerekir."],
+      ["Citizen", "OK, I'll prepare the documents.", "OWKEY, ayıl priPEÖR di DOKyuments", "Tamam, belgeleri hazırlayacağım."],
+    ]),
+
+  U("en_cit_04", 603, "A2", "🗂️", "Vize Türleri",
+    "Turist, iş, transit ve misafir vizesi türleri",
+    VIZE, "#0ea5e9",
+    "📌 Bileşik sıfatlar tire ile yazılır: single-entry — tek girişli.\n\"would like to\" — kibar istek kalıbı.",
+    [
+      ["tourist visa", "TUUrıst VİZı", "turist vizesi", "Tatil amaçlı vizadir."],
+      ["business visa", "BİZnis VİZı", "iş (ticari) vizesi", "İş seyahatleri içindir."],
+      ["transit visa", "TRANzit VİZı", "transit vizesi", "Ülke üzerinden geçiş içindir."],
+      ["single-entry", "SİNGıl-ENtri", "tek girişli", "Bir kez giriş hakkı verir."],
+      ["multiple-entry", "MALtipl-ENtri", "çok girişli", "Birden çok giriş hakkı verir."],
+      ["visitor visa", "Vİzitır VİZı", "misafir (ziyaret) vizesi", "Akraba/arkadaş ziyaretidir."],
+    ],
+    [
+      ["Is this visa single-entry or multiple-entry?", "Bu vize tek girişli mi çok girişli mi?"],
+      ["I need a tourist visa.", "Turist vizesine ihtiyacım var."],
+      ["Does a business visa let me work?", "İş vizesi çalışmaya izin verir mi?"],
+    ],
+    [
+      ["Officer", "Which visa would you like to apply for?", "wiç VİZı wud yu LAYK tu ıPLAY for", "Hangi viseye başvurmak istersiniz?"],
+      ["Tourist", "A single-entry tourist visa.", "ı SİNGıl-ENtri TUUrıst VİZı", "Tek girişli turist vizesi."],
+      ["Officer", "Fill in the form and pay the fee.", "FİL İN dı FORM and PEY dı FİY", "Formu doldurun ve ücreti ödeyin."],
+    ]),
+
+  U("en_cit_05", 604, "A2", "🏖️", "Turist Vizesi",
+    "Turist vizesi için gereken belgeler ve kalış süresi",
+    VIZE, "#0ea5e9",
+    "📌 \"purpose OF the trip\" — seyahatin amacı.\n\"valid for thirty days\" — otuz gün geçerli.",
+    [
+      ["trip", "TRİP", "seyahat", "Kısa yolculuktur."],
+      ["travel insurance", "TRAVıl inŞUırans", "seyahat sigortası", "Vize için istenir."],
+      ["hotel booking", "howTEL BUKing", "otel rezervasyonu", "Konaklama kanıtıdır."],
+      ["return ticket", "ritYÖRN TİKit", "dönüş bileti", "Ülkeye döneceğinizin kanıtıdır."],
+      ["purpose of the trip", "PÖRpıs ıv dı TRİP", "seyahat amacı", "Başvuruda belirtilir."],
+      ["length of stay", "LENKTH ıv STEY", "kalış süresi", "Vizede yazılıdır."],
+    ],
+    [
+      ["The purpose of my trip is tourism.", "Seyahatimin amacı turizm."],
+      ["I have a return ticket and insurance.", "Dönüş biletim ve sigortam var."],
+      ["The visa is valid for thirty days.", "Vize otuz gün geçerli."],
+    ],
+    [
+      ["Consul", "What is the purpose of your trip?", "WOT iz dı PÖRpıs ıv yör TRİP", "Seyahatinizin amacı nedir?"],
+      ["Tourist", "I'm here as a tourist.", "aym HİİR az ı TUUrıst", "Turist olarak geldim."],
+      ["Consul", "Where will you stay?", "VEÖR wil yu STEY", "Nerede konaklayacaksınız?"],
+    ]),
+
+  U("en_cit_06", 605, "B1", "🎓", "Öğrenci Vizesi",
+    "Eğitim için vize, kabul mektubu ve yıllık yenileme",
+    VIZE, "#0ea5e9",
+    "📌 \"every year\" — her yıl (Rusça каждый год karşılığı).\nPassive: \"the visa is issued\" — vize düzenlenir.",
+    [
+      ["student visa", "STUUdınt VİZı", "öğrenci vizesi", "Eğitim amaçlı vizadir."],
+      ["acceptance letter", "akSEPTıns LEtır", "kabul mektubu", "Okulun gönderdiği belge."],
+      ["enrolment", "inROLmınt", "kayıt", "Okula kaydedilmedir."],
+      ["first-year student", "FÖRST-yiır STUUdınt", "birinci sınıf öğrencisi", "Hazırlık sonrası başlar."],
+      ["to grant", "GRAANT", "vermek (izin)", "Yetkili makam verir."],
+      ["annual renewal", "ANYuıl riNYUuıl", "yıllık yenileme", "Öğrenci vizesi her yıl yenilenir."],
+    ],
+    [
+      ["The university sent me an acceptance letter.", "Üniversite bana kabul mektubu gönderdi."],
+      ["I enrolled in the first year.", "Birinci sınıfa kaydoldum."],
+      ["A student visa needs annual renewal.", "Öğrenci vizesi yıllık yenileme ister."],
+    ],
+    [
+      ["Student", "Here is my acceptance letter from the university.", "HİİR iz may akSEPTıns LEtır from di yuoniVÖRsi ti", "Üniversiteden gelen kabul mektubu."],
+      ["Officer", "Good. You need a student visa.", "GUD. yu NİID ı STUUdınt VİZı", "Güzel. Öğrenci vizesine ihtiyacınız var."],
+      ["Student", "When will the visa be ready?", "VEN wil dı VİZı bi REDi", "Vize ne zaman hazır olur?"],
+    ]),
+
+  U("en_cit_07", 606, "B1", "💼", "Çalışma Vizesi ve İzni",
+    "İşveren, iş sözleşmesi ve çalışma izni süreçleri",
+    VIZE, "#0ea5e9",
+    "📌 \"cannot / can't work WITHOUT a permit\" — izinsiz çalışılamaz.\n\"arrange\" — düzenlemek: arrange a permit.",
+    [
+      ["work permit", "WÖRK pörMİT", "çalışma izni", "Çalışmak için zorunludur."],
+      ["employer", "imPLOYır", "işveren", "Sizi işe alan taraftır."],
+      ["employment contract", "imPLOYmınt KONtrakt", "iş sözleşmesi", "Hak ve görevleri belirler."],
+      ["work visa", "WÖRK VİZı", "çalışma vizesi", "Çalışma amaçlı vizadir."],
+      ["job opening", "CAB OUpining", "iş ilanı", "Açık pozisyondur."],
+      ["income", "İNkam", "gelir", "Başvurularda kanıt istenir."],
+    ],
+    [
+      ["My employer arranged my work permit.", "İşverenim çalışma iznimi düzenledi."],
+      ["You cannot work without a permit.", "İzinsiz çalışmak yasaktır."],
+      ["We signed the employment contract yesterday.", "İş sözleşmesini dün imzaladık."],
+    ],
+    [
+      ["Worker", "I got a work visa.", "ay GOT ı WÖRK VİZı", "Çalışma vizesi aldım."],
+      ["Inspector", "Show me your employment contract.", "ŞOW mi yör imPLOYmınt KONtrakt", "İş sözleşmenizi gösterin."],
+      ["Worker", "Here it is, with proof of income.", "HİİR it IZ, wif PRUUF ıv İNkam", "İşte, gelir belgesiyle birlikte."],
+    ]),
+
+  U("en_cit_08", 607, "B1", "👨‍👩‍👧", "Aile Birleşimi Vizesi",
+    "Eş ve çocuklarla birleşme için vize ve belgeler",
+    VIZE, "#0ea5e9",
+    "📌 \"to prove — proof\": fiil ve isim çifti.\n\"together with\" — ile birlikte.",
+    [
+      ["family reunion", "FAMli riyUNyın", "aile birleşimi", "Ailenin aynı ülkede toplanması."],
+      ["spouse", "SPAUZ", "eş", "Evlilik bağıdır."],
+      ["close relative", "KLOWS RElıtiv", "yakın akraba", "Başvuruda tanımlanır."],
+      ["marriage certificate", "MERıc sertifiKEYt", "evlilik cüzdanı", "Eş birleşiminde kanıttır."],
+      ["to prove", "PRUUV", "kanıtlamak", "Belgeyle yapılır."],
+      ["minor", "MAYnır", "reşit olmayan", "18 yaşından küçük çocuk."],
+    ],
+    [
+      ["We applied for family reunion.", "Aile birleşimi için başvurduk."],
+      ["You must prove your relationship with documents.", "Akrabalığı belgelerle kanıtlamalısınız."],
+      ["Children get visas together with their parents.", "Çocuklar vizeyi ebeveynleriyle birlikte alır."],
+    ],
+    [
+      ["Applicant", "I want to apply for family reunion.", "ay WANT tu ıPLAY for FAMli riyUNyın", "Aile birleşimi için başvurmak istiyorum."],
+      ["Officer", "Bring your marriage certificate.", "BRING yör MERıc sertifiKEYt", "Evlilik cüzdanınızı getirin."],
+      ["Applicant", "OK, all documents are ready.", "OWKEY, OL DOKyuments ar REDi", "Tamam, tüm belgeler hazır."],
+    ]),
+
+  U("en_cit_09", 608, "B1", "🌍", "Schengen ve Vize Bölgeleri",
+    "Schengen vizesi, sınır geçişi ve vize bölgeleri",
+    VIZE, "#0ea5e9",
+    "📌 \"allow + isim + to + fiil\": allows travel to...\n\"entry stamp\" — giriş damgası (entry: giriş).",
+    [
+      ["Schengen visa", "ŞENgın VİZı", "Schengen vizesi", "Birden çok ülkeye girişi sağlar."],
+      ["zone", "ZOWN", "bölge", "Vize bölgesi anlamında."],
+      ["border", "BORdır", "sınır", "İki ülke arasındaki çizgidir."],
+      ["to cross the border", "KROS dı BORdır", "sınırı geçmek", "Sınır kontrolünden geçmek."],
+      ["stamp", "STAMP", "sınır damgası", "Giriş/çıkış kanıtıdır."],
+      ["destination country", "destiNEYşın KANtri", "varış ülkesi", "Gitmeyi planladığınız ülke."],
+    ],
+    [
+      ["A Schengen visa allows travel to many countries.", "Schengen vizesi birçok ülkeye seyahate izin verir."],
+      ["We crossed the border at night.", "Sınırı gece geçtik."],
+      ["There is an entry stamp in my passport.", "Pasaportumda giriş damgası var."],
+    ],
+    [
+      ["Border officer", "What is the purpose of your visit?", "WOT iz di PÖRpıs ıv yör Vİzit", "Ziyaretinizin amacı nedir?"],
+      ["Traveller", "Tourism. Here is my Schengen visa.", "TUUrızm. HİİR iz may ŞENgın VİZı", "Turizm. İşte Schengen vizem."],
+      ["Border officer", "Welcome!", "VELkım", "Hoş geldiniz!"],
+    ]),
+
+  U("en_cit_10", 609, "A2", "🏢", "Vize Başvuru Merkezi ve Randevu",
+    "Başvuru merkezinde randevu, sıra ve teslim",
+    VIZE, "#0ea5e9",
+    "📌 \"make/book an appointment\" — randevu almak.\nSaatler: at ten o'clock — saat on'da.",
+    [
+      ["visa application centre", "VİZı apliKAYşın SENtır", "vize başvuru merkezi", "Başvurular burada teslim edilir."],
+      ["to book an appointment", "BUUK ın ıPOYNtmınt", "randevu almak", "Önce randevu şarttır."],
+      ["queue", "KYUU", "sıra", "Bekleme sırasıdır."],
+      ["appointment slot", "ıPOYNtmınt SLOT", "randevu saati", "Uygun zaman dilimidir."],
+      ["ticket number", "TİKit NAMbır", "sıra numarası", "Elektronik sıra fişidir."],
+      ["staff member", "STAF MEMbır", "görevli", "Karşıdaki yetkili kişidir."],
+    ],
+    [
+      ["I booked an appointment for Tuesday.", "Salı günü için randevu aldım."],
+      ["Take a ticket number and wait for your turn.", "Sıra numarası alın ve sıranızı bekleyin."],
+      ["The centre is open until six.", "Merkez saate altıya kadar açık."],
+    ],
+    [
+      ["Staff member", "Hello! Do you have an appointment?", "helOW! du yu HEV ın ıPOYNtmınt", "Merhaba! Randevunuz var mı?"],
+      ["Client", "Yes, at ten o'clock.", "YES, at TEN ıKLOK", "Evet, saat on'da."],
+      ["Staff member", "Take ticket number seven.", "TEYK TİKit NAMbır SEvın", "Yedi numaralı fişi alın."],
+    ]),
+
+  U("en_cit_11", 610, "B1", "🎤", "Vize Görüşmesi",
+    "Konsolosluk görüşmesi ve sorulara hazırlık",
+    VIZE, "#0ea5e9",
+    "📌 \"ask ABOUT + konu\": asked about my plans.\n\"in order\" — kuralında/uygun: documents are in order.",
+    [
+      ["visa interview", "VİZı INtırvyu", "vize görüşmesi", "Konsolosluk mülakatıdır."],
+      ["consular section", "KONsıyulır SEKşın", "konsolosluk bölümü", "Vize işlemlerinin yapıldığı birim."],
+      ["consul", "KONsıl", "konsolos", "Kararı veren yetkilidir."],
+      ["to answer questions", "ANsır KWESçıns", "soruları yanıtlamak", "Görüşmede beklenir."],
+      ["purpose of the visit", "PÖRpıs ıv dı Vİzit", "ziyaret amacı", "En çok sorulan sorudur."],
+      ["confidently", "KONfidıntli", "kendinden emin", "Görüşmede önemli tavırdır."],
+    ],
+    [
+      ["The interview lasted ten minutes.", "Görüşme on dakika sürdü."],
+      ["Answer the questions confidently.", "Sorulara kendinden emin yanıt verin."],
+      ["The consul asked about the purpose of my visit.", "Konsolos ziyaretimin amacını sordu."],
+    ],
+    [
+      ["Consul", "Why do you want to visit this country?", "WAY du yu WANT tu Vİzit dıs KANtri", "Bu ülkeyi neden ziyaret etmek istiyorsunuz?"],
+      ["Applicant", "I want to study and work there.", "ay WANT tu STADı and WÖRK DEÖR", "Orada okumak ve çalışmak istiyorum."],
+      ["Consul", "Thank you, your documents are in order.", "tenk YU, yör DOKyuments ar in ORdır", "Teşekkürler, belgeleriniz uygun."],
+    ]),
+
+  U("en_cit_12", 611, "B2", "⛔", "Vize Reddi ve İtiraz",
+    "Ret nedenleri, itiraz süreci ve apelasyon",
+    VIZE, "#0ea5e9",
+    "📌 Passive geçmiş: \"was refused\" — reddedildi.\n\"within one month\" — bir ay içinde.",
+    [
+      ["refusal", "riFYUuzıl", "ret", "Olumsuz karardır."],
+      ["ground for refusal", "GRAUND for riFYUuzıl", "ret gerekçesi", "Yazılı bildirilir."],
+      ["to appeal", "ıPİL", "itiraz etmek", "Karara karşı çıkmak."],
+      ["appeal", "ıPİL", "itiraz başvurusu", "Üst mercie yapılır."],
+      ["insufficient funds", "insiFIşınt FANDZ", "yetersiz finansal garanti", "Sık görülen ret nedenidir."],
+      ["suspicion", "sısPIŞın", "şüphe", "Gerekçeler arasında sayılır."],
+    ],
+    [
+      ["My visa was refused without explanation.", "Vizem gerekçesiz reddedildi."],
+      ["The ground for refusal was stated in the letter.", "Ret gerekçesi mektupta belirtildi."],
+      ["You can appeal within one month.", "Bir ay içinde itiraz edebilirsiniz."],
+    ],
+    [
+      ["Applicant", "Why was I refused?", "WAY woz ay riFYUUzd", "Neden reddedildim?"],
+      ["Lawyer", "The letter says: insufficient funds.", "dı LEtır SEZ: insiFIşınt FANDZ", "Mektupta şöyle yazıyor: yetersiz finansal garanti."],
+      ["Applicant", "I will file an appeal.", "ay wil FAIL ın ıPİL", "İtiraz başvurusu yapacağım."],
+    ]),
+
+  U("en_cit_13", 612, "B1", "🏠", "Oturma İzni",
+    "Oturma izni türleri, göç kartı ve kayıt",
+    VIZE, "#0ea5e9",
+    "📌 \"first... then\" — önce... sonra.\nPassive: \"must be extended\" — uzatılmalı.",
+    [
+      ["residence permit", "REZıdans pörMİT", "oturma izni", "Uzun süreli kalma hakkı."],
+      ["temporary permit", "TEMpıreri pörMİT", "geçici oturma izni", "Süreli oturma iznidir."],
+      ["migration card", "mayGREYşın KARd", "göç kartı", "Girişte doldurulur."],
+      ["registration", "recısTREYşın", "kayıt/tescil", "Adres kaydıdır."],
+      ["notification", "nowtiFIKEYşın", "bildirim", "Makamlara verilir."],
+      ["to extend", "ikSTEND", "uzatmak", "Bitmeden yapılmalıdır."],
+    ],
+    [
+      ["I received a residence permit for three years.", "Üç yıllık oturma izni aldım."],
+      ["You fill in the migration card at the border.", "Göç kartını sınırda doldurursunuz."],
+      ["The registration period must be extended.", "Kayıt süresi uzatılmalı."],
+    ],
+    [
+      ["Migrant", "I'd like to apply for a residence permit.", "ayd LAYK tu ıPLAY for ı REZıdans pörMİT", "Oturma izni başvurusu yapmak istiyorum."],
+      ["Inspector", "First you need registration at your address.", "FÖRST yu NİID recısTREYşın at yör ıDRES", "Önce adresinizde kayıt gerekir."],
+      ["Migrant", "I already have it.", "ay olREDi HEV it", "Zaten var."],
+    ]),
+
+  U("en_cit_14", 613, "B2", "🔑", "Daimi Oturma İzni",
+    "Daimi ikamet için kesintisiz süre ve gelir şartı",
+    VIZE, "#0ea5e9",
+    "📌 Present perfect + for: \"I've lived here for five years\" — beş yıldır buradayım.\n\"require + isim\": requires residence — ikamet gerektirir.",
+    [
+      ["permanent residence", "PÖRMınınt REZıdans", "daimi oturma izni", "Süresiz kalma hakkıdır."],
+      ["continuous", "kıntINUyııs", "kesintisiz", "Süre hesabında önemlidir."],
+      ["period of residence", "Pİriyad ıv REZıdans", "ikamet süresi", "Ülkede geçen süredir."],
+      ["proven income", "PRUuvın İNkam", "kanıtlanmış gelir", "Belgeyle gösterilir."],
+      ["rights", "RAYTS", "haklar", "Statüyle kazanılır."],
+      ["settlement", "SETlımınt", "yerleşme", "Köklü ikamettir."],
+    ],
+    [
+      ["Permanent residence requires a continuous period of residence.", "Daimi ikamet kesintisiz ikamet süresi gerektirir."],
+      ["Income is proven by a certificate from work.", "Gelir işyeri belgesiyle kanıtlanır."],
+      ["Permanent status gives more rights.", "Daimi statü daha çok hak verir."],
+    ],
+    [
+      ["Applicant", "I've lived here for five years.", "ayv LİVD HİİR for FAYF YİRZ", "Beş yıldır burada yaşıyorum."],
+      ["Inspector", "Is your income proven?", "iz yör İNkam PRUuvın", "Geliriniz kanıtlandı mı?"],
+      ["Applicant", "Yes, here is a certificate for the whole year.", "YES, HİİR iz ı sertifiKEYt for dı HOWL YIİR", "Evet, işte yıl boyu belge."],
+    ]),
+
+  U("en_cit_15", 614, "A2", "✈️", "Sınır Kontrolü ve Gümrük",
+    "Pasaport kontrolü, gümrük ve beyanname",
+    VIZE, "#0ea5e9",
+    "📌 \"nothing TO declare\" — beyan edecek bir şey yok.\n\"through\" — içinden: through the green channel.",
+    [
+      ["passport control", "PASport könTROWL", "pasaport kontrolü", "Sınırda ilk duraktır."],
+      ["customs", "KAStımz", "gümrük", "Eşya kontrol noktasıdır."],
+      ["declaration", "deklıREYşın", "beyanname", "Bildirim formudur."],
+      ["belongings", "biLONingz", "eşyalar", "Kişisel eşyalarınız."],
+      ["to declare", "dikLEÖR", "beyan etmek", "Bildirimde bulunmaktır."],
+      ["nothing to declare", "NATHing tu dikLEÖR", "beyan edecek bir şey yok", "Yeşil kapıdan geçilir."],
+    ],
+    [
+      ["At passport control you show your passport and visa.", "Pasaport kontrolünde pasaport ve vize gösterilir."],
+      ["I have nothing to declare.", "Beyan edecek bir şeyim yok."],
+      ["These are my personal belongings.", "Bunlar kişisel eşyalarım."],
+    ],
+    [
+      ["Officer", "What's in your luggage?", "WOTS in yör LAGıс", "Bagajınızda ne var?"],
+      ["Passenger", "Only personal belongings.", "OWNLİ PÖRsınıl biLONingz", "Sadece kişisel eşyalar."],
+      ["Officer", "Go through the green channel.", "GOW THRUU dı GRİIN CANıl", "Yeşil koridordan geçin."],
+    ]),
+
+  U("en_cit_16", 615, "B1", "📍", "Adres ve İkamet Kaydı",
+    "İkametgâh kaydı, kira sözleşmesi ve mal sahibi onayı",
+    VIZE, "#0ea5e9",
+    "📌 Passive çoğul: \"are paid\" — ödenir.\n\"at + adres\": registered at my new address.",
+    [
+      ["residence registration", "REZıdans recısTREYşın", "ikamet kaydı", "Resmî adres kaydıdır."],
+      ["address", "ıDRES", "adres", "Resmî bildirimdir."],
+      ["rental agreement", "RENtııl ıGRİYmınt", "kira sözleşmesi", "Kayıt için gerekir."],
+      ["landlord", "LENDlord", "mal sahibi", "Onayı istenir."],
+      ["utilities", "yuTİLıtiz", "ortak giderler", "Elektrik, su vb. faturalar."],
+      ["proof of address", "PRUUF ıv ıDRES", "adres kanıtı", "Fatura veya sözleşme olur."],
+    ],
+    [
+      ["You need a rental agreement for registration.", "Kayıt için kira sözleşmesi gerekir."],
+      ["I'm registered at my new address.", "Yeni adresime kayıtlıyım."],
+      ["Utilities are paid every month.", "Ortak giderler her ay ödenir."],
+    ],
+    [
+      ["Tenant", "I need registration for my documents.", "ay NİID recısTREYşın for may DOKyuments", "Belgelerim için ikamet kaydına ihtiyacım var."],
+      ["Landlord", "I'll give my consent and the agreement.", "ayl GİV may kınSENT and di ıGRİYmınt", "Onayımı ve sözleşmeyi vereceğim."],
+      ["Tenant", "Thanks, we'll submit the application tomorrow.", "tenks, wil sıbMİT di apliKAYşın tuMOROW", "Teşekkürler, yarın başvuruyu veririz."],
+    ]),
+
+  U("en_cit_17", 616, "A2", "🏛️", "Vatandaşlık: Temel Kavramlar",
+    "Vatandaşlık, vatandaş, hak ve görevler",
+    VAT, "#8b5cf6",
+    "📌 \"citizen OF a country\" — bir ülkenin vatandaşı.\nPossessive: everyone's rights — herkesin hakları.",
+    [
+      ["citizenship", "SİTızınship", "vatandaşlık", "Kişi ile ülke arasındaki hukuki bağ."],
+      ["citizen", "SİTızın", "vatandaş", "Ülkenin tam üyesidir."],
+      ["nationality", "naşınELıti", "milliyet", "Kimlikte yazan kökendir."],
+      ["rights and duties", "RAYTS and DYUUtiz", "haklar ve görevler", "Vatandaşlıkla gelir."],
+      ["constitution", "konstiTYUUşın", "anayasa", "En üst yasadır."],
+      ["homeland", "HOWMlend", "vatan", "Doğup büyüldüğünüz yer."],
+    ],
+    [
+      ["Citizenship gives rights and duties.", "Vatandaşlık haklar ve görevler verir."],
+      ["I am a citizen of this country.", "Bu ülkenin vatandaşıyım."],
+      ["The constitution protects everyone's rights.", "Anayasa herkesin haklarını korur."],
+    ],
+    [
+      ["Teacher", "What is citizenship?", "WOT iz SİTızınship", "Vatandaşlık nedir?"],
+      ["Student", "It's the link between a person and a country.", "its dı LİNK bitwİIN ı PÖRsın and ı KANtri", "İnsanla ülke arasındaki bağıdır."],
+      ["Teacher", "Right. Citizens have rights and duties.", "RAYT. SİTızınz HEV RAYTS and DYUUtiz", "Doğru. Vatandaşların hakları ve görevleri var."],
+    ]),
+
+  U("en_cit_18", 617, "B1", "✅", "Vatandaşlık Başvuru Şartları",
+    "Başvuru koşulları: süre, dil, gelir ve yasalara uyum",
+    VAT, "#8b5cf6",
+    "📌 \"must\" — -meli (yükümlülük): You must meet...\n\"required\" — gerekli (passive sıfat).",
+    [
+      ["requirements", "riKWAYırmınts", "şartlar/gereklilikler", "Başvurunun temelidir."],
+      ["condition", "kınDIŞın", "koşul", "Her şart ayrı belirtilir."],
+      ["to meet the requirements", "MİIT di riKWAYırmınts", "şartları karşılamak", "Başvuru öncesi kontrol edilir."],
+      ["source of income", "SORS ıv İNkam", "gelir kaynağı", "Belgeyle gösterilir."],
+      ["language knowledge", "LENGvic NOLıc", "dil bilgisi", "Sınavla kanıtlanır."],
+      ["to obey the law", "ıBEY dı LO", "yasalara uymak", "Başvuru boyunca istenir."],
+    ],
+    [
+      ["You must meet all the requirements.", "Tüm şartları karşılamalısınız."],
+      ["Language knowledge is required.", "Dil bilgisi gereklidir."],
+      ["The applicant must obey the laws.", "Başvuran yasalara uymalıdır."],
+    ],
+    [
+      ["Adviser", "Do you meet the conditions?", "du yu MİIT di kınDIŞınz", "Koşulları karşılıyor musunuz?"],
+      ["Applicant", "Yes, I've lived here a long time and I know the language.", "YES, ayv LİVD HİİR ı LONG TAYM and ay NOW di LENGvic", "Evet, uzun süredir burada yaşıyorum ve dili biliyorum."],
+      ["Adviser", "Then you can apply.", "DEN yu KAN ıPLAY", "O zaman başvurabilirsiniz."],
+    ]),
+
+  U("en_cit_19", 618, "B1", "📂", "Başvuru Dosyası ve Evraklar",
+    "Evrak dosyası: onaylı kopya, çeviri ve sabıka kaydı",
+    VAT, "#8b5cf6",
+    "📌 Passive: \"must be certified\" — onaylanmalı.\n\"won't be accepted\" — kabul edilmeyecek (will not).",
+    [
+      ["document package", "DOKyument PAKıc", "evrak dosyası", "Tüm belgelerin bütünü."],
+      ["notary", "NOWtri", "noter", "Kopyaları onaylar."],
+      ["certified copy", "SÖRtıfayd KOUpi", "onaylı kopya", "Noter onaylı örnektir."],
+      ["translation", "transLEYşın", "çeviri", "Yetkili çevirmen yapar."],
+      ["original", "ırİCınıl", "asıl (original) belge", "Kopyayla birlikte istenir."],
+      ["criminal record certificate", "KRİminıl REkırd sertifiKEYt", "sabıka kaydı", "Adli sicil belgesidir."],
+    ],
+    [
+      ["All copies must be certified by a notary.", "Tüm kopyalar noter tarafından onaylanmalı."],
+      ["Translations are done by an accredited translator.", "Çevirileri yetkili çevirmen yapar."],
+      ["One certificate is missing from the package.", "Dosyada bir belge eksik."],
+    ],
+    [
+      ["Officer", "Where is the certified copy of your diploma?", "VEÖR iz dı SÖRtıfayd KOUpi ıv yör diPLOWma", "Diplomunuzun onaylı kopyası nerede?"],
+      ["Applicant", "Oh, I forgot. I'll bring it tomorrow.", "OW, ay fırGOT. ayl BRING it tuMOROW", "Ah, unuttum. Yarın getiririm."],
+      ["Officer", "OK, without it the application won't be accepted.", "OWKEY, wifAUT it di apliKAYşın wownt bi akSEPtid", "Peki, onsuz başvuru kabul edilmeyecek."],
+    ]),
+
+  U("en_cit_20", 619, "B1", "🗣️", "Dil Şartı ve Dil Sınavı",
+    "Dil sınavı: sözlü ve yazılı bölümler, sertifika",
+    VAT, "#8b5cf6",
+    "📌 \"pass an exam\" — sınavı geçmek (karşıtı: fail).\n\"practise\" — çalışmak/pratik yapmak.",
+    [
+      ["exam", "igZAM", "sınav", "Dil sınavı zorunludur."],
+      ["certificate", "sırTİFikıt", "sertifika", "Seviyeyi belgeler."],
+      ["level of proficiency", "LEvil ıv prıFIŞınsi", "yeterlilik seviyesi", "A1'den C2'ye kadardır."],
+      ["speaking part", "SPIYking PART", "sözlü bölüm", "Konuşma sınavıdır."],
+      ["writing part", "RAYting PART", "yazılı bölüm", "Okuma-yazma sınavıdır."],
+      ["to confirm knowledge", "kınFÖRM NOLıc", "bilgiyi belgelemek", "Sertifikayla yapılır."],
+    ],
+    [
+      ["I passed the language exam.", "Dil sınavını geçtim."],
+      ["The speaking part was hard, but the writing part was easy.", "Sözlü bölüm zordu ama yazılı kolaydı."],
+      ["The certificate confirms level B1.", "Sertifika B1 seviyesini belgeler."],
+    ],
+    [
+      ["Teacher", "Are you ready for the speaking part?", "ar yu REDi for dı SPIYking PART", "Sözlü bölüme hazır mısınız?"],
+      ["Candidate", "Yes, I've practised a lot.", "YES, ayv PRAKtist ı LOT", "Evet, çok çalıştım."],
+      ["Teacher", "Let's start with simple questions.", "lets START wif SİMpıl KWESçıns", "Basit sorularla başlayalım."],
+    ]),
+
+  U("en_cit_21", 620, "B2", "📚", "Vatandaşlık Sınavı: Tarih ve Toplum",
+    "Ülke tarihi, devlet düzeni ve semboller sınavı",
+    VAT, "#8b5cf6",
+    "📌 \"ask about + konu\" — ...sormak.\n\"represent\" — temsil etmek: What does the flag represent?",
+    [
+      ["history of the country", "Hİstri ıv dı KANtri", "ülke tarihi", "Sınav konusudur."],
+      ["state system", "STEYT SİStım", "devlet düzeni", "Yönetim biçimidir."],
+      ["national symbols", "NAŞınıl SİMbılz", "ulusal semboller", "Bayrak, arma vb."],
+      ["flag and coat of arms", "FLAG and KOwt ıv ARMZ", "bayrak ve arma", "En önemli semboller."],
+      ["constitutional", "konstiTYUUşınıl", "anayasal", "Düzenle ilgili sıfattır."],
+      ["society", "sıSAYıti", "toplum", "Ülkenin bütünüdür."],
+    ],
+    [
+      ["The exam asks about history and national symbols.", "Sınavda tarih ve ulusal semboller sorulur."],
+      ["You need to know the basics of the state system.", "Devlet düzeninin temellerini bilmelisiniz."],
+      ["The flag and the coat of arms are the main symbols.", "Bayrak ve arma ana sembollerdir."],
+    ],
+    [
+      ["Examiner", "What does this flag represent?", "WOT daz dıs FLAG repriZENT", "Bu bayrak neyi temsil ediyor?"],
+      ["Candidate", "It's the national flag of the country.", "its di NAŞınıl FLAG ıv dı KANtri", "Bu ülkenin ulusal bayrağı."],
+      ["Examiner", "Correct. Next question...", "kırEKT. NEKST KWESçın", "Doğru. Sonraki soru..."],
+    ]),
+
+  U("en_cit_22", 621, "B1", "👆", "Biyometri ve Parmak İzi",
+    "Biyometrik veriler: parmak izi, tarama, dijital fotoğraf",
+    VAT, "#8b5cf6",
+    "📌 Passive uyumu: \"are taken\" (çoğul) / \"is stored\" (tekil).\n\"must not\" — yapmamalı: You must not move.",
+    [
+      ["biometrics", "bayOMetriks", "biyometri", "Kimlik verilerinin dijitali."],
+      ["fingerprints", "FINGırprints", "parmak izleri", "Başvuruda verilir."],
+      ["to give fingerprints", "GİV FINGırprints", "parmak izi vermek", "Yerinde yapılır."],
+      ["scanning", "SKANing", "tarama", "Cihazla okumadır."],
+      ["digital photo", "DİCıtıl FOWtow", "dijital fotoğraf", "Anında çekilir."],
+      ["database", "DEYtıbeys", "veri tabanı", "Veriler burada saklanır."],
+    ],
+    [
+      ["Fingerprints are taken on site.", "Parmak izleri yerinde alınır."],
+      ["Biometric data is stored in a database.", "Biyometrik veriler veri tabanında saklanır."],
+      ["You must not move during the scan.", "Tarama sırasında hareket etmemelisiniz."],
+    ],
+    [
+      ["Operator", "Put your finger on the scanner.", "PUT yör FINGır on di SKANır", "Parmağınızı tarayıcıya koyun."],
+      ["Applicant", "Like this?", "LAYK dıs", "Böyle mi?"],
+      ["Operator", "Yes, perfect. Now the digital photo.", "YES, PÖRfikt. NAU dı DİCıtıl FOWtow", "Evet, harika. Şimdi dijital fotoğraf."],
+    ]),
+
+  U("en_cit_23", 622, "A2", "💳", "Başvuru Ücretleri ve Harçlar",
+    "Harç, hizmet bedeli, makbuz ve ödeme",
+    VAT, "#8b5cf6",
+    "📌 Passive: \"is paid / is not refunded\" — ödenir / iade edilmez.\n\"in case of + isim\": in case of refusal — ret durumunda.",
+    [
+      ["payment", "PEYmınt", "ödeme", "İşlemin para kısmı."],
+      ["receipt", "riSİYT", "makbuz (dekont)", "Ödeme kanıtıdır."],
+      ["service fee", "SÖRvis FİY", "hizmet bedeli", "Merkez/konsolosluk ücretidir."],
+      ["refund", "RİYfand", "iade", "Bazı durumlarda verilir."],
+      ["discount", "DİSkaunt", "indirim", "Bazı gruplara tanınır."],
+      ["to pay online", "PEY ONlayn", "internetten ödemek", "En kolay yoldur."],
+    ],
+    [
+      ["The fee is paid at a bank or online.", "Ücret bankada veya internetten ödenir."],
+      ["Keep the payment receipt.", "Ödeme makbuzunu saklayın."],
+      ["The fee is not refunded in case of refusal.", "Ret durumunda ücret iade edilmez."],
+    ],
+    [
+      ["Client", "How much does it cost?", "hau MAÇ daz it KOST", "Ne kadara mal oluyor?"],
+      ["Operator", "The state fee is five thousand, the service fee is one thousand.", "dı STEYT FİY iz FAYF THAWzend, dı SÖRvis FİY iz WAN THAWzend", "Devlet ücreti beş bin, hizmet bedeli bin."],
+      ["Client", "I'll pay online.", "ayl PEY ONlayn", "İnternetten ödeyeceğim."],
+    ]),
+
+  U("en_cit_24", 623, "B1", "🏢", "Göç İdaresi ve Devlet Daireleri",
+    "Göç idaresi, resmî kurumlar ve gişeler",
+    VAT, "#8b5cf6",
+    "📌 \"on weekdays\" — hafta içi.\nPassive: \"are made\" — yapılır (randevular).",
+    [
+      ["migration service", "mayGREYşın SÖRvis", "göç idaresi", "Oturma/vatandaşlık işlemleri."],
+      ["authority", "oTHORıti", "resmî kurum", "Devlet dairelerinin genel adı."],
+      ["department", "diPARTmınt", "birim/şube", "Kurumun bölümüdür."],
+      ["official website", "ıFIşıl WEBSayt", "resmî site", "Randevular buradan alınır."],
+      ["electronic queue", "ilekTRONik KYUU", "elektronik sıra", "Uzun bekleme çözümüdür."],
+      ["service window", "SÖRvis WINdow", "teslim gişesi", "Evrak verilen pencere."],
+    ],
+    [
+      ["The migration service receives visitors on weekdays.", "Göç idaresi hafta içi kabul eder."],
+      ["Appointments are made through the official website.", "Randevular resmî siteden alınır."],
+      ["Go to window three.", "Üç numaralı gişeye gidin."],
+    ],
+    [
+      ["Visitor", "Where do I submit the application?", "VEÖR du ay sıbMİT di apliKAYşın", "Başvuruyu nereye veririm?"],
+      ["Receptionist", "At the migration service, window three.", "at di mayGREYşın SÖRvis, WINdow THRIİ", "Göç idaresine, üç numaralı gişe."],
+      ["Visitor", "Thank you very much!", "tenk yu VERi MAÇ", "Çok teşekkürler!"],
+    ]),
+
+  U("en_cit_25", 624, "B1", "🎉", "Yemin Töreni ve Yeni Pasaport",
+    "Yemin töreni, vatandaşlık ve yeni pasaport",
+    VAT, "#8b5cf6",
+    "📌 \"repeat after me\" — benden sonra tekrar edin.\n\"take the pledge\" — yemin etmek (take-took-taken).",
+    [
+      ["oath", "OWTH", "yemin", "Vatandaşlık yemini."],
+      ["ceremony", "SERımıni", "tören", "Resmî kutlamadır."],
+      ["pledge", "PLEC", "yemin (söz)", "Verilen sözdür."],
+      ["solemnly", "SOLımli", "törenle/resmî şekilde", "Törenin havasını anlatır."],
+      ["to receive a passport", "riSİIV ı PASport", "pasaportu almak", "Son adımdır."],
+      ["congratulations", "kıngraçışLEYşınz", "tebrik", "Yakınlar da eder."],
+    ],
+    [
+      ["The oath ceremony was solemn.", "Yemin töreni görkemliydi."],
+      ["New citizens took the pledge.", "Yeni vatandaşlar yemin etti."],
+      ["Congratulations on your citizenship!", "Vatandaşlığınızın kutlu olsun!"],
+    ],
+    [
+      ["Host", "Repeat the pledge after me.", "riPİIT dı PLEC AFtır Mİ", "Yemini benden sonra tekrar edin."],
+      ["Candidate", "I pledge to be a loyal citizen.", "ay PLEC tu bi ı LOYıl SİTızın", "Sadık bir vatandaş olacağıma yemin ederim."],
+      ["Host", "Congratulations! Here is your new passport.", "kıngraçışLEYşınz! HİİR iz yör NYUU PASport", "Tebrikler! İşte yeni pasaportunuz."],
+    ]),
+];

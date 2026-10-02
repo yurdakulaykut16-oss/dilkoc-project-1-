@@ -32,7 +32,7 @@ const CARDS: LanguageCardDef[] = [
     tagline: 'Sıfırdan C2 ustalık seviyesine',
     bullets: [
       '🔤 33 harflik Kiril alfabesi + 76 fonetik/okuma dersi',
-      '📚 722 ünite: gündelik yaşam, iş, aşçılık, lokanta servisi...',
+      '📚 772 ünite: gündelik yaşam, iş, vize-vatandaşlık, aşçılık...',
       '🎧 100+ dinleme konusu · 📖 13 hikaye modülü',
       '🐰 Смешарики & «Кухня» sahneleriyle anlaşılır girdi',
     ],
@@ -47,7 +47,7 @@ const CARDS: LanguageCardDef[] = [
     tagline: 'Fonetikten C2 ustalık seviyesine',
     bullets: [
       '🔤 26 harf + TH, schwa, sessiz harfler: 30 fonetik dersi',
-      '📚 722 ünite: Rusça paketiyle aynı hacim — gündelik yaşamdan iş English\'ine',
+      '📚 772 ünite: Rusça paketiyle aynı hacim — gündelik yaşamdan vize-vatandaşlığa',
       '🎧 Harf + telaffuz kuralı + müfredat ön-hazırlık dinleme konuları',
       '📖 9 hikaye modülü: kontrol noktaları + bölüm finalleri',
     ],

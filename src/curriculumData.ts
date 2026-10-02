@@ -16,6 +16,10 @@ import { createDailyLife90 } from './extraUnits/dailyLife90';
 import { isEnglish } from './content/activeLanguage';
 import { EN_UNITS } from './content/en/units';
 import { EN_EXTRA_UNITS, EN_NEW_UNITS } from './content/en/enExtraUnits';
+import { CIT_RU_A } from './content/citizenship/citRuA';
+import { CIT_RU_B } from './content/citizenship/citRuB';
+import { EN_CIT_A } from './content/en/enCitA';
+import { EN_CIT_B } from './content/en/enCitB';
 
 export interface WordDetail {
   id: string;
@@ -3257,6 +3261,9 @@ const RU_UNITS_DATA: UnitModule[] = dedupeSimilarUnits([
   ...RESTAURANT_SERVICE_UNITS,
   ...DAILY_LIFE_90_UNITS,
   ...DAILY_LIFE_PLUS_UNITS,
+  // Vatandaşlık/vize/göç paketi (50 ünite) — her iki dilde aynı üniteler.
+  ...CIT_RU_A,
+  ...CIT_RU_B,
 ]).map(splitAdvancedLevel).sort((a, b) =>
   LEVEL_ORDER[a.levelGroup] - LEVEL_ORDER[b.levelGroup] ||
   a.unitNumber - b.unitNumber ||
@@ -3270,8 +3277,8 @@ const RU_UNITS_DATA: UnitModule[] = dedupeSimilarUnits([
 //   • 499 Rusça ek ünitesinin İngilizce AYNASI (aynı id/numara/başlık/sıra,
 //     içerik İngilizce — content/en/enExtraSpecs* + enExtraUnits motoru),
 //   • 175 İngilizce'ye özel pekiştirme ünitesi (enNewSpecs)
-// → toplam 722 ünite = Rusça müfredatın hacmi (RU: 223 + 499).
-const EN_UNITS_DATA: UnitModule[] = [...EN_UNITS, ...EN_EXTRA_UNITS, ...EN_NEW_UNITS]
+// → toplam 772 ünite = Rusça müfredatın hacmi (RU: 223 + 499 + 50 vatandaşlık paketi).
+const EN_UNITS_DATA: UnitModule[] = [...EN_UNITS, ...EN_EXTRA_UNITS, ...EN_NEW_UNITS, ...EN_CIT_A, ...EN_CIT_B]
   .map(splitAdvancedLevel)
   .sort((a, b) =>
     LEVEL_ORDER[a.levelGroup] - LEVEL_ORDER[b.levelGroup] ||
