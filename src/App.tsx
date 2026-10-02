@@ -1,3 +1,5 @@
+// DilKoç © 2026 — Bu kaynak kod telif hakkıyla korunur. İzinsiz kopyalama,
+// dağıtma ve türev çalışma üretme yasaktır (bkz. LICENSE).
 import { TextToSpeech } from '@capacitor-community/text-to-speech';
 import React, { useState, useEffect, useMemo, useRef } from 'react';
 import AiTutor from './components/AiTutor';

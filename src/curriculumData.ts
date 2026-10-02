@@ -1,3 +1,5 @@
+// DilKoç © 2026 — Bu kaynak kod telif hakkıyla korunur. İzinsiz kopyalama,
+// dağıtma ve türev çalışma üretme yasaktır (bkz. LICENSE).
 // ==========================================================
 // ORTAK MÜFREDAT KAYNAĞI — Tek veri kaynağı (single source of truth).
 // Hem ana uygulama (App.tsx) hem "100 Konu" modülü (src/topics100)

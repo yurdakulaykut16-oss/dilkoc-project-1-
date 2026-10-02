@@ -1,3 +1,5 @@
+// DilKoç © 2026 — Bu kaynak kod telif hakkıyla korunur. İzinsiz kopyalama,
+// dağıtma ve türev çalışma üretme yasaktır (bkz. LICENSE).
 import { UNITS_DATA } from '../curriculumData';
 import { detectRussianQuestionIntent, searchRussianKnowledge } from './russianExpertise';
 import { isEnglish, isTargetScript } from '../content/activeLanguage';

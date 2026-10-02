@@ -1,3 +1,5 @@
+// DilKoç © 2026 — Bu kaynak kod telif hakkıyla korunur. İzinsiz kopyalama,
+// dağıtma ve türev çalışma üretme yasaktır (bkz. LICENSE).
 /**
  * Token bütçesini şişirmeden çalışan yerel Rusça uzmanlık kütüphanesi.
  * Bilgi uygulamaya gömülüdür; her soruda yalnızca ilgili bölümler seçilir.

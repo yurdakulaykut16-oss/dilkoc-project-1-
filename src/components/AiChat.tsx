@@ -1,3 +1,5 @@
+// DilKoç © 2026 — Bu kaynak kod telif hakkıyla korunur. İzinsiz kopyalama,
+// dağıtma ve türev çalışma üretme yasaktır (bkz. LICENSE).
 import { SpeechRecognition as NativeSpeechRecognition } from '@capacitor-community/speech-recognition';
 import React, { useEffect, useMemo, useRef, useState } from 'react';
 import { answerWithLocalRussianAgent } from '../ai/localRussianAgent';
