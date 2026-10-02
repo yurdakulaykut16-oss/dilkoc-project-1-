@@ -32,9 +32,6 @@ export interface VocabModule {
   sentences: SentenceExercise[];
 }
 
-// ==========================================
-// A1 SEVİYESİ — 6 KONU + 1 BİTİRME SINAVI
-// ==========================================
 export const MODULES: VocabModule[] = [
   {
     id: 'a1_greetings',
@@ -237,9 +234,6 @@ export const MODULES: VocabModule[] = [
     sentences: [],
   },
 
-  // ==========================================
-  // A2 SEVİYESİ — 2 KONU + 1 BİTİRME SINAVI
-  // ==========================================
   {
     id: 'a2_venting',
     levelCode: 'A2',
@@ -306,9 +300,6 @@ export const MODULES: VocabModule[] = [
     sentences: [],
   },
 
-  // ==========================================
-  // B1 → C2: YAKINDA (İSKELET)
-  // ==========================================
   {
     id: 'b1_m1', levelCode: 'B1', title: "B1.1 — Flört & İlişkiler", category: 'Flört & İlişki',
     styleBadge: '❤️ B1.1 YAKINDA', icon: '❤️', color: '#ff4b4b', comingSoon: true,

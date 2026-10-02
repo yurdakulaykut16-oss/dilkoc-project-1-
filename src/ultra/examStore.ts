@@ -1,28 +1,20 @@
-// ==========================================
-// 📝 DENEME SINAVI GEÇMİŞİ — localStorage deposu
-// Her deneme sınavı sonucu burada saklanır: tarih, seviye, puan,
-// beceri kırılımı ve süre. En iyi puanlar harita kartında ve
-// rapor ekranında gösterilir.
-// ==========================================
-
 export interface ExamAttempt {
   id: string;
-  level: string;                    // A1 | A2 | B1 | B2 | C1/C2 | GENEL
-  date: number;                     // timestamp
-  total: number;                    // soru sayısı
+  level: string;
+  date: number;
+  total: number;
   correct: number;
-  percent: number;                  // 0-100
+  percent: number;
   passed: boolean;
   durationSec: number;
-  /** beceri → [doğru, toplam] */
   skills: Record<string, [number, number]>;
-  ultra: boolean;                   // ultra modda çözüldüyse ayrıca işaretlenir
+  ultra: boolean;
 }
 
 import { isEnglish } from '../content/activeLanguage';
 
 const EXAM_KEY = isEnglish() ? 'dilkoc_exams_en_v1' : 'dilkoc_exams_v1';
-const MAX_ATTEMPTS = 60; // deposu şişmesin: en yeni 60 deneme tutulur
+const MAX_ATTEMPTS = 60;
 
 export function loadExamAttempts(): ExamAttempt[] {
   try {
@@ -38,12 +30,12 @@ export function loadExamAttempts(): ExamAttempt[] {
 export function saveExamAttempt(a: Omit<ExamAttempt, 'id' | 'date'>): ExamAttempt {
   const full: ExamAttempt = { ...a, id: `ex_${Date.now()}_${Math.floor(Math.random() * 1e6)}`, date: Date.now() };
   const arr = [full, ...loadExamAttempts()].slice(0, MAX_ATTEMPTS);
-  try { localStorage.setItem(EXAM_KEY, JSON.stringify(arr)); } catch { /* yoksay */ }
+  try { localStorage.setItem(EXAM_KEY, JSON.stringify(arr)); } catch {}
   return full;
 }
 
 export function clearExamAttempts(): void {
-  try { localStorage.removeItem(EXAM_KEY); } catch { /* yoksay */ }
+  try { localStorage.removeItem(EXAM_KEY); } catch {}
 }
 
 export function bestAttemptFor(level: string, attempts?: ExamAttempt[]): ExamAttempt | null {

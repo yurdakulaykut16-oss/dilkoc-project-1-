@@ -1,22 +1,12 @@
-// ============================================================================
-// ÖĞRENEN MODELİ — çözülen sorulardan ZAMANLAR (tenses) ve EDATLAR (prepositions)
-// eksiklerini haritalandırır; kişiselleştirilmiş öğrenim rotasını üretir.
-//
-// Her cevap (doğru + yanlış) buraya işlenir. Cümlenin içinden zaman ve edat
-// tespiti deterministik morfolojik ipuçlarıyla yapılır — böylece "hangi soruda
-// yanlış yaptı"dan öte "HANGİ GRAMER KASI zayıf" bilgisi birikir.
-// ============================================================================
-
 import { isEnglish } from './content/activeLanguage';
 
-// Kayıt anahtarı dillere göre ayrılır: Rusça ve İngilizce haritaları karışmaz.
 const LEARNER_KEY = isEnglish() ? 'dilkoc_learner_model_en_v1' : 'dilkoc_learner_model_v1';
 export const LEARNER_EVENT = 'dilkoc-learner-updated';
 
 export interface SkillStat { correct: number; wrong: number; last: number }
 
 export interface LearnerData {
-  skills: Record<string, SkillStat>;   // 'tense:past', 'prep:в' ...
+  skills: Record<string, SkillStat>;
   words: Record<string, { tr: string; correct: number; wrong: number; lastSeen: number; lastCorrect: number }>;
 }
 
@@ -27,44 +17,33 @@ export function loadLearner(): LearnerData {
   try {
     const raw = localStorage.getItem(LEARNER_KEY);
     if (raw) { cache = JSON.parse(raw); return cache!; }
-  } catch { /* yok say */ }
+  } catch {}
   cache = { skills: {}, words: {} };
   return cache;
 }
 
 function save() {
   if (!cache) return;
-  try { localStorage.setItem(LEARNER_KEY, JSON.stringify(cache)); } catch { /* yok say */ }
-  try { window.dispatchEvent(new CustomEvent(LEARNER_EVENT)); } catch { /* yok say */ }
+  try { localStorage.setItem(LEARNER_KEY, JSON.stringify(cache)); } catch {}
+  try { window.dispatchEvent(new CustomEvent(LEARNER_EVENT)); } catch {}
 }
 
 export function resetLearner() {
   cache = { skills: {}, words: {} };
-  try { localStorage.removeItem(LEARNER_KEY); } catch { /* yok say */ }
-  try { window.dispatchEvent(new CustomEvent(LEARNER_EVENT)); } catch { /* yok say */ }
+  try { localStorage.removeItem(LEARNER_KEY); } catch {}
+  try { window.dispatchEvent(new CustomEvent(LEARNER_EVENT)); } catch {}
 }
 
-// ---------------------------------------------------------------------------
-// ZAMAN & EDAT TESPİTİ (deterministik morfolojik ipuçları)
-// ---------------------------------------------------------------------------
-// ---------------------------------------------------------------------------
-// DİLE GÖRE MORFOLOJİ: Rusça ek desenleri ↔ İngilizce zaman işaretleri.
-// ---------------------------------------------------------------------------
 export const PREPOSITIONS: string[] = isEnglish()
   ? ['in', 'on', 'at', 'to', 'from', 'with', 'for', 'about', 'by', 'of', 'into', 'out', 'over', 'under', 'between', 'among', 'through', 'during', 'after', 'before', 'near', 'without', 'until', 'since', 'against', 'around', 'behind', 'despite', 'upon', 'within', 'toward', 'towards', 'across', 'along', 'beside', 'beyond', 'past', 'up', 'down', 'off']
   : ['в', 'на', 'к', 'у', 'с', 'из', 'о', 'об', 'по', 'за', 'под', 'над', 'от', 'до', 'для', 'без', 'через', 'при', 'между', 'перед', 'около', 'после', 'про'];
 
 const FUTURE_AUX = ['буду', 'будешь', 'будет', 'будем', 'будете', 'будут'];
 const PAST_RE = /^[а-яё]{2,}(л|ла|ло|ли)(сь|ся)?$/i;
-// GÜÇLÜ şimdiki zaman kanıtı: çok harfli kişi ekleri (-ешь, -ет, -ем, -ют, -ит...)
 const PRESENT_STRONG_RE = /^[а-яё]{2,}(ешь|ёшь|ет|ёт|ем|ём|ете|ёте|ют|ишь|ит|им|ите|ат|ят)(ся|сь)?$/i;
-// ZAYIF kanıt: yalın -у/-ю bitişi (1. tekil kişi) — isimlerin -у/-ю hâl ekiyle karışabilir
-// (книгу, маму...), bu yüzden yalnızca başka zaman kanıtı yoksa ve önünde edat yoksa sayılır.
 const PRESENT_WEAK_RE = /^[а-яё]{2,}(ю|у)(сь)?$/i;
-// Yaygın "fiil olmayan" tuzaklar (isim/zamir olduğu hâlde ek deseni tutanlar)
 const NOT_VERB = new Set(['привет', 'момент', 'билет', 'кабинет', 'пакет', 'банкет', 'бюджет', 'секрет', 'совет', 'ответ', 'обед', 'сосед', 'салат', 'халат', 'брат', 'закат', 'адвокат', 'шоколад', 'стол', 'стул', 'пол', 'футбол', 'гол', 'укол', 'зал', 'вокзал', 'канал', 'мама', 'папа', 'вода', 'еда', 'среда', 'звезда', 'это', 'кто', 'что', 'место', 'лето', 'мясо', 'молоко', 'окно', 'кино', 'вино', 'пальто', 'метро', 'утро', 'много', 'мало', 'дело', 'тело', 'им', 'ним', 'вам', 'нам', 'там', 'сам', 'зачем', 'причём', 'днём', 'потом', 'дом', 'том', 'ем', 'семь', 'восемь']);
 
-// --- İNGİLİZCE zaman işaretleri ---
 const EN_WILL = new Set(['will', "will", 'shall', "ll", 'wo', "won't", 'won’t']);
 const EN_GOING = new Set(['going']);
 const EN_PAST_BE = new Set(['was', 'were']);
@@ -72,11 +51,8 @@ const EN_PRESENT_BE = new Set(['am', 'is', 'are', "'m", "'re", "'s", '’s', '�
 const EN_PAST_DO = new Set(['did', "didn't", 'didn’t']);
 const EN_PRESENT_DO = new Set(['do', 'does', "don't", 'doesn’t', 'doesn’t', "don’t", 'doesn']);
 const EN_IRREGULAR_PAST = new Set(['went', 'saw', 'did', 'had', 'made', 'took', 'came', 'said', 'got', 'knew', 'thought', 'found', 'bought', 'brought', 'told', 'ate', 'drank', 'drove', 'ran', 'swam', 'wrote', 'spoke', 'broke', 'fell', 'felt', 'kept', 'left', 'met', 'paid', 'put', 'sat', 'stood', 'taught', 'threw', 'understood', 'wore', 'won', 'lost', 'gave', 'grew', 'heard', 'held', 'kept', 'led', 'let', 'lay', 'lost', 'meant', 'read', 'rode', 'rose', 'sang', 'slept', 'sold', 'spent', 'stuck', 'struck', 'swung', 'taught', 'woke', 'won']);
-// -ed ile biten ama fiil olmayan (veya geçmiş olmayan) yaygın tuzaklar
 const EN_ED_NOT_PAST = new Set(['bed', 'red', 'need', 'indeed', 'seed', 'speed', 'feed', 'hundred', 'thousand', 'sacred', 'naked', 'rugged', 'wicked', 'learned', 'ragged', 'dogged', 'blessed', 'aged', 'beloved', 'netted', 'fitted']);
-// -s ile biten ama 3. tekil fiil olmayan yaygın isimler/zamirler
 const EN_S_NOT_VERB = new Set(['this', 'these', 'those', 'thus', 'yes', 'us', 'as', 'is', 'his', 'its', 'bus', 'gas', 'was', 'has', 'does', 'goes', 'news', 'glass', 'class', 'dress', 'address', 'business', 'office', 'practice', 'promise', 'purpose', 'service', 'space', 'success', 'tennis', 'virus', 'analysis', 'campus', 'chorus', 'circus', 'focus', 'genius', 'illness', 'justice', 'kindness', 'less', 'miss', 'press', 'stress', 'surface', 'sense', 'noise', 'rose', 'nose', 'base', 'case', 'chase', 'pause', 'abuse', 'whose', 'house', 'mouse', 'mouth', 'yours', 'ours', 'theirs', 'perhaps', 'always', 'sometimes', 'usually', 'clothes', 'glasses', 'shoes', 'cheese', 'please', 'else', 'cross', 'across', 'loss', 'boss', 'guess', 'pass', 'mass', 'discuss', 'express', 'impress', 'princess', 'progress', 'access', 'excess', 'princess', 'status', 'bonus', 'plus', 'versus', 'campus', 'canvas', 'mathematics', 'physics', 'politics', 'economics', 'linguistics', 'electronics', 'statistics', 'classics', 'gymnastics', 'always', 'never', 'weeks', 'months', 'years', 'days', 'thanks', 'congratulations', 'savings', 'earnings', 'belongings', 'surroundings', 'outskirts', 'headquarters', 'series', 'species', 'movies', 'stories', 'libraries', 'cities', 'babies', 'ladies', 'gentlemen', 'children', 'men', 'women', 'feet', 'teeth', 'people']);
-// 3. tekil -s'in yanlış sayılmaması için yardımcı: fiil olarak bilinenler zaten set dışında.
 
 function tokenize(ru: string): string[] {
   return ru.toLowerCase().replace(/[«»"“”.,!?;:()\-–—]/g, ' ').split(/\s+/).filter(Boolean);
@@ -84,7 +60,6 @@ function tokenize(ru: string): string[] {
 
 export type TenseKey = 'tense:present' | 'tense:past' | 'tense:future';
 
-/** İngilizce cümledeki zaman(lar)ı tespit eder (yardımcı fiiller + ek desenleri). */
 function detectTensesEn(text: string): TenseKey[] {
   const tokens = tokenize(text);
   const found = new Set<TenseKey>();
@@ -98,12 +73,10 @@ function detectTensesEn(text: string): TenseKey[] {
     if (EN_PRESENT_BE.has(t)) { found.add('tense:present'); continue; }
     if (EN_PRESENT_DO.has(t) && next !== '') { found.add('tense:present'); continue; }
     if (t === 'have' || t === 'has' || t === "'ve" || t === "'s") {
-      // Present Perfect: have/has + V3 → geçmiş ailesi (Türkçedeki "-dı/mış" karşılığı)
       if (EN_IRREGULAR_PAST.has(next) || (/[a-z]ed$/.test(next) && !EN_ED_NOT_PAST.has(next)) || /[a-z](en|ne)$/.test(next)) {
         found.add('tense:past');
         continue;
       }
-      // "have a car" (sahiplik) → şimdiki zaman ailesi
       found.add('tense:present');
       continue;
     }
@@ -114,20 +87,16 @@ function detectTensesEn(text: string): TenseKey[] {
     }
     if (EN_IRREGULAR_PAST.has(t)) { found.add('tense:past'); continue; }
     if (/[a-z]ed$/.test(t) && !EN_ED_NOT_PAST.has(t) && t.length > 3) { found.add('tense:past'); continue; }
-    // 3. tekil -s / çoğul isim tuzakları: set dışı ve fiil gibi görünen -s/-es
     if (/[a-z](s|es|ies)$/.test(t) && !EN_S_NOT_VERB.has(t) && !/ss$/.test(t) && !/us$/.test(t) && !/is$/.test(t) && t.length > 2) {
-      // "was/were + -ing" gibiPast Continuous zaten past işaretlidir; -ing present da olabilir:
       if (!/[a-z]ing$/.test(t)) found.add('tense:present');
     }
     if (/[a-z]ing$/.test(t) && tokens.length > 1) {
-      // Continuous: be yardımcısı yoksa genelde Present Continuous kabul edilir
       if (!EN_PAST_BE.has(tokens[Math.max(0, i - 1)]) && !EN_PAST_BE.has(tokens[Math.min(tokens.length - 1, i + 1)])) found.add('tense:present');
     }
   }
   return Array.from(found);
 }
 
-/** Cümledeki zaman(lar)ı tespit eder (aktif dile göre). */
 export function detectTenses(ru: string): TenseKey[] {
   if (isEnglish()) return detectTensesEn(ru);
   const tokens = tokenize(ru);
@@ -140,16 +109,13 @@ export function detectTenses(ru: string): TenseKey[] {
     if (NOT_VERB.has(t)) continue;
     if (PAST_RE.test(t)) { found.add('tense:past'); continue; }
     if (PRESENT_STRONG_RE.test(t)) { found.add(futureAux ? 'tense:future' : 'tense:present'); continue; }
-    // Zayıf -у/-ю kanıtı: önünde edat varsa büyük olasılıkla isim hâlidir (в школу, на маму)
     const prev = i > 0 ? tokens[i - 1] : '';
     if (PRESENT_WEAK_RE.test(t) && !PREPOSITIONS.includes(prev)) weakPresent = true;
   }
-  // Zayıf kanıt yalnızca başka hiçbir zaman bulunamadıysa sayılır
   if (weakPresent && found.size === 0) found.add('tense:present');
   return Array.from(found);
 }
 
-/** Cümledeki edatları döndürür. */
 export function detectPreps(ru: string): string[] {
   const tokens = tokenize(ru);
   const found: string[] = [];
@@ -157,14 +123,10 @@ export function detectPreps(ru: string): string[] {
   return found;
 }
 
-/** Bir cümlenin ölçtüğü beceri anahtarları: zamanlar + edatlar. */
 export function classifySentenceSkills(ru: string): string[] {
   return [...detectTenses(ru), ...detectPreps(ru).map(p => `prep:${p}`)];
 }
 
-// ---------------------------------------------------------------------------
-// KAYIT API'Sİ — her çözülen soru buradan geçer
-// ---------------------------------------------------------------------------
 export function recordSkill(key: string, correct: boolean) {
   const d = loadLearner();
   const s = d.skills[key] || { correct: 0, wrong: 0, last: 0 };
@@ -196,27 +158,20 @@ export function recordWordResult(ru: string, tr: string, correct: boolean) {
   w.lastSeen = Date.now();
   d.words[ru] = w;
   save();
-  // Kelimenin kendisi cümle parçasıysa (edat gibi) beceriye de işle
   const low = ru.trim().toLowerCase();
   if (PREPOSITIONS.includes(low)) recordSkill(`prep:${low}`, correct);
-  // Kelime bir cümleyse zaman/edat becerilerini de güncelle
   if (ru.trim().includes(' ')) recordSentenceResult(ru, correct);
 }
 
-// GRAMER TEMELİ üniteleri → beceri anahtarı eşlemesi
 export function skillKeyForGrammarUnit(unitId: string): string | null {
   if (unitId.startsWith('tense_past')) return 'tense:past';
   if (unitId.startsWith('tense_present')) return 'tense:present';
   if (unitId.startsWith('tense_future')) return 'tense:future';
   if (unitId === 'tense_aspect' || unitId === 'tense_overview' || unitId === 'tense_review') return 'tense:aspect';
-  // genel edat çalışması aktif dilin ana edatına işlenir
   if (unitId === 'gram_prepositions') return isEnglish() ? 'prep:in' : 'prep:в';
   return null;
 }
 
-// ---------------------------------------------------------------------------
-// BECERİ HARİTASI & KİŞİSEL ROTA
-// ---------------------------------------------------------------------------
 export interface SkillSummaryRow {
   key: string;
   group: 'zaman' | 'edat';
@@ -224,8 +179,8 @@ export interface SkillSummaryRow {
   correct: number;
   wrong: number;
   total: number;
-  accuracy: number;        // 0-100
-  weakness: number;        // 0-1 (yüksek = zayıf)
+  accuracy: number;
+  weakness: number;
   status: 'strong' | 'mid' | 'weak' | 'unknown';
 }
 
@@ -275,7 +230,6 @@ export function skillSummary(): SkillSummaryRow[] {
     const s = d.skills[key] || { correct: 0, wrong: 0, last: 0 };
     const total = s.correct + s.wrong;
     const accuracy = total > 0 ? Math.round((s.correct / total) * 100) : 0;
-    // Zayıflık: hata oranı + az veri cezası (hiç çözülmemişse "bilinmiyor")
     const weakness = total === 0 ? 0.5 : Math.min(1, (s.wrong * 1.6) / (total + 1));
     const prep = key.slice(5);
     rows.push({
@@ -306,10 +260,6 @@ export interface RouteStep {
   severity: 'high' | 'mid' | 'low';
 }
 
-/**
- * Kişiselleştirilmiş öğrenim rotası: çözülen sorulardan çıkan zayıf zaman/edat
- * becerileri + kronik hatalı kelimelerden sıralı bir çalışma planı üretir.
- */
 export function buildLearningRoute(errorStats: Record<string, { count: number; tr: string; last: number }>): RouteStep[] {
   const rows = skillSummary().filter(r => r.total > 0);
   const steps: RouteStep[] = [];
@@ -352,7 +302,6 @@ export function buildLearningRoute(errorStats: Record<string, { count: number; t
     }
   }
 
-  // Kronik hatalı kelimeler → kelime bazlı kurtarma adımları
   const weakWords = Object.entries(errorStats)
     .map(([ru, v]) => ({ ru, tr: v.tr, count: v.count }))
     .filter(w => w.count >= 2)

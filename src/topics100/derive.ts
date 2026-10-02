@@ -1,23 +1,3 @@
-// ============================================================================
-// 100 KONU — TÜRÜTME MOTORU (derive)
-// ----------------------------------------------------------------------------
-// Tüm 100 konu tek kaynaktan türetilir: UNITS_DATA (A1-C2, 72 ünite).
-//
-//  1-33   Harf konuları   : harfin geçtiği A1/A2 ÖNCELİKLİ (kolaydan zora)
-//                           kelimeler + SADECE A1 ünitelerinden kısa cümle ve
-//                           diyalog satırları. (Alfabe aşamasında dinlendiği
-//                           için B2/C1 içerik bu konulara girmez; havuz dar
-//                           kalırsa istisna olarak üst seviye kelime eklenir.)
-//  34-41  Fonetik konuları: 2 hece pratiği + 6 ses kuralı (akanje, ikanje,
-//                           sonda sedasızlaşma, yumuşatma, iyotlaşma, vurgu).
-//  42-100 Müfredat ön-hazırlık: 5 A2 + 22 B1 + 17 B2 + 15 C1/C2 ünitesi
-//                           birebir (kelime + cümle + diyalog).
-//
-// Harf/fonetik konuları "aynı format"ı korur: items + sentences + dialogue.
-// Örneklerin unitId/level alanı hangi üniteye ait olduğunu gösterir —
-// böylece her konu müfredata GERÇEK bir bağlantı taşır.
-// ============================================================================
-
 import {
   UNITS_DATA,
   type UnitModule,
@@ -34,9 +14,6 @@ import type {
 import { LETTER_INFO, THIN_LETTER_SUPPLEMENT, SYLLABLE_TOPICS } from './letterNotes';
 import { isEnglish } from '../content/activeLanguage';
 
-// KOLAY-ÖNCELİKLİ skor: harf ve fonetik konuları yolun EN BAŞINDA, alfabe
-// aşamasında dinlenir. Öğrenci henüz hiçbir üniteye başlamadığı için buradaki
-// kelimeler A1'den başlamalı; B2/C1/C2 kelimeleri ancak havuz yetersizse girer.
 const LEVEL_SCORE_EASY: Record<CefrTag, number> = {
   A1: 40,
   A2: 30,
@@ -47,9 +24,6 @@ const LEVEL_SCORE_EASY: Record<CefrTag, number> = {
   'C1/C2': 4,
 };
 
-// ---------------------------------------------------------------------------
-// Tek seferde tüm ünite içeriğini düzleştir.
-// ---------------------------------------------------------------------------
 interface FlatWord extends Topic100Item {
   unitNum: number;
 }
@@ -60,15 +34,9 @@ interface FlatLine extends Topic100Line {
   unitNum: number;
 }
 
-// UNITS_DATA zaten CEFR önceliğine göre sıralı: A1 → A2 → B1 → B2 → C1 → C2.
-// Burada tekrar unitNumber'a göre sıralamak, sonradan eklenen A2 paketlerini
-// yanlışlıkla C1/C2 arkasına atardı.
 const UNITS: UnitModule[] = [...UNITS_DATA];
 
 const FLAT_WORDS: FlatWord[] = (() => {
-  // Aynı kelime birkaç ünitede geçebilir: EN DÜŞÜK seviyeli (sonra en erken)
-  // geçişi kalır — bu havuz harf/fonetik konularını besler ve o konular
-  // alfabe aşamasında dinlendiği için kelimenin en kolay etiketi esas alınır.
   const best = new Map<string, FlatWord>();
   for (const u of UNITS) {
     for (const w of u.words) {
@@ -116,14 +84,6 @@ const FLAT_LINES: FlatLine[] = UNITS.flatMap((u) =>
   }))
 );
 
-// ---------------------------------------------------------------------------
-// Seçim yardımcıları
-// ---------------------------------------------------------------------------
-/**
- * KOLAY-ÖNCELİKLİ seçim (harf/fonetik konuları için): önce A1, sonra A2;
- * B1 ancak 1 taneyle sınırlı, B2/C1/C2 hiç girmez. Havuz yetersiz kalırsa
- * (nadir harfler: Щ, Ъ...) kalan kelimeler kolaydan zora doğru eklenir.
- */
 const EASY_CAPS: [CefrTag, number][] = [
   ['A1', 6],
   ['A2', 4],
@@ -166,8 +126,6 @@ function selectEasy<T extends { level?: CefrTag; unitId?: string; unitNum?: numb
 function pickWordsForLetter(glyph: string, max = 10): Topic100Item[] {
   const low = glyph.toLowerCase();
   const pool = FLAT_WORDS.filter((w) => w.ru.toLowerCase().includes(low));
-  // ALFABE AŞAMASI: kolay-öncelikli seçim — A1/A2 kelimeler; C1/B2 kelimeleri
-  // yeni başlayanın ilk ünitelerine GİRMEZ (havuz yetersizse istisna).
   const out: Topic100Item[] = selectEasy(pool, max, 3).map((w) => ({
     ru: w.ru,
     reading: w.reading,
@@ -175,7 +133,6 @@ function pickWordsForLetter(glyph: string, max = 10): Topic100Item[] {
     unitId: w.unitId,
     level: w.level,
   }));
-  // Havuz küçükse (ör. Щ) sınırları kaldırıp kalan kelimeleri KOLAYDAN ZORA ekle.
   if (out.length < Math.min(pool.length, max)) {
     const have = new Set(out.map((o) => o.ru.toLowerCase()));
     const rest = [...pool].sort(
@@ -188,7 +145,6 @@ function pickWordsForLetter(glyph: string, max = 10): Topic100Item[] {
       out.push({ ru: w.ru, reading: w.reading, tr: w.tr, unitId: w.unitId, level: w.level });
     }
   }
-  // İnce harfler için tamamlayıcı (8 kelime hedefi).
   const supp = THIN_LETTER_SUPPLEMENT[glyph] || [];
   const have = new Set(out.map((o) => o.ru.toLowerCase()));
   for (const s of supp) {
@@ -200,12 +156,8 @@ function pickWordsForLetter(glyph: string, max = 10): Topic100Item[] {
   return out;
 }
 
-// NOT: Kelime kartları + pratik odaklı akış için konu başına cümle/diyalog
-// sayısı bilinçli olarak düşük tutulur (each ≈ 2); uzun listeler yorar.
 function pickSentencesForLetter(glyph: string, max = 2): Topic100Sentence[] {
   const low = glyph.toLowerCase();
-  // ALFABE AŞAMASI: cümleler SADECE A1 ünitelerinden gelir (kısa olanlar önce);
-  // uygun A1 cümlesi yoksa çağıran taraf basit «Это …» cümleleri sentezler.
   const pool = FLAT_SENTENCES.filter(
     (s) => s.level === 'A1' && s.ru.toLowerCase().includes(low),
   );
@@ -223,9 +175,6 @@ function pickSentencesForLetter(glyph: string, max = 2): Topic100Sentence[] {
 
 function pickLinesForLetter(glyph: string, max = 2): Topic100Line[] {
   const low = glyph.toLowerCase();
-  // ALFABE AŞAMASI: diyalog satırları SADECE A1 ünitelerinden (kısa olanlar önce).
-  // B2/C1 sahneleri (noter, sigorta...) yeni başlayanın harf konusuna GİRMEZ;
-  // A1 satırı yoksa çağıran taraf basit Аня/Макс pratiği sentezler.
   const pool = FLAT_LINES.filter((l) => l.level === 'A1' && l.ru.toLowerCase().includes(low));
   pool.sort((a, b) => a.ru.length - b.ru.length || a.unitNum - b.unitNum);
   const out: Topic100Line[] = [];
@@ -239,7 +188,6 @@ function pickLinesForLetter(glyph: string, max = 2): Topic100Line[] {
   return out;
 }
 
-/** Ünite diyalog yetersizse kelimelerden kısa bir pratik diyalog kur. */
 function synthesizeLines(items: Topic100Item[]): Topic100Line[] {
   if (items.length === 0) return [];
   const a = items[0];
@@ -274,7 +222,6 @@ function synthesizeLines(items: Topic100Item[]): Topic100Line[] {
   return lines;
 }
 
-/** Ünite cümlesi yetersizse kelimelerden pratik cümleler kur. */
 function synthesizeSentences(items: Topic100Item[]): Topic100Sentence[] {
   if (items.length === 0) return [];
   if (isEnglish()) {
@@ -289,9 +236,6 @@ function synthesizeSentences(items: Topic100Item[]): Topic100Sentence[] {
   }));
 }
 
-// ---------------------------------------------------------------------------
-// 1) HARF KONULARI (33)
-// ---------------------------------------------------------------------------
 export function buildLetterTopic(glyph: string, num: number): Topic100 {
   const info = LETTER_INFO.find((l) => l.glyph === glyph);
   const items = pickWordsForLetter(glyph);
@@ -314,11 +258,6 @@ export function buildLetterTopic(glyph: string, num: number): Topic100 {
   };
 }
 
-// ---------------------------------------------------------------------------
-// 2) Fonetik konuları: 2 hece + 6 kural
-//    İngilizce modunda: 6 İngilizce okuma kuralı (magic E, TH, ünlü takımları,
-//    -ed, -s, sessiz harfler).
-// ---------------------------------------------------------------------------
 const VOWELS = isEnglish() ? 'aeiou' : 'аеёиоуыэюя';
 
 interface PhoneticRule {
@@ -326,9 +265,7 @@ interface PhoneticRule {
   titleRu: string;
   titleTr: string;
   descTr: string;
-  /** Kelime eşleştiricisi. */
   matchWord: (w: string) => boolean;
-  /** Cümle/diyalog filtrelemek için (isteğe bağlı) harf. */
   filterLetter?: string;
 }
 
@@ -435,8 +372,6 @@ export const PHONETIC_RULES: PhoneticRule[] = isEnglish() ? EN_PHONETIC_RULES : 
 
 function pickWordsForRule(rule: PhoneticRule, max = 8): Topic100Item[] {
   const pool = FLAT_WORDS.filter((w) => rule.matchWord(w.ru.toLowerCase()));
-  // ALFABE/FONETİK AŞAMASI: kolay-öncelikli (A1/A2) kelimeler — kural,
-  // öğrencinin okuyabileceği basit kelimeler üzerinde gösterilir.
   const out = selectEasy(pool, max, 2).map((w) => ({
     ru: w.ru,
     reading: w.reading,
@@ -444,7 +379,6 @@ function pickWordsForRule(rule: PhoneticRule, max = 8): Topic100Item[] {
     unitId: w.unitId,
     level: w.level,
   }));
-  // Güvenlik: havuz dar kalsa kalan kelimelerden KOLAYDAN ZORA doldur.
   if (out.length < 4) {
     const have = new Set(out.map((o) => o.ru.toLowerCase()));
     const fill = FLAT_WORDS.filter((w) => !have.has(w.ru.toLowerCase()));
@@ -459,8 +393,6 @@ function pickWordsForRule(rule: PhoneticRule, max = 8): Topic100Item[] {
 
 export function buildRuleTopic(rule: PhoneticRule, num: number): Topic100 {
   const items = pickWordsForRule(rule);
-  // Cümle/diyalog: SADECE A1 üniteleri (fonetik konuları alfabe aşamasında
-  // dinlenir); kuralın harfini içeren KISA cümleler önce gelir.
   const sentences = FLAT_SENTENCES.filter(
     (s) => s.level === 'A1' && (!rule.filterLetter || s.ru.toLowerCase().includes(rule.filterLetter)),
   );
@@ -536,9 +468,6 @@ export function buildSyllableTopic(s: (typeof SYLLABLE_TOPICS)[number], num: num
   };
 }
 
-// ---------------------------------------------------------------------------
-// 3) MÜFREDAT ÖN-HAZIRLIK: 5 A2 + tüm B1 + tüm B2 + C1 + C2
-// ---------------------------------------------------------------------------
 const A2_PREVIEW_IDS = isEnglish()
   ? ['en_mod_a2_9', 'en_mod_a2_10', 'en_mod_a2_12', 'en_mod_a2_14', 'en_mod_a2_16']
   : ['mod_a2_1', 'mod_a2_2', 'mod_a2_6', 'mod_a2_7', 'mod_a2_10'];
@@ -560,7 +489,6 @@ export function buildPreviewTopic(u: UnitModule, num: number): Topic100 {
     unitId: u.id,
     level: w.level,
   }));
-  // Cümle yoğunluğu düşük: en fazla 2 örnek cümle + en fazla 3 diyalog satırı.
   const dialogue: Topic100Line[] = (u.dialogue ?? [])
     .slice(0, 3)
     .map((l: DialogueLine) => ({
@@ -571,8 +499,6 @@ export function buildPreviewTopic(u: UnitModule, num: number): Topic100 {
       unitId: u.id,
       level: u.levelGroup,
     }));
-  // Ünite diyalogu 2 satırdan kısaysa ünitenin kendi kelimeleriyle
-  // pratik bir satır ekle (format her konuda eşit kalsın).
   if (dialogue.length < 2) {
     dialogue.push(...synthesizeLines(items).slice(0, 3 - dialogue.length));
   }

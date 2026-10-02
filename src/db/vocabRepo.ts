@@ -47,7 +47,6 @@ export async function getDueVocab(languageCode: LanguageCode, now = new Date()):
   return getDueItems(rows.map(fromRow), now);
 }
 
-/** Vocab never reviewed yet (repetitions = 0), easiest first, for introducing new material. */
 export async function getNewVocabCandidates(languageCode: LanguageCode, limit = 8): Promise<VocabItem[]> {
   const db = await getDb();
   const rows = await db.select<VocabRow[]>(
@@ -57,7 +56,6 @@ export async function getNewVocabCandidates(languageCode: LanguageCode, limit = 
   return rows.map(fromRow);
 }
 
-/** Grades a review and persists the SM-2 schedule update + history row. */
 export async function recordReview(item: VocabItem, outcome: ReviewOutcome, now = new Date()): Promise<VocabItem> {
   const db = await getDb();
   const updated = scheduleReview(item, outcome, now);

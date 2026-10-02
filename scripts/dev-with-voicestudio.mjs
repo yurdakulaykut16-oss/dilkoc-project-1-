@@ -1,18 +1,4 @@
 #!/usr/bin/env node
-/**
- * DilKoç tek komut geliştirici başlatıcısı.
- *
- * Kullanıcıdan VoiceStudio'yu ayrı kurmasını/çalıştırmasını istemez:
- * 1) debpalash/VoiceStudio'yu .runtime/VoiceStudio altına indirir,
- * 2) uv yoksa Python pip ile otomatik kurar,
- * 3) VoiceStudio Python bağımlılıklarını bir kez hazırlar,
- * 4) gerçek backend'i 3900'da başlatır,
- * 5) eksik OmniVoice modelini backend'in kendi indirme API'siyle başlatır,
- * 6) ardından DilKoç Vite sunucusunu açar.
- *
- * Ağ/GPU/model kurulumu başarısız olsa bile DilKoç açılır; arayüzde gerçek
- * VoiceStudio'nun neden bağlanamadığı görünür ve yedek TTS kullanılabilir.
- */
 import { existsSync, mkdirSync, readFileSync, rmSync, writeFileSync } from 'node:fs';
 import { homedir } from 'node:os';
 import { join } from 'node:path';
@@ -38,10 +24,6 @@ function spawnCommand(command, args = [], options = {}) {
     .filter(arg => arg !== undefined && arg !== null && String(arg).trim() !== '')
     .map(String);
 
-  // Windows cannot reliably launch npm.cmd and other command shims directly;
-  // depending on the Node version it may fail with spawn EINVAL. Use cmd.exe
-  // through Node's shell handling there, while retaining direct spawning on
-  // POSIX so signals continue to reach the child process normally.
   return spawn(commandName(command), safeArgs, {
     ...options,
     shell: process.platform === 'win32',
@@ -54,9 +36,6 @@ function log(message) {
 
 function voiceStudioEnvironment() {
   const env = { ...process.env, PYTHONUNBUFFERED: '1', HF_HUB_DISABLE_XET: '1' };
-  // Python/requests may otherwise use certifi instead of the OS CA bundle.
-  // VoiceStudio also injects truststore at import time; this environment
-  // fallback covers subprocesses and corporate CA installations too.
   if (!env.SSL_CERT_FILE && !env.REQUESTS_CA_BUNDLE) {
     const candidates = process.platform === 'win32'
       ? [join(process.env.SYSTEMROOT || 'C:\\Windows', 'System32', 'curl-ca-bundle.crt')]
@@ -135,9 +114,6 @@ async function ensureUv() {
   if (!python) throw new Error('Python bulunamadı; VoiceStudio kurulumu için Python 3.11+ gerekiyor.');
 
   log('uv bulunamadı; proje içindeki izole Python ortamına otomatik kuruluyor…');
-  // Debian/Ubuntu PEP 668 sistem Python'ı pip --user kurulumunu reddedebilir.
-  // Bu yüzden uv'yi proje içindeki küçük bir venv'e kuruyoruz; kullanıcıdan
-  // sudo, apt veya elle PATH ayarı istenmez.
   const uvVenv = join(RUNTIME, 'uv-venv');
   if (!existsSync(join(uvVenv, process.platform === 'win32' ? 'Scripts' : 'bin'))) {
     mkdirSync(RUNTIME, { recursive: true });
@@ -160,7 +136,6 @@ async function voiceStudioHealth() {
       const response = await fetch(`http://127.0.0.1:${VS_PORT}${path}`, { signal: AbortSignal.timeout(1500) });
       if (response.ok) return true;
     } catch {
-      // Backend henüz başlamamış.
     }
   }
   return false;
@@ -181,8 +156,6 @@ async function ensureSource() {
     return;
   }
   if (!(await canRun('git', ['--version']))) throw new Error('Git bulunamadı; VoiceStudio kaynağı indirilemiyor.');
-  // A previous interrupted clone must not make every later launch fail with
-  // Git's "destination path already exists" error.
   if (existsSync(VOICESTUDIO_DIR)) rmSync(VOICESTUDIO_DIR, { recursive: true, force: true });
   log('VoiceStudio GitHub projesi .runtime/VoiceStudio içine indiriliyor…');
   await run('git', ['clone', '--depth', '1', VS_REPO, VOICESTUDIO_DIR]);
@@ -195,26 +168,11 @@ function patchVoiceStudioForBootstrap() {
   let source = readFileSync(pyprojectPath, 'utf8');
   const before = source;
 
-  // Git may leave this file with CRLF endings on Windows, and interrupted or
-  // external tooling can also introduce bare CR characters. TOML parsers reject
-  // a bare CR with "carriage return must be followed by newline", so normalize
-  // both forms before uv reads pyproject.toml.
   source = source.replace(/\r\n?/g, '\n');
 
-  // These two optional engines are shipped as GitHub release assets by
-  // VoiceStudio. Release URLs are time-limited behind the GitHub CDN and can
-  // make an otherwise usable OmniVoice install fail much later in the solve.
-  // OmniVoice is the primary engine for DilKoç; the engine catalogue still
-  // exposes these as unavailable optional fallbacks when their packages are
-  // absent.
   source = source.replace(/^\s*"kittentts @ https:\/\/github\.com\/KittenML\/KittenTTS\/releases\/download\/[^\n]+",\r?\n/m, '');
   source = source.replace(/^\s*"en-core-web-sm @ https:\/\/github\.com\/explosion\/spacy-models\/releases\/download\/[^\n]+",\r?\n/m, '');
 
-  // Upstream selects a CUDA-only package index for every Linux/Windows host.
-  // PyPI's torch wheels carry the same runtime dependencies and are reachable
-  // in more proxy/certificate environments, so the one-command bootstrap does
-  // not require a separate PyTorch index or a user CUDA setup. VoiceStudio
-  // detects the actual device at runtime and keeps its CPU fallback.
   const sourceStart = source.indexOf('\n[tool.uv.sources]\n');
   const sourceEnd = sourceStart === -1 ? -1 : source.indexOf('\n[tool.uv]\n', sourceStart);
   if (sourceStart !== -1 && sourceEnd !== -1) {
@@ -229,9 +187,6 @@ async function prepareDependencies(uv) {
   if (existsSync(marker) && existsSync(join(VOICESTUDIO_DIR, '.venv'))) return;
   log('VoiceStudio Python bağımlılıkları otomatik hazırlanıyor (ilk açılış uzun sürebilir)…');
   patchVoiceStudioForBootstrap();
-  // Recreate the lock after the bootstrap-only dependency normalization above.
-  // --system-certs lets uv use the host trust store behind local/corporate TLS
-  // proxies instead of failing on Python's bundled CA list.
   await run(uv, ['lock', '--system-certs'], { cwd: VOICESTUDIO_DIR });
   await run(uv, ['sync', '--system-certs'], { cwd: VOICESTUDIO_DIR });
   await run(uv, ['run', '--system-certs', 'python', 'scripts/setup.py'], { cwd: VOICESTUDIO_DIR });
@@ -299,7 +254,7 @@ async function startBackend(uv) {
   child.once('error', error => warn(`VoiceStudio backend başlatılamadı: ${error.message}`));
   const ready = await waitForVoiceStudio();
   if (!ready) {
-    try { child.kill('SIGTERM'); } catch { /* zaten kapanmış olabilir */ }
+    try { child.kill('SIGTERM'); } catch {}
     throw new Error('VoiceStudio backend 180 saniye içinde hazır olmadı.');
   }
   return { child, owned: true };
@@ -309,8 +264,6 @@ async function bootstrapVoiceStudio() {
   if (process.env.DILKOC_SKIP_VOICESTUDIO === 'true') return { child: null, owned: false };
   if (await voiceStudioHealth()) {
     const backend = await startBackend(null);
-    // Backend may survive a previous localhost session while its model download
-    // failed. Retry the automatic model installer on every new launcher run.
     void installVoiceModel();
     return backend;
   }
@@ -324,16 +277,13 @@ async function bootstrapVoiceStudio() {
 
 function terminate(child) {
   if (!child || child.killed) return;
-  try { child.kill('SIGTERM'); } catch { /* yok say */ }
+  try { child.kill('SIGTERM'); } catch {}
 }
 
 async function main() {
   let backend = { child: null, owned: false };
   let shuttingDown = false;
 
-  // Vite'ı backend kurulumu/ilk açılışıyla paralel başlatıyoruz. Böylece
-  // preview portu hemen açılır; VoiceStudio birkaç saniye sonra hazır olduğunda
-  // proxy ve ses paneli otomatik olarak bağlanır.
   const frontend = spawnCommand('npm', ['run', 'dev:vite', '--', '--host', '0.0.0.0'], {
     cwd: ROOT,
     env: { ...process.env },
@@ -354,7 +304,6 @@ async function main() {
 
   try {
     backend = await bootstrapVoiceStudio();
-    // Vite portu kapanmışsa bootstrap'ın yeni backend child'ını orphan bırakma.
     if (shuttingDown && backend.owned) terminate(backend.child);
   } catch (error) {
     warn(`VoiceStudio otomatik kurulumu başarısız: ${error instanceof Error ? error.message : String(error)}`);

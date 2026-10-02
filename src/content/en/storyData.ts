@@ -1,18 +1,5 @@
-// ============================================================================
-// 🇬🇧 İNGİLİZCE HİKAYE MODÜLÜ — 9 HİKAYE (4 kontrol noktası + 5 bölüm finali)
-// ----------------------------------------------------------------------------
-// Rusça storyData.ts ile BİREBİR aynı format ve aynı sitcom ruhu:
-// 2035'te Daniel çocuklarına hikayeyi anlatır (HIMYM tarzı çerçeve).
-// Hikayeler İngilizce müfredatın kelimeleriyle kurulur; her hikayede en fazla
-// 3 YENİ kelime (sözlük kartı), ana fikirler (keyPoints) ve yanlış anlama
-// dedektörleri (misleading) bulunur.
-//
-// Yapı: cp1 (ünite 1-10) … cp4 (31-40) + bölüm finalleri A1/A2/B1/B2/C1-C2.
-// ============================================================================
-
 import type { CheckpointStory } from '../../storyModule/types';
 
-/** İngilizce hikayelerin tekrarlayan kadrosu. */
 export const EN_STORY_CAST: { name: string; emoji: string; desc: string }[] = [
   { name: 'Daniel', emoji: '📐', desc: 'Romantik mimar. 2035\'te çocuklarına bu hikayeleri anlatıyor.' },
   { name: 'Emma', emoji: '📰', desc: 'Zeki ve alaycı gazeteci. Hiçbir şaka onu es geçemez (genelde).' },
@@ -24,10 +11,6 @@ export const EN_STORY_CAST: { name: string; emoji: string; desc: string }[] = [
   { name: 'Oliver', emoji: '🍽️', desc: '"The Golden Spoon"un şanssız ama iyi kalpli garsonu. Tepsi düşürme dünya rekoru sahibi (kendi beyanı).' },
 ];
 
-// ---------------------------------------------------------------------------
-// KONTROL NOKTASI 1 — Ünite 1-10 (Tanışma, Aile, Kafe, Sayılar, Hava,
-//                          Alışveriş, Telefon, Ev, Zaman)
-// ---------------------------------------------------------------------------
 const EN_STORY_1: CheckpointStory = {
   id: 'story_cp1',
   kind: 'checkpoint',
@@ -72,10 +55,6 @@ const EN_STORY_1: CheckpointStory = {
   ],
 };
 
-// ---------------------------------------------------------------------------
-// KONTROL NOKTASI 2 — Ünite 11-20 (Yol tarifleri, Aile, Hastalık, Tavsiye,
-//                          Hava, Program yapmak, Geçmiş zaman, Duygular)
-// ---------------------------------------------------------------------------
 const EN_STORY_2: CheckpointStory = {
   id: 'story_cp2',
   kind: 'checkpoint',
@@ -120,10 +99,6 @@ const EN_STORY_2: CheckpointStory = {
   ],
 };
 
-// ---------------------------------------------------------------------------
-// KONTROL NOKTASI 3 — Ünite 21-30 (İş Görüşmeleri, Gelecek Planları,
-//                          Koşul Cümleleri, Seyahat, Deneyimler)
-// ---------------------------------------------------------------------------
 const EN_STORY_3: CheckpointStory = {
   id: 'story_cp3',
   kind: 'checkpoint',
@@ -165,10 +140,6 @@ const EN_STORY_3: CheckpointStory = {
   ],
 };
 
-// ---------------------------------------------------------------------------
-// KONTROL NOKTASI 4 — Ünite 31-40 (Akademik Yazma, Deyimler, Retorik,
-//                          Ekonomi, Felsefe, Bilim, İroni)
-// ---------------------------------------------------------------------------
 const EN_STORY_4: CheckpointStory = {
   id: 'story_cp4',
   kind: 'checkpoint',
@@ -210,9 +181,6 @@ const EN_STORY_4: CheckpointStory = {
   ],
 };
 
-// ---------------------------------------------------------------------------
-// BÖLÜM FİNALİ — A1 (Ünite 1-8)
-// ---------------------------------------------------------------------------
 const EN_STORY_LF_A1: CheckpointStory = {
   id: 'story_lf_a1',
   kind: 'levelFinal',
@@ -255,9 +223,6 @@ const EN_STORY_LF_A1: CheckpointStory = {
   ],
 };
 
-// ---------------------------------------------------------------------------
-// BÖLÜM FİNALİ — A2 (Ünite 9-16)
-// ---------------------------------------------------------------------------
 const EN_STORY_LF_A2: CheckpointStory = {
   id: 'story_lf_a2',
   kind: 'levelFinal',
@@ -300,9 +265,6 @@ const EN_STORY_LF_A2: CheckpointStory = {
   ],
 };
 
-// ---------------------------------------------------------------------------
-// BÖLÜM FİNALİ — B1 (Ünite 17-24)
-// ---------------------------------------------------------------------------
 const EN_STORY_LF_B1: CheckpointStory = {
   id: 'story_lf_b1',
   kind: 'levelFinal',
@@ -345,9 +307,6 @@ const EN_STORY_LF_B1: CheckpointStory = {
   ],
 };
 
-// ---------------------------------------------------------------------------
-// BÖLÜM FİNALİ — B2 (Ünite 25-32)
-// ---------------------------------------------------------------------------
 const EN_STORY_LF_B2: CheckpointStory = {
   id: 'story_lf_b2',
   kind: 'levelFinal',
@@ -390,9 +349,6 @@ const EN_STORY_LF_B2: CheckpointStory = {
   ],
 };
 
-// ---------------------------------------------------------------------------
-// BÖLÜM FİNALİ — C1/C2 (Ünite 33-48)
-// ---------------------------------------------------------------------------
 const EN_STORY_LF_C1: CheckpointStory = {
   id: 'story_lf_c1',
   kind: 'levelFinal',
@@ -436,7 +392,6 @@ const EN_STORY_LF_C1: CheckpointStory = {
   ],
 };
 
-/** İngilizce hikaye paketi: 4 kontrol noktası + 5 bölüm finali = 9 hikaye. */
 export const EN_STORIES: CheckpointStory[] = [
   EN_STORY_LF_A1,
   EN_STORY_1,

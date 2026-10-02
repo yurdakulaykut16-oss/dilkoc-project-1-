@@ -1,8 +1,3 @@
-// ==========================================================
-// GENİŞLEME PAKETİ 50 — BÖLÜM 2: B1 (10 ünite) + B2 (10 ünite)
-// Kesirli unitNumber'lar (95.x / 143.x) seviye bölgelerine
-// sıralanır; hikâye tetikleyicileri etkilenmez.
-// ==========================================================
 import type { UnitModule } from '../curriculumData';
 import { S, W } from './expansion50a';
 

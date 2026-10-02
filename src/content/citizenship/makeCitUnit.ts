@@ -1,26 +1,9 @@
-// DilKoç © 2026 — Bu kaynak kod telif hakkıyla korunur. İzinsiz kopyalama,
-// dağıtma ve türev çalışma üretme yasaktır (bkz. LICENSE).
-// ============================================================================
-// VATANDAŞLIK / VİZE / GÖÇ PAKETİ — ortak ünite kurucusu
-// ----------------------------------------------------------------------------
-// Ham veri dosyaları (citRuA/B, en/enCitA/B) bu kurucuyu kullanır:
-//   • kelime kimlikleri otomatik üretilir,
-//   • cümlelerin "scrambled" dizisi deterministik yer değiştirmeyle kurulur,
-//   • kelime seviyesi ünitenin seviyesini alır.
-// (Rusça paket: hedef dil Rusça; İngilizce paket: hedef dil İngilizce —
-//  her ikisi de aynı 50 üniteyi aynı sırayla içerir, içerik dili farklıdır.)
-// ============================================================================
-
 import type { UnitModule } from '../../curriculumData';
 
-/** [hedef-dil kelimesi, okunuş, Türkçe anlam, kullanım notu?] */
 export type CitWord = [string, string, string, string?];
-/** [hedef-dil cümlesi, Türkçe çevirisi] */
 export type CitSent = [string, string];
-/** [konuşan, hedef-dil repliği, okunuş, Türkçe çevirisi] */
 export type CitLine = [string, string, string, string];
 
-/** Deterministik yer değiştirme: doğru dizilişten FARKLI bir karışım üretir. */
 function derange(words: string[]): string[] {
   if (words.length < 2) return [...words];
   for (let shift = 1; shift < words.length; shift++) {

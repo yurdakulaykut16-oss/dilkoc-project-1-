@@ -1,11 +1,3 @@
-// ==========================================================
-// ZAMANLAR (TENSES) PAKETİ — 10 ÜNİTE
-// Rusçada fiil zamanları: şimdiki zaman (1. ve 2. çekim),
-// geçmiş zaman, gelecek zaman (bileşik + basit), görünüş
-// (вид) sistemi ve zaman zarflarıyla büyük tekrar.
-// GRAMMAR_FOUNDATION_UNITS'e eklenir; aynı ekran ve quiz
-// akışını kullanır.
-// ==========================================================
 import type { GrammarFoundationUnit } from './grammarFoundationData';
 
 export const TENSE_UNITS: GrammarFoundationUnit[] = [

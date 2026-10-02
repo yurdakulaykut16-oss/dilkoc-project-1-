@@ -26,11 +26,6 @@ function similarityRatio(a: string, b: string): number {
   return Math.round((1 - levenshtein(a, b) / maxLen) * 100) / 100;
 }
 
-/**
- * Grades a flashcard answer without AI: exact normalized match for
- * recall/translation/completion, token-sequence match for sentence
- * building (with a distinct "right words, wrong order" signal).
- */
 export function evaluateAnswer(mode: FlashcardMode, expectedAnswer: string, userAnswer: string): AnswerEvaluation {
   const normExpected = normalize(expectedAnswer);
   const normUser = normalize(userAnswer);

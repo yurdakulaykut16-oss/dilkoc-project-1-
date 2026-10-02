@@ -1,8 +1,3 @@
-// ==========================================================
-// 100 ÜNİTELİK BÜYÜK PAKET — BÖLÜM 1 / A1 (20 ünite)
-// unitNumber: 10.9701 – 10.9720 (A1 bölgesinin sonu, 11'den önce)
-// İçerik: temel dil + CÜMLEDE ANLAM + KÜLTÜR + DİN üniteleri
-// ==========================================================
 import type { UnitModule } from '../curriculumData';
 import { S, W } from './expansion50a';
 

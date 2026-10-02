@@ -1,10 +1,3 @@
-// DilKoç © 2026 — Bu kaynak kod telif hakkıyla korunur. İzinsiz kopyalama,
-// dağıtma ve türev çalışma üretme yasaktır (bkz. LICENSE).
-// ============================================================================
-// 🛂 VATANDAŞLIK PAKETİ — RUSÇA (4/4: ünite 76-100)
-// Göç-uyum (3) + vatandaşlık derinleşme (10) + doğum (6) + resmî (6)
-// ============================================================================
-
 import type { UnitModule } from '../../curriculumData';
 import { makeCitUnit, type CitWord, type CitSent, type CitLine } from './makeCitUnit';
 

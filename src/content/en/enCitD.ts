@@ -1,10 +1,3 @@
-// DilKoç © 2026 — Bu kaynak kod telif hakkıyla korunur. İzinsiz kopyalama,
-// dağıtma ve türev çalışma üretme yasaktır (bkz. LICENSE).
-// ============================================================================
-// 🛂 CITIZENSHIP PACK — ENGLISH (4/4: units 76-100)
-// Migration (3) + citizenship deep dive (10) + birth (6) + official (6)
-// ============================================================================
-
 import type { UnitModule } from '../../curriculumData';
 import { makeCitUnit, type CitWord, type CitSent, type CitLine } from '../citizenship/makeCitUnit';
 

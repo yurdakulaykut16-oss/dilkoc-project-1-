@@ -1,10 +1,3 @@
-// ==========================================================
-// A SEVİYESİ BÜYÜK GENİŞLEME — BÖLÜM 3/3 (18 ünite)
-// "GÜNDELİK KELİME" PAKETİ — unitNumber 10.9637-10.9654.
-// Bu 18 ünite günlük anlatı ve iletişim kelime hazinesini öğretir:
-// kafe, yağmur, tanışma, telefon numarası, bekleyiş, ilk arama...
-// Metinye gelen öğrenci artık her cümleyi tanıyarak okur.
-// ==========================================================
 import type { UnitModule } from '../curriculumData';
 import { S, W } from './expansion50a';
 

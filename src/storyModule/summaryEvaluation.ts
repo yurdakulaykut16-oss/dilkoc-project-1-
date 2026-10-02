@@ -1,24 +1,5 @@
-// ============================================================================
-// ÖZET ANALİZ MOTORU (offline "yapay zeka" değerlendirmesi)
-// ----------------------------------------------------------------------------
-// Kullanıcının Türkçe özetini, hikayenin önceden tanımlı ana fikirleriyle
-// (keyPoints) karşılaştırır. Her ana fikir bileşenlerden oluşur: bileşenin
-// eş anlamlı kelimelerinden en az biri özette geçiyorsa o bileşen "yakalanmış"
-// sayılır; TÜM bileşenler yakalanmışsa ana fikir doğru noktadır.
-//
-// Türkçe'nin eklemeli yapısı nedeniyle eşleştirme "kök içerir" mantığıyla
-// çalışır: "çiçekleri" → "çiçek", "restorandaydı" → "restoran".
-// Ek olarak harekesiz klavye toleransı için diakritik-folded (ş→s, ğ→g...)
-// ikinci bir geçiş yapılır.
-// ============================================================================
-
 import type { CheckpointStory, SummaryEvaluation } from './types';
 
-// ---------------------------------------------------------------------------
-// Metin normalizasyonu
-// ---------------------------------------------------------------------------
-
-/** Kesme işaretlerini kaldırır ("Marina'nın" -> "Marinanın"), noktalamayı temizler. */
 function normalize(raw: string): string {
   return raw
     .replace(/['’`´‘]/g, '')
@@ -27,7 +8,6 @@ function normalize(raw: string): string {
     .trim();
 }
 
-/** Türkçe duyarlı küçük harf (İ→i, I→ı). */
 function lowerTr(s: string): string {
   return s.toLocaleLowerCase('tr-TR');
 }
@@ -36,12 +16,10 @@ const FOLD_MAP: Record<string, string> = {
   ı: 'i', i: 'i', ş: 's', ğ: 'g', ü: 'u', ö: 'o', ç: 'c', â: 'a', î: 'i', û: 'u',
 };
 
-/** Diakritikleri katlar (harekesiz yazım toleransı): "gözyaşı" -> "gozyasi". */
 function fold(s: string): string {
   return s.replace(/[ışğüöçâîû]/g, (c) => FOLD_MAP[c] ?? c);
 }
 
-/** Hazırlık: hem orijinal hem katlanmış metin + token listesi döndürür. */
 function prepare(raw: string): { text: string; folded: string; tokens: string[]; foldedTokens: string[] } {
   const text = lowerTr(normalize(raw));
   const folded = fold(text);
@@ -50,29 +28,18 @@ function prepare(raw: string): { text: string; folded: string; tokens: string[];
   return { text, folded, tokens, foldedTokens };
 }
 
-// ---------------------------------------------------------------------------
-// Anahtar kelime eşleştirme
-// ---------------------------------------------------------------------------
-
-/**
- * Kısa anahtar kelimelerde (≤3 harf) yanlış pozitifleri önlemek için token
- * düzeyinde eşleşme, uzun kelimelerde ise "içerir" eşleşmesi yapılır.
- */
 function keywordMatches(prep: { text: string; folded: string; tokens: string[]; foldedTokens: string[] }, kwRaw: string): boolean {
   const kw = lowerTr(kwRaw.trim());
   if (!kw) return false;
   const kwFolded = fold(kw);
 
-  // Çok kelimeli kalıplar: "akşam yemeği", "dima aradı" gibi.
   if (kw.includes(' ')) return prep.text.includes(kw) || prep.folded.includes(kwFolded);
 
   if (kw.length >= 5) {
-    // Uzun kökler için içerir eşleşmesi yeterince güvenlidir.
     if (prep.text.includes(kw) || prep.folded.includes(kwFolded)) return true;
     return prep.tokens.some((t) => t.startsWith(kw)) || prep.foldedTokens.some((t) => t.startsWith(kwFolded));
   }
 
-  // Kısa kökler ("ev", "aşk", "iş"): tam token veya makul ek eklenmiş hali.
   return (
     prep.tokens.some((t) => t === kw || (t.length > kw.length && t.startsWith(kw) && t.length - kw.length <= 4)) ||
     prep.foldedTokens.some((t) => t === kwFolded || (t.length > kwFolded.length && t.startsWith(kwFolded) && t.length - kwFolded.length <= 4))
@@ -83,17 +50,12 @@ function groupCovered(prep: ReturnType<typeof prepare>, group: string[]): boolea
   return group.some((kw) => keywordMatches(prep, kw));
 }
 
-// ---------------------------------------------------------------------------
-// Ana değerlendirme
-// ---------------------------------------------------------------------------
-
 const MIN_WORDS = 10;
 
 export function evaluateTurkishSummary(story: CheckpointStory, summaryRaw: string): SummaryEvaluation {
   const prep = prepare(summaryRaw);
   const wordCount = prep.tokens.filter((t) => /\p{L}/u.test(t)).length;
 
-  // Dil kontrolü: harflerin %40'ından fazlası Kiril ise özet Türkçe değildir.
   const letters = summaryRaw.replace(/[^\p{L}]/gu, '');
   const cyr = (summaryRaw.match(/[\u0400-\u04FF]/g) || []).length;
   const wrongLanguage = letters.length > 0 && cyr / letters.length > 0.4;
@@ -103,7 +65,6 @@ export function evaluateTurkishSummary(story: CheckpointStory, summaryRaw: strin
 
   if (!wrongLanguage) {
     for (const kp of story.keyPoints) {
-      // Tüm bileşen grupları örtüşüyorsa ana fikir yakalanmıştır.
       if (kp.keywordGroups.length === 0 || kp.keywordGroups.every((g) => groupCovered(prep, g))) {
         matched.push({ id: kp.id, textTr: kp.textTr });
       } else {
@@ -114,7 +75,6 @@ export function evaluateTurkishSummary(story: CheckpointStory, summaryRaw: strin
     story.keyPoints.forEach((kp) => missing.push({ id: kp.id, hintTr: kp.hintTr }));
   }
 
-  // Yanlış anlama dedektörü: hikayeyle çelişen kalıplar.
   const misunderstood: { noteTr: string }[] = [];
   if (!wrongLanguage) {
     for (const m of story.misleading) {
@@ -127,9 +87,6 @@ export function evaluateTurkishSummary(story: CheckpointStory, summaryRaw: strin
   const scorePercent = Math.round((correctCount / total) * 100);
   const tooShort = wordCount < MIN_WORDS;
 
-  // ---------------------------------------------------------------------------
-  // Geri bildirim metinleri (HIMYM aromalı, yapıcı ton)
-  // ---------------------------------------------------------------------------
   let title: string;
   let message: string;
   const tips: string[] = [];

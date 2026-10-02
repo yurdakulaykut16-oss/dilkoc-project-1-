@@ -1,8 +1,3 @@
-// ==========================================================
-// 100 ÜNİTELİK BÜYÜK PAKET — BÖLÜM 2 / A2 (20 ünite)
-// unitNumber: 40.9601 – 40.9620 (A2 bölgesinin sonu)
-// Zaman/görünüş + CÜMLEDE ANLAM + KÜLTÜR + DİN
-// ==========================================================
 import type { UnitModule } from '../curriculumData';
 import { S, W } from './expansion50a';
 

@@ -1,10 +1,3 @@
-// ==========================================================
-// ALFABE GENİŞLEME PAKETİ 2 — 30 EK OKUMA DERSİ (47-76)
-// 17-46 arası temel okuma kondisyonunu tamamladık; buradan
-// sonrası SAHA ANTRENMANI: havaalanı, otel, kafe, banka,
-// acil durum, vurgu ikizleri, sessiz harfler ve mezuniyet.
-// Her ders: 3 kart + okuma testi.
-// ==========================================================
 import type { AlphabetLessonExtra } from './alphabetExtra';
 
 export const ALPHABET_LESSONS_EXTRA2: AlphabetLessonExtra[] = [

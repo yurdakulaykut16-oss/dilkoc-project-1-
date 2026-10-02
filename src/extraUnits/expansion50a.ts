@@ -1,14 +1,5 @@
-// ==========================================================
-// GENİŞLEME PAKETİ 50 — BÖLÜM 1: A1 (10 ünite) + A2 (10 ünite)
-// Kesirli unitNumber'lar (10.x / 40.x) sayesinde mevcut seviye
-// bölgelerine sıralanır; hikâye tetikleyicileri (tam sayı
-// eşitliği) etkilenmez. Diyalog alanı bilinçli olarak boş:
-// App diyalogsuz ünitelerde doğrudan FLASHCARD'a geçer.
-// ==========================================================
 import type { UnitModule, WordDetail } from '../curriculumData';
 
-// Cümle üretici: correct = kelime dizisi (noktalama bitişik),
-// scrambled = deterministik ters çevirme (her zaman correct'ten farklı).
 export const S = (ru: string, tr: string) => {
   const correct = ru.split(' ');
   const scrambled = [...correct].reverse();

@@ -1,16 +1,6 @@
-// ==========================================================
-// AŞÇILIK MÜFREDATI GENİŞLEMESİ — +20 ÜNİTE (toplam 40 aşçılık ünitesi)
-// cooking.ts'in devamı: daha fazla malzeme, alet, klasik yemek ve
-// profesyonel mutfak dünyası. Diyaloglar yine «Ван Гог» kadrosuyla.
-//   A2 : Ünite 37-41  (küçük aletler, süt ürünleri, meyveler, içecekler, saklama)
-//   B1 : Ünite 92-96  (kaşalar/garnitürler, pelmeni, balık, şaşlık/mangal, baharatlar)
-//   B2 : Ünite 140-144 (bayram kuşları, dünya mutfağı, peynir tabağı, eşleştirme, stok yönetimi)
-//   C1 : Ünite 179-183 (moleküler gastronomi, tarladan sofraya, Michelin, mentorluk, yemek medyası)
-// ==========================================================
 import type { UnitModule } from '../curriculumData';
 
 export const EXTRA_COOKING2: UnitModule[] = [
-  // ============================ A2 ============================
   {
     id: 'mod_a2_k6',
     unitNumber: 57,
@@ -192,7 +182,6 @@ export const EXTRA_COOKING2: UnitModule[] = [
     ]
   },
 
-  // ============================ B1 ============================
   {
     id: 'mod_b1_k7',
     unitNumber: 122,
@@ -388,7 +377,6 @@ export const EXTRA_COOKING2: UnitModule[] = [
     ]
   },
 
-  // ============================ B2 ============================
   {
     id: 'mod_b2_k6',
     unitNumber: 177,
@@ -570,7 +558,6 @@ export const EXTRA_COOKING2: UnitModule[] = [
     ]
   },
 
-  // ============================ C1 ============================
   {
     id: 'mod_c1_k5',
     unitNumber: 219,

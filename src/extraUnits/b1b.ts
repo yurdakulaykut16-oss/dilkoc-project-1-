@@ -1,8 +1,3 @@
-// ==========================================================
-// EK MÜFREDAT — B1 GENİŞLEME PAKETİ 2/2 (Ünite 60-67)
-// Elektronik & iade, flört mesajlaşması, buluşma, tatil,
-// araba kiralama ve resmî daire işlemleri.
-// ==========================================================
 import type { UnitModule } from '../curriculumData';
 
 export const EXTRA_B1B: UnitModule[] = [

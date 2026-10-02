@@ -1,10 +1,3 @@
-// DilKoç © 2026 — Bu kaynak kod telif hakkıyla korunur. İzinsiz kopyalama,
-// dağıtma ve türev çalışma üretme yasaktır (bkz. LICENSE).
-// ============================================================================
-// 🛂 VATANDAŞLIK PAKETİ — RUSÇA (3/4: ünite 51-75)
-// Mülakat soruları (10) + vize-pasaport derinleşme (8) + göç-uyum (7)
-// ============================================================================
-
 import type { UnitModule } from '../../curriculumData';
 import { makeCitUnit, type CitWord, type CitSent, type CitLine } from './makeCitUnit';
 

@@ -1,9 +1,7 @@
 import type { LocalRussianAnswer } from './localRussianAgent';
 
-/** Yerel zekânın bütün kalıcı indeks ve cevapları için kesin üst sınır: 1 GiB. */
 export const LOCAL_INTELLIGENCE_MAX_BYTES = 1024 * 1024 * 1024;
 export const LOCAL_INTELLIGENCE_MAX_LABEL = '1 GB';
-// Uygulamayla gelen sözlük, indeks ve kurallar için ayrılan güvenli pay.
 const BUILT_IN_KNOWLEDGE_RESERVE_BYTES = 32 * 1024 * 1024;
 const PERSISTENT_CACHE_MAX_BYTES = LOCAL_INTELLIGENCE_MAX_BYTES - BUILT_IN_KNOWLEDGE_RESERVE_BYTES;
 
@@ -54,7 +52,6 @@ function requestResult<T>(request: IDBRequest<T>): Promise<T | null> {
   });
 }
 
-/** Aynı soru için önceden hazırlanmış cevabı RAM/IndexedDB'den anında getirir. */
 export async function getLocalAnswerCache(query: string, focusTitle: string): Promise<LocalRussianAnswer | null> {
   const key = normalizeKey(query, focusTitle);
   const memory = memoryCache.get(key);
@@ -76,7 +73,6 @@ async function enforceOneGbLimit(db: IDBDatabase) {
   let total = records.reduce((sum, record) => sum + record.bytes, 0);
   if (total <= PERSISTENT_CACHE_MAX_BYTES) return;
 
-  // Sınır aşılırsa en uzun süredir kullanılmayan cevaplardan başlayarak sil.
   const oldestFirst = [...records].sort((a, b) => a.lastUsed - b.lastUsed);
   const write = db.transaction(STORE, 'readwrite');
   const store = write.objectStore(STORE);
@@ -88,7 +84,6 @@ async function enforceOneGbLimit(db: IDBDatabase) {
   }
 }
 
-/** Yeni cevabı cihazda saklar; toplam yerel zekâ verisi hiçbir zaman 1 GiB'ı aşmaz. */
 export async function putLocalAnswerCache(query: string, focusTitle: string, answer: LocalRussianAnswer): Promise<void> {
   const key = normalizeKey(query, focusTitle);
   memoryCache.set(key, answer);

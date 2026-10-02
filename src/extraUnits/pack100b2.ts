@@ -1,8 +1,3 @@
-// ==========================================================
-// 100 ÜNİTELİK BÜYÜK PAKET — BÖLÜM 4 / B2 (20 ünite)
-// unitNumber: 143.9601 – 143.9620 (B2 bölgesinin sonu)
-// Üslup + CÜMLEDE ANLAM (ironi, eşdizim) + KÜLTÜR + DİN + uzmanlık
-// ==========================================================
 import type { UnitModule } from '../curriculumData';
 import { S, W } from './expansion50a';
 

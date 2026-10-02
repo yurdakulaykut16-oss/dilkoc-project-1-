@@ -1,9 +1,3 @@
-// DilKoç © 2026 — Bu kaynak kod telif hakkıyla korunur. İzinsiz kopyalama,
-// dağıtma ve türev çalışma üretme yasaktır (bkz. LICENSE).
-// ============================================================================
-// 🛂 VISA & PASSPORT / CITIZENSHIP / MIGRATION PACK — ENGLISH (2/2: units 26-50)
-// ============================================================================
-
 import type { UnitModule } from '../../curriculumData';
 import { makeCitUnit, type CitWord, type CitSent, type CitLine } from '../citizenship/makeCitUnit';
 

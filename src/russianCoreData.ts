@@ -3,7 +3,6 @@ export interface SubTopic {
   category: 'Gündelik Hayat' | 'Aile & Arkadaşlık' | 'Emlak & Barınma' | 'Ticaret & İş' | 'Seyehat & Turizm';
   title: string;
   theory: string;
-  // Yanlış yapıldığında devreye girecek alternatif soru varyasyonları
   variations: {
     question: string;
     options: string[];

@@ -17,7 +17,7 @@ export default function LanguageSelect() {
   const { setActiveLanguage } = useActiveLanguage();
 
   async function handleSelect(lang: LanguageConfig) {
-    await getOrCreateProfile(lang.code); // creates row on first pick, reuses it after
+    await getOrCreateProfile(lang.code);
     setActiveLanguage(lang.code);
     navigate(`/learn/${lang.code}`);
   }

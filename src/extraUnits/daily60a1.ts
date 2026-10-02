@@ -1,8 +1,3 @@
-// ==========================================================
-// GÜNDELİK HAYAT GENİŞLEMESİ — 60 ÜNİTE / BÖLÜM 1: A1 (20 ünite)
-// unitNumber: 10.9721 – 10.9740
-// Odak: evde, sokakta, markette her gün gerçekten kullanılan diller.
-// ==========================================================
 import type { UnitModule } from '../curriculumData';
 import { S, W } from './expansion50a';
 

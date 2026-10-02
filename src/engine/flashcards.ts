@@ -22,19 +22,12 @@ function tokenize(sentence: string): string[] {
   return sentence.trim().split(/\s+/).filter(Boolean);
 }
 
-/** Builds multiple-choice options (answer + distractors) in stable-but-varied order. */
 function buildOptions(answer: string, distractors: string[], seed: number): string[] | undefined {
   if (distractors.length === 0) return undefined;
   const pool = [answer, ...distractors.filter((d) => d !== answer)];
   return shuffleDeterministic(pool, seed);
 }
 
-/**
- * Builds a flashcard prompt for a vocab item in a given mode. Pure and
- * language-agnostic: all EN/RU differences come from the VocabItem data.
- * distractors (optional) turn a recall prompt into a scaffolded
- * recognition prompt - used for very weak items.
- */
 export function buildFlashcard(item: VocabItem, mode: FlashcardMode, distractors: string[] = []): FlashcardPrompt {
   const seed = seedFromString(`${item.id}-${mode}`);
 

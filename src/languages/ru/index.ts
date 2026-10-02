@@ -5,5 +5,3 @@ export const ruConfig: LanguageConfig = {
   nativeName: "Русский",
   script: "cyrillic",
 };
-
-// Vocabulary, grammar, and curriculum data for Russian will be added in later phases.

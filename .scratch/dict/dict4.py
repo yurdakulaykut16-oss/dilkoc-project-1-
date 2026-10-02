@@ -1,5 +1,3 @@
-# -*- coding: utf-8 -*-
-# tr -> en sözlük PARÇA 4 (M-S)
 D.update({
 'Mahkeme': 'court',
 'Mahkemeye başvurmak': 'to go to court',

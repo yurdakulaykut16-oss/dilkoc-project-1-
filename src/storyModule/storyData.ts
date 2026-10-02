@@ -1,26 +1,9 @@
-// ============================================================================
-// HİKAYE MODÜLÜ — KONTROL NOKTASI HİKAYELERİ (storyData)
-// ----------------------------------------------------------------------------
-// Her 10 müfredat ünitesi tamamlandığında bir kontrol noktası hikayesi açılır.
-// Hikayeler:
-//   • O 10 ünitede öğrenilen kelimelerle kurulur (tek tek kontrol edilmiştir),
-//   • en fazla 3 YENİ kelime içerir (sözlük kartı olarak gösterilir),
-//   • How I Met Your Mother tarzı sit-com mizahıyla yazılır: 2035'te Dima
-//     çocuklarına hikayeyi anlatır; tekrarlayan karakter kadrosu absürt
-//     durum komedileri üretir.
-//
-// Ana kadro (Dima, Marina, Tyoma, Zhenya, Lena) tüm bölümlerde aynıdır; böylece
-// "eğlenceli karakter dinamikleri" tıpkı bir sitcom gibi bölüm bölüm kurulur.
-// ============================================================================
-
 import type { CheckpointStory } from './types';
 import { isEnglish } from '../content/activeLanguage';
 import { EN_STORIES, EN_STORY_CAST } from '../content/en/storyData';
 
-/** Kaç ünite tamamlandığında bir hikaye kontrol noktası açılır. */
 export const STORY_UNITS_PER_CHECKPOINT = 10;
 
-/** Hikayelerin tekrarlayan kadrosu — ekranda "Kadro" kartı olarak gösterilir. */
 const RU_STORY_CAST: { name: string; emoji: string; desc: string }[] = [
   { name: 'Dima', emoji: '📐', desc: 'Romantik mimar. 2035\'te çocuklarına bu hikayeleri anlatıyor.' },
   { name: 'Marina', emoji: '📰', desc: 'Zeki ve alaycı gazeteci. Hiçbir şaka onu es geçemez (genelde).' },
@@ -29,7 +12,6 @@ const RU_STORY_CAST: { name: string; emoji: string; desc: string }[] = [
   { name: 'Lena', emoji: '🎨', desc: 'Ana sınıfı öğretmeni; grubun annesi. Sürprizleri ve planları sever.' },
   { name: 'Vera', emoji: '🎤', desc: 'İroni seven, oyun sevmeyen kadın; Tyoma\'nın kaderi.' },
   { name: 'Vova Amca', emoji: '🎣', desc: 'Elli yaşında, boşanmış, ikinci baharını yaşayan amca.' },
-  // --- «Ван Гог» restoranı ekibi (Кухня dizisinden esinlenme) ---
   { name: 'Şef Pyotr', emoji: '🍳', desc: '«Ван Гог» restoranının efsanevi aşçısı. Bağırır ama kalbi altın (ve sosları mükemmel).' },
   { name: 'Lyosha', emoji: '🍽️', desc: '«Ван Гог»un şanssız ama iyi kalpli garsonu. Tepsi düşürme dünya rekoru sahibi (kendi beyanı).' },
   { name: 'Nina', emoji: '📋', desc: 'Başgarson. Kuralcı, zeki ve Pyotr\'nun 12 yıllık sağ kolu (ve kalbi).' },
@@ -38,11 +20,6 @@ const RU_STORY_CAST: { name: string; emoji: string; desc: string }[] = [
 export const STORY_CAST: { name: string; emoji: string; desc: string }[] =
   isEnglish() ? EN_STORY_CAST : RU_STORY_CAST;
 
-// ---------------------------------------------------------------------------
-// BÖLÜM 1// ---------------------------------------------------------------------------
-// BÖLÜM 1 — Ünite 1-10 (Tanışma, Aile, Kafe, Ulaşım, Sayılar, Hava,
-//                   Alışveriş, Telefon, Ev, Randevu/Zaman)
-// ---------------------------------------------------------------------------
 const STORY_1: CheckpointStory = {
   id: 'story_cp1',
   kind: 'checkpoint',
@@ -90,11 +67,6 @@ const STORY_1: CheckpointStory = {
   ],
 };
 
-// ---------------------------------------------------------------------------
-// BÖLÜM 2 — Ünite 11-20 (Mutfak Kaosu, Duygular, Doktor, Hobiler, Komşuluk,
-//                   Nezaket, Bağlaçlar, Davet/Misafirlik, Duygusal Tartışma,
-//                   Doktor & Hastane)
-// ---------------------------------------------------------------------------
 const STORY_2: CheckpointStory = {
   id: 'story_cp2',
   kind: 'checkpoint',
@@ -140,11 +112,6 @@ const STORY_2: CheckpointStory = {
   ],
 };
 
-// ---------------------------------------------------------------------------
-// BÖLÜM 3 — Ünite 21-30 (İş Görüşmesi, Dedikodu, Resmi İletişim, Market,
-//                   Ev Kiralama, Banka, Eczane, Flört/Manitacılık, Randevu,
-//                   İlk Buluşma)
-// ---------------------------------------------------------------------------
 const STORY_3: CheckpointStory = {
   id: 'story_cp3',
   kind: 'checkpoint',
@@ -190,11 +157,6 @@ const STORY_3: CheckpointStory = {
   ],
 };
 
-// ---------------------------------------------------------------------------
-// BÖLÜM 4 — Ünite 31-40 (Sevgi Sözcükleri, Tanıştırma, Film & Dizi, Sinema,
-//                   İş Sohbeti, Toplantı/İzin, Tesisatçı, Kuaför, Belgeler,
-//                   Komşuyla Gürültü)
-// ---------------------------------------------------------------------------
 const STORY_4: CheckpointStory = {
   id: 'story_cp4',
   kind: 'checkpoint',
@@ -242,10 +204,6 @@ const STORY_4: CheckpointStory = {
   ],
 };
 
-// ---------------------------------------------------------------------------
-// BÖLÜM 5 — Ünite 41-50 (Kıskançlık/İhanet, Polis, Düğün, Miras, İleri Flört,
-//                   Tartışma/Barışma, ..., Sevgililer Günü)
-// ---------------------------------------------------------------------------
 const STORY_5: CheckpointStory = {
   id: 'story_cp5',
   kind: 'checkpoint',
@@ -294,11 +252,6 @@ const STORY_5: CheckpointStory = {
   ],
 };
 
-// ---------------------------------------------------------------------------
-// BÖLÜM 6 — Ünite 51-60 (Birlikte Yaşamak, Evlilik Teklifi, Uzun Mesafe,
-//                   Maaş Pazarlığı, Patron, Film Eleştirisi, Dizi Teori,
-//                   Otel, Kaza/Sigorta, Dedikodu)
-// ---------------------------------------------------------------------------
 const STORY_6: CheckpointStory = {
   id: 'story_cp6',
   kind: 'checkpoint',
@@ -347,10 +300,6 @@ const STORY_6: CheckpointStory = {
   ],
 };
 
-// ---------------------------------------------------------------------------
-// BÖLÜM 7 — Ünite 61-70 (Çocuk/Okul, Tanışma Uygulaması, Haber, Konser,
-//                   Deyimler/Argo, Ayrılık, Mahkeme, İroni, Sunum, Ultimatom)
-// ---------------------------------------------------------------------------
 const STORY_7: CheckpointStory = {
   id: 'story_cp7',
   kind: 'checkpoint',
@@ -395,11 +344,6 @@ const STORY_7: CheckpointStory = {
   ],
 };
 
-// ---------------------------------------------------------------------------
-// BÖLÜM 8 — Ünite 71-80 (Evlilik Krizi, Boşanma/Yeni Sayfa, Düğün Konuşması,
-//                   İstifa, Dilekçe, Parti/Networking, Yabancı Olmak,
-//                   Şarkı/Replik, Terapi, Pazarlık)
-// ---------------------------------------------------------------------------
 const STORY_8: CheckpointStory = {
   id: 'story_cp8',
   kind: 'checkpoint',
@@ -448,10 +392,6 @@ const STORY_8: CheckpointStory = {
   ],
 };
 
-// ---------------------------------------------------------------------------
-// BÖLÜM FİNALİ 1 — Ünite 1-6 (A1 SONU) — HIMYM pilotu: sarı şemsiyenin doğuşu
-// Kapılı final: özet %100 + Seviye Tekrar Sınavı geçilmeden A2 açılmaz.
-// ---------------------------------------------------------------------------
 const STORY_LF_A1: CheckpointStory = {
   id: 'story_lf_a1',
   kind: 'levelFinal',
@@ -503,10 +443,6 @@ const STORY_LF_A1: CheckpointStory = {
   recycleWords: [],
 };
 
-// ---------------------------------------------------------------------------
-// BÖLÜM FİNALİ 2 — Ünite 12-61 (A2 SONU) — Кухня tarzı: yeni garsonun ilk günü
-// Kapılı final: özet %100 + Seviye Tekrar Sınavı geçilmeden B1 açılmaz.
-// ---------------------------------------------------------------------------
 const STORY_LF_A2: CheckpointStory = {
   id: 'story_lf_a2',
   kind: 'levelFinal',
@@ -569,10 +505,6 @@ const STORY_LF_A2: CheckpointStory = {
   ],
 };
 
-// ---------------------------------------------------------------------------
-// BÖLÜM FİNALİ 3 — Ünite 62-126 (B1 SONU) — Crossover: HIMYM kadrosu «Ван Гог»ta
-// Kapılı final: özet %100 + Seviye Tekrar Sınavı geçilmeden B2 açılmaz.
-// ---------------------------------------------------------------------------
 const STORY_LF_B1: CheckpointStory = {
   id: 'story_lf_b1',
   kind: 'levelFinal',
@@ -637,10 +569,6 @@ const STORY_LF_B1: CheckpointStory = {
   ],
 };
 
-// ---------------------------------------------------------------------------
-// BÖLÜM FİNALİ 4 — Ünite 127-181 (B2 SONU) — Кухня tarzı: şefin teklifi
-// Kapılı final: özet %100 + Seviye Tekrar Sınavı geçilmeden C1 açılmaz.
-// ---------------------------------------------------------------------------
 const STORY_LF_B2: CheckpointStory = {
   id: 'story_lf_b2',
   kind: 'levelFinal',
@@ -704,10 +632,6 @@ const STORY_LF_B2: CheckpointStory = {
   ],
 };
 
-// ---------------------------------------------------------------------------
-// BÖLÜM FİNALİ 5 — Ünite 182-223 (C1/C2 SONU) — DİZİ FİNALİ: gerçek hikaye
-// Kapılı final: özet %100 + Seviye Tekrar Sınavı geçilmeden "mezuniyet" yok.
-// ---------------------------------------------------------------------------
 const STORY_LF_C1: CheckpointStory = {
   id: 'story_lf_c1',
   kind: 'levelFinal',
@@ -774,30 +698,22 @@ const STORY_LF_C1: CheckpointStory = {
   ],
 };
 
-// ---------------------------------------------------------------------------
-// DERLEME — ünite sırasına göre (hem 10'luk kontrol noktaları hem bölüm finalleri)
-// ---------------------------------------------------------------------------
 const RU_STORIES: CheckpointStory[] = [
-  STORY_LF_A1,   // ünite 6  — A1 BÖLÜM FİNALİ (kapılı) — pilot: sarı şemsiye
-  STORY_1,       // ünite 10 — kontrol noktası 1 (HIMYM: kafede tanışma)
-  STORY_LF_A2,   // ünite 41 — A2 BÖLÜM FİNALİ (kapılı, Кухня) — yeni garson
-  STORY_2,       // ünite 20 — kontrol noktası 2
-  STORY_3,       // ünite 30 — kontrol noktası 3
-  STORY_4,       // ünite 40 — kontrol noktası 4
-  STORY_LF_B1,   // ünite 96 — B1 BÖLÜM FİNALİ (kapılı, crossover)
-  STORY_5,       // ünite 50 — kontrol noktası 5
-  STORY_6,       // ünite 60 — kontrol noktası 6
-  STORY_LF_B2,   // ünite 144 — B2 BÖLÜM FİNALİ (kapılı, Кухня) — şefin teklifi
-  STORY_7,       // ünite 70 — kontrol noktası 7
-  STORY_8,       // ünite 80 — kontrol noktası 8 (düğün)
-  STORY_LF_C1,   // ünite 183 — C1/C2 BÖLÜM FİNALİ (kapılı) — DİZİ FİNALİ
+  STORY_LF_A1,
+  STORY_1,
+  STORY_LF_A2,
+  STORY_2,
+  STORY_3,
+  STORY_4,
+  STORY_LF_B1,
+  STORY_5,
+  STORY_6,
+  STORY_LF_B2,
+  STORY_7,
+  STORY_8,
+  STORY_LF_C1,
 ];
 
-
-
-// İNGİLİZCE modunda Rusça hikayeler YÜKLENMEZ: 9 hikayelik İngilizce paketi
-// (4 kontrol noktası + 5 bölüm finali) tamamen İngilizce müfredata bağlıdır.
 export const STORIES: CheckpointStory[] = isEnglish() ? EN_STORIES : RU_STORIES;
 
-/** Toplam hikaye sayısı: kontrol noktaları + bölüm finalleri (aktif dile göre). */
 export const STORY_CHECKPOINT_COUNT = STORIES.length;

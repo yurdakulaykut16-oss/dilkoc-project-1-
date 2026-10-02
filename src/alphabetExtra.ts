@@ -1,9 +1,3 @@
-// ==========================================================
-// ALFABE GENİŞLEME PAKETİ — 30 EK OKUMA DERSİ (17-46)
-// 33 harf 16 derste bitti; buradan sonrası OKUMA KONDİSYONU:
-// sayılar, günler, renkler, isimler, tabelalar, menüler, zor
-// ünsüz kümeleri ve hız turları. Her ders: 3 kart + okuma testi.
-// ==========================================================
 import type { AlphabetLetter, ReadingDrill } from './App';
 
 export interface AlphabetLessonExtra {

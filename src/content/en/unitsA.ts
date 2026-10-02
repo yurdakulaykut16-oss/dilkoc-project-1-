@@ -1,13 +1,3 @@
-// ============================================================================
-// 🇬🇧 İNGİLİZCE MÜFREDATI — A1 + A2 ÜNİTELERİ (1-16)
-// ----------------------------------------------------------------------------
-// Rusça müfredatıyla BİREBİR aynı veri formatı (UnitModule):
-//   kelime (en + okunuş + TR) + cümleler + sahne diyalogu + gramer notu.
-// NOT: WordDetail.alan adı "ru" tarihsel olarak kalır; İngilizce pakette
-// bu alan hedef dil metnini (İngilizce kelime/cümle) taşır.
-// Okunuşlar Türkçe harflerle, vurgulu hece BÜYÜK yazılır (heLOU gibi).
-// ============================================================================
-
 export type EnWord = [word: string, reading: string, tr: string, note: string];
 export type EnSentence = [en: string, tr: string];
 export type EnLine = [speaker: string, en: string, reading: string, tr: string];
@@ -30,9 +20,6 @@ export interface EnRawUnit {
 }
 
 export const EN_UNITS_A: EnRawUnit[] = [
-  // ==========================================================================
-  // A1 — ÜNİTE 1-8
-  // ==========================================================================
   {
     id: 'en_mod_a1_1',
     unitNumber: 1,
@@ -363,9 +350,6 @@ export const EN_UNITS_A: EnRawUnit[] = [
       ['Mark', 'I watch films or read books. I am never bored!', 'ay UAÇ FILMS or RIID BUKS. ay EM NEver BORD!', 'Film izlerim ya da kitap okurum. Asla sıkılmam!'],
     ],
   },
-  // ==========================================================================
-  // A2 — ÜNİTE 9-16
-  // ==========================================================================
   {
     id: 'en_mod_a2_9',
     unitNumber: 9,

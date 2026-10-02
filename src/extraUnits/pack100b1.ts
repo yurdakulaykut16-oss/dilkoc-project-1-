@@ -1,8 +1,3 @@
-// ==========================================================
-// 100 ÜNİTELİK BÜYÜK PAKET — BÖLÜM 3 / B1 (20 ünite)
-// unitNumber: 95.9601 – 95.9620 (B1 bölgesinin sonu)
-// İleri gramer + CÜMLEDE ANLAM (mecaz/deyim/atasözü) + KÜLTÜR + DİN
-// ==========================================================
 import type { UnitModule } from '../curriculumData';
 import { S, W } from './expansion50a';
 

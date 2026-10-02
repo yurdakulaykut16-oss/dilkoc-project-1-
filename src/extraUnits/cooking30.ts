@@ -1,12 +1,3 @@
-// ==========================================================
-// AŞÇILIK ÖZEL PAKETİ — 30 ÜNİTE (100'lük paketin DIŞINDA)
-// Yalnızca mutfak: yemek yapma, baharatlar, mutfak malzemeleri,
-// teknikler, pastacılık, profesyonel mutfak dili.
-//   A2 ×10 : 40.9701 – 40.9710
-//   B1 ×10 : 95.9701 – 95.9710
-//   B2 ×5  : 143.9701 – 143.9705
-//   C1 ×5  : 180.9701 – 180.9705
-// ==========================================================
 import type { UnitModule } from '../curriculumData';
 import { S, W } from './expansion50a';
 

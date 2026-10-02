@@ -1,14 +1,3 @@
-// DilKoç © 2026 — Bu kaynak kod telif hakkıyla korunur. İzinsiz kopyalama,
-// dağıtma ve türev çalışma üretme yasaktır (bkz. LICENSE).
-// ==========================================================
-// ORTAK MÜFREDAT KAYNAĞI — Tek veri kaynağı (single source of truth).
-// Hem ana uygulama (App.tsx) hem "100 Konu" modülü (src/topics100)
-// bu dosyadaki UNITS_DATA üzerindeki aynı formatı kullanır:
-//   kelime (WordDetail) + cümle (sentences) + diyalog (dialogue)
-// + dinleme metni + gramer açıklaması + Smeshariki sahnesi.
-// Seviyeler (A1 -> C1/C2) arasında FORMAT farkı yoktur; yalnızca
-// zorluk (kelime düzeyi, cümle karmaşıklığı, gramer derinliği) artar.
-// ==========================================================
 import { EXTRA_UNITS } from './extraUnits';
 import { createDailyLifePlus } from './extraUnits/dailyLifePlus';
 import { createRestaurantService50 } from './extraUnits/restaurantService50';
@@ -41,27 +30,21 @@ export interface DialogueLine {
   tr: string;
 }
 
-// "Смешарики" (Smeshariki) çizgi dizisinden esinlenilmiş, A1/A2 seviyesine uygun BASİT ve
-// yavaş tempolu örnek sahneler. Buradaki diyaloglar gerçek dizi senaryosunun birebir kopyası
-// DEĞİL, karakterlerin tipik konuşma tarzına uygun, öğretici amaçla yazılmış ORİJİNAL örnek
-// cümlelerdir. Amaç: "Anlaşılır Girdi" (Comprehensible Input) yöntemiyle kulağı gerçek çizgi
-// dizi temposuna alıştırmak. Video butonu, kelime/repliklerle ilgili GERÇEK bölümü YouTube'da
-// aratır (uydurma video ID kullanılmaz).
 export interface SmesharikiQuestion {
-  prompt: string;       // Rusça soru (sahneyle ilgili anlama sorusu)
+  prompt: string;
   correct: string;
   options: string[];
 }
 
 export interface SmesharikiScene {
-  episodeRu: string;         // Örnek bölüm/temanın Rusça başlığı
-  episodeTr: string;         // Türkçe karşılığı
-  characters: string[];      // Sahnede geçen karakterler (Смешарики ya da «Ван Гог» ekibi)
-  searchQuery: string;       // Gerçek bölümü YouTube'da aramak için kullanılacak sorgu (uydurma video ID yok, gerçek arama linki)
-  contextTr: string;         // Sahnenin Türkçe bağlam açıklaması
-  miniDialogue: DialogueLine[]; // Basit, yavaş tempolu pekiştirme diyaloğu
-  questions: SmesharikiQuestion[]; // Sahne/diyalog anlama soruları (RU soruluyor, RU/TR seçenekli)
-  source?: 'kukhnya';        // 'kukhnya' → sahne «Кухня» dizisi esinli (arayüz markalaması değişir)
+  episodeRu: string;
+  episodeTr: string;
+  characters: string[];
+  searchQuery: string;
+  contextTr: string;
+  miniDialogue: DialogueLine[];
+  questions: SmesharikiQuestion[];
+  source?: 'kukhnya';
 }
 
 export interface UnitModule {
@@ -82,12 +65,6 @@ export interface UnitModule {
   smeshariki?: SmesharikiScene;
 }
 
-// ==========================================
-// 3. KONU BAŞLIKLI DERS MÜFREDATI (Günlük Hayat + Dizi Sahneleri)
-// ==========================================
-
-// SMESHARIKI sorularının şıkları veri içinde rastgele sıralanır (her açılışta sabit,
-// modül seviyesinde çalışır). App.tsx kendi kullanımı için ayrı bir shuffle'ı tutar.
 export function shuffle<T>(arr: T[]): T[] {
   const a = [...arr];
   for (let i = a.length - 1; i > 0; i--) {
@@ -1245,11 +1222,6 @@ Bir metinde her kelimeyi bilmesen bile, cümleleri birbirine bağlayan kelimeler
     ]
   },
   {
-    // =========================================================================
-    // İLİŞKİLER & FLÖRT — GENİŞLETİLMİŞ MÜFREDAT (2x)
-    // HIMYM (How I Met Your Mother) tarzı sit-com mizahı: tekrarlayan karakter
-    // kadrosu (Dima, Töma, Marina, Jenya, Lena) + absürt durum komedileri.
-    // =========================================================================
     id: 'mod_b1_fl2',
     unitNumber: 83,
     levelGroup: 'B1',
@@ -1965,9 +1937,6 @@ Bir metinde her kelimeyi bilmesen bile, cümleleri birbirine bağlayan kelimeler
     ]
   },
   {
-    // =========================================================================
-    // İLİŞKİLER & FLÖRT — GENİŞLETİLMİŞ MÜFREDAT (2x) / B2 bloğu
-    // =========================================================================
     id: 'mod_b2_fl7',
     unitNumber: 140,
     levelGroup: 'B2',
@@ -2725,9 +2694,6 @@ Bir metinde her kelimeyi bilmesen bile, cümleleri birbirine bağlayan kelimeler
     ]
   },
   {
-    // =========================================================================
-    // İLİŞKİLER & FLÖRT — GENİŞLETİLMİŞ MÜFREDAT (2x) / C1-C2 bloğu
-    // =========================================================================
     id: 'mod_c1_fl7',
     unitNumber: 191,
     levelGroup: 'C1/C2',
@@ -3179,15 +3145,6 @@ Bir metinde her kelimeyi bilmesen bile, cümleleri birbirine bağlayan kelimeler
   },
 ];
 
-// ==========================================================
-// GENİŞLEME PAKETİ BİRLEŞTİRME:
-// BASE_UNITS + src/extraUnits içindeki paketler önce ORIGINAL_UNITS olarak toplanır.
-// Ardından aşçılık/garsonluk/lokanta servisi için 50 uzmanlık ünitesi ve
-// birbirinden farklı gündelik hayat konuları için 90 ünite + 60 yeni PLUS ünite eklenir.
-// NOT (2026-09): 517 adet "Benzer Konu: ..." mirror ünitesi (mirrorPack) kullanıcı
-// isteğiyle müfredattan SİLİNDİ — aynı konunun ısıtılmış kopyaları yol uzunluğunu
-// şişiriyor, öğrenme değeri katmıyordu.
-// ==========================================================
 const ORIGINAL_UNITS: UnitModule[] = [...BASE_UNITS, ...EXTRA_UNITS];
 const nextWholeUnitNumber = (units: UnitModule[]): number => Math.ceil(Math.max(...units.map((u) => u.unitNumber))) + 1;
 const RESTAURANT_SERVICE_UNITS: UnitModule[] = createRestaurantService50(nextWholeUnitNumber(ORIGINAL_UNITS));
@@ -3198,12 +3155,6 @@ const DAILY_LIFE_PLUS_UNITS: UnitModule[] = createDailyLifePlus(
   nextWholeUnitNumber([...ORIGINAL_UNITS, ...RESTAURANT_SERVICE_UNITS, ...DAILY_LIFE_90_UNITS]),
 );
 
-// ==========================================================
-// ÇİFT/BENZER ÜNİTE AYIKLAMA (otomatik, deterministik):
-// Aynı seviyede, birebir aynı başlığa sahip ve kelime dağarcığı %35+ örtüşen
-// ünitelerden yalnızca İÇERİĞİ ZENGİN olanı tutulur. "Hayvanlar 1/2" gibi
-// isimli serilere dokunulmaz (rakam son eki sıralı müfredat sayılır).
-// ==========================================================
 const normalizeTitle = (t: string): string =>
   t.toLocaleLowerCase('tr').replace(/[^a-zçğıöşüæøåâêîôû]+/gi, ' ').replace(/\s+/g, ' ').trim();
 
@@ -3223,8 +3174,6 @@ function dedupeSimilarUnits(units: UnitModule[]): UnitModule[] {
     const richer = [...arr].sort((a, b) => contentScore(b) - contentScore(a) || a.id.localeCompare(b.id))[0];
     for (const other of arr) {
       if (other === richer) continue;
-      // BİREBİR aynı başlık + aynı seviye → kullanıcı bunu "aynı konunun tekrarı" olarak görür, sil.
-      // (Seri üniteler "… 1/2" gibi farklı başlık taşıdığı için etkilenmez.)
       if (other.title === richer.title) {
         dropped.add(other.id);
       }
@@ -3233,10 +3182,6 @@ function dedupeSimilarUnits(units: UnitModule[]): UnitModule[] {
   return units.filter(u => !dropped.has(u.id));
 }
 
-// Kullanıcının istediği ana sıralama: önce A1 ve A2, sonra B1 ve B2,
-// en sonda C1/C2. Yeni genişleme paketleri unitNumber olarak sonradan
-// üretildiği için yalnızca unitNumber'a göre sıralamak A2/B1 ünitelerini
-// C1/C2'nin arkasına atabiliyordu. Bu sıra CEFR seviyesini mutlak öncelik yapar.
 const LEVEL_ORDER: Record<UnitModule['levelGroup'], number> = {
   A1: 0,
   A2: 1,
@@ -3259,13 +3204,11 @@ function splitAdvancedLevel(unit: UnitModule): UnitModule {
   };
 }
 
-/** Rusça müfredatı: temel üniteler + ~30 genişletme paketi (kesirli numaralarla). */
 const RU_UNITS_DATA: UnitModule[] = dedupeSimilarUnits([
   ...ORIGINAL_UNITS,
   ...RESTAURANT_SERVICE_UNITS,
   ...DAILY_LIFE_90_UNITS,
   ...DAILY_LIFE_PLUS_UNITS,
-  // Vatandaşlık/vize/göç paketi (100 ünite) — her iki dilde aynı üniteler.
   ...CIT_RU_A,
   ...CIT_RU_B,
   ...CIT_RU_C,
@@ -3277,13 +3220,6 @@ const RU_UNITS_DATA: UnitModule[] = dedupeSimilarUnits([
   a.id.localeCompare(b.id),
 );
 
-// İNGİLİZCE modunda Rusça genişletme paketleri YÜKLENMEZ: bellek ve "öğrenme
-// yolu" listesi tamamen İngilizce müfredata ayrılır. EN müfredatı:
-//   • 48 elle yazılmış çekirdek ünite (content/en/units*),
-//   • 499 Rusça ek ünitesinin İngilizce AYNASI (aynı id/numara/başlık/sıra,
-//     içerik İngilizce — content/en/enExtraSpecs* + enExtraUnits motoru),
-//   • 175 İngilizce'ye özel pekiştirme ünitesi (enNewSpecs)
-// → toplam 822 ünite = Rusça müfredatın hacmi (RU: 223 + 499 + 100 vatandaşlık paketi).
 const EN_UNITS_DATA: UnitModule[] = [...EN_UNITS, ...EN_EXTRA_UNITS, ...EN_NEW_UNITS, ...EN_CIT_A, ...EN_CIT_B, ...EN_CIT_C, ...EN_CIT_D]
   .map(splitAdvancedLevel)
   .sort((a, b) =>
@@ -3298,8 +3234,6 @@ export const UNITS_DATA: UnitModule[] = isEnglish()
 
 export const ALL_WORDS = UNITS_DATA.flatMap(m => m.words);
 
-// Hikaye Türkçeleştirme sınavlarında yanlış şık (distractor) üretmek için tüm ünitelerdeki
-// cümle ve diyalog satırlarının RU/TR karşılıklarından oluşan havuz.
 export const ALL_SENTENCES: { ru: string; tr: string }[] = UNITS_DATA.flatMap(m => [
   ...(m.sentences || []).map(s => ({ ru: s.ru, tr: s.tr })),
   ...(m.dialogue || []).map(d => ({ ru: d.ru, tr: d.tr }))

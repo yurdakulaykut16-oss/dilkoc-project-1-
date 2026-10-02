@@ -1,17 +1,6 @@
-// ==========================================================
-// AŞÇILIK MÜFREDATI (PAKET 1/2) — 20 ÜNİTE (A2 +5, B1 +6, B2 +5, C1 +4); devamı cooking2.ts
-// Önce kelimeler → malzemeler → teknikler → tarifler → profesyonel mutfak.
-// Diyaloglar «Кухня» kadrosuyla (Şef Pyotr, Lyosha, Nina) yazılmıştır —
-// hikaye modülündeki «Ван Гог» restoranı evrenine bağlanır.
-//   A2 : Ünite 32-36  (mutfak eşyaları, temel ürünler, sebze hazırlığı, ölçüler, ilk tarif)
-//   B1 : Ünite 86-91  (pişirme fiilleri, tarif okuma, çorbalar, hamur işleri, salatalar, kazalar)
-//   B2 : Ünite 135-139 (et & balık, tatlılar, turşu/konserve, misafir sofrası, restoran mutfağı)
-//   C1 : Ünite 175-178 (şef dili, tabak sunumu, degüstasyon, kendi restoranını açmak)
-// ==========================================================
 import type { UnitModule } from '../curriculumData';
 
 export const EXTRA_COOKING: UnitModule[] = [
-  // ============================ A2 ============================
   {
     id: 'mod_a2_k1',
     unitNumber: 52,
@@ -194,7 +183,6 @@ export const EXTRA_COOKING: UnitModule[] = [
     ]
   },
 
-  // ============================ B1 ============================
   {
     id: 'mod_b1_k1',
     unitNumber: 116,
@@ -412,7 +400,6 @@ export const EXTRA_COOKING: UnitModule[] = [
     ]
   },
 
-  // ============================ B2 ============================
   {
     id: 'mod_b2_k1',
     unitNumber: 172,
@@ -594,7 +581,6 @@ export const EXTRA_COOKING: UnitModule[] = [
     ]
   },
 
-  // ============================ C1 ============================
   {
     id: 'mod_c1_k1',
     unitNumber: 215,

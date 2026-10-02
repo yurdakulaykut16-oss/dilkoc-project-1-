@@ -1,8 +1,3 @@
-// RU ek ünitelerini çalışma zamanından döker (extras-full.json üretir).
-// Kullanım:
-//   npx esbuild .scratch/extract-extras.ts --bundle --format=esm --platform=node \
-//     --outfile=/tmp/extract-extras.mjs --log-level=error && node /tmp/extract-extras.mjs
-// Ardından: python3 .scratch/gen-en-mirror.py  (sözlük + ayna + 175 yeni üniteyi üretir)
 const store: Record<string, string> = { dilkoc_target_lang: 'ru' };
 (globalThis as any).localStorage = {
   getItem: (k: string) => (k in store ? store[k] : null),

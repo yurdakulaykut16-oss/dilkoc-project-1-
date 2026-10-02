@@ -1,17 +1,3 @@
-// ==========================================
-// 📝 DENEME SINAVI ÜRETİCİ — "Gerçek sınav provası"
-// Kullanıcının TAMAMLADIĞI ünitelerden, her seviye için 6 beceri bölümlü,
-// süreli ve karma bir deneme sınavı üretir:
-//   A) 📖 Kelime Tanıma  (RU → TR, şıklı)
-//   B) ✍️ Üretim         (TR → RU, şıklı — geri çağırma)
-//   C) 🎧 Dinleme        (yalnız ses — şıklı)
-//   D) 💬 Bağlam         (cümle ne anlatıyor?)
-//   E) 🧩 Boşluk Doldurma (cümlede eksik kelime)
-//   F) ⌨️ Yazma           (TR verilir, Rusça YAZILIR — en zor bölüm)
-// Sorular yalnızca tamamlanmış ünitelerden çekilir → deneme gerçek
-// seviyeni ölçer; yanlışlar hata kütüğüne ve öğrenen modeline işlenir.
-// ==========================================
-
 import { UNITS_DATA } from '../curriculumData';
 import type { WordDetail, UnitModule } from '../curriculumData';
 import { isUltraMode } from './ultraMode';
@@ -24,10 +10,9 @@ export interface ExamLevelDef {
   title: string;
   icon: string;
   color: string;
-  questionCount: number;   // mix dizisinin toplamı
-  /** [vocab, production, listening, context, cloze, typing, match] */
+  questionCount: number;
   mix: [number, number, number, number, number, number, number];
-  passPct: number;         // dinamik (ultra moda göre yükselir)
+  passPct: number;
 }
 
 export const EXAM_LEVELS: ExamLevelDef[] = [
@@ -61,14 +46,14 @@ export interface ExamQuestion {
   audioOnly?: boolean;
   prompt: string;
   hint?: string;
-  speakText?: string;      // dinleme sorusunda otomatik çalınacak metin
+  speakText?: string;
   options?: string[];
-  correct: string;         // seçilecek / yazılacak doğru cevap (match'te özet etiket)
-  accept?: string[];       // yazma sorusunda kabul edilen varyantlar
-  pairs?: { ru: string; tr: string }[]; // eşleştirme sorusunun çiftleri (3 çift)
-  ru: string;              // hata kütüğü & öğrenen modeli için kaynak kelime/cümle
+  correct: string;
+  accept?: string[];
+  pairs?: { ru: string; tr: string }[];
+  ru: string;
   tr: string;
-  seconds: number;         // bu soruya ayrılan süre
+  seconds: number;
 }
 
 export interface BuiltExam {
@@ -81,8 +66,6 @@ export interface BuiltExam {
   totalSeconds: number;
 }
 
-/** Kelime listesinden benzersiz şık değerleri çek (aynı çeviriye sahip iki kelime
- *  şıklara iki kez girmesin — yoksa soru bozuk olur). */
 function pickUniqueDistractors(words: WordDetail[], field: 'ru' | 'tr', exclude: string, n: number, rand: () => number = Math.random): string[] {
   const seen = new Set<string>([exclude]);
   const out: string[] = [];
@@ -107,7 +90,6 @@ function makeShuffle(rand: () => number) {
   };
 }
 
-/** Tohum/seed'li RNG (mulberry32) — GÜNLÜK mini deneme gün boyu aynı kalsın diye. */
 export function mulberry32(seed: number): () => number {
   let a = seed >>> 0;
   return () => {
@@ -129,7 +111,6 @@ export function todaySeedStr(): string {
   return `${d.getFullYear()}-${`${d.getMonth() + 1}`.padStart(2, '0')}-${`${d.getDate()}`.padStart(2, '0')}`;
 }
 
-/** Rusça yazma cevabı normalizasyonu: ё→е, küçük harf, noktalama/ekstra boşluk temizliği. */
 export function normalizeRu(s: string): string {
   return (s || '')
     .toLowerCase()
@@ -146,11 +127,10 @@ export function typingMatches(input: string, correct: string, accept: string[] =
   return accept.some(a => normalizeRu(a) === n);
 }
 
-/** Bir seviye denemesi için kaynak havuz: tamamlanmış ünitelerin kelime/cümleleri. */
 interface Pool {
   words: WordDetail[];
   sentences: { ru: string; tr: string }[];
-  distractWords: WordDetail[];      // yanlış şık havuzu (mümkünse aynı seviyeden)
+  distractWords: WordDetail[];
   distractSentences: { ru: string; tr: string }[];
   unitsUsed: number;
 }
@@ -168,7 +148,6 @@ function buildPool(level: ExamLevelId, completedIds: string[]): Pool {
     ...u.sentences.map(s => ({ ru: s.ru, tr: s.tr })),
     ...(u.dialogue || []).map(d => ({ ru: d.ru, tr: d.tr })),
   ]);
-  // Karıştırıcı şıklar mümkünse aynı seviyeden, yoksa tüm havuzdan:
   const levelAll = UNITS_DATA.filter(inLevel).flatMap(u => u.words);
   const levelAllSent = UNITS_DATA.filter(inLevel).flatMap(u => u.sentences.map(s => ({ ru: s.ru, tr: s.tr })));
   return {
@@ -180,12 +159,10 @@ function buildPool(level: ExamLevelId, completedIds: string[]): Pool {
   };
 }
 
-/** Boşluk doldurma: cümleden içerikli bir kelimeyi sil, doğru şık olarak ver. */
 function makeCloze(sent: { ru: string; tr: string }, pool: Pool, id: string, rand: () => number): ExamQuestion | null {
   const shuffleR = makeShuffle(rand);
   const tokens = sent.ru.split(/\s+/);
   const strip = (t: string) => t.replace(/[.,!?«»"“”()—–-]/g, '');
-  // Cümlede tam haliyle geçen ve havuzda kelime kartı olan bir token tercih et:
   const candidates = tokens
     .map((raw, idx) => ({ raw, idx, clean: strip(raw) }))
     .filter(t => t.clean.replace(/ё/g, 'е').length >= 4);
@@ -210,14 +187,11 @@ function makeCloze(sent: { ru: string; tr: string }, pool: Pool, id: string, ran
   };
 }
 
-/** Seviye denemesi hazırlar; yeterli havuz yoksa null döner.
- *  seed verilirse sorular deterministik sıralanır (GÜNLÜK mini deneme: gün boyu aynı sınav). */
 export function buildMockExam(level: ExamLevelId, completedIds: string[], seed?: number): BuiltExam | null {
   const def = EXAM_LEVELS.find(l => l.id === level)!;
   const pool = buildPool(level, completedIds);
   const [nVocab, nProd, nListen, nCtx, nCloze, nType, nMatch] = def.mix;
 
-  // GÜNLÜK mini deneme: günün tohumuyla sabit sınav (herkes, her koşuda aynı 12 soru)
   const useSeed = seed ?? (level === 'GUNLUK' ? hashStringSeed(`exam:${todaySeedStr()}:${level}`) : undefined);
   const rand = useSeed === undefined ? Math.random : mulberry32(useSeed);
   const shuffleR = makeShuffle(rand);
@@ -235,7 +209,6 @@ export function buildMockExam(level: ExamLevelId, completedIds: string[], seed?:
   const nextWord = () => words[wi++ % words.length];
   const distFor = (w: WordDetail, field: 'ru' | 'tr') => pickUniqueDistractors(pool.distractWords, field, w[field], 3, rand);
 
-  // A) Kelime Tanıma RU→TR
   for (let i = 0; i < nVocab; i++) {
     const w = nextWord();
     const ds = distFor(w, 'tr');
@@ -247,7 +220,6 @@ export function buildMockExam(level: ExamLevelId, completedIds: string[], seed?:
       options: shuffleR([w.tr, ...ds]), correct: w.tr, ru: w.ru, tr: w.tr, seconds: 20,
     });
   }
-  // B) Üretim TR→RU
   for (let i = 0; i < nProd; i++) {
     const w = nextWord();
     const ds = distFor(w, 'ru');
@@ -258,7 +230,6 @@ export function buildMockExam(level: ExamLevelId, completedIds: string[], seed?:
       options: shuffleR([w.ru, ...ds]), correct: w.ru, ru: w.ru, tr: w.tr, seconds: 22,
     });
   }
-  // C) Dinleme (yalnız ses)
   for (let i = 0; i < nListen; i++) {
     const w = nextWord();
     const ds = distFor(w, 'tr');
@@ -270,7 +241,6 @@ export function buildMockExam(level: ExamLevelId, completedIds: string[], seed?:
       options: shuffleR([w.tr, ...ds]), correct: w.tr, ru: w.ru, tr: w.tr, seconds: 25,
     });
   }
-  // D) Bağlam — cümle anlama
   for (let i = 0, si = 0; i < nCtx && si < sents.length; si++) {
     const s = sents[si];
     const seenTr = new Set<string>([s.tr]);
@@ -289,7 +259,6 @@ export function buildMockExam(level: ExamLevelId, completedIds: string[], seed?:
     });
     i++;
   }
-  // E) Boşluk doldurma
   let clozeMade = 0;
   for (let si = 0; si < sents.length * 2 && clozeMade < nCloze; si++) {
     const s = sents[si % sents.length];
@@ -297,7 +266,6 @@ export function buildMockExam(level: ExamLevelId, completedIds: string[], seed?:
     const q = makeCloze(s, pool, `g_${clozeMade}`, rand);
     if (q) { qs.push(q); clozeMade++; }
   }
-  // F) Yazma — TR verilir, RU YAZILIR (en zor bölüm)
   for (let i = 0; i < nType; i++) {
     const w = nextWord();
     qs.push({
@@ -308,7 +276,6 @@ export function buildMockExam(level: ExamLevelId, completedIds: string[], seed?:
       correct: w.ru, ru: w.ru, tr: w.tr, seconds: 35,
     });
   }
-  // G) Eşleştirme — 3 çifti süreli mini oyunda bağla (tek hata hakkı)
   for (let i = 0; i < nMatch; i++) {
     const trio = [nextWord(), nextWord(), nextWord()].filter((w): w is WordDetail => Boolean(w));
     if (trio.length < 3) break;
@@ -334,14 +301,6 @@ export function buildMockExam(level: ExamLevelId, completedIds: string[], seed?:
   };
 }
 
-/** Bir seviye denemesi için minimum içerik durumu — butonu kilitlemek/açmak için. */
-/**
- * Seviye denemesi KİLİT KURALI (kullanıcı isteği, 2026-09):
- * "tüm b1 seviyesi yapılmadan b1 denemesi açılmasın" → bir seviyenin denemesi, o seviyenin
- * TÜM üniteleri bitmeden açılmaz. GENEL için tüm müfredat şart; GUNLUK muaf (öğrendiklerinle oynanır).
- * Deneme içeriği tamamen tamamlanan ünitelerin kelime/cümle/diyaloglarından kurulduğu için,
- * bu kural aynı zamanda "deneme = benim ünitelerimin içeriği" garantisini de verir.
- */
 export function examReadiness(level: ExamLevelId, completedIds: string[]): {
   ready: boolean; units: number; words: number; doneUnits: number; totalUnits: number;
 } {

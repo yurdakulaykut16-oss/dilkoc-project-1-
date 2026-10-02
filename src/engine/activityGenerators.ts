@@ -10,8 +10,6 @@ const GRAMMAR_TYPE_TO_ACTIVITY_TYPE: Record<GrammarExerciseType, ActivityType> =
   sentence_building: "sentence_construction",
 };
 
-/** Builds a grammar activity from real topic content when available, falling
- *  back to a generic prompt if this topic has no authored exercises yet. */
 function buildGrammarActivity(ctx: LessonContext, topicId: string, title: string): Activity {
   const content = getGrammarTopicContent(ctx.languageCode, topicId);
   const exercise = content?.exercises[0];
@@ -37,7 +35,6 @@ function buildGrammarActivity(ctx: LessonContext, topicId: string, title: string
   };
 }
 
-/** Reading comprehension activity from an authored passage's first question. */
 function buildReadingActivity(ctx: LessonContext, topicId: string, title: string): Activity {
   const passage = getReadingPassageForTopic(ctx.languageCode, topicId);
   const question = passage?.questions[0];
@@ -71,7 +68,6 @@ function buildReadingActivity(ctx: LessonContext, topicId: string, title: string
   };
 }
 
-/** Writing activity (sentence_writing or free_writing) from authored prompts. */
 function buildWritingActivity(ctx: LessonContext, topicId: string, title: string): Activity {
   const prompts = getWritingPromptsForTopic(ctx.languageCode, topicId);
   const writingPrompt = prompts[0];
@@ -132,8 +128,6 @@ function reviewMode(item: VocabItem): FlashcardMode {
   return REVIEW_MODE_CYCLE[item.repetitions % REVIEW_MODE_CYCLE.length];
 }
 
-/** Very weak items get recognition scaffolding (multiple choice); everything
- *  else stays production/recall, per "prefer active recall over recognition". */
 function activityTypeForReview(mode: FlashcardMode, weak: boolean): ActivityType {
   if (weak) return "multiple_choice";
   return mode === "translation" ? "translation" : "vocab_recall";
@@ -154,7 +148,6 @@ function pickDistractors(item: VocabItem, pool: VocabItem[], mode: FlashcardMode
   return out;
 }
 
-/** Due spaced-repetition reviews — highest priority, drives active recall. */
 export function generateReviewActivities(ctx: LessonContext): LessonActivity[] {
   const distractorPool = [...ctx.dueVocab, ...ctx.newVocabCandidates];
   return ctx.dueVocab.slice(0, MAX_REVIEW_ITEMS).map((item) => {
@@ -180,7 +173,6 @@ export function generateReviewActivities(ctx: LessonContext): LessonActivity[] {
   });
 }
 
-/** New vocabulary, capped so a single lesson never front-loads too much unseen material. */
 export function generateNewVocabActivities(ctx: LessonContext): LessonActivity[] {
   return ctx.newVocabCandidates.slice(0, MAX_NEW_VOCAB_ITEMS).map((item) => {
     const prompt = buildFlashcard(item, "sentence_completion");
@@ -199,7 +191,6 @@ export function generateNewVocabActivities(ctx: LessonContext): LessonActivity[]
   });
 }
 
-/** Sentence-building production practice for words the learner already retains reasonably well. */
 export function generateSentenceBuildingActivities(ctx: LessonContext): LessonActivity[] {
   const candidates = ctx.dueVocab.filter((item) => item.memoryStrength >= 0.5 && item.exampleSentence);
   return candidates.slice(0, MAX_SENTENCE_BUILDING_ITEMS).map((item) => {
@@ -239,7 +230,6 @@ function groupRepeatedMistakes(mistakes: MistakeRecord[]): MistakeGroup[] {
     .sort((a, b) => b.count - a.count);
 }
 
-/** Targeted practice for mistakes the learner keeps making, not just isolated errors. */
 export function generateMistakeReviewActivities(ctx: LessonContext): LessonActivity[] {
   return groupRepeatedMistakes(ctx.recentMistakes)
     .slice(0, MAX_MISTAKE_TOPICS)
@@ -272,11 +262,10 @@ export function skillToActivityType(skillId: SkillId): ActivityType | null {
     case "sentenceConstruction":
       return "sentence_construction";
     default:
-      return null; // speaking/pronunciation/comprehension activities not yet implemented
+      return null;
   }
 }
 
-/** Practice for the learner's currently weakest skills, using unlocked curriculum topics. */
 export function generateWeakSkillActivities(ctx: LessonContext): LessonActivity[] {
   const scoreBySkill = new Map(ctx.skillScores.map((s) => [s.skillId, s.score]));
   const skillsInCurriculum = new Set(ctx.curriculumView.map((v) => v.topic.skillId));
@@ -302,7 +291,6 @@ export function generateWeakSkillActivities(ctx: LessonContext): LessonActivity[
   return activities;
 }
 
-/** Introduces the next unlocked curriculum topic not already covered this lesson. */
 export function generateCurriculumProgressionActivities(ctx: LessonContext, excludeTopicIds: Set<string>): LessonActivity[] {
   const next = ctx.curriculumView.find((v) => v.status === "available" && !excludeTopicIds.has(v.topic.id));
   if (!next) return [];

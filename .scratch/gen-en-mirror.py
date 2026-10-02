@@ -1,12 +1,8 @@
-# -*- coding: utf-8 -*-
-# EN ayna üretici: /tmp/extras-full.json (499 RU ek ünitesi) + TR->EN sözlüğü
-# -> src/content/en/enExtraSpecsA/B/C.ts (499 ayna) + enNewSpecs.ts (175 yeni)
-import json, glob, sys, collections
+import json, glob, os, sys, collections
 
-BASE = '/home/user/dilkoc-project-1-'
+BASE = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 DICT_DIR = BASE + '/.scratch/dict/'
 
-# ---- 1) Sözlüğü yükle ----
 D = {}
 for f in sorted(glob.glob(DICT_DIR + 'dict*.py')):
     ns = {'D': D}
@@ -17,7 +13,6 @@ print('sözlük:', len(D), 'girdi')
 extras = json.load(open('/tmp/extras-full.json'))
 print('ek ünite:', len(extras))
 
-# ---- 2) Ayna spec doğrulama ----
 missing = set()
 for x in extras:
     for tr, ru in x['words']:
@@ -29,7 +24,6 @@ if missing:
         print(' ', repr(m))
     sys.exit(1)
 
-# ---- 3) TS string kaçışları ----
 def ts(s):
     return "'" + str(s).replace('\\', '\\\\').replace("'", "\\'") + "'"
 
@@ -42,7 +36,6 @@ def num(n):
     return repr(r)
 
 def emit_spec(x, words):
-    # words: [en, tr] çiftleri listesi
     wstr = ', '.join(f"[{ts(en)}, {ts(tr)}]" for en, tr in words)
     sp = 'null' if not x['dlg'] or not x['sp'] else f"[{ts(x['sp'][0])}, {ts(x['sp'][1])}]"
     return (f"  [{ts(x['id'])}, {num(x['n'])}, {ts(x['lv'])}, {ts(x['ic'])}, "
@@ -52,22 +45,13 @@ def emit_spec(x, words):
 def mirror_words(x):
     return [[D[tr], tr] for tr, ru in x['words']]
 
-HDR = """// ============================================================================
-// 🇬🇧 İNGİLİZCE EK ÜNİTE VERİSİ — {ad} ({tane} ünite)
-// ----------------------------------------------------------------------------
-// Rusça müfredattaki ek ünitelerin AYNASI: aynı id / numara / seviye / başlık /
-// kategori / ikon; kelimeler sözlük üzerinden İngilizce karşılıklarıyla taşınır.
-// Üretim: .scratch/gen-en-mirror.py (elle düzenlemeyin, üreticiyi çalıştırın).
-// Motor: enExtraUnits.ts (okunuş + cümle/diyalog şablonları).
-// ============================================================================
-
-import type { EnExtraSpec } from './enExtraUnits';
+HDR = """import type { EnExtraSpec } from './enExtraUnits';
 
 export const {name}: readonly EnExtraSpec[] = [
 """
 
-def emit_file(fname, name, rows, tane, ad):
-    out = HDR.replace('{ad}', ad).replace('{tane}', str(tane)).replace('{name}', name)
+def emit_file(fname, name, rows):
+    out = HDR.replace('{name}', name)
     out += '\n'.join(rows)
     out += '\n];\n'
     open(BASE + '/src/content/en/' + fname, 'w', encoding='utf-8').write(out)
@@ -76,20 +60,17 @@ def emit_file(fname, name, rows, tane, ad):
 rows_a = [emit_spec(x, mirror_words(x)) for x in extras[:200]]
 rows_b = [emit_spec(x, mirror_words(x)) for x in extras[200:400]]
 rows_c = [emit_spec(x, mirror_words(x)) for x in extras[400:]]
-emit_file('enExtraSpecsA.ts', 'EN_EXTRA_SPECS_A', rows_a, len(rows_a), 'BÖLÜM A')
-emit_file('enExtraSpecsB.ts', 'EN_EXTRA_SPECS_B', rows_b, len(rows_b), 'BÖLÜM B')
-emit_file('enExtraSpecsC.ts', 'EN_EXTRA_SPECS_C', rows_c, len(rows_c), 'BÖLÜM C')
+emit_file('enExtraSpecsA.ts', 'EN_EXTRA_SPECS_A', rows_a)
+emit_file('enExtraSpecsB.ts', 'EN_EXTRA_SPECS_B', rows_b)
+emit_file('enExtraSpecsC.ts', 'EN_EXTRA_SPECS_C', rows_c)
 
-# ---- 4) 175 yeni "pekiştirme" ünitesi ----
-# Hedef seviye dağılımı (RU toplamlarıyla (48+499 sonrası) farkı kapatır):
-QUOTA = {'A1': 3, 'A2': 42, 'B1': 53, 'B2': 44, 'C2': 33}  # C1: 0 (EN'de zaten dolu)
+QUOTA = {'A1': 3, 'A2': 42, 'B1': 53, 'B2': 44, 'C2': 33}
 NEW_TOTAL = sum(QUOTA.values())
 assert NEW_TOTAL == 175, NEW_TOTAL
 
-# her seviyede kaynakları kategoriye göre grupla, kategori yuvarla-robin diz
 new_specs = []
 titles_seen = set()
-delta = 0  # benzersiz küçük ondalık (0.000001 + k*0.0000001)
+delta = 0
 
 for lv, quota in QUOTA.items():
     srcs = [x for x in extras if x['lv'] == lv]
@@ -99,7 +80,6 @@ for lv, quota in QUOTA.items():
     for c in bycat:
         bycat[c].sort(key=lambda z: z['n'])
     cats = sorted(bycat.keys(), key=lambda c: (-len(bycat[c]), c))
-    # kategori yuvarla-robin kaynak dizisi (en büyük kategoriden başlar)
     seq = []
     max_len = max(len(bycat[c]) for c in cats)
     for step in range(max_len):
@@ -110,8 +90,7 @@ for lv, quota in QUOTA.items():
     for made in range(quota):
         src = seq[made % len(seq)]
         use_count[src['id']] += 1
-        p = use_count[src['id']] - 1  # aynı kaynağın kaçıncı turu
-        # kelime havuzu: kaynak + aynı kategorideki bir sonraki kaynak
+        p = use_count[src['id']] - 1
         cat_srcs = bycat[src['c']]
         idx = cat_srcs.index(src)
         nxt = cat_srcs[(idx + 1) % len(cat_srcs)]
@@ -172,9 +151,8 @@ ids = [s['id'] for s in new_specs]
 assert len(set(ids)) == 175
 
 rows_n = [emit_spec(x, x['words']) for x in new_specs]
-emit_file('enNewSpecs.ts', 'EN_NEW_SPECS', rows_n, len(rows_n), 'İNGİLİZCE\'YE ÖZEL PEKİŞTİRME')
+emit_file('enNewSpecs.ts', 'EN_NEW_SPECS', rows_n)
 
-# ---- 5) İstatistik ----
 lv_all = collections.Counter(x['lv'] for x in extras)
 lv_new = collections.Counter(x['lv'] for s in new_specs for x in [s])
 print('AYNA seviye:', dict(lv_all))

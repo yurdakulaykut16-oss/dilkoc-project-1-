@@ -1,11 +1,6 @@
 import type { PlacementAnswer, PlacementQuestion, PlacementResult, SkillId } from "./types";
 import { levelFromScore, scoreFromLevel } from "./cefr";
 
-/**
- * Scores a placement test. Not the only source of level truth: the result
- * seeds LearnerProfile.cefrScore, which updateCefrScore() then adjusts
- * continuously as the learner does regular activities.
- */
 export function scorePlacementTest(
   questions: PlacementQuestion[],
   answers: PlacementAnswer[]

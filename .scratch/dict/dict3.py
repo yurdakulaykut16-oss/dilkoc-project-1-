@@ -1,5 +1,3 @@
-# -*- coding: utf-8 -*-
-# tr -> en sözlük PARÇA 3 (H-M)
 D.update({
 'Hayat': 'life',
 'Hayır işi': 'charity',

@@ -1,14 +1,10 @@
-// ==========================================
-// KİRİL ALFABESİ - TAM 33 HARF, 6 DERSTE
-// ==========================================
-
 export interface AlphabetLetter {
   id: string;
   upper: string;
   lower: string;
-  translit: string;         // Latin karşılığı
-  description: string;      // Türkçe sesletim anlatımı
-  rule?: string;            // Ekstra fonetik kural (vurgu, yumuşama, sedasızlaşma vb.)
+  translit: string;
+  description: string;
+  rule?: string;
   example: {
     ru: string;
     tr: string;

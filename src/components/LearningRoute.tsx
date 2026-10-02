@@ -1,9 +1,3 @@
-// ============================================================================
-// 🧭 KİŞİSELLEŞTİRİLMİŞ ÖĞRENİM ROTASI
-// Çözülen sorulardan yola çıkarak ZAMANLAR ve EDATLAR eksiklerini haritalandırır
-// ve sıralı bir çalışma rotası önerir. Ayrıca Edge TTS ses seçimi buradadır.
-// ============================================================================
-
 import { useEffect, useState } from 'react';
 import { LEARNER_EVENT, buildLearningRoute, skillSummary } from '../learnerModel';
 import type { RouteStep } from '../learnerModel';
@@ -57,7 +51,6 @@ export default function LearningRoute({ errorStats, onOpenGrammar, onStartRescue
         <b> otomatik</b> çıkarıldı: hangi zamanda ve hangi edatta zayıfsan rota oradan başlıyor.
       </p>
 
-      {/* ZAMANLAR HARİTASI */}
       <div style={{ background: '#0f172a', border: '1px solid #eab30855', borderRadius: '14px', padding: '16px', marginBottom: '14px' }}>
         <div style={{ fontSize: '13px', fontWeight: 900, color: '#eab308', marginBottom: '10px' }}>⏳ ZAMANLAR (TENSES) HARİTASI</div>
         {tenses.map(r => (
@@ -73,7 +66,6 @@ export default function LearningRoute({ errorStats, onOpenGrammar, onStartRescue
         ))}
       </div>
 
-      {/* EDATLAR HARİTASI */}
       <div style={{ background: '#0f172a', border: '1px solid #f472b655', borderRadius: '14px', padding: '16px', marginBottom: '14px' }}>
         <div style={{ fontSize: '13px', fontWeight: 900, color: '#f472b6', marginBottom: '10px' }}>📍 EDATLAR (PREPOSITIONS) HARİTASI</div>
         {preps.length === 0 ? (
@@ -89,7 +81,6 @@ export default function LearningRoute({ errorStats, onOpenGrammar, onStartRescue
         ))}
       </div>
 
-      {/* ROTA ADIMLARI */}
       <div style={{ background: 'linear-gradient(135deg, rgba(56,189,248,0.12), #0f172a)', border: '1px solid #38bdf8', borderRadius: '14px', padding: '16px', marginBottom: '14px' }}>
         <div style={{ fontSize: '13px', fontWeight: 900, color: '#38bdf8', marginBottom: '10px' }}>🗺️ SANA ÖZEL ROTA — sırayla ilerle</div>
         {route.length === 0 ? (
@@ -110,7 +101,6 @@ export default function LearningRoute({ errorStats, onOpenGrammar, onStartRescue
         ))}
       </div>
 
-      {/* SES AYARLARI — Microsoft Edge TTS */}
       <div style={{ background: '#0f172a', border: '1px solid #334155', borderRadius: '14px', padding: '16px' }}>
         <div style={{ fontSize: '13px', fontWeight: 900, color: '#a78bfa', marginBottom: '4px' }}>🎙️ SES AYARLARI — Microsoft Edge TTS</div>
         <p style={{ color: '#64748b', fontSize: '12px', marginTop: 0 }}>Rusça içerikler Rus nöral sesle, botun Türkçe konuşmaları Türk nöral sesle okunur.</p>

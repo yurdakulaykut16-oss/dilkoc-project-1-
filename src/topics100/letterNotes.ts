@@ -1,12 +1,3 @@
-// ============================================================================
-// HARF NOTLARI + İNCE HARF TAMAMLAYICILARI + HECE KONULARI
-// ----------------------------------------------------------------------------
-// - LETTER_NOTES: 33 harfin kısa fonetik notu (kulak eğitimi).
-// - THIN_LETTER_SUPPLEMENT: müfredatta az geçen harfler (Ъ, Э) için elle
-//   seçilmiş B1-C2 seviyesi kelimeler — hepsi gerçek kullanım sözcükleri.
-// - SYLLABLE_TOPICS: 8 fonetik konunun 2 "hece pratiği" konusunun içeriği.
-// ============================================================================
-
 import type { Topic100Item } from './types';
 import { isEnglish } from '../content/activeLanguage';
 import {
@@ -15,8 +6,6 @@ import {
   EN_THIN_LETTER_SUPPLEMENT,
 } from '../content/en/letterNotes';
 
-/** 33 harf — büyük harf + kısa fonetik not (Alfabedeki sırayla).
- *  İngilizce modunda: 26 harf + 6 diygraf (TH, SH, CH, PH, WH, NG). */
 export const LETTER_INFO: { glyph: string; note: string }[] = isEnglish()
   ? EN_LETTER_INFO
   : [
@@ -55,12 +44,10 @@ export const LETTER_INFO: { glyph: string; note: string }[] = isEnglish()
   { glyph: 'Я', note: '"ya" (başta) / "a" (sonra). En çok "я" (ben) sözcüğünde dinlenir.' },
 ];
 
-/** İnce harf tamamlayıcıları — aktif dile göre. */
 export const THIN_LETTER_SUPPLEMENT: Record<string, Topic100Item[]> = isEnglish()
   ? EN_THIN_LETTER_SUPPLEMENT
   : {
 
-  // Rusça ince harf tamamlayıcıları (Ъ, Э) — elle seçilmiş B1-C2 örnekleri.
   'Ъ': [
     { ru: 'Объявление', reading: 'abaly-av-yé-niye', tr: 'ilan', level: 'B2' },
     { ru: 'Объём', reading: 'ab-yóm', tr: 'hacim, boyut', level: 'B2' },
@@ -79,7 +66,6 @@ export const THIN_LETTER_SUPPLEMENT: Record<string, Topic100Item[]> = isEnglish(
   ],
 };
 
-/** Hece pratiği konuları (fonetik bölümünün ilk 2 konusu). */
 export const SYLLABLE_TOPICS: {
   icon: string;
   titleRu: string;

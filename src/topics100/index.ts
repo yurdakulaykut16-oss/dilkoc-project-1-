@@ -1,13 +1,3 @@
-// ============================================================================
-// 100 KONU — DERLEME + TEST SORULARI (index)
-// ----------------------------------------------------------------------------
-// Dışa açılan isimler Faz 1'dekiyle aynı (App.tsx bu isimleri kullanır):
-//   TOPICS_100, TOPICS_100_TOTAL, TOPIC_100_CATS, topicCatInfo,
-//   buildTopicDrills, topicFullText, Topic100, Topic100Question
-// Yeni (Faz 2): LETTER_GLYPHS, LEVELS, getTopicByNum, topicsOfCat,
-//   topicSourceUnits, sourceUnitInfo
-// ============================================================================
-
 import { UNITS_DATA } from '../curriculumData';
 import type { Topic100, Topic100Question, Topic100Cat, CefrTag } from './types';
 import { LETTER_INFO, SYLLABLE_TOPICS } from './letterNotes';
@@ -24,10 +14,6 @@ import {
 export type { Topic100, Topic100Question, Topic100Cat, CefrTag } from './types';
 export type { Topic100Item, Topic100Sentence, Topic100Line } from './types';
 
-// ---------------------------------------------------------------------------
-// Kategoriler — konu sayıları UNITS_DATA'dan türetildiği için ETİKETLER de
-// dinamik hesaplanır (müfredat büyürse sayılar kendiliğinden güncellenir).
-// ---------------------------------------------------------------------------*/
 const TOPIC_100_CATS_BASE: { id: Topic100Cat; label: string; icon: string; color: string }[] = [
   { id: 'harf', label: 'Harfler — Müfredattan Örnekler', icon: '🔤', color: '#3b82f6' },
   { id: 'fonetik', label: 'Fonetik Kurallar', icon: '🧪', color: '#f59e0b' },
@@ -40,10 +26,6 @@ export function topicCatInfo(id: Topic100Cat) {
 
 export const LEVELS: CefrTag[] = ['A1', 'A2', 'B1', 'B2', 'C1', 'C2'];
 
-// ---------------------------------------------------------------------------
-// Dinleme konularının tam dizilişi: 33 harf (İng: 32) + 8 fonetik + N müfredat ön-hazırlık.
-// (N, UNITS_DATA'daki B1/B2/C1 ünite sayısından otomatik türetilir.)
-// ---------------------------------------------------------------------------
 export const LETTER_GLYPHS: string[] = LETTER_INFO.map((l) => l.glyph);
 
 const LETTER_TOPICS: Topic100[] = LETTER_GLYPHS.map((g, i) => buildLetterTopic(g, i + 1));
@@ -57,9 +39,8 @@ export const TOPICS_100: Topic100[] = [
   ...RULE_TOPICS,
   ...PREVIEW_TOPICS,
 ];
-export const TOPICS_100_TOTAL = TOPICS_100.length; // alfabe + fonetik + tüm B1/B2/C1 üniteleri (dinamik)
+export const TOPICS_100_TOTAL = TOPICS_100.length;
 
-// Kategori etiketlerine güncel konu sayılarını işle (etiketler veriye bağlı kalır).
 export const TOPIC_100_CATS: { id: Topic100Cat; label: string; icon: string; color: string }[] =
   TOPIC_100_CATS_BASE.map((c) => ({
     ...c,
@@ -74,7 +55,6 @@ export function topicsOfCat(cat: Topic100Cat): Topic100[] {
   return TOPICS_100.filter((t) => t.cat === cat);
 }
 
-/** Konunun örneklerinin geldiği ünite kimlikleri (müfredat bağlantısı). */
 export function topicSourceUnits(t: Topic100): string[] {
   const ids = new Set<string>();
   for (const i of t.items) if (i.unitId) ids.add(i.unitId);
@@ -89,9 +69,6 @@ export function sourceUnitInfo(unitId?: string) {
   return u ? { num: u.unitNumber, title: u.title, level: u.levelGroup, icon: u.icon } : null;
 }
 
-// ---------------------------------------------------------------------------
-// Konu dinleme metni: kelimeler + cümleler + diyalog (RU).
-// ---------------------------------------------------------------------------
 export function topicFullText(t: Topic100): string {
   const parts: string[] = [];
   for (const i of t.items) parts.push(i.ru);
@@ -100,12 +77,6 @@ export function topicFullText(t: Topic100): string {
   return parts.join('. ');
 }
 
-// ---------------------------------------------------------------------------
-// Test soruları — deterministik (konu numarası seed'li), her zaman 5 soru:
-//   harf konuları : 1 harf + 3 kelime + 1 karışık tekrar
-//   diğer konular : 4 kelime + 1 karışık tekrar
-// Karışık soru başka bir konudan kelime sorar => konular arası bağ.
-// ---------------------------------------------------------------------------
 function mulberry32(seed: number) {
   let a = seed >>> 0;
   return () => {
@@ -134,8 +105,6 @@ const LETTER_NAME_RU: Record<string, string> = {
   Э: 'э', Ю: 'ю', Я: 'я',
 };
 
-/** İngilizce: tek harf → harfin kendisi (TTS adını okur: "A" → "ey"),
- *  diygraflar → harf adları boşlukla ("TH" → "tee aych"). */
 const LETTER_NAME_EN: Record<string, string> = {
   A: 'A', B: 'B', C: 'C', D: 'D', E: 'E', F: 'F', G: 'G', H: 'H', I: 'I',
   J: 'J', K: 'K', L: 'L', M: 'M', N: 'N', O: 'O', P: 'P', Q: 'Q', R: 'R',
@@ -148,8 +117,6 @@ const LETTER_NAMES: Record<string, string> = isEnglish() ? LETTER_NAME_EN : LETT
 export function buildTopicDrills(t: Topic100): Topic100Question[] {
   const rnd = mulberry32(t.num * 7919 + 13);
   const qs: Topic100Question[] = [];
-  // GENİŞLETİLMİŞ TEST: daha fazla kelime sorusu — kalıcı öğrenme için her konu
-  // testinde daha çok geri çağırma denemesi yapılır (test etkisi).
   const nWords = t.cat === 'harf' ? 4 : 6;
 
   if (t.cat === 'harf' && t.letterGlyph) {
@@ -165,7 +132,6 @@ export function buildTopicDrills(t: Topic100): Topic100Question[] {
     });
   }
 
-  // Kelime soruları: konunun kendi kelimelerinden (tekerrürsüz).
   const pool = seededShuffle(t.items, rnd);
   for (let i = 0; i < nWords && i < pool.length; i++) {
     const w = pool[i];
@@ -180,8 +146,6 @@ export function buildTopicDrills(t: Topic100): Topic100Question[] {
     });
   }
 
-  // Karışık tekrar: başka bir konudan gelen kelime (konular arası bağ).
-  // Şıklarda asla tekrar olmasın: aynı kelime birden fazla konuda olabilir.
   const otherTopics = TOPICS_100.filter((x) => x.num !== t.num && x.items.length > 0);
   const other = otherTopics[Math.floor(rnd() * otherTopics.length)];
   const otherItem = other.items[Math.floor(rnd() * other.items.length)];
@@ -206,8 +170,6 @@ export function buildTopicDrills(t: Topic100): Topic100Question[] {
     hint: `${otherItem.ru} — ${otherItem.tr} (Konu ${other.num} den geliyor)`,
   });
 
-  // İKİNCİ karışık tekrar sorusu: bir başka konudan daha kelime gelir —
-  // konular arası bağ kurulur, hiçbir eski kelime "emekli" olmaz.
   const other2 = otherTopics[Math.floor(rnd() * otherTopics.length)];
   const otherItem2 = other2.items[Math.floor(rnd() * other2.items.length)];
   if (otherItem2.ru.toLowerCase() !== otherItem.ru.toLowerCase()) {

@@ -2,7 +2,6 @@ import { getDb } from "./client";
 import type { LanguageCode, PlacementAnswer, PlacementResult } from "../engine/types";
 import { updateProfileLevel } from "./profileRepo";
 
-/** Persists a placement result and seeds the language's learner profile with it. */
 export async function savePlacementResult(
   languageCode: LanguageCode,
   result: PlacementResult,

@@ -7,7 +7,6 @@ export function isUnlocked(topic: CurriculumTopic, completedTopicIds: Set<string
   return topic.prerequisites.every((id) => completedTopicIds.has(id));
 }
 
-/** Combines static curriculum data with a learner's stored progress into a renderable view. */
 export function buildCurriculumView(topics: CurriculumTopic[], progress: TopicProgress[]): CurriculumTopicView[] {
   const progressByTopic = new Map(progress.map((p) => [p.topicId, p]));
   const completedIds = new Set(progress.filter((p) => p.status === "completed").map((p) => p.topicId));

@@ -41,7 +41,6 @@ export interface GrammarFoundationUnit {
 }
 
 const GRAMMAR_FOUNDATION_UNITS_RAW: GrammarFoundationUnit[] = [
-  // SAYILAR PAKETİ — A1 başlangıcında özne/yüklem temelinden hemen sonra: 0-20, onluklar/yüzler + yaş/fiyat kullanımı
   {
     id: 'num_0_20',
     levelGroup: 'A1',
@@ -117,9 +116,7 @@ const GRAMMAR_FOUNDATION_UNITS_RAW: GrammarFoundationUnit[] = [
       { prompt: '“1000” Rusça nedir?', correct: 'тысяча', options: ['тысяча', 'миллион', 'сто', 'десять'] }
     ]
   },
-  // ZAMANLAR (TENSES) PAKETİ — sayılardan sonra: şimdiki, geçmiş, gelecek zaman + görünüş (вид)
   ...TENSE_UNITS,
-  // CÜMLE TEMELLERİ — sıralamada en başa alınır: özne, yüklem, edat vb.
   {
     id: 'gram_sentence_core',
     levelGroup: 'A1',
@@ -303,10 +300,6 @@ const GRAMMAR_FOUNDATION_UNITS_RAW: GrammarFoundationUnit[] = [
   }
 ];
 
-// A1'in en başı kullanıcı isteğine göre kesin sıra: önce cümleyi okuma
-// iskeleti (özne + yüklem), sonra sayılar, zamanlar/fiiller ve en son
-// edatlarla cümle laboratuvarı. Ham veri yukarıda içerik yakınlığına göre
-// durabilir; uygulamaya çıkan sıra burada tek merkezden sabitlenir.
 const FOUNDATION_ORDER = new Map<string, number>([
   ['gram_sentence_core', 0],
   ['gram_subject', 1],

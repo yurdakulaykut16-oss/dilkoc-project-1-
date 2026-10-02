@@ -1,12 +1,3 @@
-// ============================================================================
-// 🇬🇧 İNGİLİZCE EK ÜNİTE VERİSİ — BÖLÜM C (99 ünite)
-// ----------------------------------------------------------------------------
-// Rusça müfredattaki ek ünitelerin AYNASI: aynı id / numara / seviye / başlık /
-// kategori / ikon; kelimeler sözlük üzerinden İngilizce karşılıklarıyla taşınır.
-// Üretim: .scratch/gen-en-mirror.py (elle düzenlemeyin, üreticiyi çalıştırın).
-// Motor: enExtraUnits.ts (okunuş + cümle/diyalog şablonları).
-// ============================================================================
-
 import type { EnExtraSpec } from './enExtraUnits';
 
 export const EN_EXTRA_SPECS_C: readonly EnExtraSpec[] = [

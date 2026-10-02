@@ -5,5 +5,3 @@ export const enConfig: LanguageConfig = {
   nativeName: "English",
   script: "latin",
 };
-
-// Vocabulary, grammar, and curriculum data for English will be added in later phases.

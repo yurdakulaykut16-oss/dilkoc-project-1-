@@ -8,8 +8,6 @@ export interface MasteryImpact {
   mistake?: { skillId: SkillId; detail: string; topicId?: string };
 }
 
-/** Turns a graded flashcard answer into a vocabulary skill-score nudge and,
- *  on failure, a mistake record for the lesson engine's repeated-mistake logic. */
 export function evaluateMasteryImpact(
   evaluation: AnswerEvaluation,
   vocabItem: VocabItem,
@@ -27,8 +25,6 @@ export function evaluateMasteryImpact(
   };
 }
 
-/** Same idea for grammar exercises: nudges the grammar skill score and logs
- *  a topic-tagged mistake so repeated errors surface in future lessons. */
 export function evaluateGrammarMasteryImpact(evaluation: AnswerEvaluation, exercise: GrammarExercise): MasteryImpact {
   if (evaluation.correct) {
     return { skillScoreDelta: CORRECT_SKILL_SCORE_DELTA };
@@ -51,9 +47,6 @@ export function evaluateReadingMasteryImpact(evaluation: AnswerEvaluation, topic
   };
 }
 
-/** Writing mistakes are only logged when deterministically checkable
- *  (sentence_writing missing a required word) — free writing quality is
- *  never auto-judged as a "mistake". */
 export function evaluateWritingMasteryImpact(evaluation: AnswerEvaluation, topicId: string, detail: string): MasteryImpact {
   if (evaluation.correct) return { skillScoreDelta: CORRECT_SKILL_SCORE_DELTA };
   return {

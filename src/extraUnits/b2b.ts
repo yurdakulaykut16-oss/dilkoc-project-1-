@@ -1,7 +1,3 @@
-// ==========================================================
-// EK MÜFREDAT — B2 GENİŞLEME PAKETİ 2/2 (Ünite 96-102)
-// Tadilat, yatırım, sigorta ve olgun ilişki konuşmaları.
-// ==========================================================
 import type { UnitModule } from '../curriculumData';
 
 export const EXTRA_B2B: UnitModule[] = [

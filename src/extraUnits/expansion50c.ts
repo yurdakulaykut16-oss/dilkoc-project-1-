@@ -1,7 +1,3 @@
-// ==========================================================
-// GENİŞLEME PAKETİ 50 — BÖLÜM 3: C1 (10 ünite)
-// Kesirli unitNumber'lar (180.x) C1 bölgesine sıralanır.
-// ==========================================================
 import type { UnitModule } from '../curriculumData';
 import { S, W } from './expansion50a';
 

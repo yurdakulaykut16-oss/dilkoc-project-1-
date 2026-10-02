@@ -1,14 +1,3 @@
-// ============================================================================
-// 🏠 ANA MENÜ — Dil seçim ekranı
-// ----------------------------------------------------------------------------
-// Uygulama ilk açıldığında gösterilir: kullanıcı hangi dili öğreneceğini
-// seçer (Rusça / İngilizce). Seçim localStorage'a yazılır ve sayfa
-// yenilenir; böylece tüm müfredat modülleri seçilen dile göre kurulur.
-//
-// Bu bileşen KASITLI olarak yalnızca activeLanguage modülünü import eder:
-// ana menü ekrandayken hiçbir müfredat verisi yüklenmez.
-// ============================================================================
-
 import { useEffect, useState } from 'react';
 import { getSavedTargetLang, setTargetLang, type TargetLang } from '../content/activeLanguage';
 
@@ -61,13 +50,11 @@ export default function MainMenu({
   onContinue,
 }: {
   onChoose?: (lang: TargetLang) => void;
-  /** Kayıtlı dile GERİ DÖN (dil değiştirmeden uygulamaya devam). */
   onContinue?: (lang: TargetLang) => void;
 }) {
   const saved = getSavedTargetLang();
   const [picked, setPicked] = useState<TargetLang | null>(null);
 
-  // Kart animasyonu için hafif gecikmeli giriş
   const [shown, setShown] = useState(false);
   useEffect(() => {
     const t = setTimeout(() => setShown(true), 60);
@@ -75,23 +62,21 @@ export default function MainMenu({
   }, []);
 
   function choose(code: TargetLang) {
-    if (picked) return; // çift tıklama koruması
+    if (picked) return;
     setPicked(code);
     setTargetLang(code);
-    // Müfredat modülleri seçilen dilde yeniden kurulmalı → temiz yenileme.
     setTimeout(() => {
       if (onChoose) onChoose(code);
       window.location.reload();
     }, 250);
   }
 
-  /** Kayıtlı dil ile kaldığı yerden devam et — seçim değiştirilmez. */
   function continueSaved() {
     if (!saved || picked) return;
     if (onContinue) {
       onContinue(saved);
     } else {
-      window.location.reload(); // güvence: işleyici yoksa yenile
+      window.location.reload();
     }
   }
 
@@ -107,7 +92,6 @@ export default function MainMenu({
       padding: '40px 18px 30px',
       boxSizing: 'border-box',
     }}>
-      {/* LOGO */}
       <div style={{ textAlign: 'center', marginBottom: '34px' }}>
         <div style={{
           width: '86px', height: '86px', margin: '0 auto 16px', borderRadius: '24px',
@@ -123,7 +107,6 @@ export default function MainMenu({
         </p>
       </div>
 
-      {/* GERİ DÖN — kayıtlı dil varsa seçim değiştirmeden devam et */}
       {saved && (
         <button
           onClick={continueSaved}
@@ -157,7 +140,6 @@ export default function MainMenu({
         </button>
       )}
 
-      {/* SORU */}
       <div style={{ textAlign: 'center', marginBottom: '22px' }}>
         <h2 style={{ fontSize: '22px', fontWeight: 900, margin: 0 }}>Hangi dili öğrenmek istersin?</h2>
         <p style={{ color: '#64748b', fontSize: '13px', margin: '6px 0 0' }}>
@@ -165,7 +147,6 @@ export default function MainMenu({
         </p>
       </div>
 
-      {/* DİL KARTLARI */}
       <div style={{
         display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(300px, 380px))',
         gap: '18px', justifyContent: 'center', width: '100%', maxWidth: '820px',
@@ -226,7 +207,6 @@ export default function MainMenu({
         })}
       </div>
 
-      {/* ALT BİLGİ */}
       <div style={{ marginTop: '34px', textAlign: 'center', maxWidth: '640px' }}>
         <p style={{ color: '#64748b', fontSize: '12px', lineHeight: 1.7, margin: 0 }}>
           🧠 Aralıklı tekrar (SRS) · kalıcı tekrar enjeksiyonu · karma maraton · deneme sınavları · kart evi ·

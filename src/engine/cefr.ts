@@ -2,7 +2,6 @@ import type { CEFRLevel } from "./types";
 
 export const CEFR_LEVELS: CEFRLevel[] = ["A1", "A2", "B1", "B2", "C1", "C2"];
 
-// Midpoint score (0-100) representing each level's typical difficulty.
 const LEVEL_MIDPOINT: Record<CEFRLevel, number> = {
   A1: 8,
   A2: 25,
@@ -33,11 +32,6 @@ export function levelFromScore(score: number): CEFRLevel {
   return "C2";
 }
 
-/**
- * Continuously adjusts the learner's underlying 0-100 CEFR score after a
- * single graded activity (exercise, review, mini test, ...). Called after
- * placement too, so level tracking never depends solely on the initial test.
- */
 export function updateCefrScore(
   currentScore: number,
   correct: boolean,

@@ -1,7 +1,3 @@
-// ==========================================================
-// EK MÜFREDAT — B1 GENİŞLEME PAKETİ 1/2 (Ünite 52-59)
-// İş hayatına giriş, emlak, banka ve alışveriş pazarlığı.
-// ==========================================================
 import type { UnitModule } from '../curriculumData';
 
 export const EXTRA_B1A: UnitModule[] = [

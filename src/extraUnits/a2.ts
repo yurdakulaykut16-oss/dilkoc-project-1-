@@ -1,9 +1,3 @@
-// ==========================================================
-// EK MÜFREDAT — A2 GENİŞLEME PAKETİ (Ünite 19-26)
-// Gündelik hayatın temel senaryoları: market, kıyafet, kargo,
-// taksi, ev işleri, mutfak, operatör ve havalimanı.
-// Format, curriculumData.ts'teki UNITS_DATA ile BİREBİR aynıdır.
-// ==========================================================
 import type { UnitModule } from '../curriculumData';
 
 export const EXTRA_A2: UnitModule[] = [

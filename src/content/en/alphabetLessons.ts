@@ -1,16 +1,3 @@
-// ============================================================================
-// 🇬🇧 İNGİLİZCE ALFABE & FONETİK DERSLERİ (30 ders)
-// ----------------------------------------------------------------------------
-// Rusça paketle BİREBİR aynı format: HARF/SES → SES İPUCU → NET KURAL →
-// 1-2 ÖRNEK KELİME + OKUMA TESTİ (readingDrills).
-//   • Ders 1-16  : ÇEKİRDEK FONETİK — 26 harf + TH/SH/CH/NG sesleri, Türk
-//                  öğrencinin en çok zorlandığı noktalar (TH, W/V, sessiz
-//                  harfler, magic E, schwa...) burada çözülür.
-//   • Ders 17-30 : TEMATİK OKUMA PRATİĞİ — sayılar, günler, tabelalar,
-//                  menüler, yalancı dostlar...
-// Okunuşlar Türkçe harflerle, vurgulu hece BÜYÜK yazılır.
-// ============================================================================
-
 import type { AlphabetLetter, ReadingDrill } from '../../App';
 
 export interface EnAlphabetLesson {
@@ -31,9 +18,6 @@ const L = (
 });
 
 export const EN_ALPHABET_LESSONS: EnAlphabetLesson[] = [
-  // ==========================================================================
-  // ÇEKİRDEK FONETİK — DERS 1-16
-  // ==========================================================================
   {
     id: 'alpha_e1',
     title: 'Kısa Ünlüler: A, E, I',
@@ -301,9 +285,6 @@ export const EN_ALPHABET_LESSONS: EnAlphabetLesson[] = [
       { word: 'climb', correct: 'KLAYM', distractors: ['KLİMB', 'KLAYMB', 'KLİM'], tr: 'tırmanmak' },
     ],
   },
-  // ==========================================================================
-  // TEMATİK OKUMA PRATİĞİ — DERS 17-30
-  // ==========================================================================
   {
     id: 'alpha_e17',
     title: 'Sayıları Oku: 0-12',

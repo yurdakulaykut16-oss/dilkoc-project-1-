@@ -1,10 +1,3 @@
-// ==========================================================
-// GÜNDELİK HAYAT GENİŞLEMESİ — 60 ÜNİTE / BÖLÜM 3
-//   B1 ×15 : unitNumber 95.9801 – 95.9815
-//   B2 ×5  : unitNumber 143.9801 – 143.9805
-// Odak: yetişkin hayatının resmî tarafı — sözleşme, sigorta, kurum,
-// aile bütçesi, haklar. Hepsi gündelik ama daha karmaşık dil ister.
-// ==========================================================
 import type { UnitModule } from '../curriculumData';
 import { S, W } from './expansion50a';
 

@@ -1,17 +1,3 @@
-// ============================================================================
-// 🇬🇧 İNGİLİZCE EK ÜNİTE MOTORU — Rusça ek paketlerinin İngilizce aynası
-// ----------------------------------------------------------------------------
-// Rusça müfredattaki 499 ek ünite (src/extraUnits/*) ile AYNI kimlik
-// (id / unitNumber / seviye / başlık / açıklama / kategori / ikon / sıra)
-// bu motora beslenir; yalnızca HEDEF DİL İÇERİĞİ İngilizcedir:
-//   • kelimeler: İngilizce karşılık + otomatik okunuş (Türkçe harflerle,
-//     vurgulu hece BÜYÜK — el yazımı 48 çekirdek üniteyle aynı kural),
-//   • cümleler: kelimeyi bağlama yerleştiren İngilizce kalıp cümleler,
-//   • diyaloglar: yalnızca Rusça aynasında da diyalogu olan ünitelerde.
-// Ayrıca 175 İngilizce'ye özel "pekiştirme" ünitesi de aynı motorla üretilir
-// (bkz. enNewSpecs.ts) → EN toplamı 722 = RU toplamı.
-// ============================================================================
-
 import type { DialogueLine, UnitModule, WordDetail } from '../../curriculumData';
 import { EN_EXTRA_SPECS_A } from './enExtraSpecsA';
 import { EN_EXTRA_SPECS_B } from './enExtraSpecsB';
@@ -19,7 +5,6 @@ import { EN_EXTRA_SPECS_C } from './enExtraSpecsC';
 import { EN_NEW_SPECS } from './enNewSpecs';
 
 export type EnExtraLevel = 'A1' | 'A2' | 'B1' | 'B2' | 'C1' | 'C2';
-/** [enKelime, trAnlam] */
 export type EnExtraWord = readonly [string, string];
 export type EnExtraSpec = readonly [
   id: string,
@@ -32,16 +17,9 @@ export type EnExtraSpec = readonly [
   color: string,
   sceneTitle: string,
   sceneContext: string,
-  /** Diyalogsuz ünitelerde null (Rusça aynayla birebir aynı yapı). */
   speakers: readonly [string, string] | null,
   words: readonly EnExtraWord[],
 ];
-
-// ============================================================================
-// OKUNUŞ — İngilizce → Türkçe harf çevirisi (kaba fonetik kural seti)
-// Kural: vurgulu hece BÜYÜK yazılır (heLOU, TEYbıl, MORning).
-// Sık yanlış okunan kelimeler el listesinde önceliklidir.
-// ============================================================================
 
 const IRREGULAR: Record<string, string> = {
   a: 'EY', the: 'DI', of: 'OV', to: 'TU', i: 'AY', be: 'Bİ', am: 'EM', an: 'EN',
@@ -111,12 +89,10 @@ const IRREGULAR: Record<string, string> = {
   ratio: 'REYşiou', media: 'Mİıdiı',
 };
 
-/** Vurguyu ilk heceye koyar; “şın/jın/çır” eklerinde ek önündeki heceyi. */
 function markStress(out: string): string {
   if (!out || out === out.toUpperCase()) return out;
   const V = 'aeıioöuü';
   const isV = (c: string) => V.includes(c.toLocaleLowerCase('tr'));
-  // hece çekirdekleri: ünlü koşularının konumları
   const runs: [number, number][] = [];
   let i = 0;
   while (i < out.length) {
@@ -128,22 +104,18 @@ function markStress(out: string): string {
     } else i++;
   }
   if (runs.length === 0) return out;
-  if (runs.length === 1) return out.toUpperCase(); // tek heceli kelime
-  // -şın/-jın/-çır/-şıl ekleri: ekin ünlüsünden önceki hece vurgulanır
+  if (runs.length === 1) return out.toUpperCase();
   const tail = out.slice(-3);
   let target = 0;
   if ((tail === 'şın' || tail === 'jın' || tail === 'çır' || tail === 'şıl' || tail === 'çıl') && runs.length >= 2) {
     target = runs.length - 2;
   }
   const ve = runs[target][1];
-  // vurgulu hecenin BAŞI: hedef ilk heceyse kelime başı; değilse önceki
-  // hecenin ünlüsünden sonraki tek ünsüz
   let start = 0;
   if (target > 0) {
     const pe = runs[target - 1][1];
     start = pe + (pe < out.length && !isV(out[pe]) ? 1 : 0);
   }
-  // vurgulu hecenin SONU: ünlü koşusundan sonra en fazla bir ünsüz
   let end = ve;
   if (end < out.length && !isV(out[end]) && end + 1 < out.length) end += 1;
   return out.slice(0, start).toLocaleLowerCase('tr') + out.slice(start, end).toLocaleUpperCase('tr') + out.slice(end).toLocaleLowerCase('tr');
@@ -152,9 +124,8 @@ function markStress(out: string): string {
 const VOICED_END = new Set(['a', 'e', 'ı', 'i', 'o', 'ö', 'u', 'ü', 'b', 'd', 'g', 'c', 'v', 'z', 'l', 'm', 'n', 'r', 'y', 'ng']);
 
 function readToken(w: string): string {
-  // son noktalama/işaret kuyruğunu ayır: "who?" → HU + ?
   const m = w.match(/^([a-z]+(?:'[a-z]+)?)([^a-z]*)$/);
-  if (!m) return w; // yabancı işaret/sayı → olduğu gibi
+  if (!m) return w;
   const [, core, tail] = m;
   if (IRREGULAR[core]) return IRREGULAR[core] + tail;
   return readCore(core) + tail;
@@ -168,7 +139,6 @@ function readCore(w: string): string {
   const at = (k: number) => w[i + k] ?? '';
   const prevOut = () => out.slice(-1);
   while (i < n) {
-    // ---- çok karakterli kurallar (önce en uzunlar) ----
     if (rest().startsWith('eigh')) { out += 'ey'; i += 4; continue; }
     if (rest().startsWith('ough')) { out += 'af'; i += 4; continue; }
     if (rest().startsWith('augh')) { out += 'af'; i += 4; continue; }
@@ -196,19 +166,16 @@ function readCore(w: string): string {
     if (rest().startsWith('ible') && i + 4 === n) { out += 'ibıl'; i += 4; continue; }
     if (rest().startsWith('tive') && i + 4 === n) { out += 'tiv'; i += 4; continue; }
     if (rest().startsWith('ally') && i + 4 === n) { out += 'ıli'; i += 4; continue; }
-    // -ed son eki
     if (rest() === 'ed' && i >= 2) {
       const p = prevOut();
       out += (p === 't' || p === 'd') ? 'dı' : (VOICED_END.has(p) ? 'd' : 't');
       i += 2; continue;
     }
-    // -es / -s son eki
     if (rest() === 'es' && i > 0) {
       const p = prevOut();
       out += (p === 's' || p === 'ş' || p === 'ç' || p === 'z' || p === 'ks' || p === 'c') ? 'ız' : 's';
       i += 2; continue;
     }
-    // ikili ünsüzler
     const dbl: Record<string, string> = { ss: 's', ll: 'l', tt: 't', pp: 'p', rr: 'r', mm: 'm', nn: 'n', dd: 'd', ff: 'f', gg: 'g', bb: 'b', cc: 'k' };
     if (dbl[rest().slice(0, 2)] && !(rest().slice(0, 2) === 'cc' && /[ei]/.test(at(2)))) { out += dbl[rest().slice(0, 2)]; i += 2; continue; }
     if (rest().slice(0, 2) === 'cc') { out += 'ks'; i += 2; continue; }
@@ -227,7 +194,6 @@ function readCore(w: string): string {
     if (rest().slice(0, 2) === 'kn' && i === 0) { out += 'n'; i += 2; continue; }
     if (rest().slice(0, 2) === 'wr' && i === 0) { out += 'r'; i += 2; continue; }
     if (rest().slice(0, 2) === 'mb' && i + 2 === n) { out += 'm'; i += 2; continue; }
-    // ikili ünlüler
     const pairs: Record<string, string> = {
       ee: 'ii', ea: 'ii', oo: 'uu', ou: 'au', oa: 'ou', ai: 'ey', ay: 'ey',
       au: 'o', aw: 'o', ew: 'yu', ue: 'u', ui: 'u', oi: 'oy', oy: 'oy',
@@ -241,7 +207,6 @@ function readCore(w: string): string {
     if (rest().slice(0, 2) === 'ow') { out += (i + 2 === n) ? 'ou' : 'au'; i += 2; continue; }
     if (rest().slice(0, 2) === 'ey' && i + 2 === n) { out += 'i'; i += 2; continue; }
     if (rest().slice(0, 2) === 'oy' && i + 2 === n) { out += 'oy'; i += 2; continue; }
-    // sihirli -e (make, note, cute, dance, large)
     const c = at(0);
     const nextC = at(1);
     const nextNext = at(2);
@@ -251,8 +216,7 @@ function readCore(w: string): string {
       out += { c: 's', g: 'c' }[nextC] ?? nextC;
       i += 3; continue;
     }
-    // tek karakterler
-    if (c === 'e' && i + 1 === n) { i += 1; continue; } // sessiz son -e
+    if (c === 'e' && i + 1 === n) { i += 1; continue; }
     if (c === 'y') { out += (i === 0 ? 'y' : (i + 1 === n ? 'i' : 'i')); i += 1; continue; }
     if (c === 'o' && i + 1 === n) { out += 'ou'; i += 1; continue; }
     if (c === 'a') { out += 'e'; i += 1; continue; }
@@ -266,22 +230,17 @@ function readCore(w: string): string {
     if (c === 's') { out += 's'; i += 1; continue; }
     if (c === "'") { i += 1; continue; }
     if ('bdfklmnprstvzh'.includes(c)) { out += c; i += 1; continue; }
-    out += c; i += 1; // geri kalan her şey (q vb.)
+    out += c; i += 1;
   }
   return markStress(out);
 }
 
-/** Kelime/ifade okunuşu: “good morning” → “gud MORning”. */
 export function enReading(text: string): string {
   return text
     .split(/(\s+)/)
     .map((tok) => (/\s/.test(tok) ? tok : readToken(tok.toLocaleLowerCase('en'))))
     .join('');
 }
-
-// ============================================================================
-// YARDIMCILAR — deterministik karıştırma (48 çekirdek ünitedeki derange ile aynı)
-// ============================================================================
 
 function derange(words: string[]): string[] {
   if (words.length < 2) return [...words];
@@ -294,11 +253,6 @@ function rotate<T>(items: readonly T[], amount: number): T[] {
   const k = ((amount % items.length) + items.length) % items.length;
   return [...items.slice(k), ...items.slice(0, k)];
 }
-
-// ============================================================================
-// CÜMLE ŞABLONLARI — (kelime, başlık) → [İngilizce cümle, Türkçe çeviri]
-// Temel banka A1/A2, ileri banka B1+ ünitelerde kullanılır.
-// ============================================================================
 
 type SentTpl = (w: EnExtraWord, title: string) => readonly [string, string];
 
@@ -327,11 +281,6 @@ const SENT_ADV: SentTpl[] = [
   (w, t) => [`Within “${t}”, “${w[0]}” is the word to master first.`, `“${t}” konusunda önce ustalaşılması gereken kelime “${w[1]}”.`],
   (w) => [`If “${w[0]}” feels hard, break it into sounds.`, `“${w[1]}” zor geliyorsa seslere ayırın.`],
 ];
-
-// ============================================================================
-// DİYALOG ŞABLONLARI — 4-5 satır, 2 konuşmacı, 4-5 kelime gömülü.
-// Temel banka A1/A2, ileri banka B1+ ünitelerde kullanılır.
-// ============================================================================
 
 type DlgTpl = (sp: readonly [string, string], title: string, ws: EnExtraWord[]) => { speaker: string; ru: string; tr: string }[];
 
@@ -396,10 +345,6 @@ const DIALOG_ADV: DlgTpl[] = [
   ],
 ];
 
-// ============================================================================
-// GRAMER/KULLANIM NOTU — seviyeye göre Türkçe çalışma ipucu
-// ============================================================================
-
 const LEVEL_TIP: Record<EnExtraLevel, string> = {
   A1: 'Seviye A1: kelimeleri iki-üç kelimelik kısa cümlelerde dene; önce anlamı, sonra telaffuzu oturt.',
   A2: 'Seviye A2: kelimeleri günlük durumları anlatan cümlelere yerleştir; çoğul ve çekim formlarını da söyle.',
@@ -413,17 +358,13 @@ function grammarNote(title: string, level: EnExtraLevel, cat: string): string {
   return `📌 ÜNİTE ODAĞI — ${title}:\n1. Bu ünite "${cat}" kategorisinden seçilmiş kelimeleri bağlam içinde çalıştırır.\n2. ${LEVEL_TIP[level]}\n3. Okunuşta BÜYÜK yazılan hece vurgulu hecedir; kelimeyi sesli tekrar ederken vurguyu koru.`;
 }
 
-// ============================================================================
-// ÜNİTE ÜRETİMİ
-// ============================================================================
-
 function makeExtraUnit(spec: EnExtraSpec, index: number): UnitModule {
   const [id, n, lv, icon, title, desc, cat, color, sceneTitle, sceneContext, speakers, words] = spec;
   const advanced = lv === 'B1' || lv === 'B2' || lv === 'C1' || lv === 'C2';
 
   const wordDetails: WordDetail[] = words.map(([en, tr], i) => ({
     id: `${id}_w${i + 1}`,
-    ru: en, // "ru" alanı hedef dil metnini taşır (İngilizce pakette İngilizce)
+    ru: en,
     reading: enReading(en),
     tr,
     level: lv,
@@ -463,8 +404,6 @@ function makeExtraUnit(spec: EnExtraSpec, index: number): UnitModule {
     unit.dialogue = tpl(speakers, title, dw).map((line) => ({
       speaker: line.speaker,
       ru: line.ru,
-      // Okunuşta Türkçe başlık olduğu gibi korunur (Rusça paketteki
-      // transliterate davranışıyla aynı: yalnız hedef dil kelimeleri çevrilir).
       reading: enReading(line.ru.split(title).join('\u0001')).split('\u0001').join(title),
       tr: line.tr,
     })) as DialogueLine[];
@@ -473,12 +412,10 @@ function makeExtraUnit(spec: EnExtraSpec, index: number): UnitModule {
   return unit;
 }
 
-/** Rusça ek paketlerinin İngilizce aynası: 499 ünite, aynı kimlik ve sırada. */
 export const EN_EXTRA_UNITS: UnitModule[] = [
   ...EN_EXTRA_SPECS_A,
   ...EN_EXTRA_SPECS_B,
   ...EN_EXTRA_SPECS_C,
 ].map(makeExtraUnit);
 
-/** İngilizce'ye özel pekiştirme üniteleri (175) → EN toplamı 722 = RU. */
 export const EN_NEW_UNITS: UnitModule[] = EN_NEW_SPECS.map(makeExtraUnit);

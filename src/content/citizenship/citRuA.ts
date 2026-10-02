@@ -1,13 +1,3 @@
-// DilKoç © 2026 — Bu kaynak kod telif hakkıyla korunur. İzinsiz kopyalama,
-// dağıtma ve türev çalışma üretme yasaktır (bkz. LICENSE).
-// ============================================================================
-// 🛂 VİZE & PASAPORT / VATANDAŞLIK / GÖÇ PAKETİ — RUSÇA (1/2: ünite 1-25)
-// ----------------------------------------------------------------------------
-// Vize-pasaport işlemleri, vatandaşlık başvurusu, göç ve uyum, doğum yoluyla
-// vatandaşlık konularında bilinmesi gereken kelimeler. İngilizce aynası:
-// content/en/enCitA.ts (aynı 50 ünite, hedef dil İngilizce).
-// ============================================================================
-
 import type { UnitModule } from '../../curriculumData';
 import { makeCitUnit, type CitWord, type CitSent, type CitLine } from './makeCitUnit';
 
