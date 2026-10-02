@@ -48,6 +48,13 @@ type ChatEntry = {
   role: 'user' | 'assistant';
   text: string;
   provider?: string;
+  /** Ajanın kullandığı bilgi kaynakları — cevabın nereden geldiğini gösterir. */
+  sources?: string[];
+  /** Tek dokunuşla sorulabilen akıllı takip soruları. */
+  followUps?: string[];
+  /** Cevabı üretirken birleştirilen bilgi noktası sayısı. */
+  depth?: number;
+  confidence?: 'yüksek' | 'orta' | 'düşük';
 };
 
 export interface AiChatProps {
@@ -58,10 +65,29 @@ export interface AiChatProps {
   learningFocus: LearningFocus;
   mistakes: CoachMistake[];
   srsBank: SrsItem[];
+  /** Koçun hata defterine kayıt ekler (AiTutor üzerinden App'e bağlanır). */
+  addMistake?: (ru: string, tr: string, reason: string) => void;
+  /** Aralıklı tekrar kutusuna kart ekler. */
+  addToSRS?: (ru: string, tr: string, type: 'word' | 'letter') => void;
+  /** Soru sorma davranışını ödüllendirir. */
+  onEarnXp?: (amount: number) => void;
 }
 
 const CHAT_KEY = 'dilkoc_ai_agent_chat_v1';
 const AUTO_SPEAK_KEY = 'dilkoc_ai_agent_autospeak_v1';
+
+function restoreChat(): ChatEntry[] {
+  try {
+    const raw = localStorage.getItem(CHAT_KEY);
+    if (raw) {
+      const parsed = JSON.parse(raw) as ChatEntry[];
+      if (Array.isArray(parsed) && parsed.length > 0 && parsed.every(entry => entry && typeof entry.text === 'string')) {
+        return parsed.slice(-24);
+      }
+    }
+  } catch { /* bozuk kayıt varsa sessizce yeni sohbet aç */ }
+  return initialChat();
+}
 
 function initialChat(): ChatEntry[] {
   return [{
@@ -134,8 +160,120 @@ function splitSpeechSegments(text: string): SpeechSegment[] {
   return segments.length > 0 ? segments : [{ text, lang: labelLatin(text) }];
 }
 
+/* ─────────────────── ZENGİN CEVAP RENDER'I ───────────────────
+ * Ajan cevapları "**kalın**", bölüm başlıkları ve hizalı tablo satırları içerir.
+ * Düz metin olarak basmak bu yapıyı görünmez kılıyordu; aşağıdaki hafif
+ * biçimlendirici bölümleri, vurguları ve tabloları gerçek görsel bloklara çevirir.
+ */
+
+const SECTION_STYLES: { match: RegExp; color: string; background: string }[] = [
+  { match: /^⚡/, color: '#fde68a', background: 'rgba(245,158,11,.12)' },
+  { match: /^📘/, color: '#bae6fd', background: 'rgba(56,189,248,.10)' },
+  { match: /^📊/, color: '#c7d2fe', background: 'rgba(99,102,241,.12)' },
+  { match: /^🧩/, color: '#bbf7d0', background: 'rgba(34,197,94,.10)' },
+  { match: /^🔍/, color: '#e9d5ff', background: 'rgba(168,85,247,.10)' },
+  { match: /^⚠️/, color: '#fecaca', background: 'rgba(239,68,68,.10)' },
+  { match: /^🎯/, color: '#99f6e4', background: 'rgba(20,184,166,.10)' },
+  { match: /^🔗/, color: '#cbd5e1', background: 'rgba(148,163,184,.10)' },
+];
+
+function inlineBold(text: string, keyPrefix: string): React.ReactNode[] {
+  return text.split(/(\*\*[^*]+\*\*)/g).filter(Boolean).map((chunk, index) => {
+    if (chunk.startsWith('**') && chunk.endsWith('**') && chunk.length > 4) {
+      return <strong key={`${keyPrefix}-b${index}`} style={{ color: '#f8fafc', fontWeight: 900 }}>{chunk.slice(2, -2)}</strong>;
+    }
+    return <React.Fragment key={`${keyPrefix}-t${index}`}>{chunk}</React.Fragment>;
+  });
+}
+
+function isSectionHeading(line: string) {
+  return SECTION_STYLES.some(style => style.match.test(line)) && line === line.toLocaleUpperCase('tr-TR');
+}
+
+function AnswerBody({ text }: { text: string }) {
+  const blocks = text.split('\n\n');
+  return (
+    <div style={{ display: 'grid', gap: '9px' }}>
+      {blocks.map((block, blockIndex) => {
+        const lines = block.split('\n');
+        const heading = lines[0] ?? '';
+        const style = SECTION_STYLES.find(entry => entry.match.test(heading));
+
+        if (style && isSectionHeading(heading)) {
+          const body = lines.slice(1);
+          // Girintili satırlar hizalı tablodur; tek boşluklu font ile göster.
+          const monospace = body.some(line => /^\s{2,}/.test(line) || /\s{2,}\S/.test(line));
+          return (
+            <div key={`blk-${blockIndex}`} style={{ borderRadius: '11px', background: style.background, border: `1px solid ${style.color}22`, padding: '8px 10px' }}>
+              <div style={{ color: style.color, fontSize: '10.5px', fontWeight: 950, letterSpacing: '.7px', marginBottom: body.length ? '5px' : 0 }}>{heading}</div>
+              {body.length > 0 && (
+                <div style={{
+                  whiteSpace: 'pre-wrap',
+                  fontFamily: monospace ? 'ui-monospace, SFMono-Regular, Menlo, Consolas, monospace' : 'inherit',
+                  fontSize: monospace ? '11.5px' : '12.5px',
+                  lineHeight: monospace ? 1.6 : 1.55,
+                  color: '#e2e8f0',
+                  overflowX: 'auto',
+                }}>
+                  {body.map((line, lineIndex) => (
+                    <React.Fragment key={`blk-${blockIndex}-l${lineIndex}`}>
+                      {inlineBold(line, `blk-${blockIndex}-l${lineIndex}`)}
+                      {lineIndex < body.length - 1 ? '\n' : ''}
+                    </React.Fragment>
+                  ))}
+                </div>
+              )}
+            </div>
+          );
+        }
+
+        return (
+          <div key={`blk-${blockIndex}`} style={{ whiteSpace: 'pre-wrap', lineHeight: 1.6, color: '#e2e8f0' }}>
+            {lines.map((line, lineIndex) => (
+              <React.Fragment key={`blk-${blockIndex}-p${lineIndex}`}>
+                {inlineBold(line, `blk-${blockIndex}-p${lineIndex}`)}
+                {lineIndex < lines.length - 1 ? '\n' : ''}
+              </React.Fragment>
+            ))}
+          </div>
+        );
+      })}
+    </div>
+  );
+}
+
+/** Sohbet boşken gösterilen, motorun en güçlü yeteneklerini sergileyen başlangıç soruları. */
+const STARTER_PROMPTS = isEnglish()
+  ? ['Present Perfect ile Past Simple farkı', '«get up» ne demek?', 'in / on / at nasıl seçilir?', 'Bana günlük çalışma planı çıkar', 'Zayıf konularım neler?']
+  : ['«книга» kelimesinin hâllerini göster', '«читать» fiilini çekimle', 'в ve на farkı nedir?', '«хорошо» nasıl okunur?', 'Zayıf konularım neler?'];
+
+const CONFIDENCE_STYLE: Record<'yüksek' | 'orta' | 'düşük', { label: string; color: string; background: string }> = {
+  'yüksek': { label: 'yüksek güven', color: '#86efac', background: 'rgba(34,197,94,.16)' },
+  'orta': { label: 'orta güven', color: '#fde68a', background: 'rgba(245,158,11,.16)' },
+  'düşük': { label: 'düşük güven', color: '#fca5a5', background: 'rgba(239,68,68,.16)' },
+};
+
+/**
+ * Ajan bir cümle düzeltmesi yaptıysa, düzeltilen biçimi ve gerekçesini çıkarır;
+ * böylece kullanıcı tek dokunuşla bunu koçun hata defterine kaydedebilir.
+ */
+function extractCorrection(text: string, sources: string[] | undefined): { corrected: string; reason: string } | null {
+  if (!sources?.some(source => source.includes('gramer kural motoru'))) return null;
+  const corrected = text.match(/✅ Doğru biçim: \*\*(.+?)\*\*/);
+  if (!corrected) return null;
+  const reason = text.match(/\*\*Kural:\*\*\s*(.+)/);
+  return { corrected: corrected[1].trim(), reason: (reason?.[1] || 'Yerel gramer kural motoru düzeltmesi').trim() };
+}
+
+/** Ajan cevabından SRS'e eklenebilecek ilk hedef-dil kelimesini çıkarır. */
+function extractTargetTerm(text: string): string | null {
+  const pattern = isEnglish() ? /\*\*([A-Za-z][A-Za-z' -]{2,28})\*\*/ : /\*\*([\u0400-\u04FF][\u0400-\u04FF' -]{1,28})\*\*/;
+  const match = text.match(pattern);
+  return match ? match[1].trim() : null;
+}
+
 export default function AiChat(props: AiChatProps) {
-  const [messages, setMessages] = useState<ChatEntry[]>(initialChat);
+  const [messages, setMessages] = useState<ChatEntry[]>(restoreChat);
   const [input, setInput] = useState('');
   const [busy, setBusy] = useState(false);
   const [autoSpeak, setAutoSpeak] = useState(() => localStorage.getItem(AUTO_SPEAK_KEY) !== '0');
@@ -278,7 +416,19 @@ export default function AiChat(props: AiChatProps) {
   const persist = (next: ChatEntry[]) => {
     const trimmed = next.slice(-24);
     setMessages(trimmed);
-    try { localStorage.removeItem(CHAT_KEY); } catch {}
+    // Sohbet geçmişi cihazda kalır; sayfa yenilenince konuşma kaybolmaz.
+    try { localStorage.setItem(CHAT_KEY, JSON.stringify(trimmed)); } catch {}
+  };
+
+  const copyAnswer = async (text: string) => {
+    // Markdown vurgularını temizleyip düz metin olarak panoya kopyala.
+    const plain = text.replace(/\*\*/g, '');
+    try {
+      await navigator.clipboard.writeText(plain);
+      setStatus('Cevap panoya kopyalandı.');
+    } catch {
+      setStatus('Panoya kopyalanamadı; metni elle seçebilirsin.');
+    }
   };
 
   const speakAnswer = async (text: string) => {
@@ -330,17 +480,24 @@ export default function AiChat(props: AiChatProps) {
       completedAlpha: props.completedAlpha.length,
       completedGrammar: props.completedGrammar.length,
       recentUserQueries: messages.filter(message => message.role === 'user').slice(-3).map(message => message.text),
+      mistakes: props.mistakes,
+      srsBank: props.srsBank,
     });
     if (!cached && cacheable) void putLocalAnswerCache(query, props.learningFocus.title, answer);
-    const sourceLabel = answer.sources.slice(0, 2).join(' • ');
     const assistantEntry: ChatEntry = {
       id: `local-${Date.now()}`,
       role: 'assistant',
       text: answer.text,
-      provider: `yerel zeka • ${answer.confidence} güven${sourceLabel ? ` • ${sourceLabel}` : ''}`,
+      provider: cached ? 'yerel zeka · önbellek' : 'yerel zeka',
+      sources: answer.sources,
+      followUps: answer.followUps,
+      depth: answer.depth,
+      confidence: answer.confidence,
     };
     persist([...next, assistantEntry]);
-    setStatus(`🧠 ${cached ? 'Önbellekten anında' : 'Yerel zeka'} yanıtladı • ${answer.confidence} güven • 0 token`);
+    // Soru sormak öğrenme davranışıdır; küçük ama düzenli ödüllendirilir.
+    if (!cached && answer.confidence !== 'düşük') props.onEarnXp?.(2);
+    setStatus(`🧠 ${cached ? 'Önbellekten anında' : 'Yerel zeka'} yanıtladı • ${answer.confidence} güven${answer.depth ? ` • ${answer.depth} bilgi noktası` : ''} • 0 token`);
     if (autoSpeak) void speakAnswer(answer.text);
     if (abortRef.current === controller) abortRef.current = null;
     setBusy(false);
@@ -349,7 +506,8 @@ export default function AiChat(props: AiChatProps) {
   const clearChat = () => {
     abortRef.current?.abort();
     stopSpeech();
-    persist(initialChat());
+    try { localStorage.removeItem(CHAT_KEY); } catch {}
+    setMessages(initialChat());
     setStatus(langMeta().code === 'en' ? '🧠 Yerel İngilizce zekası hazır • 0 token' : '🧠 Yerel Rusça zekası hazır • 0 token');
   };
 
@@ -425,18 +583,117 @@ export default function AiChat(props: AiChatProps) {
         </div>
       </div>
 
-      <div style={{ marginTop: '14px', minHeight: '130px', maxHeight: '340px', overflowY: 'auto', display: 'grid', gap: '8px', padding: '4px' }}>
-        {messages.map(message => (
-          <div key={message.id} style={{ justifySelf: message.role === 'user' ? 'end' : 'start', width: 'min(92%, 680px)', padding: '10px 12px', borderRadius: message.role === 'user' ? '14px 14px 4px 14px' : '14px 14px 14px 4px', color: '#f8fafc', background: message.role === 'user' ? '#1d4ed8' : '#1e293b', border: `1px solid ${message.role === 'user' ? '#3b82f6' : '#334155'}`, lineHeight: 1.55, fontSize: '13px', whiteSpace: 'pre-wrap' }}>
-            <div>{message.text}</div>
-            <div style={{ display: 'flex', justifyContent: 'space-between', gap: '8px', alignItems: 'center', marginTop: '7px' }}>
-              <span style={{ color: '#64748b', fontSize: '10px' }}>{message.provider || (message.role === 'user' ? 'sen' : 'ajan')}</span>
-              {message.role === 'assistant' && <button onClick={() => void speakAnswer(message.text)} style={{ border: 'none', background: 'transparent', color: '#7dd3fc', cursor: 'pointer', fontSize: '11px', fontWeight: 800 }}>🔊 Dinle</button>}
+      <div style={{ marginTop: '14px', minHeight: '130px', maxHeight: '420px', overflowY: 'auto', display: 'grid', gap: '10px', padding: '4px' }}>
+        {messages.map(message => {
+          const badge = message.confidence ? CONFIDENCE_STYLE[message.confidence] : null;
+          const term = message.role === 'assistant' ? extractTargetTerm(message.text) : null;
+          const correction = message.role === 'assistant' ? extractCorrection(message.text, message.sources) : null;
+          return (
+            <div
+              key={message.id}
+              style={{
+                justifySelf: message.role === 'user' ? 'end' : 'start',
+                width: message.role === 'user' ? 'min(88%, 560px)' : 'min(96%, 720px)',
+                padding: message.role === 'user' ? '10px 12px' : '11px 13px',
+                borderRadius: message.role === 'user' ? '14px 14px 4px 14px' : '14px 14px 14px 4px',
+                color: '#f8fafc',
+                background: message.role === 'user' ? '#1d4ed8' : 'rgba(15,23,42,.92)',
+                border: `1px solid ${message.role === 'user' ? '#3b82f6' : '#334155'}`,
+                lineHeight: 1.55,
+                fontSize: '13px',
+              }}
+            >
+              {message.role === 'assistant'
+                ? <AnswerBody text={message.text} />
+                : <div style={{ whiteSpace: 'pre-wrap' }}>{message.text}</div>}
+
+              {message.role === 'assistant' && message.sources && message.sources.length > 0 && (
+                <div style={{ display: 'flex', flexWrap: 'wrap', gap: '5px', marginTop: '9px' }}>
+                  {message.sources.slice(0, 4).map((source, index) => (
+                    <span key={`${message.id}-src-${index}`} style={{ fontSize: '9.5px', fontWeight: 800, color: '#94a3b8', background: 'rgba(148,163,184,.12)', border: '1px solid rgba(148,163,184,.2)', borderRadius: '999px', padding: '3px 7px' }}>
+                      📎 {source}
+                    </span>
+                  ))}
+                </div>
+              )}
+
+              {message.role === 'assistant' && message.followUps && message.followUps.length > 0 && (
+                <div style={{ marginTop: '10px', borderTop: '1px dashed #334155', paddingTop: '9px' }}>
+                  <div style={{ color: '#7dd3fc', fontSize: '9.5px', fontWeight: 950, letterSpacing: '.6px', marginBottom: '6px' }}>↪️ DEVAMINDA ŞUNU SORABİLİRSİN</div>
+                  <div style={{ display: 'flex', flexWrap: 'wrap', gap: '6px' }}>
+                    {message.followUps.slice(0, 4).map((followUp, index) => (
+                      <button
+                        key={`${message.id}-fu-${index}`}
+                        type="button"
+                        disabled={busy || isSpeaking || isListening}
+                        onClick={() => void send(undefined, followUp)}
+                        style={{ border: '1px solid rgba(56,189,248,.45)', background: 'rgba(56,189,248,.10)', color: '#bae6fd', borderRadius: '999px', padding: '5px 10px', fontSize: '11px', fontWeight: 800, cursor: busy ? 'wait' : 'pointer', textAlign: 'left' }}
+                      >
+                        {followUp}
+                      </button>
+                    ))}
+                  </div>
+                </div>
+              )}
+
+              <div style={{ display: 'flex', justifyContent: 'space-between', gap: '8px', alignItems: 'center', marginTop: '9px', flexWrap: 'wrap' }}>
+                <div style={{ display: 'flex', gap: '6px', alignItems: 'center', flexWrap: 'wrap' }}>
+                  <span style={{ color: '#64748b', fontSize: '10px' }}>{message.provider || (message.role === 'user' ? 'sen' : 'ajan')}</span>
+                  {badge && (
+                    <span style={{ fontSize: '9.5px', fontWeight: 900, color: badge.color, background: badge.background, borderRadius: '999px', padding: '2px 7px' }}>{badge.label}</span>
+                  )}
+                  {typeof message.depth === 'number' && message.depth > 0 && (
+                    <span style={{ fontSize: '9.5px', fontWeight: 900, color: '#c7d2fe', background: 'rgba(99,102,241,.16)', borderRadius: '999px', padding: '2px 7px' }}>🧠 {message.depth} bilgi noktası</span>
+                  )}
+                </div>
+                {message.role === 'assistant' && (
+                  <div style={{ display: 'flex', gap: '10px', alignItems: 'center' }}>
+                    {correction && props.addMistake && (
+                      <button
+                        type="button"
+                        onClick={() => { props.addMistake?.(correction.corrected, correction.reason, correction.reason); setStatus('Bu düzeltme hata defterine kaydedildi.'); }}
+                        title="Bu düzeltmeyi koçun hata defterine kaydet"
+                        style={{ border: 'none', background: 'transparent', color: '#fca5a5', cursor: 'pointer', fontSize: '11px', fontWeight: 800 }}
+                      >
+                        📓 Hata defterime ekle
+                      </button>
+                    )}
+                    {!correction && term && props.addToSRS && (
+                      <button
+                        type="button"
+                        onClick={() => { props.addToSRS?.(term, '', 'word'); setStatus(`«${term}» tekrar kutusuna eklendi.`); }}
+                        title="Bu kelimeyi aralıklı tekrar kutusuna ekle"
+                        style={{ border: 'none', background: 'transparent', color: '#86efac', cursor: 'pointer', fontSize: '11px', fontWeight: 800 }}
+                      >
+                        ＋ Tekrara ekle
+                      </button>
+                    )}
+                    <button onClick={() => void copyAnswer(message.text)} style={{ border: 'none', background: 'transparent', color: '#94a3b8', cursor: 'pointer', fontSize: '11px', fontWeight: 800 }}>⧉ Kopyala</button>
+                    <button onClick={() => void speakAnswer(message.text)} style={{ border: 'none', background: 'transparent', color: '#7dd3fc', cursor: 'pointer', fontSize: '11px', fontWeight: 800 }}>🔊 Dinle</button>
+                  </div>
+                )}
+              </div>
             </div>
-          </div>
-        ))}
-        {busy && <div style={{ justifySelf: 'start', color: '#bae6fd', fontSize: '12px', padding: '8px 12px' }}>🧠 Bağlamını okuyorum, hızlı cevap hazırlıyorum…</div>}
+          );
+        })}
+        {busy && <div style={{ justifySelf: 'start', color: '#bae6fd', fontSize: '12px', padding: '8px 12px' }}>🧠 Bağlamını okuyorum, bilgi bankasını tarıyorum…</div>}
       </div>
+
+      {messages.filter(message => message.role === 'user').length === 0 && (
+        <div style={{ margin: '4px 0 10px', display: 'flex', flexWrap: 'wrap', gap: '6px' }}>
+          {STARTER_PROMPTS.map(prompt => (
+            <button
+              key={prompt}
+              type="button"
+              disabled={busy || isSpeaking || isListening}
+              onClick={() => void send(undefined, prompt)}
+              style={{ border: '1px solid rgba(34,197,94,.42)', background: 'rgba(34,197,94,.10)', color: '#bbf7d0', borderRadius: '999px', padding: '6px 11px', fontSize: '11px', fontWeight: 800, cursor: 'pointer' }}
+            >
+              {prompt}
+            </button>
+          ))}
+        </div>
+      )}
 
       <form onSubmit={send} style={{ display: 'grid', gridTemplateColumns: '1fr auto auto', gap: '8px' }}>
         <textarea value={input} onChange={event => setInput(event.target.value)} onKeyDown={event => { if (event.key === 'Enter' && !event.shiftKey) { event.preventDefault(); void send(); } }} disabled={busy || isSpeaking || isListening} rows={2} placeholder={isEnglish() ? 'Sorunu yaz… Örn. “get up” ne demek?' : 'Sorunu yaz… Örn. ‘Как тебя зовут?’ ne demek?'} style={{ resize: 'vertical', minWidth: 0, background: '#020617', border: '1px solid #334155', color: '#f8fafc', borderRadius: '13px', padding: '11px 12px', fontFamily: 'inherit', outline: 'none' }} />

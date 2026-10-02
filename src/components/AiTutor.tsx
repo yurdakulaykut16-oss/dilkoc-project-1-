@@ -7,6 +7,12 @@ export interface AiTutorProps extends AiChatProps {
   onEarnXp: (amount: number) => void;
 }
 
+/**
+ * AiTutor, sohbet ajanını uygulamanın koç altyapısına bağlayan ince sarmalayıcıdır.
+ * Hata defteri, SRS kutusu ve XP geri çağrıları artık ajana kadar iletilir; böylece
+ * ajan "zayıf konularım neler?" gibi soruları gerçek kullanıcı verisiyle yanıtlar
+ * ve cevaplardaki kelimeler tek dokunuşla tekrar kutusuna eklenebilir.
+ */
 export default function AiTutor({
   completedUnits,
   completedTopics,
@@ -15,6 +21,9 @@ export default function AiTutor({
   learningFocus,
   mistakes,
   srsBank,
+  addMistake,
+  addToSRS,
+  onEarnXp,
 }: AiTutorProps) {
   return (
     <AiChat
@@ -25,6 +34,9 @@ export default function AiTutor({
       learningFocus={learningFocus}
       mistakes={mistakes}
       srsBank={srsBank}
+      addMistake={addMistake}
+      addToSRS={addToSRS}
+      onEarnXp={onEarnXp}
     />
   );
 }

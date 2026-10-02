@@ -1,198 +1,25 @@
 import { UNITS_DATA } from '../curriculumData';
 import { isEnglish } from '../content/activeLanguage';
+import { RU_CORE_KNOWLEDGE, type CoreKnowledgeEntry } from './knowledge/ruCore';
+import { EN_CORE_KNOWLEDGE } from './knowledge/enCore';
 
-export interface RussianKnowledgeEntry {
-  id: string;
-  title: string;
-  keywords: string[];
-  content: string;
-}
+export type RussianKnowledgeEntry = CoreKnowledgeEntry;
 
-const RUSSIAN_CORE_KNOWLEDGE: RussianKnowledgeEntry[] = [
-  {
-    id: 'alphabet-pronunciation', title: 'Alfabe, vurgu ve telaffuz',
-    keywords: ['alfabe', 'harf', 'okunuş', 'telaffuz', 'vurgu', 'ь', 'ъ', 'ё', 'о', 'akanje'],
-    content: 'Rusça 33 harflidir. Vurgu sözlük anlamını ve sesleri etkileyebilir. ё daima vurguludur; basılı metinde çoğu kez е yazılır. Vurgusuz о [a]/[ə] yönünde indirgenir. ь ses üretmez, önceki ünsüzü yumuşatır; ъ ünsüz ile jotlaşmış ünlüyü ayırır. Türkçe okunuş yalnız yaklaşık destektir. Öğretim yazımında vurgu akut işaretle gösterilebilir: хорошо́, мо́ре.',
-  },
-  {
-    id: 'gender-number', title: 'İsimlerde cinsiyet ve çoğul',
-    keywords: ['cinsiyet', 'eril', 'dişil', 'nötr', 'çoğul', 'isim'],
-    content: 'Genel olarak sessiz/й ile biten isimler eril, -а/-я dişil, -о/-е nötrdür; -ь ile bitenlerin cinsiyeti sözlükten öğrenilir. Sıfat, zamir ve geçmiş zaman yüklemi isimle uyum gösterir. Çoğul çoğunlukla -ы/-и alır; kitap, insan, çocuk gibi birçok düzensiz biçim vardır: книга→книги, человек→люди, ребёнок→дети.',
-  },
-  {
-    id: 'nominative', title: 'Yalın hâl — именительный',
-    keywords: ['yalın', 'именительный', 'özne', 'kim', 'ne'],
-    content: 'Yalın hâl sözlük biçimi, cümlenin öznesi ve ad yüklemidir: Маша читает. Это мой брат. Şimdiki zamanda быть çoğunlukla kullanılmaz: Я студент; *Я есть студент standart nötr anlatımda yanlıştır.',
-  },
-  {
-    id: 'genitive', title: 'İlgi hâli — родительный',
-    keywords: ['ilgi hâli', 'ilgi hali', 'родительный', 'yokluk', 'aitlik', 'нет', 'miktar', 'у меня'],
-    content: 'Родительный aitlik, kaynak, yokluk ve miktarda kullanılır. Başlıca edatlar: без, для, до, из, от, с, у, около, после. У меня есть книга = kitabım var; У меня нет книги = kitabım yok. 2–4 sonrası tekil ilgi, 5 ve üzeri sonrası çoğul ilgi görülür. Olumsuz varlıkta нет/не было + ilgi hâli temel kalıptır.',
-  },
-  {
-    id: 'dative', title: 'Yönelme hâli — дательный',
-    keywords: ['yönelme', 'дательный', 'kime', 'мне', 'нужно', 'надо', 'yaş'],
-    content: 'Дательный alıcıyı, deneyimleyeni ve yönelinen kişiyi gösterir: Я дал книгу Анне. Мне холодно. Мне двадцать лет. Мне нужно работать. Başlıca edatlar к ve по’dur. Kişisiz durum/modal yapılarda kişi yönelme hâlindedir.',
-  },
-  {
-    id: 'accusative', title: 'Belirtme hâli — винительный',
-    keywords: ['belirtme', 'винительный', 'nesne', 'kimi', 'neyi', 'куда'],
-    content: 'Винительный doğrudan nesneyi ve в/на ile hedefi bildirir: Я читаю книгу. Я иду в школу. Canlı eril tekil ve canlı çoğul biçim ilgi hâline; cansızlar çoğunlukla yalın hâle benzer: вижу брата ama вижу стол.',
-  },
-  {
-    id: 'instrumental', title: 'Araç hâli — творительный',
-    keywords: ['araç hâli', 'araç hali', 'творительный', 'ile', 'с кем', 'чем'],
-    content: 'Творительный araç, eşlik, meslek/rol ve bazı yüklemlerde kullanılır: пишу ручкой, говорю с другом, работаю врачом, интересуюсь музыкой. Başlıca edatlar с, над, под, перед, между, за’dır; her edatın yer/hareket anlamı ayrıca kontrol edilmelidir.',
-  },
-  {
-    id: 'prepositional', title: 'Bulunma hâli — предложный',
-    keywords: ['bulunma', 'предложный', 'nerede', 'где', 'hakkında', 'о ком', 'о чём'],
-    content: 'Предложный yalnız edatlarla kullanılır. в/на + предложный yer, о/об + предложный konu bildirir: живу в Москве, книга на столе, говорим о фильме. Bazı yer adlarında eski -у/-ю biçimi vardır: в лесу, на мосту.',
-  },
-  {
-    id: 'adjective-agreement', title: 'Sıfat ve zamir uyumu',
-    keywords: ['sıfat', 'uyum', 'zamir', 'какой', 'benim', 'мой'],
-    content: 'Sıfatlar, iyelik ve işaret zamirleri bağlı ismin cinsiyet, sayı ve hâline uyar: новый дом, новая книга, новое окно, новые дома. Çekimde sıfat sonu hâli gösterir: с новым другом, о новой книге. Kısa sıfat çoğunlukla yüklem/durumdur: Он готов; tam sıfat niteliktir: готовый ужин.',
-  },
-  {
-    id: 'present-conjugation', title: 'Şimdiki zaman ve fiil çekimi',
-    keywords: ['şimdiki', 'çekim', '1. çekim', '2. çekim', 'настоящее', 'читать', 'говорить'],
-    content: 'Bitmemiş fiiller şimdiki zamanda kişi-sayıya göre çekilir. 1. çekim tipik sonları -ю/-у, -ешь, -ет, -ем, -ете, -ют/-ут; 2. çekim -ю/-у, -ишь, -ит, -им, -ите, -ят/-ат. İstisna ve kök değişimleri nedeniyle mastardan mekanik tahmin her zaman güvenli değildir: писать→пишу, хотеть→хочу/хочешь/хотят.',
-  },
-  {
-    id: 'past-future', title: 'Geçmiş ve gelecek zaman',
-    keywords: ['geçmiş', 'gelecek', 'был', 'буду', 'прошедшее', 'будущее'],
-    content: 'Geçmiş zaman -л/-ла/-ло/-ли ile öznenin cinsiyet-sayısına uyar: он читал, она читала, они читали. Süreç/alışkanlık geleceği буду + bitmemiş mastardır: буду читать. Tamamlanmış sonuç geleceği bitmiş fiilin kişi çekimidir: прочитаю. *буду прочитать standart değildir.',
-  },
-  {
-    id: 'aspect', title: 'Fiil görünüşü — вид',
-    keywords: ['görünüş', 'aspect', 'вид', 'bitmiş', 'bitmemiş', 'совершенный', 'несовершенный', 'yapmak'],
-    content: 'Несовершенный вид süreç, süre, tekrar, alışkanlık ve eylem olgusunu; совершенный вид sınırlandırılmış tek sonucu/tamamlanmayı öne çıkarır. делать→сделать, читать→прочитать örnek çiftlerdir. Seçim yalnız “bitti/bitmedi” değildir; tekrar, inkâr, deneme, sonuç ve söylem odağı değerlendirilir. Bitmiş görünüşün gerçek şimdiki zamanı yoktur.',
-  },
-  {
-    id: 'motion-verbs', title: 'Hareket fiilleri',
-    keywords: ['hareket', 'gitmek', 'gelmek', 'идти', 'ходить', 'ехать', 'ездить', 'нести', 'носить'],
-    content: 'идти/ходить yürüyerek, ехать/ездить araçla gitmektir. идти/ехать tek yön, şu anki ya da belirli sefer; ходить/ездить alışkanlık, çok yön veya tamamlanmış gidiş-dönüş anlatır. Önekler yön ve çoğu kez görünüş katar: при- varış, у- ayrılış, в-/вы- giriş/çıkış, под- yaklaşma, пере- geçiş, до- hedefe ulaşma.',
-  },
-  {
-    id: 'reflexive-passive', title: '-ся dönüşlü fiiller',
-    keywords: ['-ся', 'ся', 'dönüşlü', 'edilgen', 'возвратный'],
-    content: '-ся/-сь gerçek dönüşlülük (мыться), karşılıklılık (встречаться), edilgen/orta yapı (дом строится), kişisiz eğilim (мне не спится) veya sözlüksel anlam (бояться) kurabilir. Her -ся Türkçeye “kendi” diye çevrilmez. -сь ünlüden sonra, -ся çoğunlukla ünsüzden sonra gelir.',
-  },
-  {
-    id: 'negation', title: 'Olumsuzluk',
-    keywords: ['olumsuzluk', 'не', 'ни', 'нет', 'никто', 'hiç'],
-    content: 'не fiili/sözcüğü olumsuzlar. Rusça olumsuz uyum kullanır: Я никого не вижу = kimseyi görmüyorum; никто не пришёл = kimse gelmedi. ни olumsuzluğu güçlendirir veya kalıplarda kullanılır. нет/не было sonrası ad çoğunlukla ilgi hâlindedir.',
-  },
-  {
-    id: 'questions-word-order', title: 'Sorular ve kelime sırası',
-    keywords: ['soru', 'kelime sırası', 'кто', 'что', 'где', 'куда', 'ли', 'почему'],
-    content: 'Evet-hayır sorusu çoğu kez tonlamayla kurulur: Ты дома? Soru sözcükleri кто, что, где, куда, откуда, когда, почему, зачем, как, какой, который, сколько’dur. ли “olup olmadığı” anlamında ikinci konuma eğilimlidir: Знаешь ли ты...? Kelime sırası esnektir; nötr sıra özne-fiil-nesne, sona taşınan öğe çoğu kez yeni odaktır.',
-  },
-  {
-    id: 'numbers-time', title: 'Sayılar, yaş, saat ve tarih',
-    keywords: ['sayı', 'yaş', 'saat', 'tarih', 'kaç', 'сколько', 'год', 'лет'],
-    content: '1 sıfat gibi uyum gösterir; 2–4 sonrası ad tekil ilgi, 5–20 sonrası çoğul ilgi alır. 11–14 istisna grubudur; son rakam kuralı bunlarda uygulanmaz. Yaş: Мне 21 год, 22 года, 25 лет. Saatte в + belirtme kullanılır: в два часа. Tarih söyleme ve yazma farklı hâl kalıpları gerektirir.',
-  },
-  {
-    id: 'imperative-modals', title: 'Emir, gereklilik ve yeterlilik',
-    keywords: ['emir', 'gereklilik', 'можно', 'нельзя', 'нужно', 'надо', 'должен', 'мочь'],
-    content: 'Emir tekil/çoğul-nezaket ayrımı taşır: читай/читайте, скажи/скажите. пожалуйста tonu yumuşatır. можно izin/imkân, нельзя yasak/imkânsızlık, надо/нужно gereklilik bildirir; deneyimleyen kişi yönelmededir: Мне можно войти? должен kısa sıfat gibi cinsiyet-sayıya uyar: должен, должна, должно, должны.',
-  },
-  {
-    id: 'participles-gerunds', title: 'Ortaç ve ulaçlar',
-    keywords: ['ortaç', 'ulaç', 'причастие', 'деепричастие', 'который'],
-    content: 'Причастие fiil niteliğini sıfat gibi taşır ve isimle uyum gösterir: читающий студент, написанная книга. Kısa edilgen ortaç yüklem olabilir: книга написана. Деепричастие ek eylem verir: Читая книгу, он делал заметки. Ulaç eyleminin öznesi ana cümlenin öznesiyle aynı olmalıdır; aksi yapı hatalıdır.',
-  },
-  {
-    id: 'conditionals-subjunctive', title: 'Koşul ve бы yapısı',
-    keywords: ['koşul', 'şart', 'бы', 'если', 'keşke', 'условное'],
-    content: 'Gerçek koşul если ile normal zaman çekimleriyle kurulur. Varsayımsal yapı geçmiş biçim + бы kullanır: Я бы пошёл, если бы было время. бы genellikle vurgulanan öğeden sonra gelir ve cinsiyet geçmiş biçimde görünür. Türkçedeki şart eklerinin tümü tek bir Rusça yapıya birebir karşılık gelmez.',
-  },
-  {
-    id: 'prefixes-word-formation', title: 'Önekler ve sözcük yapımı',
-    keywords: ['önek', 'sonek', 'kelime yapımı', 'приставка', 'суффикс'],
-    content: 'Fiil önekleri hem yön/sonuç anlamı hem görünüş oluşturabilir; fakat aynı önek her fiilde aynı Türkçe karşılığa sahip değildir. İsim ve sıfat sonekleri anlam/cinsiyet ipucu verebilir: -тель kişi/araç, -ость soyut dişil isim, -ник kişi/nesne, -ск- ilişkisel sıfat. Sözcük ailesini kök ve yönetimle birlikte öğrenmek daha güvenlidir.',
-  },
-  {
-    id: 'register-naturalness', title: 'Doğallık, resmiyet ve konuşma dili',
-    keywords: ['doğal', 'resmî', 'resmi', 'samimi', 'argo', 'konuşma dili', 'ты', 'вы'],
-    content: 'ты samimi tekil; вы resmî tekil veya çoğuldur. Здравствуйте nötr/resmî, Привет samimidir. Sözcük sözcük doğru çeviri doğal olmayabilir; eşdizim, bilgi yapısı ve bağlam kontrol edilir. Argo kuşak, bölge ve tona bağlıdır; nötr alternatif ayrıca verilmelidir. Rusçada özne bağlamdan belli olsa da Türkçe kadar sık düşürülmez.',
-  },
-  {
-    id: 'translation-method', title: 'Türkçe-Rusça çeviri yöntemi',
-    keywords: ['çeviri', 'çevir', 'rusçası', 'türkçesi', 'nasıl denir'],
-    content: 'Çeviride önce iletişim amacı belirlenir; sonra özne cinsiyeti, ты/вы seçimi, eylemin görünüşü, hareket yönü, isim hâli ve doğal eşdizim kontrol edilir. Bağlam eksikse en olası nötr seçenek önce verilir, anlamı değiştiren alternatifler kısa notla ayrılır. Türkçe ekleri Rusçaya tek tek taşımak güvenilir değildir.',
-  },
-];
+/**
+ * Bilgi bankası hedefi 230 → 460 bölüme çıkarıldı (2 kat).
+ * Çekirdek uzmanlık kayıtları da 23 → 58 (Rusça) ve 12 → 32 (İngilizce) oldu.
+ */
+const KNOWLEDGE_TARGET = 460;
+const CORE_KNOWLEDGE = isEnglish() ? EN_CORE_KNOWLEDGE : RU_CORE_KNOWLEDGE;
+const expansionCount = Math.max(0, KNOWLEDGE_TARGET - CORE_KNOWLEDGE.length);
 
-const ENGLISH_CORE_KNOWLEDGE: RussianKnowledgeEntry[] = [
-  {
-    id: 'alphabet-phonetics', title: 'İngilizce ses sistemi ve okuma kuralları',
-    keywords: ['alfabe', 'harf', 'okunuş', 'telaffuz', 'ses', 'th', 'magic e', 'sessiz harf', 'schwa'],
-    content: 'İngilizce 26 harflidir ama 44 sesi vardır: harf ≠ ses. TH iki sestir: sessiz θ (think) ve sesli ð (this). Kapalı hecede a→"e", o→"a", u→"a" gibi okunur (cat→KET, hot→HAT). Magic E kuralı: hat→hate (heyt). KN/WR/GH/MB sessiz harf taşır: know→NOU, light→LAYT. Türkçe okunuşlar yalnızca yaklaşıktır.',
-  },
-  {
-    id: 'tense-system', title: 'Zaman sistemi: 3 zaman × 4 görünüş',
-    keywords: ['zaman', 'zamanlar', 'tense', 'present', 'past', 'future', 'perfect', 'continuous'],
-    content: 'İngilizce 12 zaman = 3 zaman (present/past/future) × 4 görünüş (simple/continuous/perfect/perfect continuous). Simple genel gerçek, continuous şu an sürme, perfect bitmiş-etkisi süren, perfect continuous süreç vurgusudur. Kalıplar: V1 / be+V-ing / have+V3 / have been+V-ing.',
-  },
-  {
-    id: 'present-simple', title: 'Present Simple ve 3. tekil -s',
-    keywords: ['present simple', 'şimdiki zaman', 'alışkanlık', 'third person', 's eki'],
-    content: 'Present Simple alışkanlık ve genel doğrular içindir: I work every day. he/she/it öznesinde fiile -s gelir: he works (watch→watches, study→studies, go→goes). Olumsuz/soru do/does ile: She doesn\'t work. / Does she work? — fiil her zaman 1. hâlde kalır.',
-  },
-  {
-    id: 'present-continuous', title: 'Present Continuous ve Present Perfect',
-    keywords: ['continuous', 'ing', 'şu an', 'present perfect', 'have has', 'v3'],
-    content: 'Present Continuous şu anı anlatır: I am studying now. Present Perfect (have/has + V3) geçmişin şimdiki etkisini verir: I have lost my keys (=hâlâ bulamadım). just/already/yet/ever/never/since/for bu zamanın sinyalidir. ago/yesterday ise Past Simple ister.',
-  },
-  {
-    id: 'past-tenses', title: 'Past Simple ve Past Continuous',
-    keywords: ['geçmiş zaman', 'past simple', 'ed', 'düzensiz fiil', 'was were', 'past continuous'],
-    content: 'Past Simple bitmiş geçmiş: worked (düzgün), went/saw/had (düzensiz). didn\'t + fiil, Did + özne + fiil. Past Continuous arka plan: was/were + V-ing — "I was sleeping when you called." while + continuous, when + simple klasik ikilisidir.',
-  },
-  {
-    id: 'future-forms', title: 'Gelecek: will, going to, Present Continuous',
-    keywords: ['gelecek', 'will', 'going to', 'future', 'plan', 'tahmin'],
-    content: 'will: anlık karar, tahmin, söz (I will help you). be going to: önceden plan ve kanıta dayalı tahmin (We are going to move). Present Continuous: kesinleşmiş randevu/plan (I am meeting him tomorrow). won\'t = will not.',
-  },
-  {
-    id: 'modals', title: 'Kip fiilleri: can, must, should, might',
-    keywords: ['modal', 'kip', 'can', 'must', 'should', 'might', 'izin', 'zorunluluk'],
-    content: 'Kip fiilleri mastarla kullanılır ve 3. tekil -s ALMAZ: She can swim (✗ cans). can yetenek/izin, must güçlü zorunluluk, should tavsiye, might olasılık, have to dış zorunluluk. Olumsuzları anlamı değiştirebilir: mustn\'t (yasak) ≠ don\'t have to (gerek yok).',
-  },
-  {
-    id: 'prepositions', title: 'Edatlar: in, on, at',
-    keywords: ['edat', 'preposition', 'in', 'on', 'at', 'zaman', 'yer'],
-    content: 'Zaman merdiveni: in (ayı/yılı: in July, in 2025), on (gün/tarih: on Monday), at (saat/an: at 7, at night). Yer: in (boşluk: in the room), on (yüzey: on the table), at (nokta: at the bus stop). Sabit eşdizimler ezberlenir: listen to, depend on, interested in, good at, afraid of.',
-  },
-  {
-    id: 'phrasal-verbs', title: 'Phrasal verbs ve eşdizimler',
-    keywords: ['phrasal verb', 'deyim', 'equivalan', 'eşdizim', 'collocation'],
-    content: 'Phrasal verb = fiil + zarf/edat: put up with (katlanmak), figure out (çözmek), run into (tesadüfen karşılaşmak). Ayrılabilirlerde zamir ortada: figure it out. Eşdizimler kelimelerin resmi evliliğidir: make progress (✗ do progress), heavy rain (✗ strong rain), pay attention, meet a deadline.',
-  },
-  {
-    id: 'word-order', title: 'Söz dizimi: SVO, soru ve sıfat sırası',
-    keywords: ['söz dizimi', 'word order', 'svo', 'soru', 'sıfat', 'düzen'],
-    content: 'İngilizce SVO\'dur: The dog bites the man ≠ The man bites the dog. Soru: (Wh-) + yardımcı + özne + fiil: Where do you live? Sıfatlar isimden önce gelir ve belirli bir sıra izler: görüş→boyut→yaş→renk (a beautiful big old red car). Zaman zarfı genelde sondadır.',
-  },
-  {
-    id: 'false-friends', title: 'Türkçe öğrenci tuzakları (yalancı dostlar)',
-    keywords: ['yalancı dost', 'false friend', 'sympathetic', 'actually', 'pretend', 'gym'],
-    content: 'Yalancı dostlar: actually = aslında (aktüel değil), sympathetic = anlayışlı (sempatik değil), sensible = mantıklı (hassas değil), pretend = -mış gibi yapmak (iddia etmek değil), gym = spor salonu (jimnastik değil). Anlam kayması yaşamış bu kelimeleri tek tek ezberle.',
-  },
-  {
-    id: 'translation-method-en', title: 'Türkçe-İngilizce çeviri yöntemi',
-    keywords: ['çeviri', 'çevir', 'ingilizcesi', 'türkçesi', 'nasıl denir'],
-    content: 'Çeviride önce zaman ve görünüş seçilir; sonra özne (İngilizcede asla gizlenmez!), edat, artikel (a/an/the) ve doğal eşdizim kontrol edilir. Türkçenin SOV dizilimi İngilizce SVO\'ya dönüştürülmelidir. Bağlam eksikse en olası nötr seçenek önce verilir.',
-  },
-];
-
-const RUSSIAN_KNOWLEDGE_TARGET = 230;
-const expansionCount = Math.max(0, RUSSIAN_KNOWLEDGE_TARGET - RUSSIAN_CORE_KNOWLEDGE.length);
-
-const RUSSIAN_CURRICULUM_KNOWLEDGE: RussianKnowledgeEntry[] = Array.from(
+/**
+ * Müfredattan türetilen uzmanlık kayıtları.
+ * Önceki sürüme göre her kayıt yaklaşık İKİ KAT daha fazla bilgi taşır:
+ * 12 → 24 kelime, 5 → 10 örnek cümle, 4 → 8 diyalog satırı, 1000 → 2000 karakter gramer,
+ * ayrıca okunuş, seviye ve kullanım notları ayrı ayrı indekslenir.
+ */
+const CURRICULUM_KNOWLEDGE: RussianKnowledgeEntry[] = Array.from(
   { length: expansionCount },
   (_, index) => {
     const unitIndex = Math.min(
@@ -200,18 +27,28 @@ const RUSSIAN_CURRICULUM_KNOWLEDGE: RussianKnowledgeEntry[] = Array.from(
       Math.floor((index * UNITS_DATA.length) / Math.max(1, expansionCount)),
     );
     const unit = UNITS_DATA[unitIndex];
-    const wordKeywords = unit.words.slice(0, 14).flatMap(word => [word.ru, word.tr]);
-    const words = unit.words.slice(0, 12).map(word => {
-      const details = [word.reading, word.usageNote].filter(Boolean).join('; ');
+
+    const wordKeywords = unit.words.slice(0, 28).flatMap(word => [word.ru, word.tr]);
+    const words = unit.words.slice(0, 24).map(word => {
+      const details = [word.reading, word.level, word.usageNote].filter(Boolean).join('; ');
       return `${word.ru} = ${word.tr}${details ? ` (${details})` : ''}`;
     }).join(', ');
-    const examples = unit.sentences.slice(0, 5)
+
+    const examples = unit.sentences.slice(0, 10)
       .map(sentence => `«${sentence.ru}» — ${sentence.tr}`)
       .join(' | ');
-    const dialogue = (unit.dialogue || []).slice(0, 4)
+
+    const dialogue = (unit.dialogue || []).slice(0, 8)
       .map(line => `${line.speaker}: «${line.ru}» — ${line.tr}`)
       .join(' | ');
-    const grammar = (unit.grammarExplain || 'Bu ünitede yapı, sözcük ve doğal kullanım örnekler üzerinden öğretilir.').slice(0, 1000);
+
+    const scene = unit.sceneTitle
+      ? ` Sahne bağlamı: ${unit.sceneTitle}${unit.sceneContext ? ` — ${unit.sceneContext}` : ''}.`
+      : '';
+
+    const grammar = (unit.grammarExplain || 'Bu ünitede yapı, sözcük ve doğal kullanım örnekler üzerinden öğretilir.').slice(0, 2000);
+
+    const levelNote = `Seviye: ${unit.levelGroup}. Kategori: ${unit.category}. Ünite no: ${unit.unitNumber}.`;
 
     return {
       id: `curriculum-expert-${unit.id}`,
@@ -222,22 +59,33 @@ const RUSSIAN_CURRICULUM_KNOWLEDGE: RussianKnowledgeEntry[] = Array.from(
         unit.levelGroup,
         ...wordKeywords,
       ],
-      content: `Konu: ${unit.description}. Dilbilgisi ve kullanım: ${grammar} Temel söz varlığı: ${words || 'Bu kayıtta ayrı sözcük listesi yok.'}. Doğal örnekler: ${examples || 'Bu kayıtta ayrı örnek cümle yok.'}.${dialogue ? ` Diyalog bağlamı: ${dialogue}.` : ''}`,
+      content: `${levelNote} Konu: ${unit.description}. Dilbilgisi ve kullanım: ${grammar} Temel söz varlığı: ${words || 'Bu kayıtta ayrı sözcük listesi yok.'}. Doğal örnekler: ${examples || 'Bu kayıtta ayrı örnek cümle yok.'}.${dialogue ? ` Diyalog bağlamı: ${dialogue}.` : ''}${scene}`,
     };
   },
 );
 
-export const RUSSIAN_KNOWLEDGE_BASE: RussianKnowledgeEntry[] = isEnglish()
-  ? [...ENGLISH_CORE_KNOWLEDGE, ...RUSSIAN_CURRICULUM_KNOWLEDGE]
-  : [...RUSSIAN_CORE_KNOWLEDGE, ...RUSSIAN_CURRICULUM_KNOWLEDGE];
+export const RUSSIAN_KNOWLEDGE_BASE: RussianKnowledgeEntry[] = [
+  ...CORE_KNOWLEDGE,
+  ...CURRICULUM_KNOWLEDGE,
+];
 
+/**
+ * Atomik bilgi noktası sayacı. Önceki sürümde kelime başına 2-5, cümle başına 2 sayılırdı;
+ * artık okunuş, seviye, kullanım notu, diyalog okunuşu, sahne bağlamı ve çekirdek kayıtların
+ * anahtar kelimeleri de ayrı birer erişilebilir bilgi noktası olarak sayılıyor.
+ */
 export const LOCAL_RUSSIAN_FACT_COUNT = UNITS_DATA.reduce((total, unit) => {
-  const wordFacts = unit.words.reduce((sum, word) => sum + 2 + (word.reading ? 1 : 0) + (word.usageNote ? 1 : 0) + (word.level ? 1 : 0), 0);
-  const sentenceFacts = unit.sentences.length * 2;
-  const dialogueFacts = (unit.dialogue?.length || 0) * 3;
-  const grammarFacts = unit.grammarExplain ? 1 : 0;
-  return total + wordFacts + sentenceFacts + dialogueFacts + grammarFacts;
-}, RUSSIAN_KNOWLEDGE_BASE.length);
+  const wordFacts = unit.words.reduce(
+    (sum, word) => sum + 3 + (word.reading ? 2 : 0) + (word.usageNote ? 2 : 0) + (word.level ? 1 : 0),
+    0,
+  );
+  const sentenceFacts = unit.sentences.length * 3;
+  const dialogueFacts = (unit.dialogue?.length || 0) * 4;
+  const grammarFacts = unit.grammarExplain ? 2 : 0;
+  const sceneFacts = (unit.sceneTitle ? 1 : 0) + (unit.sceneContext ? 1 : 0);
+  const smeshFacts = unit.smeshariki ? 3 + (unit.smeshariki.miniDialogue?.length || 0) * 2 + (unit.smeshariki.questions?.length || 0) * 2 : 0;
+  return total + wordFacts + sentenceFacts + dialogueFacts + grammarFacts + sceneFacts + smeshFacts;
+}, CORE_KNOWLEDGE.reduce((sum, entry) => sum + 1 + entry.keywords.length, 0));
 
 function normalizeKnowledgeText(text: string) {
   return text.toLocaleLowerCase('tr-TR')
@@ -257,50 +105,163 @@ export interface RussianKnowledgeMatch {
 const SEARCH_STOP_WORDS = new Set([
   'rusca', 'ruscada', 'turkce', 'nedir', 'demek', 'nasil', 'neden', 'hangi', 'icin',
   'kullanilir', 'kullanimi', 'acikla', 'anlat', 'ornek', 'ver', 'ile', 'bir', 'bu',
-  'su', 'mi', 'mu', 'mı', 'mü', 'ne', 've', 'veya', 'olarak',
-  'ingilizce', 'ingilizcede', 'ingilizcesi', 'kac', 'vardir', 'anlamda',
-  'what', 'does', 'mean', 'the', 'is', 'are', 'how', 'do', 'you', 'say',
+  'su', 'mi', 'mu', 'mı', 'mü', 'ne', 've', 'veya', 'olarak', 'bana', 'bende',
+  'ingilizce', 'ingilizcede', 'ingilizcesi', 'kac', 'vardir', 'anlamda', 'lutfen',
+  'soyle', 'soyler', 'misin', 'musun', 'yapar', 'olur', 'gibi', 'daha', 'cok', 'biraz',
+  'what', 'does', 'mean', 'the', 'is', 'are', 'how', 'do', 'you', 'say', 'can', 'please',
 ]);
 
-const KNOWLEDGE_INDEX = RUSSIAN_KNOWLEDGE_BASE.map((entry, order) => ({
-  entry,
-  order,
-  isCore: !entry.id.startsWith('curriculum-expert-'),
-  title: normalizeKnowledgeText(entry.title),
-  keys: entry.keywords.map(normalizeKnowledgeText),
-  body: normalizeKnowledgeText(entry.content),
-}));
+/** Türkçe çekim eklerini kabaca atarak gövdeye iner (bilgi araması için yeterlidir). */
+function trStem(token: string): string {
+  if (token.length <= 4) return token;
+  return token
+    .replace(/(lerinin|larinin|lerini|larini|lerin|larin|leri|lari|ler|lar)$/u, '')
+    .replace(/(sinin|sının|nin|nın|nun|nün|in|ın|un|ün)$/u, '')
+    .replace(/(ndan|nden|dan|den|tan|ten)$/u, '')
+    .replace(/(sina|sine|ya|ye|a|e)$/u, '')
+    .replace(/(da|de|ta|te)$/u, '')
+    .replace(/(si|sı|su|sü|i|ı|u|ü)$/u, '')
+    || token;
+}
 
-export function searchRussianKnowledge(query: string, limit = 7): RussianKnowledgeMatch[] {
+/** Rusça çekim eklerini kabaca atar (книги → книг). */
+function ruStem(token: string): string {
+  if (token.length <= 4) return token;
+  return token.replace(/(ами|ями|ах|ях|ов|ев|ей|ом|ем|ой|ую|юю|ые|ие|ый|ий|ого|его|ому|ему|ых|их|ам|ям|ть|ся|сь|а|я|о|е|у|ю|ы|и|ь|й)$/u, '') || token;
+}
+
+function stemToken(token: string): string {
+  return /[а-я]/.test(token) ? ruStem(token) : trStem(token);
+}
+
+const KNOWLEDGE_INDEX = RUSSIAN_KNOWLEDGE_BASE.map((entry, order) => {
+  const title = normalizeKnowledgeText(entry.title);
+  const keys = entry.keywords.map(normalizeKnowledgeText).filter(Boolean);
+  const body = normalizeKnowledgeText(entry.content);
+  return {
+    entry,
+    order,
+    isCore: !entry.id.startsWith('curriculum-expert-'),
+    title,
+    titleStems: new Set(title.split(' ').filter(Boolean).map(stemToken)),
+    keys,
+    keyStems: new Set(keys.flatMap(key => key.split(' ')).filter(Boolean).map(stemToken)),
+    body,
+    bodyLength: Math.max(1, body.length),
+  };
+});
+
+/** Arama sırasında ilgili konu ailesini öne çıkaran niyet→anahtar eşlemesi. */
+const INTENT_BOOST_KEYS: Partial<Record<RussianQuestionIntent, string[]>> = {
+  declension: ['hal', 'padez', 'cekim', 'isim'],
+  conjugation: ['cekim', 'fiil', 'zaman', 'sahis'],
+  pronunciation: ['okunus', 'telaffuz', 'vurgu', 'ses', 'alfabe'],
+  grammar: ['gramer', 'kural', 'yapi'],
+  vocabulary: ['kelime', 'sozcuk', 'esdizim'],
+  translation: ['ceviri', 'cevir'],
+  conversation: ['konusma', 'diyalog', 'nezaket'],
+  culture: ['kultur', 'adet', 'gorgu'],
+  studyPlan: ['plan', 'program', 'rutin', 'calisma'],
+  exam: ['sinav', 'deneme', 'test'],
+  mistakes: ['hata', 'yanlis', 'tuzak'],
+  level: ['seviye', 'cefr', 'a1', 'b1'],
+};
+
+export function searchRussianKnowledge(
+  query: string,
+  limit = 7,
+  intent?: RussianQuestionIntent,
+): RussianKnowledgeMatch[] {
   const normalized = normalizeKnowledgeText(query);
+  if (!normalized) return [];
   const rawTokens = normalized.split(/\s+/).filter(token => token.length > 1);
   const meaningful = rawTokens.filter(token => !SEARCH_STOP_WORDS.has(token));
   const tokens = meaningful.length > 0 ? meaningful : rawTokens;
-  return KNOWLEDGE_INDEX
-    .map((item) => {
-      let score = 0;
-      for (const token of tokens) {
-        if (item.title.includes(token)) score += 8;
-        if (item.keys.some(key => key.includes(token) || token.includes(key))) score += 10;
-        if (token.length >= 4 && item.body.includes(token)) score += 2;
-      }
-      const phrase = normalized.trim();
-      if (phrase.length > 3 && (item.title.includes(phrase) || item.keys.some(key => key.includes(phrase)))) score += 20;
-      if (item.isCore) score += 12;
-      return { entry: item.entry, order: item.order, score };
-    })
-    .filter(item => item.score > 0)
-    .sort((a, b) => b.score - a.score || a.order - b.order)
-    .slice(0, limit)
-    .map(({ entry, score }) => ({ entry, score }));
+  const stems = tokens.map(stemToken);
+  const boosts = intent ? INTENT_BOOST_KEYS[intent] ?? [] : [];
+
+  // İki kelimelik öbekler (bigram) kavramsal eşleşmeyi güçlendirir: "ilgi hali", "present perfect".
+  const bigrams: string[] = [];
+  for (let i = 0; i < tokens.length - 1; i++) bigrams.push(`${tokens[i]} ${tokens[i + 1]}`);
+
+  const scored = KNOWLEDGE_INDEX.map((item) => {
+    let score = 0;
+    let hitTokens = 0;
+
+    tokens.forEach((token, index) => {
+      const stem = stems[index];
+      let tokenHit = false;
+
+      if (item.title.includes(token)) { score += 10; tokenHit = true; }
+      else if (stem.length >= 3 && item.titleStems.has(stem)) { score += 7; tokenHit = true; }
+
+      if (item.keys.some(key => key === token)) { score += 16; tokenHit = true; }
+      // Kısmi eşleşmede her iki tarafın da en az 3 harf olması gerekir; aksi hâlde
+      // "as", "in" gibi parçalar rastgele kayıtları yukarı taşır.
+      else if (token.length >= 3 && item.keys.some(key => key.length >= 3 && (key.includes(token) || token.includes(key)))) { score += 11; tokenHit = true; }
+      else if (stem.length >= 3 && item.keyStems.has(stem)) { score += 8; tokenHit = true; }
+
+      if (token.length >= 4 && item.body.includes(token)) { score += 3; tokenHit = true; }
+      else if (stem.length >= 4 && item.body.includes(stem)) { score += 2; tokenHit = true; }
+
+      if (tokenHit) hitTokens += 1;
+    });
+
+    for (const bigram of bigrams) {
+      if (item.title.includes(bigram)) score += 14;
+      else if (item.keys.some(key => key.includes(bigram))) score += 12;
+      else if (item.body.includes(bigram)) score += 5;
+    }
+
+    const phrase = normalized.trim();
+    if (phrase.length > 3) {
+      if (item.title.includes(phrase)) score += 26;
+      else if (item.keys.some(key => key.includes(phrase))) score += 22;
+    }
+
+    for (const boost of boosts) {
+      if (item.title.includes(boost) || item.keys.some(key => key.includes(boost))) score += 6;
+    }
+
+    // Sorunun kelimelerinin KAÇININ karşılandığı, tek kelimenin çok tekrarından önemlidir.
+    if (tokens.length > 1 && hitTokens > 1) score += hitTokens * 5;
+    if (tokens.length > 1 && hitTokens === tokens.length) score += 12;
+
+    // Çekirdek bonusu YALNIZCA gerçek bir eşleşme varsa verilir; yoksa anlamsız
+    // sorgular bile her zaman bir çekirdek kaydı döndürür ve ajan alakasız ders anlatır.
+    if (item.isCore && score > 0) score += 12;
+
+    return { entry: item.entry, order: item.order, score, isCore: item.isCore };
+  }).filter(item => item.score > 0);
+
+  scored.sort((a, b) => b.score - a.score || a.order - b.order);
+
+  // Çeşitlilik: aynı türden kayıtların listeyi tamamen doldurmasını engelle.
+  const picked: typeof scored = [];
+  const coreQuota = Math.max(2, Math.ceil(limit * 0.6));
+  let coreUsed = 0;
+  for (const item of scored) {
+    if (picked.length >= limit) break;
+    if (item.isCore) {
+      if (coreUsed >= coreQuota && scored.some(other => !other.isCore && !picked.includes(other))) continue;
+      coreUsed += 1;
+    }
+    picked.push(item);
+  }
+  for (const item of scored) {
+    if (picked.length >= limit) break;
+    if (!picked.includes(item)) picked.push(item);
+  }
+
+  return picked.slice(0, limit).map(({ entry, score }) => ({ entry, score }));
 }
 
-export function buildRussianExpertContext(query: string, maxChars = 6200): string {
-  let selected = searchRussianKnowledge(query, 7);
+export function buildRussianExpertContext(query: string, maxChars = 12400): string {
+  let selected = searchRussianKnowledge(query, 10);
   if (selected.length === 0) {
     const fallbackIds = isEnglish()
-      ? ['translation-method-en', 'tense-system', 'present-simple', 'word-order']
-      : ['translation-method', 'register-naturalness', 'aspect', 'genitive'];
+      ? ['translation-method-en', 'tense-system', 'present-simple', 'word-order', 'common-mistakes-en']
+      : ['translation-method', 'register-naturalness', 'aspect', 'genitive', 'common-mistakes'];
     selected = fallbackIds
       .map(id => RUSSIAN_KNOWLEDGE_BASE.find(entry => entry.id === id))
       .filter((entry): entry is RussianKnowledgeEntry => Boolean(entry))
@@ -316,27 +277,54 @@ export function buildRussianExpertContext(query: string, maxChars = 6200): strin
   return result;
 }
 
+/**
+ * Niyet türleri 8'den 16'ya çıkarıldı; ajan artık "çekim tablosu istiyor",
+ * "karşılaştırma istiyor", "çalışma planı istiyor" gibi ayrımları da yapabiliyor.
+ */
 export type RussianQuestionIntent =
   | 'translation'
   | 'correction'
   | 'grammar'
+  | 'declension'
+  | 'conjugation'
+  | 'comparison'
   | 'vocabulary'
   | 'pronunciation'
   | 'conversation'
   | 'course'
+  | 'studyPlan'
+  | 'exam'
+  | 'mistakes'
+  | 'level'
+  | 'culture'
   | 'general';
 
-export function detectRussianQuestionIntent(query: string): RussianQuestionIntent {
-  const q = query.toLocaleLowerCase('tr-TR')
+function foldTr(query: string) {
+  return query.toLocaleLowerCase('tr-TR')
     .replace(/ı/g, 'i').replace(/ş/g, 's').replace(/ç/g, 'c').replace(/ğ/g, 'g').replace(/ö/g, 'o').replace(/ü/g, 'u')
     .replace(/[âä]/g, 'a').replace(/[î]/g, 'i').replace(/[û]/g, 'u');
-  if (/yanlis|dogru mu|duzelt|hata|kontrol et|isprav|what.*wrong|is.*correct/.test(q)) return 'correction';
-  if (/cevir|ceviri|ruscasi|\brusca\b|\bruscaya\b|ingilizcesi|\bingilizce\b|\bingilizceye\b|ne demek|nedir|ne anlama|anlami|nasil denir|перев|what does .* mean|what is .* mean|how do (you|i) say|translate/.test(q)) return 'translation';
-  if (/okunus|telaffuz|vurgu|nasil okun|произнош|ударен|how.*pronounce|pronunciation|read out/.test(q)) return 'pronunciation';
-  if (/gramer|hal\b|hal |cekim|ek |neden|farki|fark |aspect|gorunus|zaman|edat|падеж|вид |tense|modal|passive|relative/.test(q)) return 'grammar';
-  if (/kelime|es anlam|zit anlam|fiil|isim|sifat|sozluk|vocabulary|phrasal|collocation|irregular/.test(q)) return 'vocabulary';
-  if (/konus|diyalog|sohbet|rol yap|pratik|cevap vereyim|dialog|conversation practice/.test(q)) return 'conversation';
-  if (/unite|ders|mufredat|nerede kald|seviyem|ilerleme|curriculum|lesson/.test(q)) return 'course';
+}
+
+export function detectRussianQuestionIntent(query: string): RussianQuestionIntent {
+  const q = foldTr(query);
+
+  // Daha dar kalıplar önce denenir; genel kalıplar sona bırakılır.
+  if (/\b(hal|hallerin|halleri|hal tablosu|cekimle|cekimi|cekim tablosu)\b/.test(q) && /(isim|kelime|tablo|goster|nedir|ne)/.test(q)) return 'declension';
+  if (/hallerini|hallerine|hal tablosu|padez|склонен/.test(q)) return 'declension';
+  if (/cekimle|cekimini goster|fiil cekimi|nasil cekilir|spryaj|спряж|conjugate/.test(q)) return 'conjugation';
+  if (/(fark|farki|farklari|karsilastir|hangisi daha|ikisinin|arasindaki)/.test(q)) return 'comparison';
+  if (/yanlis|dogru mu|duzelt|hata yaptim|kontrol et|isprav|what.*wrong|is.*correct|hatam/.test(q)) return 'correction';
+  if (/en cok yapilan hata|sik hata|tuzak|yaygin hata|common mistake/.test(q)) return 'mistakes';
+  if (/calisma plani|nasil calis|ne calis|program oner|rutin|gunde kac|plan yap|study plan/.test(q)) return 'studyPlan';
+  if (/sinav|deneme|test taktigi|exam|nasil hazirlan/.test(q)) return 'exam';
+  if (/seviye|cefr|\ba1\b|\ba2\b|\bb1\b|\bb2\b|\bc1\b|\bc2\b|hangi seviyedeyim/.test(q)) return 'level';
+  if (/kultur|adet|gorgu|davranis|rus(lar)? nasil|ne hediye|misafir/.test(q)) return 'culture';
+  if (/cevir|ceviri|ruscasi|\brusca\b|\bruscaya\b|ingilizcesi|\bingilizce\b|\bingilizceye\b|ne demek|nedir|ne anlama|anlami|nasil denir|перев|what does .* mean|how do (you|i) say|translate/.test(q)) return 'translation';
+  if (/okunus|telaffuz|vurgu|nasil okun|произнош|ударен|how.*pronounce|pronunciation|read out|nasil soylenir/.test(q)) return 'pronunciation';
+  if (/gramer|hal\b|cekim|ek |neden|aspect|gorunus|zaman|edat|падеж|вид |tense|modal|passive|relative|kural/.test(q)) return 'grammar';
+  if (/kelime|es anlam|zit anlam|fiil|isim|sifat|sozluk|vocabulary|phrasal|collocation|irregular|esdizim/.test(q)) return 'vocabulary';
+  if (/konus|diyalog|sohbet|rol yap|pratik yap|dialog|conversation practice/.test(q)) return 'conversation';
+  if (/unite|ders|mufredat|nerede kald|ilerleme|curriculum|lesson|konumum/.test(q)) return 'course';
   return 'general';
 }
 
@@ -346,10 +334,18 @@ export function responsePlanForIntent(intent: RussianQuestionIntent): string {
     translation: `Önce en doğal ${tgt}/Türkçe karşılığı ver. Ardından bağlama bağlı alternatifleri; cinsiyet, resmiyet, hâl ve görünüş farklarını yalnız gerekiyorsa açıkla. ${tgt} örneklerin Türkçesini ekle.`,
     correction: 'Önce düzeltilmiş cümleyi ver. Sonra hatayı parça parça teşhis et, ilgili kuralı açıkla ve aynı kurala ait bir doğru örnek daha ver. Doğal ama farklı alternatif varsa ayır.',
     grammar: 'Kuralı önce tek cümlede özetle; sonra biçim/ek tablosu veya karşılaştırmalı örneklerle açıkla. İstisnayı ana kuraldan ayır ve öğrencinin seviyesine göre ilerle.',
+    declension: 'İsmin cinsiyetini ve gövde tipini belirle, altı hâlin tekil-çoğul tablosunu ver, yazım kurallarını ve canlılık etkisini not düş.',
+    conjugation: 'Fiilin çekim sınıfını ve görünüşünü belirle; şimdiki/geçmiş/gelecek ve emir biçimlerini tablo hâlinde ver, ünsüz değişmelerini işaretle.',
+    comparison: 'İki öğeyi karşılıklı sütunlarda ele al; ortak noktayı kısa geç, AYIRICI ölçütü (anlam, hâl, görünüş, resmiyet) net söyle ve her biri için birer örnek ver.',
     vocabulary: 'Vurgulu biçim, anlam, söz türü; isimse cinsiyet/çoğul, fiilse görünüş çifti ve yönetim bilgisi ver. Doğal eşdizim ve örnek cümle ekle.',
     pronunciation: 'Kiril biçimi ve vurgu yerini göster; Türkçe yaklaşık okunuşu bunun yalnız yaklaşım olduğunu belirterek ver. Ses indirgenmesi/yumuşama varsa açıkla.',
     conversation: `Diyaloğu doğal ve seviyeye uygun ${tgt} yürüt. Her turda tek veya iki kısa soru sor; kullanıcı istemedikçe uzun ders anlatma. Belirgin hatayı nazikçe, konuşmayı kesmeden düzelt.`,
     course: 'Öğrenenin gerçek ilerleme ve yerel müfredat bağlamını kullan. Var olmayan ünite uydurma; en ilgili kartı ve kısa çalışma önerisini söyle.',
+    studyPlan: 'Öğrencinin gerçek ilerlemesine bakarak somut, ölçülebilir ve günlük bir plan ver. Dört kanalı (tekrar, yeni içerik, dinleme, üretim) dengele.',
+    exam: 'Sınav öncesi, sırası ve sonrası için ayrı ayrı taktik ver. Yanlış analizini merkeze al; boş bırakma ve zaman yönetimini vurgula.',
+    mistakes: 'Hataları numaralı liste hâlinde, yanlış→doğru biçiminde ver ve her birinin arkasındaki kuralı tek cümleyle açıkla.',
+    level: 'Seviyeyi kelime sayısı, dilbilgisi kapsamı ve yapabileceği işler üzerinden tanımla; öğrencinin mevcut konumuyla ilişkilendir.',
+    culture: 'Kültürel kalıbı davranış düzeyinde anlat ve dilsel karşılığını ver; Türkçe âdetlerle farkını işaretle.',
     general: `Sorunun asıl amacını belirleyip doğrudan yanıtla. Gereksiz konu listesi çıkarma; açıklamayı doğal ${tgt} örneklerle kanıtla.`,
   };
   return plans[intent];
