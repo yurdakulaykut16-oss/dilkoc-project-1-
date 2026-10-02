@@ -1,8 +1,8 @@
 {
   "tool": "dilkoc-integrity/1",
   "algo": "sha256",
-  "generatedAt": "2026-10-02T17:22:13.977Z",
-  "fileCount": 519,
+  "generatedAt": "2026-10-02T17:41:30.663Z",
+  "fileCount": 521,
   "files": {
     ".env.example": "9c1e0f199c90879bb7acbde014f829f7ee5fd4cf6cbb7dab0f912e943f038037",
     ".gitattributes": "1a1dbe176bc233b499d35a57db7513f2941c99ab9759f177830c9149be99005b",
@@ -19,7 +19,8 @@
     ".scratch/extract-extras.ts": "23a819090297948cc19fde325a075c7d2988c63109e85d7e1246d30e5080a024",
     ".scratch/gen-en-mirror.py": "c99a79d1cee639d7b122829df2455785e10878bfeea102634d962f39f6566a3c",
     "LICENSE": "6e7625255beeab6081b74727d58861e85b7d5037d9633d7d43af6d71593531f1",
-    "SECURITY.md": "67e8b4e497ddefd169d855e9907a19069ac7d8739efe386242a858d75781c090",
+    "PLAY-STORE-GUVENLIK.md": "5bd8cbfa50801d1067fd4673c05354128af8b930615a03a32b66d25ccbc4826e",
+    "SECURITY.md": "ea1f1bec163416138f5005d80074472d32ad189d6b49dd48052848466ab8bb57",
     "android/.gitignore": "065e4a92a240fe11a0ea230491ad9dabef143f5fd5a3e6884ad6f0395666a971",
     "android/.idea/.gitignore": "a9e54fc4f08bc97d82c04bd86ff37d3af84ba9ef4ad87fcfcb438dab622e8aaa",
     "android/.idea/AndroidProjectSystem.xml": "bcdc8749688b237f88ee6c20e6cc2e655a600e4ec9e69478f396783b383d48bc",
@@ -83,8 +84,8 @@
     "app-icon.png": "53e9eee530caafaaace9dd77e20da30f125d94d5433329744264cd2dcc65dd27",
     "capacitor.config.ts": "9ef3c760d29b50edb951799fbe298c35e96865094b6cfc28e00b28e4bca719fc",
     "index.html": "64be96e9de2bc75f5a94c5cc26b27b6ae573285852f801fa08baa1527c02d518",
-    "package-lock.json": "91c2c2d7ab7963798b1ad9d6660af56f7933178abe161538506bdc6b43b55210",
-    "package.json": "f11cc7219d43c1ad7871721863704089541aeef9cddcfedb4e02a65e1d9973d9",
+    "package-lock.json": "59d2491fd4818286f3a8b285ca39838a61367de5587473d8b552d92e8d462197",
+    "package.json": "ba2839d808f86ad1a6a7ab67a14f663af0074e5c11dc452c921a259692040f71",
     "powershell": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
     "public/dilkoc-voices/demo_voice.wav": "9ff69da0155e6a402bdfb8f9bbeb3b256c3f7cda1b13bfd00d1b71a6972ca2b8",
     "public/dilkoc-voices/demo_voice_design_audiobook_uk_narrator.wav": "361ccf99c75e287b48a337c2e403dd363a10c18d02d7cd99f0557b84e8eddc67",
@@ -321,6 +322,7 @@
     "readme.md": "05a834e3d1c937ac35ef65d03a91a1d4eba9e8775df3bdb5db8ec6abfa5eabec",
     "scripts/dev-with-voicestudio.mjs": "aeb22ce995cd66f958459693e7abb402d355b18490a6ace8f6ee9e432c209c68",
     "scripts/integrity.mjs": "7c64df8ff1c5c19045bf91967ff757de16d6e46778488f1a13e5f3f49105c406",
+    "scripts/obfuscate.mjs": "23fe6951e274f8869d4f485c72ed73cd4ab7780825dceeea2dd9596b2637f4ba",
     "src-tauri/Cargo.lock": "070eacfe012c04835b4a7c4115dadf27002aecb501dc509365ca7e968a78845c",
     "src-tauri/Cargo.toml": "a8c2590328cb94182d2fbc27671c26b5776faf9973cb3343fde148fc3a1107c0",
     "src-tauri/build.rs": "6aeeab41bc35efde4e3c2b644a6248f7fc06d24ae30b75c0d33491cbb0c1fa31",
@@ -522,6 +524,6 @@
     "src/ultra/ultraMode.ts": "509307554e105f3db8f7efbd53c14beb33588ccf8c6b836652f90854ec7fcb05",
     "src/vocabData.ts": "241bf4519a243882139e3b69d4f62ad343d9fe87b330907f6c6ab11b80948f76",
     "tsconfig.json": "8dadb5cfc031c9e3165edbddfbcc2b53af73ee57ff65ae4f0c21fc549b9f2ca2",
-    "vite.config.ts": "35df1adfdb2c24818bb3904366f4b7beb3606719d5db26172d05472aa7e6dd68"
+    "vite.config.ts": "c2c2bdb5589c4ea422e776eeda29109aaad5e892e087491c1308d24d957668ef"
   }
 }

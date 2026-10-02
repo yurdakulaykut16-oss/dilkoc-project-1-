@@ -21,6 +21,14 @@ export default defineConfig({
       mangle: { toplevel: true },
       format: { comments: false },
     },
+    // Tek paket: kod bölme (code splitting) kapatıldı → derleme çıktısında
+    // import/export kalmaz → build sonrası obfuscation güvenle uygulanabilir
+    // ve dağıtılan pakette uygulamanın tamamı tek, karartılmış dosyadır.
+    rollupOptions: {
+      output: {
+        inlineDynamicImports: true,
+      },
+    },
   },
   server: {
     host: true,

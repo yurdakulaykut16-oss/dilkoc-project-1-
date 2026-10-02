@@ -11,8 +11,10 @@
 | **LICENSE** | Tüm kod, müfredat, görsel ve sesler — 5846 FSEK kapsamında tam mülkiyet | `LICENSE` |
 | **Telif başlıkları** | Kaynak dosyalarda kalıcı sahiplik ibaresi | `src/*.ts`, `src/*.tsx` (çekirdek dosyalar) |
 | **Bütünlük manifesti** | Dosyaların değiştirilmesi/silinmesi tespit edilir | `integrity.manifest.json` + `scripts/integrity.mjs` |
+| **Obfuscation (kod karartma)** | Derlenen pakette tüm string'ler base64 gizli diziye gömülür, isimler hex'e döner, tek dosya paketi — pakette düz metin aranamaz | `scripts/obfuscate.mjs` (her `npm run build`'de otomatik) |
 | **Derleme sertleştirmesi** | Dağıtılan paketin tersine mühendisliği zorlaştırır (sourcemap yok, konsol silinir, isimler karışır) | `vite.config.ts` |
 | **Telif bildirimi + noindex** | Konsolda yasal uyarı; arama motorları içeriği arşivlemez | `index.html` |
+| **Play Store rehberi** | Android derlemesi, keystore, R8, Play Integrity adımları | `PLAY-STORE-GUVENLIK.md` |
 
 ## Bütünlük doğrulama (en önemli araç)
 
