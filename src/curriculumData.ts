@@ -18,8 +18,12 @@ import { EN_UNITS } from './content/en/units';
 import { EN_EXTRA_UNITS, EN_NEW_UNITS } from './content/en/enExtraUnits';
 import { CIT_RU_A } from './content/citizenship/citRuA';
 import { CIT_RU_B } from './content/citizenship/citRuB';
+import { CIT_RU_C } from './content/citizenship/citRuC';
+import { CIT_RU_D } from './content/citizenship/citRuD';
 import { EN_CIT_A } from './content/en/enCitA';
 import { EN_CIT_B } from './content/en/enCitB';
+import { EN_CIT_C } from './content/en/enCitC';
+import { EN_CIT_D } from './content/en/enCitD';
 
 export interface WordDetail {
   id: string;
@@ -3261,9 +3265,11 @@ const RU_UNITS_DATA: UnitModule[] = dedupeSimilarUnits([
   ...RESTAURANT_SERVICE_UNITS,
   ...DAILY_LIFE_90_UNITS,
   ...DAILY_LIFE_PLUS_UNITS,
-  // Vatandaşlık/vize/göç paketi (50 ünite) — her iki dilde aynı üniteler.
+  // Vatandaşlık/vize/göç paketi (100 ünite) — her iki dilde aynı üniteler.
   ...CIT_RU_A,
   ...CIT_RU_B,
+  ...CIT_RU_C,
+  ...CIT_RU_D,
 ]).map(splitAdvancedLevel).sort((a, b) =>
   LEVEL_ORDER[a.levelGroup] - LEVEL_ORDER[b.levelGroup] ||
   a.unitNumber - b.unitNumber ||
@@ -3277,8 +3283,8 @@ const RU_UNITS_DATA: UnitModule[] = dedupeSimilarUnits([
 //   • 499 Rusça ek ünitesinin İngilizce AYNASI (aynı id/numara/başlık/sıra,
 //     içerik İngilizce — content/en/enExtraSpecs* + enExtraUnits motoru),
 //   • 175 İngilizce'ye özel pekiştirme ünitesi (enNewSpecs)
-// → toplam 772 ünite = Rusça müfredatın hacmi (RU: 223 + 499 + 50 vatandaşlık paketi).
-const EN_UNITS_DATA: UnitModule[] = [...EN_UNITS, ...EN_EXTRA_UNITS, ...EN_NEW_UNITS, ...EN_CIT_A, ...EN_CIT_B]
+// → toplam 822 ünite = Rusça müfredatın hacmi (RU: 223 + 499 + 100 vatandaşlık paketi).
+const EN_UNITS_DATA: UnitModule[] = [...EN_UNITS, ...EN_EXTRA_UNITS, ...EN_NEW_UNITS, ...EN_CIT_A, ...EN_CIT_B, ...EN_CIT_C, ...EN_CIT_D]
   .map(splitAdvancedLevel)
   .sort((a, b) =>
     LEVEL_ORDER[a.levelGroup] - LEVEL_ORDER[b.levelGroup] ||

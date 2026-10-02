@@ -1,0 +1,598 @@
+// DilKoç © 2026 — Bu kaynak kod telif hakkıyla korunur. İzinsiz kopyalama,
+// dağıtma ve türev çalışma üretme yasaktır (bkz. LICENSE).
+// ============================================================================
+// 🛂 VATANDAŞLIK PAKETİ — RUSÇA (4/4: ünite 76-100)
+// Göç-uyum (3) + vatandaşlık derinleşme (10) + doğum (6) + resmî (6)
+// ============================================================================
+
+import type { UnitModule } from '../../curriculumData';
+import { makeCitUnit, type CitWord, type CitSent, type CitLine } from './makeCitUnit';
+
+const U = (
+  id: string, n: number, lv: UnitModule['levelGroup'], icon: string,
+  title: string, desc: string, cat: string, color: string, grammar: string,
+  words: CitWord[], sents: CitSent[], dlg: CitLine[],
+): UnitModule => makeCitUnit({ id, unitNumber: n, level: lv, icon, title, desc, category: cat, color, grammar, words, sents, dlg });
+
+const GOC = "Göç & Uyum";
+const VAT = "Vatandaşlık";
+const DOGUM = "Doğum & Vatandaşlık";
+const RESMI = "Resmî İşlemler";
+
+export const CIT_RU_D: UnitModule[] = [
+  U("cit_76", 675, "B2", "🤝", "Sosyal Çevre Edinme",
+    "Kulüpler, tanışma ve sosyal ağ kurma",
+    GOC, "#f59e0b",
+    "📌 «заводить знакомства» — tanışıklık kurmak (deyim).\n«по интересам» — ilgi alanlarına göre.",
+    [
+      ["заводить знакомства", "zavodít' znakómstva", "tanışıklık kurmak", "Sosyal ağ kurmaktır."],
+      ["клуб по интересам", "klub pa intyérésам", "ilgi kulübü", "Spor, satranç, kitap..."],
+      ["сосед по лестничной клетке", "sasyét pa lyestnichnay klyétkye", "kapı komşusu", "En yakın tanışıklıktır."],
+      ["пригласить в гости", "priglasít' f góstyi", "misafirliğe çağırmak", "İlk adımdır."],
+      ["общий язык", "abşçiy yazyk", "ortak dil", "Anlaşmanın temelidir."],
+      ["одиночество", "adináchyestva", "yalnızlık", "Entegrasyonun düşmanıdır."],
+    ],
+    [
+      ["Я вступил в спортивный клуб.", "Spor kulübüne üye oldum."],
+      ["Мы нашли общий язык с коллегами.", "İş arkadaşlarımla anlaştık."],
+      ["Соседи пригласили нас в гости.", "Komşular bizi misafirliğe çağırdı."],
+    ],
+    [
+      ["Мигрант", "Как найти друзей здесь?", "Kak naytí druzyéy zdyés'", "Burada arkadaş nasıl bulunur?"],
+      ["Коллега", "Вступи в клуб по интересам.", "Fstúp'i f klub pa intyérésам", "İlgi kulübüne gir."],
+      ["Мигрант", "Хорошая идея, спасибо!", "Harasháya idyéya, spasíba", "İyi fikir, teşekkürler!"],
+    ]),
+
+  U("cit_77", 676, "B1", "🏦", "Banka İşlemleri",
+    "Hesap açma, kart, transfer ve döviz bozdurma",
+    GOC, "#f59e0b",
+    "📌 «открыть счёт НА имя» — ...adına hesap açmak.\n«перевести деньги куда» — parayı ...ya yollamak.",
+    [
+      ["банковский счёт", "bankóvskiy şchót", "banka hesabı", "Maaş için zorunludur."],
+      ["дебетовая карта", "dyebétavaya kárta", "banka kartı", "Hesaba bağlıdır."],
+      ["перевод денег", "piryevód dyényeg", "para transferi", "Ülkeye/illiye yapılır."],
+      ["обменять валюту", "abminyát' valyútu", "döviz bozdurmak", "Günlük kurla olur."],
+      ["комиссия за перевод", "kamísiya za piryevót", "transfer komisyonu", "Miktarı etkiler."],
+      ["банкомат", "bankamat", "ATM (bankamatik)", "7/24 çalışır."],
+    ],
+    [
+      ["Мне нужен счёт для зарплаты.", "Maaş için hesaba ihtiyacım var."],
+      ["Перевод занял один день.", "Transfer bir gün sürdü."],
+      ["Снимите деньги в банкомате.", "Parayı bankamatikten çekin."],
+    ],
+    [
+      ["Клиент", "Я хочу открыть счёт.", "Ya khachú atkrýt' şchót", "Hesap açmak istiyorum."],
+      ["Операционист", "Паспорт и миграционную карту, пожалуйста.", "Pásport i migratsiónnuу kártu, pajálusta", "Pasaport ve göç kartınızı lütfen."],
+      ["Клиент", "Вот, пожалуйста. Карта будет сразу?", "Vot, pajálusta. Kárta búdit srazú", "Buyurun. Kart hemen olacak mı?"],
+    ]),
+
+  U("cit_78", 677, "B1", "🕌", "Dini ve Kültürel Mekânlar",
+    "İbadet yerleri ve kültürel haklar",
+    GOC, "#f59e0b",
+    "📌 «ходить в + önerme» — ...e gitmek: ходить в мечеть (camiye).\n«свобода вероисповедания» — inanç özgürlüğü.",
+    [
+      ["мечеть", "myechyét'", "cami", "Müslümanların ibadet yeridir."],
+      ["церковь", "tsyérkaf'", "kilise", "Hristiyan ibadet yeridir."],
+      ["свобода вероисповедания", "svabóda vyeroispavyedániya", "inanç özgürlüğü", "Anayasal haktır."],
+      ["праздники", "prazdniki", "bayramlar", "Kültürün parçasıdır."],
+      ["традиции", "tradítsii", "gelenekler", "Toplumu bağlar."],
+      ["уважение", "uvajyéniye", "saygı", "Birlikte yaşamanın kuralıdır."],
+    ],
+    [
+      ["Рядом с домом есть мечеть.", "Evimin yanında cami var."],
+      ["Закон защищает свободу вероисповедания.", "Yasa inanç özgürlüğünü korur."],
+      ["Мы уважаем традиции друг друга.", "Birbirimizin geleneklerine saygı duyuyoruz."],
+    ],
+    [
+      ["Новичок", "Здесь есть мечеть поблизости?", "Zdyés' yest' myechyét' pablyízasti", "Yakınlarda cami var mı?"],
+      ["Сосед", "Да, в двух остановках отсюда.", "Da, f dvuh astanófkah atsyúda", "Evet, iki durak ötede."],
+      ["Новичок", "Спасибо за помощь!", "Spasíba za pómaşch'", "Yardım için teşekkürler!"],
+    ]),
+
+  U("cit_79", 678, "B2", "🗺️", "Vatandaşlık Süreci Adım Adım",
+    "Bilinmesi ve yapılması gerekenler: tam kontrol listesi",
+    VAT, "#8b5cf6",
+    "📌 Sıra zarfları: сначала → потом → затем → наконец (önce→sonra→ardından→en sonunda).\nFiil isimleri: подача — başvuru, получение — alma.",
+    [
+      ["шаг первый", "şag pyérvıy", "birinci adım", "İkamet süresi sağlanır."],
+      ["проверить условия", "pravyérit' uslóviya", "şartları kontrol etmek", "Başvuru öncesi yapılır."],
+      ["собрать пакет", "sabrat' pakyét", "dosyayı toplamak", "Belgeler eksiksiz olur."],
+      ["сдать экзамены", "zdat' yekzamyénы", "sınavları geçmek", "Dil + tarih/toplum."],
+      ["подать заявление", "padát' zayavlyéniye", "başvuruyu vermek", "Son resmî adımdır."],
+      ["дождаться решения", "dajdat'sya ryshyéniya", "kararı beklemek", "Süreç uzundur."],
+    ],
+    [
+      ["Сначала проверьте все условия.", "Önce tüm şartları kontrol edin."],
+      ["Затем соберите пакет документов.", "Ardından evrak dosyasını toplayın."],
+      ["Наконец, дождитесь решения.", "En sonunda kararı bekleyin."],
+    ],
+    [
+      ["Консультант", "Шаг первый — вид на жительство.", "Şag pyérvıy — vit na zhítel'stva", "Birinci adım — oturma izni."],
+      ["Заявитель", "У меня уже есть. Шаг второй?", "U manyá užye yest'. Şag ftaróy", "Bende zaten var. İkinci adım?"],
+      ["Консультант", "Сдайте экзамены и подавайте заявление.", "Zdaytye yekzamyénы i padavátye zayavlyéniye", "Sınavları geçin ve başvurun."],
+    ]),
+
+  U("cit_80", 679, "B2", "🪪", "Kimlik Kartı ve Kimlik Bilgileri",
+    "Vatandaşlık sonrası kimlik kartı ve bilgiler",
+    VAT, "#8b5cf6",
+    "📌 «серия и номер» — seri ve numara (belge kimliği).\n«срок обмена» — değişim süresi.",
+    [
+      ["удостоверение личности", "udyastyeryéniye lichnasti", "kimlik kartı", "Vatandaşlıkla verilir."],
+      ["серия и номер", "sériya i nómyer", "seri ve numara", "Belgenin kimliğidir."],
+      ["код подразделения", "kot padrazyélyéniya", "birim kodu", "Kartın arkasında yazar."],
+      ["сменить фамилию", "smyinít' famíliyu", "soyad değiştirmek", "Evlenince olabilir."],
+      ["замена документа", "zamyéna dakumyénta", "belge yenileme", "Süre bitiminde yapılır."],
+      ["действителен до", "dyéystvitelen da", "...geçerli (tarih)", "Belgede yazar."],
+    ],
+    [
+      ["Получите удостоверение личности после присяги.", "Yeminden sonra kimlik kartınızı alın."],
+      ["Серия и номер указаны на лицевой стороне.", "Seri ve numara ön yüzde yazar."],
+      ["Документ действителен до 2035 года.", "Belge 2035'e kadar geçerli."],
+    ],
+    [
+      ["Гражданин", "Где получить удостоверение личности?", "Gdye paluchít' udyastyeryéniye lichnasti", "Kimlik kartı nereden alınır?"],
+      ["Сотрудник", "В миграционной службе, после присяги.", "F migratsiónnay slújbye, póslye prisyági", "Göç idaresinden, yeminden sonra."],
+      ["Гражданин", "Спасибо, всё понятно.", "Spasíba, fsyo pantyát но", "Teşekkürler, her şey açık."],
+    ]),
+
+  U("cit_81", 680, "B2", "🗳️", "Seçme ve Seçilme Hakkı",
+    "Oy kullanma, sandık ve seçmen kaydı",
+    VAT, "#8b5cf6",
+    "📌 «голосовать за кого» — ...ye oy vermek.\n«идти на выборы» — seçime gitmek.",
+    [
+      ["выборы", "vıbórы", "seçimler", "Demokrasinin temelidir."],
+      ["голосовать", "galasavát'", "oy kullanmak", "Vatandaş hakkıdır."],
+      ["избирательный участок", "izbirátel'nыy učastók", "sandık bölgesi", "Kayıtlı olduğunuz yerdir."],
+      ["бюллетень", "byulityén'", "oy pusulası", "Gizli doldurulur."],
+      ["кандидат", "kandidát", "aday", "Seçilen kişidir."],
+      ["избирательное право", "izbirátel'نaye práva", "seçme hakkı", "Vatandaşlıkla gelir."],
+    ],
+    [
+      ["Я впервые голосую на выборах.", "İlk kez seçimde oy kullanıyorum."],
+      ["Участок находится рядом с домом.", "Sandık bölgesi evimin yanında."],
+      ["Бюллетень заполняется тайно.", "Oy pusulası gizli doldurulur."],
+    ],
+    [
+      ["Сосед", "Вы идёте на выборы?", "Vy idyótye na vıbórы", "Seçime gidiyor musunuz?"],
+      ["Гражданин", "Да, я впервые голосую!", "Da, ya pyérvыy galasúyu", "Evet, ilk kez oy kullanıyorum!"],
+      ["Сосед", "Поздравляю с первым голосом!", "Pazdravlyáyu s pyérvыm gólasam", "İlk oyunuz kutlu olsun!"],
+    ]),
+
+  U("cit_82", 681, "B2", "🧮", "Vergi Yükümlülükleri",
+    "Vergi mükellefi olma, beyan ve ödeme",
+    VAT, "#8b5cf6",
+    "📌 «отчитаться перед кем» — ...a karşı hesap vermek.\n«в установленный срок» — belirlenen sürede.",
+    [
+      ["налогоплательщик", "nalagaplatyél'şchik", "vergi mükellefi", "Vatandaş statüsüdür."],
+      ["отчитаться", "atçítatsa", "hesap vermek", "Beyanname ile olur."],
+      ["в установленный срок", "f ustanóvlennıy srak", "belirlenen sürede", "Kaçırılmamalıdır."],
+      ["имущественный налог", "imuşchéstvyennıy nalók", "emlak vergisi", "Ev/araba için ödenir."],
+      ["штраф за неуплату", "ştraf za nyeupláту", "ödememe cezası", "Gecikince çıkar."],
+      ["квитанция об оплате", "kvitánsiya ab aplatyé", "ödeme makbuzu", "Saklanmalıdır."],
+    ],
+    [
+      ["Каждый гражданин — налогоплательщик.", "Her vatandaş vergi mükellefidir."],
+      ["Налог платится в установленный срок.", "Vergi belirlenen sürede ödenir."],
+      ["За неуплату начисляют штраф.", "Ödememe için ceza hesaplanır."],
+    ],
+    [
+      ["Налогоплательщик", "Когда подать декларацию?", "Kagdá padát' dyeklarátsiyu", "Beyanname ne zaman verilir?"],
+      ["Инспектор", "До тридцатого апреля, в установленный срок.", "Da tritsátava apryélya, f ustanóvlennıy srak", "30 Nisan'a kadar, belirlenen sürede."],
+      ["Налогоплательщик", "Спасибо, не пропущу срок.", "Spasíba, ni prapuşchú srak", "Teşekkürler, süreyi kaçırmayacağım."],
+    ]),
+
+  U("cit_83", 682, "B1", "🎖️", "Askerlik ve Hizmet Yükümlülüğü",
+    "Askerlik kaydı, hizmet ve muafiyetler",
+    VAT, "#8b5cf6",
+    "📌 «подлежать призыву» — askere tabi olmak.\n«отсрочка» — erteleme (tecil).",
+    [
+      ["военный билет", "vayénnыy bilét", "askerlik cüzdanı", "Askerlik belgesidir."],
+      ["призыв", "prыv", "askere çağrılma", "Yaş gelince yapılır."],
+      ["подлежать призыву", "padlyeját' prыvу", "askere tabi olmak", "Şartları yasa belirler."],
+      ["отсрочка", "atsróchka", "erteleme (tecil)", "Öğrenciliğe verilir."],
+      ["военкомат", "vayénкamat", "askerlik şubesi", "Kayıt burada tutulur."],
+      ["служба по контракту", "slújba pa kantráktu", "sözleşmeli hizmet", "Gönüllü yoldur."],
+    ],
+    [
+      ["Молодые люди подлежат призыву.", "Gençler askere tabidir."],
+      ["Студенты получают отсрочку.", "Öğrencilere erteleme verilir."],
+      ["Военный билет хранят всю жизнь.", "Askerlik cüzdanı ömür boyu saklanır."],
+    ],
+    [
+      ["Призывник", "Мне нужна отсрочка для учёбы.", "Mnye nujнá atsróchka dlya učóbı", "Öğrenimim için erteleme gerekiyor."],
+      ["Работник военкомата", "Принесите справку из университета.", "Prinyesítye spráfku iz universitéta", "Üniversiteden belge getirin."],
+      ["Призывник", "Хорошо, принесу завтра.", "Harashó, prinyesú záftra", "Peki, yarın getireceğim."],
+    ]),
+
+  U("cit_84", 683, "B2", "⚖️", "Mahkemeler ve Adalet Sistemi",
+    "Mahkemeler, hakim, savcı ve yurttaş görevleri",
+    VAT, "#8b5cf6",
+    "📌 «обратиться в суд с чем» — ...ile mahkemeye başvurmak.\n«в соответствии с законом» — kanuna uygun olarak.",
+    [
+      ["судья", "sud'yá", "hakim", "Kararı veren kişidir."],
+      ["прокурор", "prakyúrór", "savcı", "Kamu davasını izler."],
+      ["истец", "istyéts", "davacı", "Davayı açan taraftır."],
+      ["ответчик", "atvyétçik", "davalı", "Davaya uyan taraftır."],
+      ["в соответствии с законом", "f atvyétstvii s zakónam", "kanuna uygun olarak", "Resmî kalıptır."],
+      ["присяжные", "prisyaжnıyyе", "jurü üyeleri", "Vatandaşlar arasından seçilir."],
+    ],
+    [
+      ["Дело рассматривает судья.", "Davayı hakim görür."],
+      ["Суд действует в соответствии с законом.", "Mahkeme kanuna uygun hareket eder."],
+      ["Граждане могут быть присяжными.", "Vatandaşlar jurü olabilir."],
+    ],
+    [
+      ["Гражданин", "Куда подать иск?", "Kudá padát' isk", "Dava nereye verilir?"],
+      ["Юрист", "В районный суд, в соответствии с законом.", "F rayónnıy sut, f atvyétstvii s zakónam", "İlçe mahkemesine, kanuna uygun olarak."],
+      ["Гражданин", "Спасибо за консультацию.", "Spasíba za kansultátsiyu", "Danışma için teşekkürler."],
+    ]),
+
+  U("cit_85", 684, "B1", "🎉", "Devlet Törenleri ve Bayramlar",
+    "Ulusal bayramlar ve törenlere katılım",
+    VAT, "#8b5cf6",
+    "📌 «отмечать праздник» — bayramı kutlamak (deyim).\n«в честь чего» — ...anısına.",
+    [
+      ["государственный праздник", "gasudárstvyennыy prazdnik", "ulusal bayram", "Resmî tatildir."],
+      ["отмечать", "atmyečát'", "kutlamak", "Törenle yapılır."],
+      ["в честь независимости", "f čést' nyezavisímasti", "bağımsızlık anısına", "Bayramın adıdır."],
+      ["торжественное мероприятие", "tarjyéstvyennaye myerapriyátiye", "resmî tören", "Meydanlarda yapılır."],
+      ["салют", "salyút", "havai fişek", "Akşam atılır."],
+      ["выходной день", "výkhadnóy dyen'", "resmî tatil", "İşe gidilmez."],
+    ],
+    [
+      ["День независимости — государственный праздник.", "Bağımsızlık günü ulusal bayramdır."],
+      ["Вечером будет салют.", "Akşam havai fişek olacak."],
+      ["Это выходной день для всех.", "Bu herkes için tatildir."],
+    ],
+    [
+      ["Друг", "Как отмечают этот праздник?", "Kak atmyečáуut etat prazdnik", "Bu bayram nasıl kutlanıyor?"],
+      ["Гражданин", "Торжественное мероприятие и салют.", "Tarjyéstvyennaye myerapriyátiye i salyút", "Resmî tören ve havai fişek."],
+      ["Друг", "Пойдём вместе!", "Paydyóm vmestye", "Birlikte gidelim!"],
+    ]),
+
+  U("cit_86", 685, "B2", "📆", "Belge Yenileme Takvimi",
+    "Hangi belge ne zaman yenilenir: süre takvimi",
+    VAT, "#8b5cf6",
+    "📌 «по истечении срока» — sürenin dolması üzerine (resmî ifade).\n«заранее» — önceden.",
+    [
+      ["по истечении срока", "pa istyechéniyi sróka", "sürenin dolmasıyla", "Resmî yenileme ifadesidir."],
+      ["заранее", "zaranyéye", "önceden (erken)", "Başvuru buna yapılır."],
+      ["отслеживать сроки", "atslyéjivat' sróki", "süreleri takip etmek", "Ajanda tutulur."],
+      ["уведомление о замене", "uyedyamléniye a zamyénye", "yenileme bildirimi", "Sistem hatırlatır."],
+      ["просрочка", "prasróčka", "gecikme", "Ceza nedenidir."],
+      ["планировать заранее", "planíravat' zaranyéye", "önceden planlamak", "En sağlıklı yoldur."],
+    ],
+    [
+      ["Паспорт меняют по истечении срока.", "Pasaport süresi dolunca değiştirilir."],
+      ["Продлевайте документы заранее.", "Belgeleri önceden uzatın."],
+      ["Просрочка приводит к штрафу.", "Gecikme cezaya yol açar."],
+    ],
+    [
+      ["Мигрант", "Когда продлевать вид на жительство?", "Kagdá pradlyevát' vit na zhítel'stva", "Oturma izni ne zaman uzatılır?"],
+      ["Инспектор", "Заранее, за два месяца до конца срока.", "Zaranyéye, za dva myésyatsa da kantssá sróka", "Önceden, sürenin bitiminden iki ay önce."],
+      ["Мигрант", "Запишу в календарь, спасибо!", "Zapíshу f kalendár', spasíba", "Ajandama yazacağım, teşekkürler!"],
+    ]),
+
+  U("cit_87", 686, "B2", "🚫", "Ret Gerekçeleri ve Çözümleri",
+    "Vatandaşlık red sebepleri ve her birine çözüm",
+    VAT, "#8b5cf6",
+    "📌 «отказать из-за чего» — ...nedeniyle ret.\n«устранимый» — giderilebilir (düzeletilebilir).",
+    [
+      ["основания для отказа", "asnávaniya dlya atkáza", "ret gerekçeleri", "Yasa sayar."],
+      ["устранимая ошибка", "ustranímaya ashíbka", "giderilebilir hata", "Belge tamamlanır."],
+      ["дополнить пакет", "dapólnit' pakyét", "dosyayı tamamlamak", "Eksik belge eklenir."],
+      ["повторная подача", "paftórnaya padáça", "yeniden başvuru", "Süre beklenmeden olur."],
+      ["судебная защита", "sudyébnaya zaştchíta", "yargı yolu", "Son çaredir."],
+      ["не хватает стажа", "ni khvatáyет staжa", "kıdem süresi eksik", "Beklenir veya itiraz edilir."],
+    ],
+    [
+      ["Отказали из-за нехватки документов.", "Belge eksikliğinden ret verildi."],
+      ["Устранимую ошибку можно исправить.", "Giderilebilir hata düzeltilebilir."],
+      ["Повторная подача возможна через месяц.", "Yeniden başvuru bir ay sonra mümkün."],
+    ],
+    [
+      ["Заявитель", "Мне отказали! Что делать?", "Mnye atkazáli! Shtó dyélat'", "Ret aldım! Ne yapmalıyım?"],
+      ["Юрист", "Причина — не хватает стажа? Она устранима.", "Prichína — ni khvatáyет staжa? Aná ustraníма", "Neden kıdem eksikliği mi? O giderilebilir."],
+      ["Заявитель", "Значит, подождать и подать снова.", "Znachit, padajdát' i padát' snóva", "Demek bekleyip yeniden başvuracağım."],
+    ]),
+
+  U("cit_88", 687, "C1", "⭐", "Özel Yollar: Hizmet, Spor, Yatırım",
+    "Vatandaşlığa özel statü yolları",
+    VAT, "#8b5cf6",
+    "📌 «за заслуги перед» — ...önündeki hizmetlere karşılık.\n«в упрощённом порядке» — basitleştirilmiş usulde.",
+    [
+      ["за заслуги перед страной", "za zaslugí pyeryed stranóy", "ülkeye hizmetlerinden ötürü", "Onur yoludur."],
+      ["в упрощённом порядке", "f upraşchyonam paryádkye", "basitleştirilmiş usulde", "Süre kısalır."],
+      ["особые достижения", "asóbыyye dastijyéniya", "özel başarılar", "Spor, bilim, kültür."],
+      ["инвестор", "invystór", "yatırımcı", "Ekonomik yoldur."],
+      ["крупный вклад", "krupnыy vklad", "büyük katkı", "Yatırım ölçütüdür."],
+      ["квота", "kvóta", "kota", "Sınırlı sayıda verilir."],
+    ],
+    [
+      ["За особые достижения — упрощённый порядок.", "Özel başarılar için basitleştirilmiş usul."],
+      ["Инвестор делает крупный вклад в экономику.", "Yatırımcı ekonomiye büyük katkı yapar."],
+      ["Заслуги перед страной учитываются.", "Ülkeye hizmetler dikkate alınır."],
+    ],
+    [
+      ["Журналист", "Как спортсмен получил гражданство так быстро?", "Kak spartsmyén paluchíl grajdánstva tak býstra", "Sporcu vatandaşlığı nasıl bu kadar hızlı aldı?"],
+      ["Юрист", "За особые достижения, в упрощённом порядке.", "Za asóbыyye dastijyéniya, f upraşchyonam paryádkye", "Özel başarılarından ötürü, basitleştirilmiş usulde."],
+      ["Журналист", "Понятно, спасибо за объяснение.", "Pantyát но, spasíba za abyyasnyéniye", "Anlaşıldı, açıklama için teşekkürler."],
+    ]),
+
+  U("cit_89", 688, "B1", "🍼", "Doğum Sonrası İlk 30 Gün",
+    "Doğumdan sonraki ilk işlemler takvimi",
+    DOGUM, "#ec4899",
+    "📌 «в течение + ilgi hâli» — süresi içinde: в течение месяца — bir ay içinde.\n«получить на руки» — teslim almak.",
+    [
+      ["в течение месяца", "f tyechéniyi myésyatsa", "bir ay içinde", "Kayıt süresidir."],
+      ["получить на руки", "paluchít' na rúki", "teslim almak", "Belge şahsa verilir."],
+      ["справка о рождении", "spráfka a rajdyéniya", "doğum belgesi (hastane)", "İlk elimdedir."],
+      ["свидетельство", "svidyétel'stva", "resmî belge (nüfus)", "Kayıtla verilir."],
+      ["полис новорождённому", "pólis navarajdyónnamu", "yenidoğan sigortası", "Sağlık için zorunludur."],
+      ["регистрация по адресу", "ragistrátsiya pa ádryesu", "adrese kayıt", "Çocuk için de yapılır."],
+    ],
+    [
+      ["Зарегистрируйте рождение в течение месяца.", "Doğumu bir ay içinde kaydettirin."],
+      ["Сначала справка из роддома, потом свидетельство.", "Önce hastane belgesi, sonra resmî belge."],
+      ["Оформите полис новорождённому.", "Yenidoğana sigorta yaptırın."],
+    ],
+    [
+      ["Мать", "Какие первые шаги после рождения?", "Kakíyye pyérvыyye şági póslye rajdyéniya", "Doğumdan sonraki ilk adımlar ne?"],
+      ["Консультант", "Справка из роддома, потом ЗАГС и полис.", "Spráfka iz roddóма, patóm zaks i pólis", "Hastane belgesi, sonra nüfus ve sigorta."],
+      ["Мать", "Спасибо, всё запишу.", "Spasíba, fsyo zapíshu", "Teşekkürler, hepsini not edeceğim."],
+    ]),
+
+  U("cit_90", 689, "B2", "🌐", "Uluslararası Aileler: Karma Statü",
+    "Farklı uyruklü ebeveynlerin çocukları",
+    DOGUM, "#ec4899",
+    "📌 «по законам какой страны» — hangi ülkenin yasalarına göre.\n«приоритет» — öncelik (hukuk terimi).",
+    [
+      ["международная семья", "myejdunaródnaya syem'yá", "uluslararası aile", "Farklı uyruklü ebeveynler."],
+      ["гражданство по выбору", "grajdánstva pa vıbóru", "seçmeli vatandaşlık", "Bazı ülkelerde olur."],
+      ["приоритет", "priyarityét", "öncelik", "Hukuk belirler."],
+      ["двойное гражданство ребёнка", "dvóynaye grajdánstva ryebyónka", "çocuğun çift vatandaşlığı", "Karma ailelerde mümkündür."],
+      ["консульская регистрация", "kansúl'skaya ragistrátsiya", "konsolosluk kaydı", "Doğum bildirimi olur."],
+      ["выбрать гражданство", "vıbrát' grajdánstvo", "vatandaşlık seçmek", "Reşit olunca bazı ülkelerde."],
+    ],
+    [
+      ["Ребёнок международной семьи может иметь два гражданства.", "Uluslararası ailenin çocuğu iki vatandaşlığa sahip olabilir."],
+      ["Сделайте консульскую регистрацию рождения.", "Doğumu konsoloslukta kaydettirin."],
+      ["Иногда гражданство выбирают позже.", "Bazen vatandaşlık sonra seçilir."],
+    ],
+    [
+      ["Отец", "У нас разные гражданства. Какое получит ребёнок?", "U nas rásnыyyе grajdánstva. Kakóye paluchít ryebyónak", "Farklı vatandaşlıklarımız var. Çocuk hangisini alacak?"],
+      ["Юрист", "Возможно двойное — по законам обеих стран.", "Vazmójnа dvóynaye — pa zakónam abyéyh stran", "Çift olabilir — her iki ülkenin yasasına göre."],
+      ["Отец", "Спасибо, изучим оба варианта.", "Spasíba, izučím aba varyánta", "Teşekkürler, iki seçeneği de inceleyeceğiz."],
+    ]),
+
+  U("cit_91", 690, "B1", "🤱", "Evlat Edinilen Çocukğun Yatandaşlığı",
+    "Evlat edinmede çocukğun vatandaşlık durumu",
+    DOGUM, "#ec4899",
+    "📌 «усыновить — усыновление» — fiil ve isim çifti.\n«наравне с» — ile eşit olarak.",
+    [
+      ["усыновить ребёнка", "usыnavít' ryebyónka", "çocuk edinmek", "Mahkemeyle olur."],
+      ["наравне с родными", "naravné s radnыmi", "öz çocuklarla eşit", "Haklar aynıdır."],
+      ["автоматически приобрести", "avtamatíçyеski priabryestí", "otomatik kazanmak", "Bazı ülkelerde olur."],
+      ["по ходатайству", "pa hadatáystvu", "talep üzerine", "Başvuru gerekir."],
+      ["судебное усыновление", "sudyébnaye usыnavlyéniye", "mahkeme evlat edinmesi", "Tek geçerli yoldur."],
+      ["тайна усыновления", "táyna usыnavlyéniya", "edinme sırrı", "Yasayla korunur."],
+    ],
+    [
+      ["Усыновлённый ребёнок получает гражданство наравне с родными.", "Evlat edinilen çocuk öz çocuklarla eşit vatandaşlık alır."],
+      ["Иногда гражданство приобретается автоматически.", "Bazen vatandaşlık otomatik kazanılır."],
+      ["Тайна усыновления защищена законом.", "Edinme sırrı yasayla korunur."],
+    ],
+    [
+      ["Приёмная мать", "Ребёнок получит гражданство сразу?", "Ryebyónak paluchít grajdánstva srazú", "Çocuk hemen vatandaşlık alacak mı?"],
+      ["Юрист", "После судебного усыновления — да, наравне с родными.", "Póslye sudyébnava usыnavlyéniya — da, naravné s radnыmi", "Mahkeme kararından sonra — evet, öz çocuklarla eşit."],
+      ["Приёмная мать", "Какое счастье! Спасибо.", "Kakóye şchást'ye! Spasíba", "Ne mutluluk! Teşekkürler."],
+    ]),
+
+  U("cit_92", 691, "B2", "🍼", "Terk Edilmiş Çocuk ve Vatandaşlık",
+    "Buluntu çocukların vatandaşlık durumu",
+    DOGUM, "#ec4899",
+    "📌 «найденный ребёнок» — bulunan çocuk (kısa passive sıfat).\n«до установления» — belirleninceye kadar.",
+    [
+      ["подкидыш", "padkídış", "terk edilmiş bebek", "Hukuki terimdir."],
+      ["найденный ребёнок", "náydennıy ryebyónak", "bulunan çocuk", "Resmî ifadedir."],
+      ["до установления родителей", "da ustanavléniya radítyelеy", "ebeveynler belirlenene kadar", "Geçici statüdür."],
+      ["государственная опека", "gasudárstvyennaya apyéka", "devlet velayeti", "Yetimhane/koruma altında."],
+      ["присвоить гражданство", "prisvóit' grajdánstva", "vatandaşlık vermek", "Devlet tanır."],
+      ["сирота", "siratá", "yetim", "Koruma altındadır."],
+    ],
+    [
+      ["Найденному ребёнку присваивают гражданство.", "Bulunan çocuğa vatandaşlık verilir."],
+      ["До установления родителей действует госопека.", "Ebeveynler bulunana kadar devlet velayeti geçerlidir."],
+      ["Закон защищает таких детей.", "Yasa bu çocukları korur."],
+    ],
+    [
+      ["Студент", "Что если родители неизвестны?", "Shtо yesli radítyeli nyeizvyéstnı", "Ebeveynler bilinmiyorsa ne olur?"],
+      ["Преподаватель", "Ребёнку присваивают гражданство страны.", "Ryebyónku prisvóyауut grajdánstva stranı", "Çocuğa ülkenin vatandaşlığı verilir."],
+      ["Студент", "Закон хорошо защищает детей.", "Zakón harashó zaştchíшcháyет dyétey", "Yasa çocukları iyi koruyor."],
+    ]),
+
+  U("cit_93", 692, "B2", "✍️", "İsim Değiştirme ve Vatandaşlık",
+    "Vatandaşlık alırken ad/soyad uyumu",
+    DOGUM, "#ec4899",
+    "📌 «изменить имя НА что» — adı ...ile değiştirmek.\n«в соответствии с традицией» — geleneğe uygun olarak.",
+    [
+      ["изменить имя", "izmyinít' ímya", "ad değiştirmek", "Nüfusta yapılır."],
+      ["транслитерация", "translityerátsiya", "harf çevirisi (transliterasyon)", "Alfabe farkında olur."],
+      ["написание фамилии", "napisániye famíliyi", "soyad yazımı", "Belgede standardıdır."],
+      ["в соответствии с традицией", "f atvyétstvii s tradítsiyey", "geleneğe uygun olarak", "Kültürel tercihtir."],
+      ["новое свидетельство", "nówaye svidyétel'stva", "yeni belge", "Değişiklikle verilir."],
+      ["отметка о смене", "atmyétka a smyiкnyé", "değişiklik kaydı", "Eski belgeye işlenir."],
+    ],
+    [
+      ["Имя можно изменить при получении гражданства.", "Vatandaşlık alınırken ad değiştirilebilir."],
+      ["Транслитерация влияет на написание.", "Harf çevirisi yazımı etkiler."],
+      ["Выдадут новое свидетельство.", "Yeni belge verilecek."],
+    ],
+    [
+      ["Заявитель", "Можно изменить написание фамилии?", "Mójna izmyinít' napisániye famíliyi", "Soyadın yazımı değiştirilebilir mi?"],
+      ["Сотрудник", "Да, при получении гражданства.", "Da, pri paluchyéniyi grajdánstva", "Evet, vatandaşlık alınırken."],
+      ["Заявитель", "Отлично, подготовлю заявление.", "Atlíçna, padgatóvlyu zayavlyéniye", "Harika, başvuru hazırlayacağım."],
+    ]),
+
+  U("cit_94", 693, "C1", "🧭", "Vatansızlık ve Koruma",
+    "Statelessness: vatansızlar ve korunma hakları",
+    DOGUM, "#ec4899",
+    "📌 «лицо без гражданства» — vatansız kişi (hukuki terim).\n«независимо от» — ...den bağımsız olarak.",
+    [
+      ["лицо без гражданства", "lítsa byez grajdánstva", "vatansız kişi", "Hukuki tanımdır."],
+      ["апатрид", "apatríd", "vatansız (uluslararası terim)", "Sözleşme dilidir."],
+      ["независимо от происхождения", "nyezavíсима at praisxajdyéniya", "kökenden bağımsız", "Eşitlik ilkesidir."],
+      ["правовая защита", "pravóvaya zaştchíta", "hukuki korunma", "Devlet sağlar."],
+      ["международная конвенция", "myejdunaródnaya kanvyénciya", "uluslararası sözleşme", "1954 ve 1961 sözleşmeleri."],
+      ["упрощённое получение", "upraşchonnaye paluchyéniye", "basitleştirilmiş alma", "Vatansızlar için usuldür."],
+    ],
+    [
+      ["Лицо без гражданства имеет права.", "Vatansız kişinin hakları vardır."],
+      ["Конвенция защищает апатридов.", "Sözleşme vatansızları korur."],
+      ["Для них действует упрощённое получение гражданства.", "Onlar için basitleştirilmiş usul geçerlidir."],
+    ],
+    [
+      ["Студент", "Кто такой апатрид?", "Kto takóy apatríd", "Vatansız kimdir?"],
+      ["Преподаватель", "Лицо без гражданства ни одной страны.", "Lítsa byez grajdánstva ni adnóy stranı", "Hiçbir ülkenin vatandaşı olmayan kişi."],
+      ["Студент", "А права у него есть?", "A práva u nyevó yest'", "Peki hakları var mı?"],
+      ["Преподаватель", "Да, независимого от происхождения.", "Da, nyezavíсima at praisxajdyéniya", "Evet, kökenden bağımsız olarak."],
+    ]),
+
+  U("cit_95", 694, "B1", "✉️", "Resmî Yazışma ve Dilekçe",
+    "Dilekçe yazma: hitap, metin, imza düzeni",
+    RESMI, "#10b981",
+    "📌 «обращаться с просьбой» — taleple başvurmak.\n«заранее благодарю» — şimdiden teşekkür ederim.",
+    [
+      ["официальное письмо", "afitsiál'naye písmо", "resmî mektup", "Belirli kalıbı vardır."],
+      ["шапка заявления", "shápka zayavlyéniya", "başvuru başlığı", "Kime/kimden bilgisidir."],
+      ["обращаться с просьбой", "abraşchát'sa s prós'bай", "taleple başvurmak", "Ana cümledir."],
+      ["с уважением", "s uvajyéniyem", "saygılarımla", "Kapanış ifadesidir."],
+      ["приложение", "prilojyéniye", "ek (belge)", "Ek listesidir."],
+      ["заранее благодарю", "zaranyéye blagadaryú", "şimdiden teşekkürler", "Nazik kapanıştır."],
+    ],
+    [
+      ["Шапка заявления — в правом верхнем углу.", "Başvuru başlığı sağ üst köşededir."],
+      ["Я обращаюсь с просьбой рассмотреть документы.", "Belgelerin incelenmesini talep ediyorum."],
+      ["В конце: «с уважением» и подпись.", "Sonda: «saygılarımla» ve imza."],
+    ],
+    [
+      ["Клиент", "Помогите написать заявление.", "Pamagítye napísat' zayavlyéniye", "Başvuru yazmama yardım edin."],
+      ["Консультант", "Сначала шапка, потом просьба и подпись.", "Snachála shápka, patóm prós'ba i pódpis'", "Önce başlık, sonra talep ve imza."],
+      ["Клиент", "Спасибо за образец!", "Spasíba za abrazyéts", "Örnek için teşekkürler!"],
+    ]),
+
+  U("cit_96", 695, "B1", "📢", "Şikâyet ve Geri Bildirim",
+    "Şikâyet dilekçesi ve çözüm süreci",
+    RESMI, "#10b981",
+    "📌 «жаловаться на что» — ...e şikâyet etmek.\n«в течение скольких дней» — kaç gün içinde.",
+    [
+      ["жалоба", "jalóba", "şikâyet", "Yazılı yapılır."],
+      ["жаловаться на очередь", "jalávatsa na achyérd'", "sıraya şikâyet etmek", "Hizmet aksatılmışsa."],
+      ["рассмотреть жалобу", "rasmotryét' jалóbu", "şikâyeti incelemek", "Makam görevlidir."],
+      ["срок ответа", "srak atvyéta", "yanıt süresi", "Yasa belirler."],
+      ["книга отзывов", "kníga atzывof", "geri bildirim defteri", "İş yerlerinde olur."],
+      ["улучшение сервиса", "uluchshéniye syérvisa", "hizmet iyileştirme", "Sonuç hedeftir."],
+    ],
+    [
+      ["Подал жалобу на длинную очередь.", "Uzun sıraya şikâyet ettim."],
+      ["Жалобу рассмотрят в течение десяти дней.", "Şikâyet on gün içinde incelenecek."],
+      ["Отзыв помогает улучшить сервис.", "Geri bildirim hizmeti iyileştirir."],
+    ],
+    [
+      ["Посетитель", "Куда подать жалобу?", "Kudá padát' jалóbu", "Şikâyet nereye verilir?"],
+      ["Секретарь", "Начальнику отдела, письменно.", "Naчál'niku atdyéla, písmyenna", "Birim amirine, yazılı olarak."],
+      ["Посетитель", "Спасибо, напишу сегодня.", "Spasíba, napíshу syevódnya", "Teşekkürler, bugün yazacağım."],
+    ]),
+
+  U("cit_97", 696, "A2", "🔎", "Kayıp Belgeler ve Yeniden Çıkarma",
+    "Kaybolan belgelerin yerine yenilerinin alınması",
+    RESMI, "#10b981",
+    "📌 «восстановить документ» — belgeyi iade ettirmek.\n«дубликат» — ikinci nüsha (asıl değil).",
+    [
+      ["восстановить документ", "vastanavít' dakumyént", "belgeyi yeniden çıkarmak", "Kayıpla yapılır."],
+      ["дубликат", "duplikát", "ikinci nüsha", "Üzerinde «дубликат» yazar."],
+      ["утеря", "utyérya", "kayıp (olay)", "Resmî ifadedir."],
+      ["объявление об утере", "abyavlyéniye ab utyéri", "kayıp bildirimi", "Gazetede/portalda yapılır."],
+      ["заплатить пошлину", "zaplatít' pashlínu", "harç ödemek", "Yeniden çıkarmada olur."],
+      ["срок восстановления", "srak vastanavléniya", "iade süresi", "Bazı belgeler uzundur."],
+    ],
+    [
+      ["Я потерял свидетельство — нужен дубликат.", "Belgemi kaybettim — ikinci nüsha gerekli."],
+      ["Сначала объявление об утере.", "Önce kayıp bildirimi."],
+      ["За дубликат платят пошлину.", "İkinci nüsha için harç ödenir."],
+    ],
+    [
+      ["Клиент", "Как восстановить утерянное свидетельство?", "Kak vastanavít' utyéryannaye svidyétel'stva", "Kayıp belge nasıl yeniden çıkarılır?"],
+      ["Сотрудник", "Объявление об утере, пошлина, потом дубликат.", "Abyavlyéniye ab utyéri, pashlína, patóm duplikát", "Kayıp bildirimi, harç, sonra ikinci nüsha."],
+      ["Клиент", "Понял, спасибо большое!", "Panyál, spasíba bal'shóye", "Anladım, çok teşekkürler!"],
+    ]),
+
+  U("cit_98", 697, "B2", "📱", "Çevrim İçi Devlet Hizmetleri",
+    "E-devlet portalı: randevu, belge, ödeme online",
+    RESMI, "#10b981",
+    "📌 «в личном кабинете» — kişisel hesapta.\n«электронная подпись» — e-imza (onay).",
+    [
+      ["госуслуги", "gasuslúgi", "e-devlet portalı", "Tüm işlemler buradadır."],
+      ["личный кабинет", "líçnыy kabinyét", "kişisel hesap", "Girişle açılır."],
+      ["электронная подпись", "yiktróнная pódpis'", "e-imza", "Onaylama aracıdır."],
+      ["запись онлайн", "zápis' anlayn", "online randevu", "Sıra beklemeden olur."],
+      ["отследить готовность", "atslyedít' gotóvnast'", "hazırlığı takip etmek", "Bildirimle gelir."],
+      ["электронная очередь", "yiktróнная achyérd'", "elektronik sıra", "Adil sıralamadır."],
+    ],
+    [
+      ["Все услуги — в личном кабинете.", "Tüm işlemler kişisel hesapta."],
+      ["Запись онлайн экономит время.", "Online randevu zaman kazandırır."],
+      ["Готовность документа можно отследить.", "Belgenin hazırlığı takip edilebilir."],
+    ],
+    [
+      ["Пользователь", "Как записаться через госуслуги?", "Kak zapissátsa chyeryez gasuslúgi", "E-devlet üzerinden randevu nasıl alınır?"],
+      ["Оператор", "В личном кабинете выберите услугу и время.", "F líçnam kabinyété vıbyerítye úslugu i vryémya", "Kişisel hesapta işlem ve saat seçin."],
+      ["Пользователь", "Удобно! Спасибо.", "Udóbna! Spasíba", "Pratik! Teşekkürler."],
+    ]),
+
+  U("cit_99", 698, "B1", "🧩", "Eylem Kelimeleri: İşlem Fiilleri",
+    "Başvur, ver, al, uzat: işlem fiilleri paketi",
+    RESMI, "#10b981",
+    "📌 Fiil çiftleri: подать (perfektif) / подавать (imperfektif) — vermek.\nBir kez mi sürekli mi anlamına dikkat.",
+    [
+      ["подать / подавать", "padát' / padavát'", "vermek (başvuru)", "Perfektif/imperfektif çifti."],
+      ["получить / получать", "paluchít' / paluchát'", "almak", "En sık çifttir."],
+      ["продлить / продлевать", "pradlít' / pradlyevát'", "uzatmak", "Süre işlemlerinde."],
+      ["оформить / оформлять", "aformít' / aformlyát'", "işlemek (düzenlemek)", "Belge işlemlerinde."],
+      ["заполнить / заполнять", "zapólnit' / zapálnyat'", "doldurmak", "Formlarda."],
+      ["предоставить / предоставлять", "pryedastavít' / pryedastavlyát'", "sunmak (belge)", "Resmî dilde."],
+    ],
+    [
+      ["Я подал заявление и получил справку.", "Başvuruyu verdim ve belgeyi aldım."],
+      ["Каждый год продлеваю регистрацию.", "Her yıl kaydımı uzatıyorum."],
+      ["Предоставьте документы в окошко.", "Belgeleri gişeye sunun."],
+    ],
+    [
+      ["Преподаватель", "Скажите пары: «подать» — а несовершенный вид?", "Skajítye páry: «padát'» — a nyisavyrshyén nıy vid", "Çiftleri söyleyin: «podat» — peki süreklilik biçimi?"],
+      ["Студент", "«Подавать» — подавать документы.", "«Padavát'» — padavát' dakumyéntı", "«Podavat» — belge vermek."],
+      ["Преподаватель", "Отлично! Следующая пара…", "Atlíčna! Slyéduуuşchaya pára…", "Harika! Sıradaki çift…"],
+    ]),
+
+  U("cit_100", 699, "C1", "🧠", "Kavram Kelimeleri: Statü ve Süre",
+    "Statü, hak, yükümlülük: soyut kavram paketi",
+    RESMI, "#10b981",
+    "📌 Soyut isimler: право (hak) — мн. права (haklar); обязанность (görev).\n«по отношению к» — ...karşısında.",
+    [
+      ["статус", "státus", "statü", "Hukuki konumdur."],
+      ["право", "práva", "hak", "Çoğulu: права."],
+      ["обязанность", "abyázannast'", "yükümlülük", "Hakkın karşılığıdır."],
+      ["полномочия", "pannamóчiya", "yetkiler", "Kurum/kişi gücüdür."],
+      ["преимущество", "praymúşchéstva", "avantaj", "Statüyle gelir."],
+      ["по отношению к", "pa adnashyéniyu k", "...karşısında", "Soyut kıyastır."],
+    ],
+    [
+      ["Статус определяет права и обязанности.", "Statü hak ve yükümlülükleri belirler."],
+      ["У каждого статуса свои полномочия.", "Her statünün kendi yetkileri vardır."],
+      ["Гражданство даёт преимущество перед визой.", "Vatandaşlık vizeye karşı avantaj sağlar."],
+    ],
+    [
+      ["Экзаменатор", "Что даёт статус гражданина?", "Shtó dáyót státus grajdanína", "Vatandaş statüsü ne verir?"],
+      ["Кандидат", "Права, обязанности и преимущества.", "Práva, abyázannastí i praymúşchéstva", "Haklar, yükümlülükler ve avantajlar."],
+      ["Экзаменатор", "Прекрасный ответ!", "Pryekrásnыy atvyét", "Mükemmel cevap!"],
+    ]),
+];

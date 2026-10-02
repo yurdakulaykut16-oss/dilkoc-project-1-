@@ -255,6 +255,7 @@ export const EN_CIT_A: UnitModule[] = [
     VIZE, "#0ea5e9",
     "📌 \"ask ABOUT + konu\": asked about my plans.\n\"in order\" — kuralında/uygun: documents are in order.",
     [
+      ["interview", "INtırvyu", "mülakat", "Vize ve vatandaşlık mülakatlarının genel adıdır."],
       ["visa interview", "VİZı INtırvyu", "vize görüşmesi", "Konsolosluk mülakatıdır."],
       ["consular section", "KONsıyulır SEKşın", "konsolosluk bölümü", "Vize işlemlerinin yapıldığı birim."],
       ["consul", "KONsıl", "konsolos", "Kararı veren yetkilidir."],
