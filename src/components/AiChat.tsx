@@ -75,6 +75,7 @@ export interface AiChatProps {
 
 const CHAT_KEY = 'dilkoc_ai_agent_chat_v1';
 const AUTO_SPEAK_KEY = 'dilkoc_ai_agent_autospeak_v1';
+const SPEAK_SCOPE_KEY = 'dilkoc_ai_agent_speakscope_v1';
 
 function restoreChat(): ChatEntry[] {
   try {
@@ -94,8 +95,8 @@ function initialChat(): ChatEntry[] {
     id: 'welcome',
     role: 'assistant',
     text: isEnglish()
-      ? 'Merhaba! İngilizce hakkında istediğini sorabilirsin. Çeviri, cümle düzeltme, zamanlar, phrasal verb\'ler, telaffuz ve doğal konuşma farklarını soruna göre düşünüp Türkçe açıklayabilirim.'
-      : 'Merhaba! Rusça hakkında istediğini sorabilirsin. Çeviri, cümle düzeltme, hâller, fiil görünüşleri, telaffuz ve doğal konuşma farklarını soruna göre düşünüp Türkçe açıklayabilirim.',
+      ? 'Merhaba! İngilizce hakkında istediğini sorabilirsin. Çeviri, cümle düzeltme, zamanlar, phrasal verb\'ler, telaffuz ve doğal konuşma farklarını soruna göre düşünüp Türkçe açıklayabilirim.\n\nSesli okuma varsayılan olarak yalnızca ⚡ KISA CEVAP bölümünü okur. Daha fazlasını duymak istersen «neden böyle kısmını da oku», «tabloyu oku» ya da «hepsini oku» diyebilir, veya her bölümün sağındaki 🔊 simgesine dokunabilirsin.'
+      : 'Merhaba! Rusça hakkında istediğini sorabilirsin. Çeviri, cümle düzeltme, hâller, fiil görünüşleri, telaffuz ve doğal konuşma farklarını soruna göre düşünüp Türkçe açıklayabilirim.\n\nSesli okuma varsayılan olarak yalnızca ⚡ KISA CEVAP bölümünü okur. Daha fazlasını duymak istersen «neden böyle kısmını da oku», «tabloyu oku» ya da «hepsini oku» diyebilir, veya her bölümün sağındaki 🔊 simgesine dokunabilirsin.',
     provider: 'yerel hafıza',
   }];
 }
@@ -190,7 +191,7 @@ function isSectionHeading(line: string) {
   return SECTION_STYLES.some(style => style.match.test(line)) && line === line.toLocaleUpperCase('tr-TR');
 }
 
-function AnswerBody({ text }: { text: string }) {
+function AnswerBody({ text, onSpeakSection }: { text: string; onSpeakSection?: (scope: SpeechScope, label: string) => void }) {
   const blocks = text.split('\n\n');
   return (
     <div style={{ display: 'grid', gap: '9px' }}>
@@ -205,7 +206,20 @@ function AnswerBody({ text }: { text: string }) {
           const monospace = body.some(line => /^\s{2,}/.test(line) || /\s{2,}\S/.test(line));
           return (
             <div key={`blk-${blockIndex}`} style={{ borderRadius: '11px', background: style.background, border: `1px solid ${style.color}22`, padding: '8px 10px' }}>
-              <div style={{ color: style.color, fontSize: '10.5px', fontWeight: 950, letterSpacing: '.7px', marginBottom: body.length ? '5px' : 0 }}>{heading}</div>
+              <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: '8px', marginBottom: body.length ? '5px' : 0 }}>
+                <div style={{ color: style.color, fontSize: '10.5px', fontWeight: 950, letterSpacing: '.7px' }}>{heading}</div>
+                {onSpeakSection && (
+                  <button
+                    type="button"
+                    title={`Bu bölümü seslendir: ${heading}`}
+                    aria-label={`Bu bölümü seslendir: ${heading}`}
+                    onClick={() => onSpeakSection(heading.replace(/^[^\p{L}]+/u, '').trim().toLocaleLowerCase('tr-TR'), heading)}
+                    style={{ border: 'none', background: 'transparent', color: style.color, cursor: 'pointer', fontSize: '12px', lineHeight: 1, opacity: .75, padding: '0 2px' }}
+                  >
+                    🔊
+                  </button>
+                )}
+              </div>
               {body.length > 0 && (
                 <div style={{
                   whiteSpace: 'pre-wrap',
@@ -247,6 +261,102 @@ const STARTER_PROMPTS = isEnglish()
   ? ['Present Perfect ile Past Simple farkı', '«get up» ne demek?', 'in / on / at nasıl seçilir?', 'Bana günlük çalışma planı çıkar', 'Zayıf konularım neler?']
   : ['«книга» kelimesinin hâllerini göster', '«читать» fiilini çekimle', 'в ve на farkı nedir?', '«хорошо» nasıl okunur?', 'Zayıf konularım neler?'];
 
+/* ─────────────── SESLENDİRME KAPSAMI ───────────────
+ * Cevaplar bölümlü üretildiği için tamamını okutmak uzun sürüyordu.
+ * Varsayılan olarak yalnızca "⚡ KISA CEVAP" seslendirilir; kullanıcı
+ * ister düğmeyle ister "neden böyle kısmını da oku" gibi bir komutla
+ * istediği bölümü ayrıca dinleyebilir.
+ */
+
+export type SpeechScope = 'short' | 'full' | string;
+
+interface AnswerSection {
+  key: string;
+  heading: string;
+  body: string;
+}
+
+/** Cevap metnini "⚡ KISA CEVAP", "📘 NEDEN BÖYLE" gibi bölümlere ayırır. */
+export function parseSections(text: string): AnswerSection[] {
+  const sections: AnswerSection[] = [];
+  for (const block of text.split('\n\n')) {
+    const lines = block.split('\n');
+    const heading = (lines[0] ?? '').trim();
+    if (!SECTION_STYLES.some(style => style.match.test(heading)) || heading !== heading.toLocaleUpperCase('tr-TR')) continue;
+    const key = heading.replace(/^[^\p{L}]+/u, '').trim().toLocaleLowerCase('tr-TR');
+    sections.push({ key, heading, body: lines.slice(1).join('\n').trim() });
+  }
+  return sections;
+}
+
+/** Seslendirmeden önce metni sadeleştirir: yıldızlar, madde imleri, tablo girintileri. */
+function speechFriendly(text: string): string {
+  return text
+    .replace(/\*\*/g, '')
+    // Emoji ve simgeler sesli okunduğunda anlamsız ses çıkarır veya atlanır.
+    .replace(/[\u{1F000}-\u{1FAFF}\u{2600}-\u{27BF}\u{2B00}-\u{2BFF}\u{FE0F}\u{2190}-\u{21FF}]/gu, ' ')
+    .replace(/^[•▸]\s*/gm, '')
+    .replace(/^\s{2,}/gm, '')
+    .replace(/[↳→]/g, ',')
+    .replace(/\n{2,}/g, '. ')
+    .replace(/\n/g, '. ')
+    .replace(/\.\s*\./g, '.')
+    .replace(/\s{2,}/g, ' ')
+    .trim();
+}
+
+/** Verilen kapsama göre seslendirilecek metni çıkarır. */
+export function textForScope(answer: string, scope: SpeechScope): string {
+  const sections = parseSections(answer);
+  if (sections.length === 0) return speechFriendly(answer);
+  if (scope === 'full') return speechFriendly(sections.map(section => `${section.heading}. ${section.body}`).join('\n\n'));
+  if (scope === 'short') {
+    const short = sections.find(section => section.key.startsWith('kisa') || section.key.startsWith('kısa')) ?? sections[0];
+    return speechFriendly(short.body || short.heading);
+  }
+  const wanted = sections.find(section => section.key === scope);
+  return wanted ? speechFriendly(wanted.body || wanted.heading) : speechFriendly(answer);
+}
+
+/**
+ * Kullanıcının mesajı bir SESLENDİRME KOMUTU mu?
+ * Örn. "neden böyle kısmını da oku", "tabloyu oku", "hepsini seslendir".
+ * Böyle bir komut ajana soru olarak gönderilmez; son cevabın ilgili bölümü okunur.
+ */
+const SPEECH_SECTION_TRIGGERS: { scope: SpeechScope; label: string; patterns: RegExp }[] = [
+  { scope: 'full', label: 'tamamı', patterns: /(hepsini|hepsi|tamamini|tamamını|tumunu|tümünü|butun|bütün|komple|basindan sonuna)/ },
+  { scope: 'kisa cevap', label: 'kısa cevap', patterns: /(kisa cevab|kısa cevab|kisa cevap|kısa cevap|ozeti|özeti|ozet|özet)/ },
+  { scope: 'neden boyle', label: 'neden böyle', patterns: /(neden boyle|neden böyle|aciklama|açıklama|nedenini|gerekce|gerekçe)/ },
+  { scope: 'tablo', label: 'tablo', patterns: /(tabloyu|tablo)/ },
+  { scope: 'ornekler', label: 'örnekler', patterns: /(ornekler|örnekler|ornegi|örneği|ornek cumle|örnek cümle)/ },
+  { scope: 'ince ayar', label: 'ince ayar', patterns: /(ince ayar|detay|ayrinti|ayrıntı)/ },
+  { scope: 'turk ogrenci tuzagi', label: 'tuzak', patterns: /(tuzag|tuzağ|tuzak|sik yapilan hata|sık yapılan hata)/ },
+  { scope: 'mini alistirma', label: 'alıştırma', patterns: /(alistirma|alıştırma|pratigi|pratiği|pratik)/ },
+  { scope: 'siradaki adim', label: 'sıradaki adım', patterns: /(siradaki adim|sıradaki adım|sonraki adim|sonraki adım)/ },
+];
+
+const SPEECH_VERB = /(oku|okur musun|okusana|seslendir|sesli soyle|sesli söyle|soyle|söyle|dinletir misin|dinlemek istiyorum|sesli oku)/;
+
+export function detectSpeechCommand(raw: string): { scope: SpeechScope; label: string } | null {
+  const query = raw
+    .toLocaleLowerCase('tr-TR')
+    .replace(/ı/g, 'i').replace(/ş/g, 's').replace(/ç/g, 'c').replace(/ğ/g, 'g').replace(/ö/g, 'o').replace(/ü/g, 'u')
+    .replace(/[^\p{L}\p{N}\s]/gu, ' ')
+    .replace(/\s+/g, ' ')
+    .trim();
+  if (!query || query.split(' ').length > 9) return null;
+  if (!SPEECH_VERB.test(query)) return null;
+  // Kiril harf veya tırnak içeren mesaj bir seslendirme komutu değil, içerik sorusudur
+  // (ör. «хорошо» nasıl okunur?).
+  if (/[\u0400-\u04FF]/.test(raw) || /[«»""'']/.test(raw)) return null;
+  for (const trigger of SPEECH_SECTION_TRIGGERS) {
+    if (trigger.patterns.test(query)) return { scope: trigger.scope, label: trigger.label };
+  }
+  // Sadece "oku" / "devamını oku" denmişse tamamını oku.
+  if (/(devam|gerisini|kalanini|kalanını)/.test(query)) return { scope: 'full', label: 'tamamı' };
+  return null;
+}
+
 const CONFIDENCE_STYLE: Record<'yüksek' | 'orta' | 'düşük', { label: string; color: string; background: string }> = {
   'yüksek': { label: 'yüksek güven', color: '#86efac', background: 'rgba(34,197,94,.16)' },
   'orta': { label: 'orta güven', color: '#fde68a', background: 'rgba(245,158,11,.16)' },
@@ -277,6 +387,8 @@ export default function AiChat(props: AiChatProps) {
   const [input, setInput] = useState('');
   const [busy, setBusy] = useState(false);
   const [autoSpeak, setAutoSpeak] = useState(() => localStorage.getItem(AUTO_SPEAK_KEY) !== '0');
+  // Varsayılan seslendirme kapsamı: yalnızca kısa cevap mı, cevabın tamamı mı?
+  const [speakScope, setSpeakScope] = useState<'short' | 'full'>(() => (localStorage.getItem(SPEAK_SCOPE_KEY) === 'full' ? 'full' : 'short'));
   const [showVoiceStudio, setShowVoiceStudio] = useState(false);
   const [status, setStatus] = useState(langMeta().code === 'en' ? '🧠 Yerel İngilizce zekası hazır • 0 token' : '🧠 Yerel Rusça zekası hazır • 0 token');
   const [isSpeaking, setIsSpeaking] = useState(false);
@@ -431,13 +543,15 @@ export default function AiChat(props: AiChatProps) {
     }
   };
 
-  const speakAnswer = async (text: string) => {
+  const speakAnswer = async (text: string, scope: SpeechScope = 'short') => {
+    const spoken = textForScope(text, scope);
+    if (!spoken) return;
     const runId = speechRunRef.current + 1;
     speechRunRef.current = runId;
     stopBotVoice();
     setIsSpeaking(true);
     try {
-      for (const segment of splitSpeechSegments(text)) {
+      for (const segment of splitSpeechSegments(spoken)) {
         if (speechRunRef.current !== runId) return;
         animateMouth(segment.text, segment.lang);
         const usedAiVoice = await speakWithBotVoice(segment.text, 1);
@@ -457,6 +571,23 @@ export default function AiChat(props: AiChatProps) {
     event?.preventDefault();
     const query = (forcedQuery || input).trim();
     if (!query || busy) return;
+
+    // "neden böyle kısmını da oku", "tabloyu oku", "hepsini seslendir" gibi mesajlar
+    // ajana soru olarak gitmez; son cevabın istenen bölümü seslendirilir.
+    const speechCommand = detectSpeechCommand(query);
+    const lastAnswer = [...messages].reverse().find(message => message.role === 'assistant');
+    if (speechCommand && lastAnswer) {
+      setInput('');
+      const spoken = textForScope(lastAnswer.text, speechCommand.scope);
+      if (!spoken) {
+        setStatus(`Son cevapta "${speechCommand.label}" bölümü yok.`);
+        return;
+      }
+      setStatus(`🔊 Okunuyor: ${speechCommand.label}`);
+      void speakAnswer(lastAnswer.text, speechCommand.scope);
+      return;
+    }
+
     abortRef.current?.abort();
     stopSpeech();
     const controller = new AbortController();
@@ -498,7 +629,7 @@ export default function AiChat(props: AiChatProps) {
     // Soru sormak öğrenme davranışıdır; küçük ama düzenli ödüllendirilir.
     if (!cached && answer.confidence !== 'düşük') props.onEarnXp?.(2);
     setStatus(`🧠 ${cached ? 'Önbellekten anında' : 'Yerel zeka'} yanıtladı • ${answer.confidence} güven${answer.depth ? ` • ${answer.depth} bilgi noktası` : ''} • 0 token`);
-    if (autoSpeak) void speakAnswer(answer.text);
+    if (autoSpeak) void speakAnswer(answer.text, speakScope);
     if (abortRef.current === controller) abortRef.current = null;
     setBusy(false);
   };
@@ -509,6 +640,17 @@ export default function AiChat(props: AiChatProps) {
     try { localStorage.removeItem(CHAT_KEY); } catch {}
     setMessages(initialChat());
     setStatus(langMeta().code === 'en' ? '🧠 Yerel İngilizce zekası hazır • 0 token' : '🧠 Yerel Rusça zekası hazır • 0 token');
+  };
+
+  const toggleSpeakScope = () => {
+    setSpeakScope(current => {
+      const next = current === 'short' ? 'full' : 'short';
+      localStorage.setItem(SPEAK_SCOPE_KEY, next);
+      setStatus(next === 'short'
+        ? 'Otomatik seslendirme artık yalnızca ⚡ KISA CEVAP bölümünü okuyacak.'
+        : 'Otomatik seslendirme artık cevabın tamamını okuyacak.');
+      return next;
+    });
   };
 
   const toggleAutoSpeak = () => {
@@ -559,6 +701,13 @@ export default function AiChat(props: AiChatProps) {
         </div>
         <div style={{ display: 'flex', gap: '7px', flexWrap: 'wrap' }}>
           <button onClick={toggleAutoSpeak} style={{ border: '1px solid #334155', background: 'rgba(15,23,42,.75)', color: '#cbd5e1', padding: '8px 10px', borderRadius: '10px', cursor: 'pointer', fontWeight: 800, fontSize: '11px' }}>{autoSpeak ? '🔊 Ses açık' : '🔇 Ses kapalı'}</button>
+          <button
+            onClick={toggleSpeakScope}
+            title="Otomatik seslendirme kapsamı: yalnızca kısa cevap mı, cevabın tamamı mı?"
+            style={{ border: '1px solid #38bdf8', background: 'rgba(56,189,248,.12)', color: '#bae6fd', padding: '8px 10px', borderRadius: '10px', cursor: 'pointer', fontWeight: 800, fontSize: '11px' }}
+          >
+            {speakScope === 'short' ? '⚡ Sadece kısa cevap' : '📖 Cevabın tamamı'}
+          </button>
           <button onClick={() => setShowVoiceStudio(value => !value)} style={{ border: '1px solid #a855f7', background: 'rgba(168,85,247,.12)', color: '#e9d5ff', padding: '8px 10px', borderRadius: '10px', cursor: 'pointer', fontWeight: 800, fontSize: '11px' }}>🎚️ Ses Stüdyosu</button>
           <button onClick={clearChat} style={{ border: '1px solid #475569', background: 'transparent', color: '#94a3b8', padding: '8px 10px', borderRadius: '10px', cursor: 'pointer', fontWeight: 800, fontSize: '11px' }}>Temizle</button>
         </div>
@@ -604,7 +753,15 @@ export default function AiChat(props: AiChatProps) {
               }}
             >
               {message.role === 'assistant'
-                ? <AnswerBody text={message.text} />
+                ? (
+                  <AnswerBody
+                    text={message.text}
+                    onSpeakSection={(scope, label) => {
+                      setStatus(`🔊 Okunuyor: ${label}`);
+                      void speakAnswer(message.text, scope);
+                    }}
+                  />
+                )
                 : <div style={{ whiteSpace: 'pre-wrap' }}>{message.text}</div>}
 
               {message.role === 'assistant' && message.sources && message.sources.length > 0 && (
@@ -669,7 +826,8 @@ export default function AiChat(props: AiChatProps) {
                       </button>
                     )}
                     <button onClick={() => void copyAnswer(message.text)} style={{ border: 'none', background: 'transparent', color: '#94a3b8', cursor: 'pointer', fontSize: '11px', fontWeight: 800 }}>⧉ Kopyala</button>
-                    <button onClick={() => void speakAnswer(message.text)} style={{ border: 'none', background: 'transparent', color: '#7dd3fc', cursor: 'pointer', fontSize: '11px', fontWeight: 800 }}>🔊 Dinle</button>
+                    <button onClick={() => { setStatus('🔊 Okunuyor: kısa cevap'); void speakAnswer(message.text, 'short'); }} title="Yalnızca kısa cevabı seslendir" style={{ border: 'none', background: 'transparent', color: '#7dd3fc', cursor: 'pointer', fontSize: '11px', fontWeight: 800 }}>🔊 Kısa cevap</button>
+                    <button onClick={() => { setStatus('🔊 Okunuyor: cevabın tamamı'); void speakAnswer(message.text, 'full'); }} title="Cevabın tamamını seslendir" style={{ border: 'none', background: 'transparent', color: '#a5b4fc', cursor: 'pointer', fontSize: '11px', fontWeight: 800 }}>🔊 Tamamı</button>
                   </div>
                 )}
               </div>
@@ -707,6 +865,8 @@ export default function AiChat(props: AiChatProps) {
       )}
       <div style={{ color: '#64748b', fontSize: '10px', marginTop: '8px', lineHeight: 1.45 }}>
         Yalnızca yazdığın soruya göre konuşur. Türkçe açıklamayı, istediğin hedef dil kelime/cümle ve soru kalıplarıyla birlikte ele alır. Üniteler ve ilerlemen ajanın bağlamında tutulur; API anahtarı uygulamaya gömülmez.
+        <br />
+        🔊 <b>Seslendirme:</b> Varsayılan olarak yalnızca <b>⚡ KISA CEVAP</b> okunur. «neden böyle kısmını da oku», «tabloyu oku», «örnekleri seslendir» ya da «hepsini oku» yazabilir/söyleyebilirsin; her bölümün sağındaki 🔊 simgesi de o bölümü tek başına okur. Üstteki düğmeden varsayılanı «cevabın tamamı» yapabilirsin.
       </div>
     </section>
   );

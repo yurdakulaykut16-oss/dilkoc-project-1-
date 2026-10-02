@@ -1,5 +1,5 @@
 import { UNITS_DATA } from '../curriculumData';
-import { detectRussianQuestionIntent, searchRussianKnowledge, type RussianQuestionIntent } from './russianExpertise';
+import { detectRussianQuestionIntent, searchRussianKnowledge, type RussianKnowledgeMatch, type RussianQuestionIntent } from './russianExpertise';
 import { isEnglish, isTargetScript } from '../content/activeLanguage';
 import { compose, buildFollowUps, caseTable, compareTable } from './answerComposer';
 import {
@@ -1472,6 +1472,140 @@ function splitIntoParagraphs(content: string, maxParts: number): string[] {
   return parts.slice(0, maxParts);
 }
 
+/** Müfredat kaydı id'sinden (curriculum-expert-<unitId>) üniteyi bulur. */
+const UNIT_BY_ID = new Map(UNITS_DATA.map(unit => [unit.id, unit]));
+
+/** Gramer açıklamasını numaralı maddelere ayırır: "1. … 2. … 3. …" */
+function splitNumberedSteps(text: string): string[] {
+  // "📌 ÜNİTE ODAĞI — Kültür: Banya (Rus Hamamı):" başlığının tamamını at;
+  // içinde iki nokta geçtiği için satırın yarısı artık olarak kalıyordu.
+  const cleaned = text.replace(/^\s*📌[\s\S]*?(?=\d{1,2}\.\s)/, '').trim();
+  const parts = cleaned.split(/\s*(?=\d{1,2}\.\s)/).map(part => part.trim()).filter(Boolean);
+  const steps = parts.length < 2
+    ? (cleaned ? [cleaned] : [])
+    : parts.map(part => part.replace(/^\d{1,2}\.\s*/, ''));
+  // Her ünitede aynen tekrar eden dolgu cümlesi bilgi taşımıyor.
+  return steps.filter(step => !/kategorisinden se[cç]ilmi[sş] kelimeleri ba[gğ]lam i[cç]inde [cç]al[ıi][sş]t[ıi]r[ıi]r/i.test(step));
+}
+
+/** "… kelimeleri nelerdir", "… ile ilgili kelimeler" gibi liste istekleri. */
+function wantsWordList(query: string): boolean {
+  const q = normalize(query);
+  return /(kelime|kelimeler|kelimeleri|sozcuk|sozcukler|sozluk|vocabulary|words|terimler|ifadeler)/.test(q)
+    && /(nelerdir|neler|ver|listele|soyle|yaz|ogret|ogrenmek|hangileri|var|mi|misin|ile ilgili|hakkinda|temasindan|konusunda)/.test(q);
+}
+
+/**
+ * Müfredat ünitelerini HAM VERİ DÖKÜMÜ olarak değil, gerçek bir ders gibi anlatır.
+ * Daha önce ünite numarası, kategori etiketi ve okunuş parantezleri tek bir paragrafa
+ * sıkıştırılıyordu; burada kelime listesi tabloya, cümleler örneklere ayrılır.
+ */
+function unitAnswer(match: RussianKnowledgeMatch, support: RussianKnowledgeMatch[], listMode = false): LocalRussianAnswer | null {
+  const unitId = match.entry.id.replace(/^curriculum-expert-/, '');
+  const unit = UNIT_BY_ID.get(unitId);
+  if (!unit) return null;
+
+  // Kullanıcı "bu temada hangi kelimeler var?" diye sorduysa tek üniteyle yetinme;
+  // aynı temadaki diğer üniteleri de aynı tabloda topla.
+  const relatedUnits = listMode
+    ? [unit, ...support
+      .map(other => UNIT_BY_ID.get(other.entry.id.replace(/^curriculum-expert-/, '')))
+      .filter((other): other is typeof unit => Boolean(other))]
+    : [unit];
+
+  const seen = new Set<string>();
+  const collected: { word: typeof unit.words[number]; from: typeof unit }[] = [];
+  for (const source of relatedUnits) {
+    for (const word of source.words) {
+      const key = normalize(word.ru);
+      if (seen.has(key)) continue;
+      seen.add(key);
+      collected.push({ word, from: source });
+    }
+  }
+  const limit = listMode ? 20 : 12;
+  const picked = collected.slice(0, limit);
+  const words = picked.map(item => item.word);
+
+  const table: string[] = [];
+  if (words.length > 0) {
+    table.push(listMode
+      ? `${unit.icon || '📚'} ${unit.category.toLocaleUpperCase('tr-TR')} — ${collected.length} KELİMELİK SÖZ VARLIĞI`
+      : `${unit.icon || '📚'} ${unit.title.toLocaleUpperCase('tr-TR')} — TEMEL SÖZ VARLIĞI`);
+    const width = Math.min(26, Math.max(...words.map(word => word.ru.length)) + 2);
+    let currentUnit = '';
+    for (const item of picked) {
+      if (listMode && item.from.title !== currentUnit) {
+        currentUnit = item.from.title;
+        table.push('');
+        table.push(`   ▸ ${item.from.levelGroup} · ${currentUnit}`);
+      }
+      const reading = item.word.reading ? `  [${item.word.reading}]` : '';
+      table.push(`   ${item.word.ru.padEnd(width)}${item.word.tr}${reading}`);
+    }
+    if (collected.length > picked.length) {
+      table.push('');
+      table.push(`   … ve ${collected.length - picked.length} kelime daha. "devamını ver" diyebilirsin.`);
+    }
+  }
+
+  const steps = splitNumberedSteps(unit.grammarExplain || '');
+  const explanation: string[] = [];
+  if (unit.description) explanation.push(`**Konu:** ${unit.description}`);
+  explanation.push(`**Seviye:** ${unit.levelGroup} · **Kategori:** ${unit.category}`);
+  for (const step of steps.slice(0, 3)) explanation.push(step);
+
+  const examples = unit.sentences.slice(0, 4).map(sentence => ({
+    target: sentence.ru,
+    tr: sentence.tr,
+  }));
+
+  const dialogueLines = (unit.dialogue || []).slice(0, 4);
+  const notes: string[] = [];
+  if (dialogueLines.length > 0) {
+    notes.push(`**Diyalogdan:** ${dialogueLines.map(line => `${line.speaker}: «${line.ru}» (${line.tr})`).join('  ·  ')}`);
+  }
+  if (!listMode) {
+    for (const other of support.slice(0, 2)) {
+      notes.push(`**İlgili ünite — ${other.entry.title}**`);
+    }
+  }
+
+  // Kelime odaklı bir soruysa en çok işe yarayan şey listenin kendisidir.
+  const headline = words.length === 0
+    ? `**${unit.title}** — ${unit.description || unit.category}`
+    : listMode
+      ? `**${unit.category}** temasında ${collected.length} kelime var; en işlek ${words.length} tanesi aşağıdaki tabloda — ${relatedUnits.length} üniteden derlendi.`
+      : `**${unit.title}** ünitesinde bu konunun ${unit.words.length} temel kelimesi var; en sık kullanılan ${words.length} tanesi aşağıda.`;
+
+  const composed = compose({
+    headline,
+    explanation,
+    table: table.length > 0 ? table : undefined,
+    examples: examples.length > 0 ? examples : undefined,
+    notes: notes.length > 0 ? notes : undefined,
+    practice: words[0]
+      ? `«${words[0].ru}» ve «${words[1]?.ru ?? words[0].ru}» kelimelerini kullanarak bir cümle kur ve bana yaz — kontrol edeyim.`
+      : 'Bu konudan bir cümle kur ve bana yaz — kontrol edeyim.',
+    nextStep: support.length > 0
+      ? `Aynı temadan devam etmek istersen: ${support.slice(0, 2).map(other => other.entry.title).join(' · ')}`
+      : undefined,
+  });
+
+  return {
+    text: composed.text,
+    confidence: match.score >= 30 ? 'yüksek' : 'orta',
+    sources: [match.entry.title, ...support.slice(0, 2).map(other => other.entry.title)],
+    followUps: [
+      words[0] ? `«${words[0].ru}» ne demek?` : `${unit.title} konusunu anlat`,
+      words[0] ? `«${words[0].ru}» nasıl okunur?` : 'Bu konuda beni test et',
+      `${unit.category} temasından başka kelimeler ver`,
+      'Bu kelimelerle bana alıştırma yap',
+    ],
+    depth: words.length + examples.length + steps.length,
+  };
+}
+
 function knowledgeAnswer(query: string, intent: RussianQuestionIntent): LocalRussianAnswer | null {
   const knowledge = searchRussianKnowledge(query, 5, intent);
   if (knowledge.length === 0) return null;
@@ -1480,6 +1614,12 @@ function knowledgeAnswer(query: string, intent: RussianQuestionIntent): LocalRus
   // Puan çok düşükse bu bir eşleşme değil gürültüdür. Alakasız bir ders anlatmaktansa
   // kullanıcıya nasıl soracağını göstermek daha dürüst ve daha faydalıdır.
   if (top.score < 10) return null;
+
+  // Müfredat üniteleri ham metin bloğu olarak değil, yapılandırılmış ders olarak anlatılır.
+  if (top.entry.id.startsWith('curriculum-expert-')) {
+    const unitBased = unitAnswer(top, knowledge.slice(1, 4), wantsWordList(query));
+    if (unitBased) return unitBased;
+  }
   const parts = splitIntoParagraphs(top.entry.content, 3);
   const support = knowledge.slice(1, 3);
 
