@@ -8,7 +8,9 @@ const PERSISTENT_CACHE_MAX_BYTES = LOCAL_INTELLIGENCE_MAX_BYTES - BUILT_IN_KNOWL
 const DB_NAME = 'dilkoc-local-intelligence';
 const DB_VERSION = 1;
 const STORE = 'answer-cache';
-const CACHE_VERSION = 1;
+// LocalRussianAnswer şekli değiştiğinde (followUps / depth alanları) bu sürüm artırılır;
+// böylece eski önbellek kayıtları otomatik olarak geçersizleşir.
+const CACHE_VERSION = 2;
 
 type CachedAnswerRecord = {
   key: string;
