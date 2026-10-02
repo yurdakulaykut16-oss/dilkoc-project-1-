@@ -8,7 +8,9 @@
     "dev:vite": "vite",
     "build": "tsc && vite build",
     "preview": "vite preview",
-    "tauri": "tauri"
+    "tauri": "tauri",
+    "integrity:manifest": "node scripts/integrity.mjs manifest",
+    "integrity:check": "node scripts/integrity.mjs check"
   },
   "dependencies": {
     "@capacitor-community/speech-recognition": "^7.0.1",

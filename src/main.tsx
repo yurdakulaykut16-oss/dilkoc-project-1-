@@ -3,7 +3,6 @@
 import React from "react";
 import ReactDOM from "react-dom/client";
 import MainMenu from "./components/MainMenu";
-import { installContentGuard } from "./security/contentGuard";
 import {
   consumeMainMenuRequest,
   getSavedTargetLang,
@@ -77,8 +76,5 @@ function Root() {
 // yüklenmeden önce veri modülleri bu değeri okumuş olamaz; yine de güvenlik
 // için burada bir kez daha bildirilir).
 getTargetLang();
-
-// İçerik koruma kalkanı: yalnız üretim derlemesinde (veya ?guard=on) etkin.
-installContentGuard();
 
 ReactDOM.createRoot(document.getElementById("root") as HTMLElement).render(<Root />);
