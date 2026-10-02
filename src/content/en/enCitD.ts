@@ -1,0 +1,598 @@
+// DilKoç © 2026 — Bu kaynak kod telif hakkıyla korunur. İzinsiz kopyalama,
+// dağıtma ve türev çalışma üretme yasaktır (bkz. LICENSE).
+// ============================================================================
+// 🛂 CITIZENSHIP PACK — ENGLISH (4/4: units 76-100)
+// Migration (3) + citizenship deep dive (10) + birth (6) + official (6)
+// ============================================================================
+
+import type { UnitModule } from '../../curriculumData';
+import { makeCitUnit, type CitWord, type CitSent, type CitLine } from '../citizenship/makeCitUnit';
+
+const U = (
+  id: string, n: number, lv: UnitModule['levelGroup'], icon: string,
+  title: string, desc: string, cat: string, color: string, grammar: string,
+  words: CitWord[], sents: CitSent[], dlg: CitLine[],
+): UnitModule => makeCitUnit({ id, unitNumber: n, level: lv, icon, title, desc, category: cat, color, grammar, words, sents, dlg });
+
+const GOC = "Göç & Uyum";
+const VAT = "Vatandaşlık";
+const DOGUM = "Doğum & Vatandaşlık";
+const RESMI = "Resmî İşlemler";
+
+export const EN_CIT_D: UnitModule[] = [
+  U("en_cit_76", 675, "B2", "🤝", "Sosyal Çevre Edinme",
+    "Kulüpler, tanışma ve sosyal ağ kurma",
+    GOC, "#f59e0b",
+    "📌 \"make friends\" — arkadaş edinmek (deyim).\n\"based on interests\" — ilgi alanlarına göre.",
+    [
+      ["to make friends", "MEYK FRENDZ", "arkadaş edinmek", "Sosyal ağ kurmaktır."],
+      ["hobby club", "HOBi KLAB", "ilgi kulübü", "Spor, satranç, kitap..."],
+      ["next-door neighbour", "NEKST-DOÖR NEYbır", "kapı komşusu", "En yakın tanışıklıktır."],
+      ["to invite over", "inVAYT Ouvır", "misafirliğe çağırmak", "İlk adımdır."],
+      ["common language", "KOMın LENGvic", "ortak dil", "Anlaşmanın temelidir."],
+      ["loneliness", "LOUnlinıs", "yalnızlık", "Entegrasyonun düşmanıdır."],
+    ],
+    [
+      ["I joined a sports club.", "Spor kulübüne üye oldum."],
+      ["We found a common language with colleagues.", "İş arkadaşlarımla anlaştık."],
+      ["The neighbours invited us over.", "Komşular bizi misafirliğe çağırdı."],
+    ],
+    [
+      ["Migrant", "How do I make friends here?", "hau du ay MEYK FRENDZ HİİR", "Burada nasıl arkadaş edinirim?"],
+      ["Colleague", "Join a club based on your interests.", "COYN ı KLAB BEYST on yör INtırısts", "İlgi alanına göre bir kulübe gir."],
+      ["Migrant", "Good idea, thanks!", "GUD ayDİİa, tenks", "İyi fikir, teşekkürler!"],
+    ]),
+
+  U("en_cit_77", 676, "B1", "🏦", "Banka İşlemleri",
+    "Hesap açma, kart, transfer ve döviz bozdurma",
+    GOC, "#f59e0b",
+    "📌 \"open an account IN someone's name\" — ...adına hesap açmak.\n\"transfer money TO\" — parayı ...ya yollamak.",
+    [
+      ["bank account", "BENK ıKAUNT", "banka hesabı", "Maaş için zorunludur."],
+      ["debit card", "DEBit KARd", "banka kartı", "Hesaba bağlıdır."],
+      ["money transfer", "MANi TRANSför", "para transferi", "Ülkeye/illiye yapılır."],
+      ["to exchange currency", "iksCEYNС KARınsi", "döviz bozdurmak", "Günlük kurla olur."],
+      ["transfer fee", "TRANSför FİY", "transfer komisyonu", "Miktarı etkiler."],
+      ["ATM (cash machine)", "EY-Tİ-EM", "ATM (bankamatik)", "7/24 çalışır."],
+    ],
+    [
+      ["I need an account for my salary.", "Maaşım için hesaba ihtiyacım var."],
+      ["The transfer took one day.", "Transfer bir gün sürdü."],
+      ["Withdraw money from the ATM.", "Parayı bankomatikten çekin."],
+    ],
+    [
+      ["Client", "I'd like to open an account.", "ayd LAYK tu OWpın ın ıKAUNT", "Hesap açmak istiyorum."],
+      ["Bank clerk", "Your passport and migration card, please.", "yör PASport and mayGREYşın KARd, pliiz", "Pasaport ve göç kartınızı lütfen."],
+      ["Client", "Here you are. Will I get the card right away?", "hiİR yu AR. wil ay GET di KARd RAYT ıVEY", "Buyurun. Kartı hemen alacak mıyım?"],
+    ]),
+
+  U("en_cit_78", 677, "B1", "🕌", "Dini ve Kültürel Mekânlar",
+    "İbadet yerleri ve kültürel haklar",
+    GOC, "#f59e0b",
+    "📌 \"go TO a mosque/church\" — camiye/kiliseye gitmek.\n\"freedom of religion\" — inanç özgürlüğü.",
+    [
+      ["mosque", "MOSK", "cami", "Müslümanların ibadet yeridir."],
+      ["church", "ÇÖRÇ", "kilise", "Hristiyan ibadet yeridir."],
+      ["freedom of religion", "FRİİdım ıv rilİCın", "inanç özgürlüğü", "Anayasal haktır."],
+      ["holidays", "HOLıdeyz", "bayramlar", "Kültürün parçasıdır."],
+      ["traditions", "trıDIşınz", "gelenekler", "Toplumu bağlar."],
+      ["respect", "riSPEKT", "saygı", "Birlikte yaşamanın kuralıdır."],
+    ],
+    [
+      ["There is a mosque near my home.", "Evimin yanında cami var."],
+      ["The law protects freedom of religion.", "Yasa inanç özgürlüğünü korur."],
+      ["We respect each other's traditions.", "Birbirimizin geleneklerine saygı duyuyoruz."],
+    ],
+    [
+      ["Newcomer", "Is there a mosque nearby?", "iz DEÖR ı MOSK niİRBAY", "Yakınlarda cami var mı?"],
+      ["Neighbour", "Yes, two bus stops away.", "YES, TUU BAS STOPS ıVEY", "Evet, iki durak ötede."],
+      ["Newcomer", "Thanks for your help!", "tenks for yör HELP", "Yardım için teşekkürler!"],
+    ]),
+
+  U("en_cit_79", 678, "B2", "🗺️", "Vatandaşlık Süreci Adım Adım",
+    "Bilinmesi ve yapılması gerekenler: tam kontrol listesi",
+    VAT, "#8b5cf6",
+    "📌 Sıra zarfları: first → then → next → finally (önce→sonra→ardından→en sonunda).\n\"make sure\" — emin olmak.",
+    [
+      ["step one", "STEP WAN", "birinci adım", "İkamet süresi sağlanır."],
+      ["to check the conditions", "ÇEK di kınDIŞınz", "şartları kontrol etmek", "Başvuru öncesi yapılır."],
+      ["to put together the package", "PUT tugEDır di PAKıс", "dosyayı toplamak", "Belgeler eksiksiz olur."],
+      ["to pass the exams", "PAS di igZAMZ", "sınavları geçmek", "Dil + tarih/toplum."],
+      ["to submit the application", "sıbMİT di apliKAYşın", "başvuruyu vermek", "Son resmî adımdır."],
+      ["to wait for the decision", "WEYT for di diSIJın", "kararı beklemek", "Süreç uzundur."],
+    ],
+    [
+      ["First, check all the conditions.", "Önce tüm şartları kontrol edin."],
+      ["Next, put together the document package.", "Ardından evrak dosyasını toplayın."],
+      ["Finally, wait for the decision.", "En sonunda kararı bekleyin."],
+    ],
+    [
+      ["Adviser", "Step one — the residence permit.", "STEP WAN — di REZıdans pörMİT", "Birinci adım — oturma izni."],
+      ["Applicant", "I already have it. Step two?", "ay olREDi HEV it. STEP TUU", "Bende zaten var. İkinci adım?"],
+      ["Adviser", "Pass the exams and submit the application.", "PAS di igZAMZ and sıbMİT di apliKAYşın", "Sınavları geçin ve başvurun."],
+    ]),
+
+  U("en_cit_80", 679, "B2", "🪪", "Kimlik Kartı ve Kimlik Bilgileri",
+    "Vatandaşlık sonrası kimlik kartı ve bilgiler",
+    VAT, "#8b5cf6",
+    "📌 \"ID card\" — kimlik kartı (identity).\n\"valid until\" — ...tarihine kadar geçerli.",
+    [
+      ["ID card", "AY-Dİİ KARd", "kimlik kartı", "Vatandaşlıkla verilir."],
+      ["serial number", "SİRiyıl NAMbır", "seri numarası", "Belgenin kimliğidir."],
+      ["issuing authority code", "İŞuing oTHORıti KOwd", "veren birim kodu", "Kartın arkasında yazar."],
+      ["to change a surname", "CEYNС ı SÖRneym", "soyad değiştirmek", "Evlenince olabilir."],
+      ["document replacement", "DOKyument riPLEYSmınt", "belge yenileme", "Süre bitiminde yapılır."],
+      ["valid until", "VALid unTİL", "...geçerli (tarih)", "Belgede yazar."],
+    ],
+    [
+      ["Get your ID card after the oath.", "Yeminden sonra kimlik kartınızı alın."],
+      ["The serial number is on the front.", "Seri numarası ön yüzde yazar."],
+      ["The document is valid until 2035.", "Belge 2035'e kadar geçerli."],
+    ],
+    [
+      ["Citizen", "Where do I get an ID card?", "VEÖR du ay GET ın AY-Dİİ KARd", "Kimlik kartı nereden alınır?"],
+      ["Officer", "At the migration service, after the oath.", "at di mayGREYşın SÖRvis, AFtır di OWTH", "Göç idaresinden, yeminden sonra."],
+      ["Citizen", "Thanks, everything is clear.", "tenks, EVriTHing iz KLİİR", "Teşekkürler, her şey açık."],
+    ]),
+
+  U("en_cit_81", 680, "B2", "🗳️", "Seçme ve Seçilme Hakkı",
+    "Oy kullanma, sandık ve seçmen kaydı",
+    VAT, "#8b5cf6",
+    "📌 \"vote FOR someone\" — birine oy vermek.\n\"go to the polls\" — seçime gitmek (deyim).",
+    [
+      ["elections", "iLEKşınz", "seçimler", "Demokrasinin temelidir."],
+      ["to vote", "VOWT", "oy kullanmak", "Vatandaş hakkıdır."],
+      ["polling station", "POLing STEYşın", "sandık bölgesi", "Kayıtlı olduğunuz yerdir."],
+      ["ballot paper", "BALıt PEYıpır", "oy pusulası", "Gizli doldurulur."],
+      ["candidate", "KANdidıt", "aday", "Seçilen kişidir."],
+      ["suffrage (voting rights)", "SAFric", "seçme hakkı", "Vatandaşlıkla gelir."],
+    ],
+    [
+      ["I'm voting in an election for the first time.", "İlk kez seçimde oy kullanıyorum."],
+      ["The polling station is near my home.", "Sandık bölgesi evimin yanında."],
+      ["The ballot is filled in secretly.", "Oy pusulası gizli doldurulur."],
+    ],
+    [
+      ["Neighbour", "Are you going to the polls?", "ar yu GOUing tu di POLZ", "Seçime gidiyor musunuz?"],
+      ["Citizen", "Yes, I'm voting for the first time!", "YES, aym VOWting for dı FÖRST TAYM", "Evet, ilk kez oy kullanıyorum!"],
+      ["Neighbour", "Congratulations on your first vote!", "kıngraçışLEYşınz on yör FÖRST VOWT", "İlk oyunuz kutlu olsun!"],
+    ]),
+
+  U("en_cit_82", 681, "B2", "🧮", "Vergi Yükümlülükleri",
+    "Vergi mükellefi olma, beyan ve ödeme",
+    VAT, "#8b5cf6",
+    "📌 \"report TO someone\" — birine hesap vermek.\n\"within the deadline\" — süre içinde.",
+    [
+      ["taxpayer", "TAKSPEYır", "vergi mükellefi", "Vatandaş statüsüdür."],
+      ["to report", "riPORT", "hesap vermek", "Beyanname ile olur."],
+      ["within the deadline", "widİN di DEDlayn", "belirlenen sürede", "Kaçırılmamalıdır."],
+      ["property tax", "PROPöRti TAKS", "emlak vergisi", "Ev/araba için ödenir."],
+      ["penalty for non-payment", "PENılti for non-PEYmınt", "ödememe cezası", "Gecikince çıkar."],
+      ["proof of payment", "PRUUF ıv PEYmınt", "ödeme makbuzu", "Saklanmalıdır."],
+    ],
+    [
+      ["Every citizen is a taxpayer.", "Her vatandaş vergi mükellefidir."],
+      ["The tax is paid within the deadline.", "Vergi belirlenen sürede ödenir."],
+      ["A penalty is charged for non-payment.", "Ödememe için ceza tahakkuk eder."],
+    ],
+    [
+      ["Taxpayer", "When do I file the return?", "VEN du ay FAIL di riTÖRN", "Beyanname ne zaman verilir?"],
+      ["Inspector", "By the thirtieth of April, within the deadline.", "bay di THÖRtiyeth ıv EYprıl, widİN di DEDlayn", "30 Nisan'a kadar, süresi içinde."],
+      ["Taxpayer", "Thanks, I won't miss the deadline.", "tenks, ay wownt MİS di DEDlayn", "Teşekkürler, süreyi kaçırmayacağım."],
+    ]),
+
+  U("en_cit_83", 682, "B1", "🎖️", "Askerlik ve Hizmet Yükümlülüğü",
+    "Askerlik kaydı, hizmet ve muafiyetler",
+    VAT, "#8b5cf6",
+    "📌 \"be liable for military service\" — askere tabi olmak.\n\"deferment\" — erteleme (tecil).",
+    [
+      ["military ID", "MİLıtiri AY-Dİİ", "askerlik cüzdanı", "Askerlik belgesidir."],
+      ["conscription", "kınSKRİPşın", "askere çağrılma", "Yaş gelince yapılır."],
+      ["liable for service", "LAYıbıl for SÖRvis", "askere tabi olmak", "Şartları yasa belirler."],
+      ["deferment", "diFÖRmınt", "erteleme (tecil)", "Öğrenciliğe verilir."],
+      ["military enlistment office", "MİLıtiri inLİSTmınt OFis", "askerlik şubesi", "Kayıt burada tutulur."],
+      ["contract service", "KONtrakt SÖRvis", "sözleşmeli hizmet", "Gönüllü yoldur."],
+    ],
+    [
+      ["Young men are liable for military service.", "Gençler askere tabidir."],
+      ["Students receive a deferment.", "Öğrencilere erteleme verilir."],
+      ["Keep your military ID for life.", "Askerlik cüzdanını ömür boyu saklayın."],
+    ],
+    [
+      ["Conscript", "I need a deferment for my studies.", "ay NİID ı diFÖRmınt for may STADız", "Öğrenimim için erteleme gerekiyor."],
+      ["Office worker", "Bring a certificate from the university.", "BRING ı sırTİFıkıt from di yuuniVÖRsiti", "Üniversiteden belge getirin."],
+      ["Conscript", "OK, I'll bring it tomorrow.", "OWKEY, ayl BRING it tuMOROW", "Peki, yarın getireceğim."],
+    ]),
+
+  U("en_cit_84", 683, "B2", "⚖️", "Mahkemeler ve Adalet Sistemi",
+    "Mahkemeler, hakim, savcı ve yurttaş görevleri",
+    VAT, "#8b5cf6",
+    "📌 \"go to court WITH a claim\" — davayla mahkemeye gitmek.\n\"in accordance with the law\" — kanuna uygun olarak.",
+    [
+      ["judge", "CAC", "hakim", "Kararı veren kişidir."],
+      ["prosecutor", "PROSıkuytır", "savcı", "Kamu davasını izler."],
+      ["plaintiff", "PLEYntif", "davacı", "Davayı açan taraftır."],
+      ["defendant", "diFENdınt", "davalı", "Davaya uyan taraftır."],
+      ["in accordance with the law", "in ıKORdıns wid di LO", "kanuna uygun olarak", "Resmî kalıptır."],
+      ["jurors", "CUUırız", "jurü üyeleri", "Vatandaşlar arasından seçilir."],
+    ],
+    [
+      ["The judge hears the case.", "Davayı hakim görür."],
+      ["The court acts in accordance with the law.", "Mahkeme kanuna uygun hareket eder."],
+      ["Citizens can serve as jurors.", "Vatandaşlar jurü olarak görev yapabilir."],
+    ],
+    [
+      ["Citizen", "Where do I file a claim?", "VEÖR du ay FAIL ı KLEYM", "Dava nereye verilir?"],
+      ["Lawyer", "At the district court, in accordance with the law.", "at di DİStrikt KORT, in ıKORdıns wid di LO", "İlçe mahkemesine, kanuna uygun olarak."],
+      ["Citizen", "Thanks for the consultation.", "tenks for di konsılTEYşın", "Danışma için teşekkürler."],
+    ]),
+
+  U("en_cit_85", 684, "B1", "🎉", "Devlet Törenleri ve Bayramlar",
+    "Ulusal bayramlar ve törenlere katılım",
+    VAT, "#8b5cf6",
+    "📌 \"celebrate a holiday\" — bayramı kutlamak (deyim).\n\"in honour of\" — ...anısına/onuruna.",
+    [
+      ["national holiday", "NAŞınıl HOLıdey", "ulusal bayram", "Resmî tatildir."],
+      ["to celebrate", "SELıbreyt", "kutlamak", "Törenle yapılır."],
+      ["in honour of independence", "in ONır ıv indiPENdıns", "bağımsızlık anısına", "Bayramın adıdır."],
+      ["official ceremony", "ıFIşıl SERımıni", "resmî tören", "Meydanlarda yapılır."],
+      ["fireworks", "FAYırwörks", "havai fişek", "Akşam atılır."],
+      ["public holiday", "PABlik HOLıdey", "resmî tatil", "İşe gidilmez."],
+    ],
+    [
+      ["Independence Day is a national holiday.", "Bağımsızlık günü ulusal bayramdır."],
+      ["There will be fireworks in the evening.", "Akşam havai fişek olacak."],
+      ["It's a public holiday for everyone.", "Bu herkes için tatildir."],
+    ],
+    [
+      ["Friend", "How is this holiday celebrated?", "hau iz dıs HOLıdey SELıbreytid", "Bu bayram nasıl kutlanıyor?"],
+      ["Citizen", "An official ceremony and fireworks.", "ın ıFIşıl SERımıni and FAYırwörks", "Resmî tören ve havai fişek."],
+      ["Friend", "Let's go together!", "lets GOW tugEDır", "Birlikte gidelim!"],
+    ]),
+
+  U("en_cit_86", 685, "B2", "📆", "Belge Yenileme Takvimi",
+    "Hangi belge ne zaman yenilenir: süre takvimi",
+    VAT, "#8b5cf6",
+    "📌 \"upon expiry\" — sürenin dolması üzerine (resmî ifade).\n\"in advance\" — önceden.",
+    [
+      ["upon expiry", "ıPON ikSPAYıri", "sürenin dolmasıyla", "Resmî yenileme ifadesidir."],
+      ["in advance", "in ıDVANS", "önceden (erken)", "Başvuru buna yapılır."],
+      ["to keep track of deadlines", "KİIP TRAK ıv DEDlaynz", "süreleri takip etmek", "Ajanda tutulur."],
+      ["renewal notice", "riNYUuıl NOWtis", "yenileme bildirimi", "Sistem hatırlatır."],
+      ["overdue", "ouvırDYUU", "gecikmiş (süresi geçmiş)", "Ceza nedenidir."],
+      ["to plan ahead", "PLAN ıHED", "önceden planlamak", "En sağlıklı yoldur."],
+    ],
+    [
+      ["A passport is replaced upon expiry.", "Pasaport süresi dolunca değiştirilir."],
+      ["Renew your documents in advance.", "Belgeleri önceden yenileyin."],
+      ["Being overdue leads to a fine.", "Gecikme cezaya yol açar."],
+    ],
+    [
+      ["Migrant", "When should I renew my residence permit?", "VEN şud ay riNYUU may REZıdans pörMİT", "Oturma iznim ne zaman yenilenmeli?"],
+      ["Inspector", "In advance — two months before it expires.", "in ıDVANS — TUU MANTHS biFOR it ikSPAYırz", "Önceden — bitiminden iki ay önce."],
+      ["Migrant", "I'll note it in my calendar, thanks!", "ayl NOWT it in may KALındır, tenks", "Ajandama not edeceğim, teşekkürler!"],
+    ]),
+
+  U("en_cit_87", 686, "B2", "🚫", "Ret Gerekçeleri ve Çözümleri",
+    "Vatandaşlık red sebepleri ve her birine çözüm",
+    VAT, "#8b5cf6",
+    "📌 \"be refused because of\" — ...nedeniyle reddedilmek.\n\"fixable\" — giderilebilir (düzeletilebilir).",
+    [
+      ["grounds for refusal", "GRAUNDZ for riFYUuzıl", "ret gerekçeleri", "Yasa sayar."],
+      ["fixable error", "FİKSibıl Eör", "giderilebilir hata", "Belge tamamlanır."],
+      ["to complete the package", "kımPLİIT di PAKıc", "dosyayı tamamlamak", "Eksik belge eklenir."],
+      ["re-application", "ri-apliKAYşın", "yeniden başvuru", "Süre beklenmeden olur."],
+      ["legal remedy", "Lİİgıl REMıdi", "hukuki çare", "Yargı yoludur."],
+      ["not enough residence history", "not iNAF REZıdans Hİstri", "ikamet süresi eksik", "Beklenir veya itiraz edilir."],
+    ],
+    [
+      ["I was refused because of missing documents.", "Belge eksikliğinden reddedildim."],
+      ["A fixable error can be corrected.", "Giderilebilir hata düzeltilebilir."],
+      ["Re-application is possible in a month.", "Yeniden başvuru bir ay sonra mümkün."],
+    ],
+    [
+      ["Applicant", "I was refused! What now?", "ay woz riFYUUzd! WOT NAU", "Reddoldum! Şimdi ne?"],
+      ["Lawyer", "Not enough residence history? It's fixable.", "not iNAF REZıdans Hİstri? its FİKSibıl", "İkamet süresi eksik mi? O giderilebilir."],
+      ["Applicant", "So I'll wait and apply again.", "SO ayl WEYT and ıPLAY ıGEN", "Demek bekleyip yeniden başvuracağım."],
+    ]),
+
+  U("en_cit_88", 687, "C1", "⭐", "Özel Yollar: Hizmet, Spor, Yatırım",
+    "Vatandaşlığa özel statü yolları",
+    VAT, "#8b5cf6",
+    "📌 \"for services to the country\" — ülkeye hizmetlerinden ötürü.\n\"under a simplified procedure\" — basitleştirilmiş usulde.",
+    [
+      ["for services to the country", "for SÖRvisiz tu di KANtri", "ülkeye hizmetlerinden ötürü", "Onur yoludur."],
+      ["under a simplified procedure", "ANdır ı SİMplifayd prıSİYıcı", "basitleştirilmiş usulde", "Süre kısalır."],
+      ["outstanding achievements", "autSTANding ıÇİİvmınts", "özel başarılar", "Spor, bilim, kültür."],
+      ["investor", "inVEStır", "yatırımcı", "Ekonomik yoldur."],
+      ["major contribution", "MEYcır kontriBYUUşın", "büyük katkı", "Yatırım ölçütüdür."],
+      ["quota", "KWOwtı", "kota", "Sınırlı sayıda verilir."],
+    ],
+    [
+      ["Outstanding achievements — a simplified procedure.", "Özel başarılar için basitleştirilmiş usul."],
+      ["An investor makes a major contribution to the economy.", "Yatırımcı ekonomiye büyük katkı yapar."],
+      ["Services to the country are taken into account.", "Ülkeye hizmetler dikkate alınır."],
+    ],
+    [
+      ["Journalist", "How did the athlete get citizenship so fast?", "hau did di ETHliit GET SİTızınship SO FAST", "Sporcu vatandaşlığı nasıl bu kadar hızlı aldı?"],
+      ["Lawyer", "For outstanding achievements, under a simplified procedure.", "for autSTANding ıÇİİvmınts, ANdır ı SİMplifayd prıSİYıcı", "Özel başarılarından ötürü, basitleştirilmiş usulde."],
+      ["Journalist", "I see, thanks for the explanation.", "ay Sİİ, tenks for di eksplıNEYşın", "Anlaşıldı, açıklama için teşekkürler."],
+    ]),
+
+  U("en_cit_89", 688, "B1", "🍼", "Doğum Sonrası İlk 30 Gün",
+    "Doğumdan sonraki ilk işlemler takvimi",
+    DOGUM, "#ec4899",
+    "📌 \"within a month\" — bir ay içinde.\n\"receive in hand\" — teslim almak (deyimsi).",
+    [
+      ["within a month", "widİN ı MANTH", "bir ay içinde", "Kayıt süresidir."],
+      ["to receive in person", "riSİİV in PÖRsın", "şahsen teslim almak", "Belge şahsa verilir."],
+      ["hospital birth certificate", "HOSPıtıl BYÖRTH sırTİFıkıt", "doğum belgesi (hastane)", "İlk elimdedir."],
+      ["official certificate", "ıFIşıl sırTİFıkıt", "resmî belge (nüfus)", "Kayıtla verilir."],
+      ["newborn's insurance policy", "NYUUbornz inŞUırans POLısi", "yenidoğan sigortası", "Sağlık için zorunludur."],
+      ["registration at the address", "recısTREYşın at di ıDRES", "adrese kayıt", "Çocuk için de yapılır."],
+    ],
+    [
+      ["Register the birth within a month.", "Doğumu bir ay içinde kaydettirin."],
+      ["First the hospital certificate, then the official one.", "Önce hastane belgesi, sonra resmî belge."],
+      ["Arrange an insurance policy for the newborn.", "Yenidoğana sigorta yaptırın."],
+    ],
+    [
+      ["Mother", "What are the first steps after the birth?", "WOT ar di FÖRST STEPS AFtır di BÖRTH", "Doğumdan sonraki ilk adımlar ne?"],
+      ["Adviser", "The hospital certificate, then the registry office and insurance.", "di HOSPıtıl sırTİFıkıt, DEN di REcistri OFis and inŞUırans", "Hastane belgesi, sonra nüfus dairesi ve sigorta."],
+      ["Mother", "Thanks, I'll write everything down.", "tenks, ayl RAYT EVriTHing DAUN", "Teşekkürler, her şeyi not edeceğim."],
+    ]),
+
+  U("en_cit_90", 689, "B2", "🌐", "Uluslararası Aileler: Karma Statü",
+    "Farklı uyruklü ebeveynlerin çocukları",
+    DOGUM, "#ec4899",
+    "📌 \"according to the laws of which country\" — hangi ülkenin yasalarına göre.\n\"priority\" — öncelik (hukuk terimi).",
+    [
+      ["international family", "intırNAŞınıl FAMli", "uluslararası aile", "Farklı uyruklü ebeveynler."],
+      ["citizenship by choice", "SİTızınship bay ÇOYS", "seçmeli vatandaşlık", "Bazı ülkelerde olur."],
+      ["priority", "praiORıti", "öncelik", "Hukuk belirler."],
+      ["child's dual citizenship", "CHAYLDZ DyUuıl SİTızınship", "çocuğun çift vatandaşlığı", "Karma ailelerde mümkündür."],
+      ["consular registration", "KONsıyulır recısTREYşın", "konsolosluk kaydı", "Doğum bildirimi olur."],
+      ["to choose citizenship", "ÇUUZ SİTızınship", "vatandaşlık seçmek", "Reşit olunca bazı ülkelerde."],
+    ],
+    [
+      ["A child of an international family can have two citizenships.", "Uluslararası ailenin çocuğu iki vatandaşlığa sahip olabilir."],
+      ["Do a consular registration of the birth.", "Doğumu konsoloslukta kaydettirin."],
+      ["Sometimes citizenship is chosen later.", "Bazen vatandaşlık sonra seçilir."],
+    ],
+    [
+      ["Father", "We have different citizenships. Which will the child get?", "wi HEV DİFrınt SİTızınships. wiç wil di CHAYLD GET", "Farklı vatandaşlıklarımız var. Çocuk hangisini alacak?"],
+      ["Lawyer", "Possibly dual — according to the laws of both countries.", "POSıbli DyUuıl — ıKORding tu di LOZ ıv BOTH KANtriz", "Çift olabilir — her iki ülkenin yasasına göre."],
+      ["Father", "Thanks, we'll study both options.", "tenks, wil STADı BOTH OPşınz", "Teşekkürler, iki seçeneği de inceleyeceğiz."],
+    ]),
+
+  U("en_cit_91", 690, "B1", "🤱", "Evlat Edinilen Çocuğun Vatandaşlığı",
+    "Evlat edinmede çocuğun vatandaşlık durumu",
+    DOGUM, "#ec4899",
+    "📌 \"adopt — adoption\" — fiil ve isim çifti.\n\"on an equal footing with\" — ile eşit düzeyde.",
+    [
+      ["to adopt a child", "ıDOPT ı CHAYLD", "çocuk edinmek", "Mahkemeyle olur."],
+      ["on an equal footing with", "on ı İİkwıl FUTing wid", "öz çocuklarla eşit", "Haklar aynıdır."],
+      ["to acquire automatically", "ıkKWAYİR otıMETıkli", "otomatik kazanmak", "Bazı ülkelerde olur."],
+      ["upon request", "ıPON riKWEST", "talep üzerine", "Başvuru gerekir."],
+      ["court adoption", "KORT ıDOPşın", "mahkeme evlat edinmesi", "Tek geçerli yoldur."],
+      ["adoption confidentiality", "ıDOPşın konfiDENşiELıti", "edinme sırrı", "Yasayla korunur."],
+    ],
+    [
+      ["An adopted child gets citizenship on an equal footing with biological children.", "Evlat edinilen çocuk öz çocuklarla eşit vatandaşlık alır."],
+      ["Sometimes citizenship is acquired automatically.", "Bazen vatandaşlık otomatik kazanılır."],
+      ["Adoption confidentiality is protected by law.", "Edinme sırrı yasayla korunur."],
+    ],
+    [
+      ["Adoptive mother", "Will the child get citizenship right away?", "wil di CHAYLD GET SİTızınship RAYT ıVEY", "Çocuk hemen vatandaşlık alacak mı?"],
+      ["Lawyer", "After the court adoption — yes, on an equal footing.", "AFtır di KORT ıDOPşın — YES, on ı İİkwıl FUTing", "Mahkeme kararından sonra — evet, eşit düzeyde."],
+      ["Adoptive mother", "What happiness! Thank you.", "WOT HAPinis! tenk YU", "Ne mutluluk! Teşekkürler."],
+    ]),
+
+  U("en_cit_92", 691, "B2", "🍼", "Terk Edilmiş Çocuk ve Vatandaşlık",
+    "Buluntu çocukların vatandaşlık durumu",
+    DOGUM, "#ec4899",
+    "📌 \"a found child\" — bulunan çocuk (kısa passive sıfat).\n\"until … is established\" — ...belirlenene kadar.",
+    [
+      ["foundling", "FAUNDling", "terk edilmiş bebek", "Hukuki terimdir."],
+      ["found child", "FAUND CHAYLD", "bulunan çocuk", "Resmî ifadedir."],
+      ["until the parents are identified", "unTİL di PEÖrınts ar ayDENtıfayd", "ebeveynler belirlenene kadar", "Geçici statüdür."],
+      ["state guardianship", "STEYT GARDiyınship", "devlet velayeti", "Yetimhane/koruma altında."],
+      ["to grant citizenship", "GRAANT SİTızınship", "vatandaşlık vermek", "Devlet tanır."],
+      ["orphan", "ORfın", "yetim", "Koruma altındadır."],
+    ],
+    [
+      ["A found child is granted citizenship.", "Bulunan çocuğa vatandaşlık verilir."],
+      ["Until the parents are identified, state guardianship applies.", "Ebeveynler bulunana kadar devlet velayeti geçerlidir."],
+      ["The law protects such children.", "Yasa bu çocukları korur."],
+    ],
+    [
+      ["Student", "What if the parents are unknown?", "WOT if di PEÖrınts ar unNOWN", "Ebeveynler bilinmiyorsa ne olur?"],
+      ["Teacher", "The child is granted citizenship of the country.", "di CHAYLD iz GRAANtid SİTızınship ıv di KANtri", "Çocuğa ülkenin vatandaşlığı verilir."],
+      ["Student", "The law protects children well.", "dı LO prıTEKTS CHILdrın WEL", "Yasa çocukları iyi koruyor."],
+    ]),
+
+  U("en_cit_93", 692, "B2", "✍️", "İsim Değiştirme ve Vatandaşlık",
+    "Vatandaşlık alırken ad/soyad uyumu",
+    DOGUM, "#ec4899",
+    "📌 \"change A for B\" — A'yı B ile değiştirmek.\n\"in line with tradition\" — geleneğe uygun olarak.",
+    [
+      ["to change a name", "CEYNС ı NEYM", "ad değiştirmek", "Nüfusta yapılır."],
+      ["transliteration", "translitıREYşın", "harf çevirisi (transliterasyon)", "Alfabe farkında olur."],
+      ["spelling of a surname", "SPELing ıv ı SÖRneym", "soyad yazımı", "Belgede standardıdır."],
+      ["in line with tradition", "in LAYN wid trıDIşın", "geleneğe uygun olarak", "Kültürel tercihtir."],
+      ["a new certificate", "ı NYUU sırTİFıkıt", "yeni belge", "Değişiklikle verilir."],
+      ["record of the change", "REkırd ıv di CEYNС", "değişiklik kaydı", "Eski belgeye işlenir."],
+    ],
+    [
+      ["You can change your name when getting citizenship.", "Vatandaşlık alınırken ad değiştirilebilir."],
+      ["Transliteration affects the spelling.", "Harf çevirisi yazımı etkiler."],
+      ["They will issue a new certificate.", "Yeni belge verilecek."],
+    ],
+    [
+      ["Applicant", "Can I change the spelling of my surname?", "KAN ay CEYNС di SPELing ıv may SÖRneym", "Soyadımın yazımını değiştirebilir miyim?"],
+      ["Officer", "Yes, when you receive citizenship.", "YES, ven yu riSİİV SİTızınship", "Evet, vatandaşlık aldığınızda."],
+      ["Applicant", "Great, I'll prepare the application.", "GREYT, ayl priPEÖR di apliKAYşın", "Harika, başvuruyu hazırlayacağım."],
+    ]),
+
+  U("en_cit_94", 693, "C1", "🧭", "Vatansızlık ve Koruma",
+    "Statelessness: vatansızlar ve korunma hakları",
+    DOGUM, "#ec4899",
+    "📌 \"a stateless person\" — vatansız kişi (hukuki terim).\n\"regardless of\" — ...den bağımsız olarak.",
+    [
+      ["stateless person", "STEYTLis PÖRsın", "vatansız kişi", "Hukuki tanımdır."],
+      ["statelessness", "STEYTLisnis", "vatansızlık", "Uluslararası terimdir."],
+      ["regardless of origin", "riGARDlis ıv ORıcın", "kökenden bağımsız", "Eşitlik ilkesidir."],
+      ["legal protection", "Lİİgıl prıTEKşın", "hukuki korunma", "Devlet sağlar."],
+      ["international convention", "inıtırNAŞınıl kanVENşın", "uluslararası sözleşme", "1954 ve 1961 sözleşmeleri."],
+      ["simplified acquisition", "SİMplifayd ekwiZİŞın", "basitleştirilmiş kazanım", "Vatansızlar için usuldür."],
+    ],
+    [
+      ["A stateless person has rights.", "Vatansız kişinin hakları vardır."],
+      ["The convention protects stateless people.", "Sözleşme vatansızları korur."],
+      ["They benefit from simplified acquisition of citizenship.", "Onlar vatandaşlığın basitleştirilmiş kazanımından yararlanır."],
+    ],
+    [
+      ["Student", "Who is a stateless person?", "HUİ iz ı STEYTLis PÖRsın", "Vatansız kimdir?"],
+      ["Teacher", "A person who is a citizen of no country.", "ı PÖRsın HUİ iz ı SİTızın ıv NOW KANtri", "Hiçbir ülkenin vatandaşı olmayan kişi."],
+      ["Student", "Do they have rights?", "du DEY HEV RAYTS", "Peki hakları var mı?"],
+      ["Teacher", "Yes — regardless of origin.", "YES — riGARDlis ıv ORıcın", "Evet — kökenden bağımsız olarak."],
+    ]),
+
+  U("en_cit_95", 694, "B1", "✉️", "Resmî Yazışma ve Dilekçe",
+    "Dilekçe yazma: hitap, metin, imza düzeni",
+    RESMI, "#10b981",
+    "📌 \"Dear Sir or Madam\" — resmî hitap (adı bilinmiyorsa).\n\"I am writing to request…\" — ...talebiyle yazıyorum.",
+    [
+      ["official letter", "ıFIşıl LEtır", "resmî mektup", "Belirli kalıbı vardır."],
+      ["the heading of an application", "dı HEDing ıv ın apliKAYşın", "başvuru başlığı", "Kime/kimden bilgisidir."],
+      ["to make a request", "MEYK ı riKWEST", "talepte bulunmak", "Ana cümledir."],
+      ["Yours faithfully", "yörz FEYTHfıli", "saygılarımla (resmî)", "Kapanış ifadesidir."],
+      ["enclosure", "inKLOWjır", "ek (belge)", "Ek listesidir."],
+      ["thank you in advance", "tenk yu in ıDVANS", "şimdiden teşekkürler", "Nazik kapanıştır."],
+    ],
+    [
+      ["The heading goes in the top right corner.", "Başvuru başlığı sağ üst köşededir."],
+      ["I am writing to request a review of my documents.", "Belgelerimin incelenmesini talep ediyorum."],
+      ["At the end: \"Yours faithfully\" and a signature.", "Sonda: «saygılarımla» ve imza."],
+    ],
+    [
+      ["Client", "Help me write an application.", "HELP mi RAYT ın apliKAYşın", "Başvuru yazmama yardım edin."],
+      ["Adviser", "First the heading, then the request and the signature.", "FÖRST di HEDing, DEN di riKWEST and di SIGNıçır", "Önce başlık, sonra talep ve imza."],
+      ["Client", "Thanks for the template!", "tenks for di TEMpleyt", "Şablon için teşekkürler!"],
+    ]),
+
+  U("en_cit_96", 695, "B1", "📢", "Şikâyet ve Geri Bildirim",
+    "Şikâyet dilekçesi ve çözüm süreci",
+    RESMI, "#10b981",
+    "📌 \"complain ABOUT something\" — ...e şikâyet etmek (about!).\n\"within how many days\" — kaç gün içinde.",
+    [
+      ["complaint", "kımPLEYNT", "şikâyet", "Yazılı yapılır."],
+      ["to complain about the queue", "kımPLEYN ıBAUT di KYUU", "sıraya şikâyet etmek", "Hizmet aksatılmışsa."],
+      ["to review a complaint", "riVYUU ı kımPLEYNT", "şikâyeti incelemek", "Makam görevlidir."],
+      ["response time", "riSPONS TAYM", "yanıt süresi", "Yasa belirler."],
+      ["comments book", "KOMınts BUUK", "geri bildirim defteri", "İş yerlerinde olur."],
+      ["service improvement", "SÖRvis imPRUUvmınt", "hizmet iyileştirme", "Sonuç hedeftir."],
+    ],
+    [
+      ["I filed a complaint about the long queue.", "Uzun sıraya şikâyet ettim."],
+      ["The complaint will be reviewed within ten days.", "Şikâyet on gün içinde incelenecek."],
+      ["Feedback helps improve the service.", "Geri bildirim hizmeti iyileştirir."],
+    ],
+    [
+      ["Visitor", "Where do I submit a complaint?", "VEÖR du ay sıbMİT ı kımPLEYNT", "Şikâyet nereye verilir?"],
+      ["Secretary", "To the head of the department, in writing.", "tu di HED ıv di diPARTmınt, in RAYting", "Birim amirine, yazılı olarak."],
+      ["Visitor", "Thanks, I'll write it today.", "tenks, ayl RAYT it tuDEY", "Teşekkürler, bugün yazacağım."],
+    ]),
+
+  U("en_cit_97", 696, "A2", "🔎", "Kayıp Belgeler ve Yeniden Çıkarma",
+    "Kaybolan belgelerin yerine yenilerinin alınması",
+    RESMI, "#10b981",
+    "📌 \"replace a document\" — belgeyi yenisiyle değiştirmek.\n\"duplicate\" — ikinci nüsha (asıl değil).",
+    [
+      ["to replace a document", "riPLEYS ı DOKyument", "belgeyi yeniden çıkarmak", "Kayıpla yapılır."],
+      ["duplicate", "DYUUplikıt", "ikinci nüsha", "Üzerinde «duplicate» yazar."],
+      ["loss", "LOS", "kayıp (olay)", "Resmî ifadedir."],
+      ["loss announcement", "LOS ıNAUNsmınt", "kayıp bildirimi", "Gazetede/portalda yapılır."],
+      ["to pay a fee", "PEY ı FİY", "harç ödemek", "Yeniden çıkarmada olur."],
+      ["replacement period", "riPLEYSmınt Pİriyad", "iade süresi", "Bazı belgeler uzundur."],
+    ],
+    [
+      ["I lost my certificate — I need a duplicate.", "Belgemi kaybettim — ikinci nüsha gerekli."],
+      ["First, a loss announcement.", "Önce kayıp bildirimi."],
+      ["You pay a fee for a duplicate.", "İkinci nüsha için harç ödenir."],
+    ],
+    [
+      ["Client", "How do I replace a lost certificate?", "hau du ay riPLEYS ı LOST sırTİFıkıt", "Kayıp belge nasıl yeniden çıkarılır?"],
+      ["Officer", "A loss announcement, the fee, then a duplicate.", "ı LOS ıNAUNsmınt, dı FİY, DEN ı DYUUplikıt", "Kayıp bildirimi, harç, sonra ikinci nüsha."],
+      ["Client", "Got it, thank you very much!", "GOT it, tenk yu VERi MAÇ", "Anladım, çok teşekkürler!"],
+    ]),
+
+  U("en_cit_98", 697, "B2", "📱", "Çevrim İçi Devlet Hizmetleri",
+    "E-devlet portalı: randevu, belge, ödeme online",
+    RESMI, "#10b981",
+    "📌 \"in your personal account\" — kişisel hesabınızda.\n\"electronic signature\" — e-imza (onay).",
+    [
+      ["government services portal", "GAVınmınt SÖRvisiz PORtıl", "e-devlet portalı", "Tüm işlemler buradadır."],
+      ["personal account", "PÖRsınıl ıKAUNT", "kişisel hesap", "Girişle açılır."],
+      ["electronic signature", "ilekTRONik SIGNıçır", "e-imza", "Onaylama aracıdır."],
+      ["online booking", "ONlayn BUKing", "online randevu", "Sıra beklemeden olur."],
+      ["to track readiness", "TRAK REDinis", "hazırlığı takip etmek", "Bildirimle gelir."],
+      ["electronic queue", "ilekTRONik KYUU", "elektronik sıra", "Adil sıralamadır."],
+    ],
+    [
+      ["All services are in your personal account.", "Tüm işlemler kişisel hesabınızda."],
+      ["Online booking saves time.", "Online randevu zaman kazandırır."],
+      ["You can track the document's readiness.", "Belgenin hazırlığını takip edebilirsiniz."],
+    ],
+    [
+      ["User", "How do I book through the government portal?", "hau du ay BUUK THRUU di GAVınmınt PORtıl", "E-devlet üzerinden randevu nasıl alınır?"],
+      ["Operator", "In your personal account, choose the service and a time.", "in yör PÖRsınıl ıKAUNT, ÇUUS di SÖRvis and ı TAYM", "Kişisel hesabınızda işlem ve saat seçin."],
+      ["User", "Convenient! Thank you.", "kınVİEnyınt! tenk YU", "Pratik! Teşekkürler."],
+    ]),
+
+  U("en_cit_99", 698, "B1", "🧩", "Eylem Kelimeleri: İşlem Fiilleri",
+    "Başvur, ver, al, uzat: işlem fiilleri paketi",
+    RESMI, "#10b981",
+    "📌 \"apply\" düzenli fiildir: apply — applied — applied.\n\"provide — provided\": belge sunmak düzensiz değil, düzenlidir.",
+    [
+      ["to apply", "ıPLAY", "başvurmak", "En temel işlem fiilidir."],
+      ["to receive", "riSİİV", "almak", "Belge alımıyla kullanılır."],
+      ["to extend", "ikSTEND", "uzatmak", "Süre işlemlerinde."],
+      ["to arrange", "ıREYNС", "işlemek (düzenlemek)", "Belge işlemlerinde."],
+      ["to fill in", "FİL İN", "doldurmak", "Formlarda."],
+      ["to provide", "prıVAYD", "sunmak (belge)", "Resmî dilde."],
+    ],
+    [
+      ["I applied and received a certificate.", "Başvurdum ve belge aldım."],
+      ["I extend my registration every year.", "Kaydımı her yıl uzatıyorum."],
+      ["Provide the documents at the window.", "Belgeleri gişeye sunun."],
+    ],
+    [
+      ["Teacher", "Give the forms: «apply» — the past tense?", "GİV di FORMZ: «ıPLAY» — di PAST TENS", "Biçimleri söyleyin: «apply» — geçmiş zaman?"],
+      ["Student", "«Applied» — I applied for a visa.", "«ıPLAYD» — ay ıPLAYD for ı VİZı", "«Applied» — vizeye başvurdum."],
+      ["Teacher", "Excellent! Next verb…", "EKsılınt! NEKST VÖRB", "Harika! Sıradaki fiil…"],
+    ]),
+
+  U("en_cit_100", 699, "C1", "🧠", "Kavram Kelimeleri: Statü ve Süre",
+    "Statü, hak, yükümlülük: soyut kavram paketi",
+    RESMI, "#10b981",
+    "📌 Soyut isimler: right (hak) — pl. rights (haklar); duty (görev).\n\"towards\" — ...karşısında (yön+soyut).",
+    [
+      ["status", "STEYdıs", "statü", "Hukuki konumdur."],
+      ["right", "RAYT", "hak", "Çoğulu: rights."],
+      ["duty", "DYUuti", "yükümlülük", "Hakkın karşılığıdır."],
+      ["powers", "PAUırz", "yetkiler", "Kurum/kişi gücüdür."],
+      ["advantage", "ıdVANTıс", "avantaj", "Statüyle gelir."],
+      ["towards", "tıVORDZ", "...karşısında", "Soyut kıyastır."],
+    ],
+    [
+      ["Status defines rights and duties.", "Statü hak ve yükümlülükleri belirler."],
+      ["Every status has its own powers.", "Her statünün kendi yetkileri vardır."],
+      ["Citizenship is an advantage over a visa.", "Vatandaşlık vizeye karşı bir avantajdır."],
+    ],
+    [
+      ["Examiner", "What does the status of a citizen give?", "WOT daz di STEYdıs ıv ı SİTızın GİV", "Vatandaş statüsü ne verir?"],
+      ["Candidate", "Rights, duties and advantages.", "RAYTS, DYUutiz and ıdVANTıсız", "Haklar, yükümlülükler ve avantajlar."],
+      ["Examiner", "An excellent answer!", "ın EKsılınt ANsır", "Mükemmel cevap!"],
+    ]),
+];

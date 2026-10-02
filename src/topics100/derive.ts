@@ -32,6 +32,7 @@ import type {
   CefrTag,
 } from './types';
 import { LETTER_INFO, THIN_LETTER_SUPPLEMENT, SYLLABLE_TOPICS } from './letterNotes';
+import { isEnglish } from '../content/activeLanguage';
 
 // KOLAY-ÖNCELİKLİ skor: harf ve fonetik konuları yolun EN BAŞINDA, alfabe
 // aşamasında dinlenir. Öğrenci henüz hiçbir üniteye başlamadığı için buradaki
@@ -243,6 +244,13 @@ function synthesizeLines(items: Topic100Item[]): Topic100Line[] {
   if (items.length === 0) return [];
   const a = items[0];
   const b = items[1] || items[0];
+  if (isEnglish()) {
+    return [
+      { speaker: 'Anna', ru: `Look, this is ${a.ru}!`, reading: `LUK, dis İZ ${a.reading}!`, tr: `Bak, bu ${a.tr}!` },
+      { speaker: 'Mark', ru: `${a.ru} — a new word!`, reading: `${a.reading} — e NYU UORD!`, tr: `${a.ru} — yeni kelime!` },
+      { speaker: 'Anna', ru: `I really like the word "${b.ru}"!`, reading: `ay Rİli LAYK di UORD "${b.reading}"!`, tr: `"${b.tr}" kelimesini gerçekten beğendim!` },
+    ];
+  }
   const lines: Topic100Line[] = [
     {
       speaker: 'Аня',
@@ -269,6 +277,12 @@ function synthesizeLines(items: Topic100Item[]): Topic100Line[] {
 /** Ünite cümlesi yetersizse kelimelerden pratik cümleler kur. */
 function synthesizeSentences(items: Topic100Item[]): Topic100Sentence[] {
   if (items.length === 0) return [];
+  if (isEnglish()) {
+    return items.slice(0, 3).map((w) => ({
+      ru: `This is ${w.ru}.`,
+      tr: `Bu ${w.tr}.`,
+    }));
+  }
   return items.slice(0, 3).map((w) => ({
     ru: `Это ${w.ru.toLowerCase()}.`,
     tr: `Bu ${w.tr}.`,
@@ -290,8 +304,8 @@ export function buildLetterTopic(glyph: string, num: number): Topic100 {
     num,
     cat: 'harf',
     icon: glyph,
-    titleRu: `Буква ${glyph}`,
-    titleTr: `Harf ${glyph}`,
+    titleRu: isEnglish() ? `Letter ${glyph}` : `Буква ${glyph}`,
+    titleTr: isEnglish() ? `Harf ${glyph}` : `Harf ${glyph}`,
     descTr: info?.note || '',
     letterGlyph: glyph,
     items,
@@ -302,8 +316,10 @@ export function buildLetterTopic(glyph: string, num: number): Topic100 {
 
 // ---------------------------------------------------------------------------
 // 2) Fonetik konuları: 2 hece + 6 kural
+//    İngilizce modunda: 6 İngilizce okuma kuralı (magic E, TH, ünlü takımları,
+//    -ed, -s, sessiz harfler).
 // ---------------------------------------------------------------------------
-const VOWELS = 'аеёиоуыэюя';
+const VOWELS = isEnglish() ? 'aeiou' : 'аеёиоуыэюя';
 
 interface PhoneticRule {
   icon: string;
@@ -316,7 +332,7 @@ interface PhoneticRule {
   filterLetter?: string;
 }
 
-export const PHONETIC_RULES: PhoneticRule[] = [
+const RU_PHONETIC_RULES: PhoneticRule[] = [
   {
     icon: '🅰️',
     titleRu: 'Аканье: О -> А',
@@ -364,6 +380,58 @@ export const PHONETIC_RULES: PhoneticRule[] = [
     matchWord: (w) => VOWELS.split('').filter((v) => w.includes(v)).length >= 3,
   },
 ];
+
+const EN_PHONETIC_RULES: PhoneticRule[] = [
+  {
+    icon: '✨',
+    titleRu: 'Magic E: hat -> hate',
+    titleTr: 'Magic E (Sihirli E)',
+    descTr: 'Kapalı hece + sessiz + sondaki E → ünlü kendi ADIYLA okunur: hat → "het" ama hate → "heyt"; bit → "bit" ama bite → "bayt".',
+    matchWord: (w) => /[aeiou][^aeiou]e$/.test(w),
+    filterLetter: 'e',
+  },
+  {
+    icon: '👅',
+    titleRu: 'TH: think / this',
+    titleTr: 'TH Sesi (θ / ð)',
+    descTr: 'Dil ucunu dişlerin arasına koy: sessiz θ (think, three) ve sesli ð (this, mother). İngilizcenin en belirgin sesi — "t" veya "s" ile işi çözülmez!',
+    matchWord: (w) => w.includes('th'),
+    filterLetter: 'th',
+  },
+  {
+    icon: '👥',
+    titleRu: 'Vowel teams: ee, ea, oo',
+    titleTr: 'Ünlü Takımları (EE, EA, OO)',
+    descTr: 'İki ünlü yan yana gelince TEK uzun ses okunur: see → "sii", tea → "tii", food → "fuud" (ama book → "buk"!).',
+    matchWord: (w) => /(ee|ea|oo)/.test(w),
+    filterLetter: 'ee',
+  },
+  {
+    icon: '⏪',
+    titleRu: '-ed endings: t / d / id',
+    titleTr: 'Sonda -Ed Okunuşu',
+    descTr: 'Geçmiş zaman -ed üç şekilde okunur: sessizden sonra "t" (worked → "uörkt"), sesliden/softdan sonra "d" (played → "pleyd"), t/d\'den sonra "ıd" (wanted → "uantıd").',
+    matchWord: (w) => /ed$/.test(w),
+    filterLetter: 'ed',
+  },
+  {
+    icon: '🐝',
+    titleRu: '-s endings: s / z',
+    titleTr: 'Sonda -S Okunuşu (s / z / iz)',
+    descTr: 'Çoğul ve 3. tekil -s: sessizden sonra "s" (cats → "kets"), sesliden sonra "z" (dogs → "dagz"), s/sh/ch/x sonrasında "iz" (watches → "uoçız").',
+    matchWord: (w) => /s$/.test(w),
+    filterLetter: 's',
+  },
+  {
+    icon: '🤫',
+    titleRu: 'Silent letters: kn, wr, gh, mb',
+    titleTr: 'Sessiz Harfler (KN, WR, GH, MB)',
+    descTr: 'Yazılıyor ama duyulmuyor: know → "nou" (k yok), write → "rayt" (w yok), light → "layt" (gh yok), climb → "klaym" (b yok).',
+    matchWord: (w) => /^(kn|wr)/.test(w) || /(gh|mb|mn)$/.test(w),
+  },
+];
+
+export const PHONETIC_RULES: PhoneticRule[] = isEnglish() ? EN_PHONETIC_RULES : RU_PHONETIC_RULES;
 
 function pickWordsForRule(rule: PhoneticRule, max = 8): Topic100Item[] {
   const pool = FLAT_WORDS.filter((w) => rule.matchWord(w.ru.toLowerCase()));
@@ -447,21 +515,33 @@ export function buildSyllableTopic(s: (typeof SYLLABLE_TOPICS)[number], num: num
     titleTr: s.titleTr,
     descTr: s.descTr,
     items: s.items.map((i) => ({ ru: i.ru, reading: i.reading, tr: i.tr })),
-    sentences: [
-      { ru: 'А, о, е, и, ы, у. Смотри, как меняется звук.', tr: '"a, o, e, i, ı, u" hecelerini sırayla dinle.' },
-      { ru: 'Говори медленно вместе со мной.', tr: 'Benimle birlikte yavaşça tekrar et.' },
-    ],
-    dialogue: [
-      { speaker: 'Аня', ru: 'Ма-ма! Па-па! Так легко!', reading: 'Ma-ma! Pa-pa! Tak lyéyga!', tr: 'Ma-ma! Pa-pa! Çok kolay!' },
-      { speaker: 'Макс', ru: 'Ра-ра-ра, как радио!', reading: 'Ra-ra-ra, kak radió!', tr: 'Ra-ra-ra, radyo gibi!' },
-    ],
+    sentences: isEnglish()
+      ? [
+          { ru: 'A, e, i, o, u. Listen how the sound changes.', tr: '"a, e, i, o, u" seslerini sırayla dinle.' },
+          { ru: 'Say it slowly with me.', tr: 'Benimle birlikte yavaşça tekrar et.' },
+        ]
+      : [
+          { ru: 'А, о, е, и, ы, у. Смотри, как меняется звук.', tr: '"a, o, e, i, ı, u" hecelerini sırayla dinle.' },
+          { ru: 'Говори медленно вместе со мной.', tr: 'Benimle birlikte yavaşça tekrar et.' },
+        ],
+    dialogue: isEnglish()
+      ? [
+          { speaker: 'Anna', ru: 'Ma-ma! Pa-pa! So easy!', reading: 'MA-MA! PA-PA! SOU IIZI!', tr: 'Ma-ma! Pa-pa! Çok kolay!' },
+          { speaker: 'Mark', ru: 'Ra-ra-ra, like a radio!', reading: 'RA-RA-RA, LAYK e REYDİOU!', tr: 'Ra-ra-ra, radyo gibi!' },
+        ]
+      : [
+          { speaker: 'Аня', ru: 'Ма-ма! Па-па! Так легко!', reading: 'Ma-ma! Pa-pa! Tak lyéyga!', tr: 'Ma-ma! Pa-pa! Çok kolay!' },
+          { speaker: 'Макс', ru: 'Ра-ра-ра, как радио!', reading: 'Ra-ra-ra, kak radió!', tr: 'Ra-ra-ra, radyo gibi!' },
+        ],
   };
 }
 
 // ---------------------------------------------------------------------------
 // 3) MÜFREDAT ÖN-HAZIRLIK: 5 A2 + tüm B1 + tüm B2 + C1 + C2
 // ---------------------------------------------------------------------------
-const A2_PREVIEW_IDS = ['mod_a2_1', 'mod_a2_2', 'mod_a2_6', 'mod_a2_7', 'mod_a2_10'];
+const A2_PREVIEW_IDS = isEnglish()
+  ? ['en_mod_a2_9', 'en_mod_a2_10', 'en_mod_a2_12', 'en_mod_a2_14', 'en_mod_a2_16']
+  : ['mod_a2_1', 'mod_a2_2', 'mod_a2_6', 'mod_a2_7', 'mod_a2_10'];
 
 export function previewUnits(): UnitModule[] {
   const a2 = UNITS.filter((u) => A2_PREVIEW_IDS.includes(u.id));

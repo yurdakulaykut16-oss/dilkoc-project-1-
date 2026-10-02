@@ -8,9 +8,18 @@
 // ============================================================================
 
 import type { Topic100Item } from './types';
+import { isEnglish } from '../content/activeLanguage';
+import {
+  EN_LETTER_INFO,
+  EN_SYLLABLE_TOPICS,
+  EN_THIN_LETTER_SUPPLEMENT,
+} from '../content/en/letterNotes';
 
-/** 33 harf — büyük harf + kısa fonetik not (Alfabedeki sırayla). */
-export const LETTER_INFO: { glyph: string; note: string }[] = [
+/** 33 harf — büyük harf + kısa fonetik not (Alfabedeki sırayla).
+ *  İngilizce modunda: 26 harf + 6 diygraf (TH, SH, CH, PH, WH, NG). */
+export const LETTER_INFO: { glyph: string; note: string }[] = isEnglish()
+  ? EN_LETTER_INFO
+  : [
   { glyph: 'А', note: '"a" sesi — Türkçedekiyle aynı. Vurgulu olsun olmasın hep net okunur.' },
   { glyph: 'Б', note: '"b" sesi. Kelime sonunda "p" olarak sedasızlaşır (брат -> brat).' },
   { glyph: 'В', note: 'Y görünümlü ama "v" okunur. Alt dudak üst dişlere hafifçe değer.' },
@@ -46,12 +55,12 @@ export const LETTER_INFO: { glyph: string; note: string }[] = [
   { glyph: 'Я', note: '"ya" (başta) / "a" (sonra). En çok "я" (ben) sözcüğünde dinlenir.' },
 ];
 
-/**
- * İnce harf tamamlayıcıları — müfredat kelimeleriyle hedeflenen 8 kelime
- * sayısına ulaşılamayan harfler için elle seçilmiş örnekler.
- * Seviye B1-C2: "alfabe çalışması = üst seviye ön-hazırlık" ilkesi.
- */
-export const THIN_LETTER_SUPPLEMENT: Record<string, Topic100Item[]> = {
+/** İnce harf tamamlayıcıları — aktif dile göre. */
+export const THIN_LETTER_SUPPLEMENT: Record<string, Topic100Item[]> = isEnglish()
+  ? EN_THIN_LETTER_SUPPLEMENT
+  : {
+
+  // Rusça ince harf tamamlayıcıları (Ъ, Э) — elle seçilmiş B1-C2 örnekleri.
   'Ъ': [
     { ru: 'Объявление', reading: 'abaly-av-yé-niye', tr: 'ilan', level: 'B2' },
     { ru: 'Объём', reading: 'ab-yóm', tr: 'hacim, boyut', level: 'B2' },
@@ -77,7 +86,7 @@ export const SYLLABLE_TOPICS: {
   titleTr: string;
   descTr: string;
   items: { ru: string; reading: string; tr: string }[];
-}[] = [
+}[] = isEnglish() ? EN_SYLLABLE_TOPICS : [
   {
     icon: '🔤',
     titleRu: 'Гласные: а, о, е, и, ы, у',

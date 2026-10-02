@@ -6,3 +6,4 @@ src-tauri/target
 .env.local
 .env.*.local
 !.env.example
+.scratch/extras-full.json

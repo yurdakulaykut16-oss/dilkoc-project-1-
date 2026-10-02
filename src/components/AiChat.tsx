@@ -1,3 +1,5 @@
+// DilKoç © 2026 — Bu kaynak kod telif hakkıyla korunur. İzinsiz kopyalama,
+// dağıtma ve türev çalışma üretme yasaktır (bkz. LICENSE).
 import { SpeechRecognition as NativeSpeechRecognition } from '@capacitor-community/speech-recognition';
 import React, { useEffect, useMemo, useRef, useState } from 'react';
 import { answerWithLocalRussianAgent } from '../ai/localRussianAgent';
@@ -5,6 +7,7 @@ import { getLocalAnswerCache, LOCAL_INTELLIGENCE_MAX_LABEL, putLocalAnswerCache 
 import { LOCAL_RUSSIAN_FACT_COUNT, RUSSIAN_KNOWLEDGE_BASE } from '../ai/russianExpertise';
 import { speakWithBotVoice, stopBotVoice } from '../tts/voiceStudio';
 import VoiceStudioPanel from './VoiceStudioPanel';
+import { isEnglish, langMeta } from '../content/activeLanguage';
 
 type LearningWord = { ru: string; tr: string; reading?: string };
 type LearningSentence = { ru: string; tr: string };
@@ -66,7 +69,9 @@ function initialChat(): ChatEntry[] {
   return [{
     id: 'welcome',
     role: 'assistant',
-    text: 'Merhaba! Rusça hakkında istediğini sorabilirsin. Çeviri, cümle düzeltme, hâller, fiil görünüşleri, telaffuz ve doğal konuşma farklarını soruna göre düşünüp Türkçe açıklayabilirim.',
+    text: isEnglish()
+      ? 'Merhaba! İngilizce hakkında istediğini sorabilirsin. Çeviri, cümle düzeltme, zamanlar, phrasal verb\'ler, telaffuz ve doğal konuşma farklarını soruna göre düşünüp Türkçe açıklayabilirim.'
+      : 'Merhaba! Rusça hakkında istediğini sorabilirsin. Çeviri, cümle düzeltme, hâller, fiil görünüşleri, telaffuz ve doğal konuşma farklarını soruna göre düşünüp Türkçe açıklayabilirim.',
     provider: 'yerel hafıza',
   }];
 }
@@ -101,33 +106,38 @@ function visemeForChar(char: string): MouthViseme {
   return 'wide';
 }
 
-function visemeDelayForChar(char: string, lang: 'tr-TR' | 'ru-RU') {
+function visemeDelayForChar(char: string, lang: 'tr-TR' | 'ru-RU' | 'en-US') {
   if (/[.!?]/.test(char)) return 170;
   if (/[,;:]/.test(char)) return 120;
   if (!char.trim()) return 54;
   return lang === 'tr-TR' ? 70 : 76;
 }
 
-type SpeechSegment = { text: string; lang: 'tr-TR' | 'ru-RU' };
+type SpeechSegment = { text: string; lang: 'tr-TR' | 'ru-RU' | 'en-US' };
+const TURKISH_TEXT_RE = /[çğıöşüâîûÇĞİÖŞÜ]/;
 
 /** Türkçe açıklamayı ve içindeki Rusça örnekleri aynı seçili profille ayrı dil
  * segmentleri olarak okur. Böylece tek bir Rusça örnek, bütün cevabı Rusça
  * aksanıyla okutmaz. */
 function splitSpeechSegments(text: string): SpeechSegment[] {
+  // Türkçe'ye özgü harf yoksa segment hedef dil (EN'de en-US, RU'da ru-RU) sayılır.
+  const targetTag: SpeechSegment['lang'] = isEnglish() ? 'en-US' : 'ru-RU';
+  const labelLatin = (chunk: string): SpeechSegment['lang'] =>
+    TURKISH_TEXT_RE.test(chunk) ? 'tr-TR' : targetTag;
   const segments: SpeechSegment[] = [];
   const russianPattern = /[\u0400-\u04FF]+(?:[\s,.!?;:()[\]{}«»"'`´’‘“”\-—–]*[\u0400-\u04FF]+)*[\s!?.,;:]*/g;
   let cursor = 0;
   for (const match of text.matchAll(russianPattern)) {
     const start = match.index ?? cursor;
     const turkish = text.slice(cursor, start).trim();
-    if (turkish) segments.push({ text: turkish, lang: 'tr-TR' });
+    if (turkish) segments.push({ text: turkish, lang: labelLatin(turkish) });
     const russian = match[0].trim();
     if (russian) segments.push({ text: russian, lang: 'ru-RU' });
     cursor = start + match[0].length;
   }
   const remainder = text.slice(cursor).trim();
-  if (remainder) segments.push({ text: remainder, lang: 'tr-TR' });
-  return segments.length > 0 ? segments : [{ text, lang: 'tr-TR' }];
+  if (remainder) segments.push({ text: remainder, lang: labelLatin(remainder) });
+  return segments.length > 0 ? segments : [{ text, lang: labelLatin(text) }];
 }
 
 export default function AiChat(props: AiChatProps) {
@@ -138,7 +148,7 @@ export default function AiChat(props: AiChatProps) {
   const [busy, setBusy] = useState(false);
   const [autoSpeak, setAutoSpeak] = useState(() => localStorage.getItem(AUTO_SPEAK_KEY) !== '0');
   const [showVoiceStudio, setShowVoiceStudio] = useState(false);
-  const [status, setStatus] = useState('🧠 Yerel Rusça zekası hazır • 0 token');
+  const [status, setStatus] = useState(langMeta().code === 'en' ? '🧠 Yerel İngilizce zekası hazır • 0 token' : '🧠 Yerel Rusça zekası hazır • 0 token');
   const [isSpeaking, setIsSpeaking] = useState(false);
   const [isListening, setIsListening] = useState(false);
   const [mouthViseme, setMouthViseme] = useState<MouthViseme>('rest');
@@ -168,7 +178,7 @@ export default function AiChat(props: AiChatProps) {
     setMouthViseme('rest');
   };
 
-  const animateMouth = (text: string, lang: 'tr-TR' | 'ru-RU') => {
+  const animateMouth = (text: string, lang: 'tr-TR' | 'ru-RU' | 'en-US') => {
     stopMouthAnimation();
     const chars = Array.from(text || ' ');
     let index = 0;
@@ -318,7 +328,7 @@ export default function AiChat(props: AiChatProps) {
     persist(next);
     setInput('');
     setBusy(true);
-    setStatus('Yerel Rusça motoru bilgi bankasını tarıyor…');
+    setStatus(langMeta().code === 'en' ? 'Yerel İngilizce motoru bilgi bankasını tarıyor…' : 'Yerel Rusça motoru bilgi bankasını tarıyor…');
 
     // Tamamen yerel motor: ağ isteği, API anahtarı, LLM ve token kullanmaz.
     // Daha önce sorulan sorular 1 GB sınırındaki yerel önbellekten anında gelir.
@@ -354,7 +364,7 @@ export default function AiChat(props: AiChatProps) {
     abortRef.current?.abort();
     stopSpeech();
     persist(initialChat());
-    setStatus('🧠 Yerel Rusça zekası hazır • 0 token');
+    setStatus(langMeta().code === 'en' ? '🧠 Yerel İngilizce zekası hazır • 0 token' : '🧠 Yerel Rusça zekası hazır • 0 token');
   };
 
   const toggleAutoSpeak = () => {
@@ -395,8 +405,8 @@ export default function AiChat(props: AiChatProps) {
       `}</style>
       <div style={{ display: 'flex', alignItems: 'flex-start', justifyContent: 'space-between', gap: '12px', flexWrap: 'wrap' }}>
         <div>
-          <div style={{ color: '#86efac', fontSize: '11px', fontWeight: 950, letterSpacing: '.6px' }}>🧠 YEREL RUSÇA ZEKASI • API YOK • TOKEN YOK</div>
-          <h2 style={{ margin: '5px 0 4px', color: '#f8fafc', fontSize: '21px' }}>Sorunu yaz, Rusçayı birlikte konuşalım</h2>
+          <div style={{ color: '#86efac', fontSize: '11px', fontWeight: 950, letterSpacing: '.6px' }}>🧠 {isEnglish() ? 'YEREL İNGİLİZCE ZEKASI' : 'YEREL RUSÇA ZEKASI'} • API YOK • TOKEN YOK</div>
+          <h2 style={{ margin: '5px 0 4px', color: '#f8fafc', fontSize: '21px' }}>Sorunu yaz, {isEnglish() ? 'İngilizceyi' : 'Rusçayı'} birlikte konuşalım</h2>
           <div style={{ display: 'flex', gap: '7px', alignItems: 'center', flexWrap: 'wrap', color: '#cbd5e1', fontSize: '12px' }}>
             <span style={{ padding: '4px 8px', borderRadius: '999px', background: 'rgba(56,189,248,.14)', color: '#bae6fd', fontWeight: 800 }}>{contextPreview}</span>
             <span style={{ padding: '4px 8px', borderRadius: '999px', background: 'rgba(34,197,94,.14)', color: '#86efac', fontWeight: 800 }}>📚 {RUSSIAN_KNOWLEDGE_BASE.length} bölüm • {LOCAL_RUSSIAN_FACT_COUNT.toLocaleString('tr-TR')} bilgi • ≤ {LOCAL_INTELLIGENCE_MAX_LABEL}</span>
@@ -443,7 +453,7 @@ export default function AiChat(props: AiChatProps) {
       </div>
 
       <form onSubmit={send} style={{ display: 'grid', gridTemplateColumns: '1fr auto auto', gap: '8px' }}>
-        <textarea value={input} onChange={event => setInput(event.target.value)} onKeyDown={event => { if (event.key === 'Enter' && !event.shiftKey) { event.preventDefault(); void send(); } }} disabled={busy || isSpeaking || isListening} rows={2} placeholder="Sorunu yaz… Örn. ‘Как тебя зовут?’ ne demek?" style={{ resize: 'vertical', minWidth: 0, background: '#020617', border: '1px solid #334155', color: '#f8fafc', borderRadius: '13px', padding: '11px 12px', fontFamily: 'inherit', outline: 'none' }} />
+        <textarea value={input} onChange={event => setInput(event.target.value)} onKeyDown={event => { if (event.key === 'Enter' && !event.shiftKey) { event.preventDefault(); void send(); } }} disabled={busy || isSpeaking || isListening} rows={2} placeholder={isEnglish() ? 'Sorunu yaz… Örn. “get up” ne demek?' : 'Sorunu yaz… Örn. ‘Как тебя зовут?’ ne demek?'} style={{ resize: 'vertical', minWidth: 0, background: '#020617', border: '1px solid #334155', color: '#f8fafc', borderRadius: '13px', padding: '11px 12px', fontFamily: 'inherit', outline: 'none' }} />
         <button type="button" onClick={() => void startListening()} disabled={busy || isSpeaking || isListening} aria-label="Mikrofondan soru söyle" title="Mikrofondan soru söyle" style={{ alignSelf: 'stretch', minWidth: '52px', border: `1px solid ${isListening ? '#22c55e' : '#38bdf8'}`, borderRadius: '13px', background: isListening ? 'rgba(34,197,94,.18)' : 'rgba(56,189,248,.12)', color: isListening ? '#86efac' : '#bae6fd', fontSize: '20px', cursor: busy || isSpeaking || isListening ? 'wait' : 'pointer' }}>{isListening ? '●' : '🎙️'}</button>
         <button disabled={busy || isSpeaking || isListening || !input.trim()} style={{ alignSelf: 'stretch', minWidth: '92px', border: 'none', borderRadius: '13px', background: busy || isSpeaking ? '#475569' : 'linear-gradient(135deg, #22c55e, #38bdf8)', color: '#07111f', fontWeight: 950, cursor: busy || isSpeaking ? 'wait' : 'pointer' }}>{busy ? '…' : 'Sor →'}</button>
       </form>
@@ -453,7 +463,7 @@ export default function AiChat(props: AiChatProps) {
         </div>
       )}
       <div style={{ color: '#64748b', fontSize: '10px', marginTop: '8px', lineHeight: 1.45 }}>
-        Yalnızca yazdığın soruya göre konuşur. Türkçe açıklamayı, istediğin Rusça kelime/cümle ve soru kalıplarıyla birlikte ele alır. Üniteler ve ilerlemen ajanın bağlamında tutulur; API anahtarı uygulamaya gömülmez.
+        Yalnızca yazdığın soruya göre konuşur. Türkçe açıklamayı, istediğin hedef dil kelime/cümle ve soru kalıplarıyla birlikte ele alır. Üniteler ve ilerlemen ajanın bağlamında tutulur; API anahtarı uygulamaya gömülmez.
       </div>
     </section>
   );

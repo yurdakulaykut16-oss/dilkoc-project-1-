@@ -14,12 +14,14 @@
 // ============================================================================
 
 import type { CheckpointStory } from './types';
+import { isEnglish } from '../content/activeLanguage';
+import { EN_STORIES, EN_STORY_CAST } from '../content/en/storyData';
 
 /** Kaç ünite tamamlandığında bir hikaye kontrol noktası açılır. */
 export const STORY_UNITS_PER_CHECKPOINT = 10;
 
 /** Hikayelerin tekrarlayan kadrosu — ekranda "Kadro" kartı olarak gösterilir. */
-export const STORY_CAST: { name: string; emoji: string; desc: string }[] = [
+const RU_STORY_CAST: { name: string; emoji: string; desc: string }[] = [
   { name: 'Dima', emoji: '📐', desc: 'Romantik mimar. 2035\'te çocuklarına bu hikayeleri anlatıyor.' },
   { name: 'Marina', emoji: '📰', desc: 'Zeki ve alaycı gazeteci. Hiçbir şaka onu es geçemez (genelde).' },
   { name: 'Tyoma', emoji: '🤵', desc: 'Takım elbiseli efsanevi manitacı. Sözü: «Это будет легендарно!» (Efsanevi olacak!)' },
@@ -31,10 +33,13 @@ export const STORY_CAST: { name: string; emoji: string; desc: string }[] = [
   { name: 'Şef Pyotr', emoji: '🍳', desc: '«Ван Гог» restoranının efsanevi aşçısı. Bağırır ama kalbi altın (ve sosları mükemmel).' },
   { name: 'Lyosha', emoji: '🍽️', desc: '«Ван Гог»un şanssız ama iyi kalpli garsonu. Tepsi düşürme dünya rekoru sahibi (kendi beyanı).' },
   { name: 'Nina', emoji: '📋', desc: 'Başgarson. Kuralcı, zeki ve Pyotr\'nun 12 yıllık sağ kolu (ve kalbi).' },
-  { name: 'Semyon', emoji: '🎩', desc: 'Metrdotel. Kibar, ölçülü ve her şeyi kontrol listesiyle yapan bir adam.' },
-];
+  { name: 'Semyon', emoji: '🎩', desc: 'Metrdotel. Kibar, ölçülü ve her şeyi kontrol listesiyle yapan bir adam.' },];
+
+export const STORY_CAST: { name: string; emoji: string; desc: string }[] =
+  isEnglish() ? EN_STORY_CAST : RU_STORY_CAST;
 
 // ---------------------------------------------------------------------------
+// BÖLÜM 1// ---------------------------------------------------------------------------
 // BÖLÜM 1 — Ünite 1-10 (Tanışma, Aile, Kafe, Ulaşım, Sayılar, Hava,
 //                   Alışveriş, Telefon, Ev, Randevu/Zaman)
 // ---------------------------------------------------------------------------
@@ -772,7 +777,7 @@ const STORY_LF_C1: CheckpointStory = {
 // ---------------------------------------------------------------------------
 // DERLEME — ünite sırasına göre (hem 10'luk kontrol noktaları hem bölüm finalleri)
 // ---------------------------------------------------------------------------
-export const STORIES: CheckpointStory[] = [
+const RU_STORIES: CheckpointStory[] = [
   STORY_LF_A1,   // ünite 6  — A1 BÖLÜM FİNALİ (kapılı) — pilot: sarı şemsiye
   STORY_1,       // ünite 10 — kontrol noktası 1 (HIMYM: kafede tanışma)
   STORY_LF_A2,   // ünite 41 — A2 BÖLÜM FİNALİ (kapılı, Кухня) — yeni garson
@@ -788,5 +793,11 @@ export const STORIES: CheckpointStory[] = [
   STORY_LF_C1,   // ünite 183 — C1/C2 BÖLÜM FİNALİ (kapılı) — DİZİ FİNALİ
 ];
 
-/** Toplam hikaye sayısı: 8 kontrol noktası + 5 bölüm finali. */
+
+
+// İNGİLİZCE modunda Rusça hikayeler YÜKLENMEZ: 9 hikayelik İngilizce paketi
+// (4 kontrol noktası + 5 bölüm finali) tamamen İngilizce müfredata bağlıdır.
+export const STORIES: CheckpointStory[] = isEnglish() ? EN_STORIES : RU_STORIES;
+
+/** Toplam hikaye sayısı: kontrol noktaları + bölüm finalleri (aktif dile göre). */
 export const STORY_CHECKPOINT_COUNT = STORIES.length;

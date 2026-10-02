@@ -12,7 +12,9 @@ export interface Twister {
   tip: string;          // hangi sesleri çalıştırdığı (1 satır)
 }
 
-export const TWISTERS: Twister[] = [
+import { isEnglish } from '../content/activeLanguage';
+
+const RU_TWISTERS: Twister[] = [
   { ru: 'Шла Саша по шоссе и сосала сушку', reading: 'Şla Saşa pa şasse i sasala suşku', tr: 'Saşa otoyolda yürüyor ve simit emiyordu', tip: 'Ş-S ayrımı: klasik Rus tekerlemesi' },
   { ru: 'На дворе трава, на траве дрова', reading: 'Na dvare trava, na trye drava', tr: 'Avluda ot var, otun üstünde odunlar', tip: 'V sesini inceltmez: TR-DR kümeleri' },
   { ru: 'Карл у Клары украл кораллы', reading: 'Karl u Kları ukral koralı', tr: 'Karl, Klara’nın mercanlarını çaldı', tip: 'Sert R + K-L kümeleri' },
@@ -37,4 +39,30 @@ export const TWISTERS: Twister[] = [
   { ru: 'Страшный зверь в сыром бору', reading: 'Straşnıy zvyer f sıram baru', tr: 'Korkunç hayvan ıslak çam ormanında', tip: 'Sert-yumuşak S + BV kümesi' },
   { ru: 'Хриплый хорь хрустит хлебом', reading: 'Hripılıy hór’ hrustít hlyebam', tr: 'Hırıltılı gelincik ekmekle çıtırdıyor', tip: 'H-HR: gırtlak sesleri — Türkçeye en uzak seri' },
   { ru: 'Забыл Панкрат домкрат', reading: 'Zabıl Pankrát damkrát', tr: 'Pankrat krikoyu unuttu', tip: 'N-KR-D kümeleri' },
+]
+// ==========================================
+// 🇬🇧 İNGİLİZCE TEKERLEMELER (tongue twisters)
+// Amaç aynı: ağız/dil kaslarının İngilizce ses dizilerine (TH, W, R-L,
+// sessiz kümeleri) alışması. Okunuşlar Türkçe harflerle, vurgu BÜYÜK.
+// ==========================================
+const EN_TWISTERS: Twister[] = [
+  { ru: 'She sells seashells by the seashore', reading: 'Şİ SELS SİİşELZ bay di SİIşor', tr: 'Kız sahilde deniz kabuğu satıyor', tip: 'S-Ş: İngilizcenin en klasik tekerlemesi' },
+  { ru: 'Peter Piper picked a peck of pickled peppers', reading: 'PIİtır PAYpır PİKT e PEK ıv PİKıld PEPırz', tr: 'Peter Piper bir kap turşu biber aldı', tip: 'P patlamaları: dudak Jimnastiği' },
+  { ru: 'How much wood would a woodchuck chuck if a woodchuck could chuck wood?', reading: 'hau MADŞ UUD uud e UUDçak ÇAK if e UUDçak kud ÇAK UUD?', tr: 'Bir dağ sincabı odun atabilseydi ne kadar odun atardı?', tip: 'W sesi: dudak yuvarlama antrenmanı' },
+  { ru: 'Red lorry, yellow lorry, red lorry, yellow lorry', reading: 'RED LORi, YELOU LORi, RED LORi, YELOU LORi', tr: 'Kırmızı kamyon, sarı kamyon...', tip: 'R-L dönüşümü: Türk öğrencinin klasiği' },
+  { ru: 'Three free throws', reading: 'θRII FRII θROUZ', tr: 'Üç serbest atış', tip: 'TH sesi (θ) üst üste üç kez' },
+  { ru: 'The thirty-three thieves thought that they thrilled the throne throughout Thursday', reading: 'di TERti TRII TIIVZ θOT det DEY θRILD di θROUN θruAUT TÖRZdey', tr: 'Otuz üç hırsız perşembe boyunca tahtı heyecanlandırdıklarını düşündü', tip: 'TH + R: efsanevi kombinasyon' },
+  { ru: 'A proper copper coffee pot', reading: 'e PROPır KOPır KOFi POT', tr: 'Düzgün bir bakır kahve fincanı', tip: 'P-K sesleri: kısa patlama serisi' },
+  { ru: 'Betty bought a bit of better butter', reading: 'BETi BOT e BİT ıv BEDır BATır', tr: 'Betty biraz daha iyi tereyağı aldı', tip: 'B-T ritmi: kısa ve hızlı' },
+  { ru: 'Six slippery snails slid slowly seaward', reading: 'SİKS SLİPıri SNEYLZ SLİD SLOUli SİIUırd', tr: 'Altı kaygan salyangoz yavaşça denize kaydı', tip: 'S-SL ses dizileri' },
+  { ru: 'I scream, you scream, we all scream for ice cream', reading: 'ay SKRIIM, yu SKRIIM, ui OL SKRIIM for AYS KRİIM', tr: 'Ben bağırırım, sen bağırırsın, hepimiz dondurma için bağırırız', tip: 'SKR kümesi + uzun ii sesi' },
+  { ru: 'Fuzzy Wuzzy was a bear, Fuzzy Wuzzy had no hair', reading: 'FAZi UAZi UOZ e BER, FAZi UAZı HED NOU HER', tr: 'Fuzzy Wuzzy bir ayıydı, Fuzzy Wuzzy\'nin saçı yoktu', tip: 'W-Z ikilisi' },
+  { ru: 'Black background, brown background', reading: 'BLEK BEKgraund, BRAUN BEKgraund', tr: 'Siyah arka plan, kahverengi arka plan', tip: 'B-L kümeleri' },
+  { ru: 'The big bug bit the little beetle', reading: 'di BIG BAG BİT di LITıl BIİtııl', tr: 'Büyük böcek küçük böceği ısırdı', tip: 'B sesinin kısa patlamaları' },
+  { ru: 'Nine nice night nurses nursing nicely', reading: 'NAYN NAYS NAYT NÖRsız NÖRsing NAYSLi', tr: 'Dokuz güzel gece hemşiresi güzelce bakıyor', tip: 'N sesi + uzun ay' },
+  { ru: 'Very well, very well, very well', reading: 'VERi UEL, VERi UEL, VERi UEL', tr: 'Çok iyi, çok iyi, çok iyi', tip: 'V-W ayrımı: Türk öğrenciye özel' },
+  { ru: 'Think twice before you speak once', reading: 'θINGK TUAIS bifOR yu SPIIK UANS', tr: 'Bir kez konuşmadan önce iki kez düşün', tip: 'TH + S: hem ders hem tekerleme' },
 ];
+
+export const TWISTERS: Twister[] = isEnglish() ? EN_TWISTERS : RU_TWISTERS;
+

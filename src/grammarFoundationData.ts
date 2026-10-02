@@ -1,5 +1,7 @@
 import type { CefrTag } from './topics100';
 import { TENSE_UNITS } from './tensesData';
+import { isEnglish } from './content/activeLanguage';
+import { EN_GRAMMAR_FOUNDATION_UNITS } from './content/en/grammarFoundation';
 
 export interface GrammarFoundationExample {
   ru: string;
@@ -316,8 +318,12 @@ const FOUNDATION_ORDER = new Map<string, number>([
   ['gram_sentence_lab', 31],
 ]);
 
-export const GRAMMAR_FOUNDATION_UNITS: GrammarFoundationUnit[] = [...GRAMMAR_FOUNDATION_UNITS_RAW].sort((a, b) =>
-  (FOUNDATION_ORDER.get(a.id) ?? 999) - (FOUNDATION_ORDER.get(b.id) ?? 999),
-);
+export const GRAMMAR_FOUNDATION_UNITS: GrammarFoundationUnit[] = isEnglish()
+  ? [...EN_GRAMMAR_FOUNDATION_UNITS].sort((a, b) =>
+      (FOUNDATION_ORDER.get(a.id) ?? 999) - (FOUNDATION_ORDER.get(b.id) ?? 999),
+    )
+  : [...GRAMMAR_FOUNDATION_UNITS_RAW].sort((a, b) =>
+      (FOUNDATION_ORDER.get(a.id) ?? 999) - (FOUNDATION_ORDER.get(b.id) ?? 999),
+    );
 
 export const ALL_GRAMMAR_FOUNDATION_QUESTIONS = GRAMMAR_FOUNDATION_UNITS.flatMap((u) => u.quiz);

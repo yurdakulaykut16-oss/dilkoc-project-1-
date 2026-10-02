@@ -1,0 +1,598 @@
+// DilKoç © 2026 — Bu kaynak kod telif hakkıyla korunur. İzinsiz kopyalama,
+// dağıtma ve türev çalışma üretme yasaktır (bkz. LICENSE).
+// ============================================================================
+// 🛂 VİZE & PASAPORT / VATANDAŞLIK / GÖÇ PAKETİ — RUSÇA (1/2: ünite 1-25)
+// ----------------------------------------------------------------------------
+// Vize-pasaport işlemleri, vatandaşlık başvurusu, göç ve uyum, doğum yoluyla
+// vatandaşlık konularında bilinmesi gereken kelimeler. İngilizce aynası:
+// content/en/enCitA.ts (aynı 50 ünite, hedef dil İngilizce).
+// ============================================================================
+
+import type { UnitModule } from '../../curriculumData';
+import { makeCitUnit, type CitWord, type CitSent, type CitLine } from './makeCitUnit';
+
+const U = (
+  id: string, n: number, lv: UnitModule['levelGroup'], icon: string,
+  title: string, desc: string, cat: string, color: string, grammar: string,
+  words: CitWord[], sents: CitSent[], dlg: CitLine[],
+): UnitModule => makeCitUnit({ id, unitNumber: n, level: lv, icon, title, desc, category: cat, color, grammar, words, sents, dlg });
+
+const VIZE = "Vize & Pasaport";
+const VAT = "Vatandaşlık";
+
+export const CIT_RU_A: UnitModule[] = [
+  U("cit_01", 600, "A2", "🛂", "Pasaport ve Temel Belgeler",
+    "Pasaport, vize ve resmî işlemlerin temel belgeleri",
+    VIZE, "#0ea5e9",
+    "📌 «паспорт» eril bir isimdir: паспорт → паспорта (tamlama) → паспорту (yönelme).\n«нет + ilgi hâli»: У меня нет паспорта. — Pasaportum yok.",
+    [
+      ["паспорт", "Pásport", "pasaport", "Seyahat ve kimlik için ana belgedir."],
+      ["виза", "Víza", "vize", "Bir ülkeye giriş izni veren belgedir."],
+      ["документ", "dakumyént", "belge", "Resmî evrakların genel adıdır."],
+      ["анкета", "ankyéta", "başvuru formu", "Başvuru formlarına анкета denir."],
+      ["фотография", "fatagráfiya", "fotoğraf", "Başvuru fotoğrafı biyometrik olmalıdır."],
+      ["госпошлина", "gaspashlína", "resmî harç", "Devlet işlemlerinin ücretidir."],
+    ],
+    [
+      ["Паспорт — это главный документ гражданина.", "Pasaport, vatandaşın en önemli belgesidir."],
+      ["Мне нужно получить визу.", "Vize almam gerekiyor."],
+      ["Заполните, пожалуйста, эту анкету.", "Lütfen bu formu doldurun."],
+    ],
+    [
+      ["Сотрудник", "Ваш паспорт, пожалуйста.", "Vash pásport, pajálusta", "Pasaportunuz, lütfen."],
+      ["Гражданин", "Вот мой паспорт и анкета.", "Vot moy pásport i ankyéta", "İşte pasaportum ve formum."],
+      ["Сотрудник", "Спасибо. Госпошлина — две тысячи.", "Spasíba. Gaspashlína — dvyé týsyachi", "Teşekkürler. Harç iki bin."],
+    ]),
+
+  U("cit_02", 601, "A2", "📝", "Pasaport Başvurusu",
+    "Pasaport çıkarmak için başvuru adımları ve evraklar",
+    VIZE, "#0ea5e9",
+    "📌 «подать» (teslim etmek) geçmiş zamanda: подал / подала / подали.\n«о + önerme»: заявление о рождении — doğumla ilgili başvuru.",
+    [
+      ["заявление", "zayavlyéniye", "başvuru dilekçesi", "Resmî başvuruların ana formudur."],
+      ["подать документы", "padát dakumyéntı", "evrak vermek", "Başvuruyu teslim etmek anlamına gelir."],
+      ["выдать", "vídat", "vermek (kurum)", "Kurum belgeyi «выдать» eder."],
+      ["срок изготовления", "srak izgatovlyéniya", "hazırlanma süresi", "Belgenin çıkma süresidir."],
+      ["паспортный стол", "pásportnıy stol", "pasaport bürosu", "Pasaport işlemlerinin yapıldığı yerdir."],
+      ["свидетельство о рождении", "svidyétel'stva a rojdéniya", "doğum belgesi", "Başvuruda istenir."],
+    ],
+    [
+      ["Я хочу подать заявление на паспорт.", "Pasaport için başvuru yapmak istiyorum."],
+      ["Какие документы нужны?", "Hangi belgeler gerekiyor?"],
+      ["Паспорт будет готов через десять дней.", "Pasaport on gün içinde hazır olacak."],
+    ],
+    [
+      ["Гражданин", "Я хочу оформить паспорт.", "Ya khachú aformít' pásport", "Pasaport çıkarmak istiyorum."],
+      ["Сотрудник", "Подайте заявление и свидетельство о рождении.", "Padáytye zayavlyéniye i svidyétel'stva a rojdéniya", "Başvuru formunu ve doğum belgesini verin."],
+      ["Гражданин", "Сколько ждать?", "Skól'ka jdát'", "Ne kadar beklemek gerekir?"],
+    ]),
+
+  U("cit_03", 602, "A2", "📅", "Pasaport Yenileme ve Süre Bitişi",
+    "Süresi dolan pasaportun yenilenmesi ve uzatma",
+    VIZE, "#0ea5e9",
+    "📌 Kısa sıfatlar cinsiyete göre değişir: действителen (eril) / действительна (dişil) — geçerli.",
+    [
+      ["продлить", "pradlít'", "uzatmak", "Süre bitiminde işlem yenilenir."],
+      ["истёк срок", "istyók srak", "süre doldu", "«истечь» — doldu (zaman)."],
+      ["обмен паспорта", "abmén paspórta", "pasaport yenileme", "Eski pasaportun yenisiyle değişimi."],
+      ["новый образец", "nówıy abrázets", "yeni örnek", "Yeni model pasaport."],
+      ["действителен", "dyístvitelen", "geçerli", "Belgenin yürürlükte olması."],
+      ["просроченный", "prasróchennıy", "süresi geçmiş", "Süresi dolmuş belge."],
+    ],
+    [
+      ["Срок моего паспорта истёк.", "Pasaportumun süresi doldu."],
+      ["Мне нужно обменять паспорт.", "Pasaportumu yenilemem gerekiyor."],
+      ["Паспорт действителен ещё пять лет.", "Pasaport beş yıl daha geçerli."],
+    ],
+    [
+      ["Гражданин", "Мой паспорт просрочен.", "Moy pásport prasróchen", "Pasaportumun süresi geçmiş."],
+      ["Сотрудник", "Нужно обменять паспорт и заплатить пошлину.", "Nújna abmenyát' pásport i zaplatít' pashlínu", "Pasaportu yenileyip harcı ödemeniz gerekir."],
+      ["Гражданин", "Хорошо, я подготовлю документы.", "Harashó, ya padgatóvlyu dakumyéntı", "Tamam, belgeleri hazırlayacağım."],
+    ]),
+
+  U("cit_04", 603, "A2", "🗂️", "Vize Türleri",
+    "Turist, iş, transit ve misafir vizesi türleri",
+    VIZE, "#0ea5e9",
+    "📌 Sıfat–isim uyumu: турuстическАЯ виза (dişil «виза»).\nEril isimlerde -ый, dişilde -ая gelir.",
+    [
+      ["туристическая виза", "turistíçeskaya víza", "turist vizesi", "Tatil amaçlı vizadir."],
+      ["деловая виза", "dyélavaya víza", "iş (ticari) vizesi", "İş seyahatleri için alınır."],
+      ["транзитная виза", "tranzítnaya víza", "transit vizesi", "Ülke üzerinden geçiş içindir."],
+      ["однократная", "adnakrátnaya", "tek girişli", "Bir kez giriş hakkı verir."],
+      ["многократная", "mnagakrátnaya", "çok girişli", "Birden çok giriş hakkı verir."],
+      ["гостевая виза", "gastyévaya víza", "misafir (ziyaret) vizesi", "Akraba/arkadaş ziyareti içindir."],
+    ],
+    [
+      ["Какая это виза — однократная или многократная?", "Bu vize tek girişli mi çok girişli mi?"],
+      ["Мне нужна туристическая виза.", "Turist vizesine ihtiyacım var."],
+      ["Деловая виза позволяет работать?", "İş vizesi çalışmaya izin verir mi?"],
+    ],
+    [
+      ["Сотрудник", "Какую визу вы хотите получить?", "Kakúyu vízu vy khatíti paluchít'", "Hangi viseyi almak istiyorsunuz?"],
+      ["Турист", "Туристическую, однократную.", "Turistíçeskuу, adnakrátnuу", "Turist vizesi, tek girişli."],
+      ["Сотрудник", "Заполните анкету и оплатите сбор.", "Zapólnitye ankyétu i aplatítye sbor", "Formu doldurun ve ücreti ödeyin."],
+    ]),
+
+  U("cit_05", 604, "A2", "🏖️", "Turist Vizesi",
+    "Turist vizesi için gereken belgeler ve kalış süresi",
+    VIZE, "#0ea5e9",
+    "📌 Hareket fiillerinin geçmişi cinsiyete göre: приехал (eril) / приехала (dişil) — geldi.",
+    [
+      ["поездка", "poyézdka", "seyahat", "Kısa yolculuk anlamındadır."],
+      ["страховка", "strahófka", "sigorta", "Vize için seyahat sigortası istenir."],
+      ["бронь гостиницы", "bron' gastínitsı", "otel rezervasyonu", "Konaklama kanıtıdır."],
+      ["обратный билет", "abrát­nıy bilét", "dönüş bileti", "Ülkeye döneceğinizin kanıtıdır."],
+      ["цель поездки", "tsél' poyézdki", "seyahat amacı", "Başvuruda belirtilir."],
+      ["сроки пребывания", "sróki prybıvániya", "kalış süreleri", "Vizede yazılıdır."],
+    ],
+    [
+      ["Цель моей поездки — туризм.", "Seyahatimin amacı turizm."],
+      ["У меня есть обратный билет и страховка.", "Dönüş biletim ve sigortam var."],
+      ["Виза действует тридцать дней.", "Vize otuz gün geçerli."],
+    ],
+    [
+      ["Консул", "Какова цель вашей поездки?", "Kakavá tsél' váşey poyézdki", "Seyahatinizin amacı nedir?"],
+      ["Турист", "Я приехал как турист.", "Ya priyéhal kak turíst", "Turist olarak geldim."],
+      ["Консул", "Где вы остановитесь?", "Gdye vy astanóvityes'", "Nerede konaklayacaksınız?"],
+    ]),
+
+  U("cit_06", 605, "B1", "🎓", "Öğrenci Vizesi",
+    "Eğitim için vize, kabul mektubu ve yıllık yenileme",
+    VIZE, "#0ea5e9",
+    "📌 «каждый + önerme» — her ...: каждый год (her yıl), каждый месяц (her ay).\n«поступить в + önerme» — ...e kaydolmak.",
+    [
+      ["учебная виза", "uchyéb­naya víza", "öğrenci vizesi", "Eğitim amaçlı vizadir."],
+      ["приглашение", "priglaşéniye", "kabul (davet) mektubu", "Okulun gönderdiği resmî belge."],
+      ["справка", "spráfka", "yazılı belge", "Kurumdan alınan belge."],
+      ["зачисление", "zachislyéniye", "kayıt kabulü", "Okula kabul edilmedir."],
+      ["собеседование", "sabyédavaniye", "görüşme", "Okul/vize görüşmesi."],
+      ["продление визы", "pradlyéniye vízı", "vize uzatma", "Öğrenci vizesi her yıl uzatılır."],
+    ],
+    [
+      ["Университет прислал мне приглашение.", "Üniversite bana kabul mektubu gönderdi."],
+      ["Я поступил на первый курс.", "Birinci sınıfa kaydoldum."],
+      ["Студенческую визу нужно продлевать каждый год.", "Öğrenci vizesi her yıl uzatılmalı."],
+    ],
+    [
+      ["Студент", "Вот приглашение из университета.", "Vot priglaşéniye iz universitéta", "Üniversiteden gelen kabul mektubu."],
+      ["Сотрудник", "Хорошо. Вам нужна учебная виза.", "Harashó. Vam nujná uchyébnaya víza", "Güzel. Öğrenci vizesine ihtiyacınız var."],
+      ["Студент", "Когда виза будет готова?", "Kagdá víza búdit gotóva", "Vize ne zaman hazır olur?"],
+    ]),
+
+  U("cit_07", 606, "B1", "💼", "Çalışma Vizesi ve İzni",
+    "İşveren, iş sözleşmesi ve çalışma izni süreçleri",
+    VIZE, "#0ea5e9",
+    "📌 «нельзя + fiil» — yasak: без разрешения нельзя работать.\n«без + ilgi hâli» — -sız: без визы — vizesiz.",
+    [
+      ["разрешение на работу", "razryşyéniye na rábotu", "çalışma izni", "Çalışmak için zorunludur."],
+      ["работодатель", "rabotadátyel'", "işveren", "Sizi çalışan olarak belirleyen taraf."],
+      ["трудовой договор", "trudavóy dagavór", "iş sözleşmesi", "Hak ve görevleri belirler."],
+      ["рабочая виза", "ráboçaya víza", "çalışma vizesi", "Çalışma amaçlı vizadir."],
+      ["вакансия", "vakánsiya", "iş ilanı", "Açık pozisyon demektir."],
+      ["доход", "dakhót", "gelir", "Başvurularda kanıt istenir."],
+    ],
+    [
+      ["Мой работодатель оформил разрешение на работу.", "İşverenim çalışma iznini düzenledi."],
+      ["Без разрешения нельзя работать.", "İzin olmadan çalışmak yasaktır."],
+      ["Трудовой договор подписали вчера.", "İş sözleşmesi dün imzalandı."],
+    ],
+    [
+      ["Работник", "Мне оформили рабочую визу.", "Mnye aformíli ráboчuу vízu", "Bana çalışma vizesi düzenlendi."],
+      ["Инспектор", "Покажите трудовой договор.", "Pajíjité trudavóy dagavór", "İş sözleşmenizi gösterin."],
+      ["Работник", "Вот договор и справка о доходах.", "Vot dagavór i spráfka a dakhódah", "İşte sözleşme ve gelir belgesi."],
+    ]),
+
+  U("cit_08", 607, "B1", "👨‍👩‍👧", "Aile Birleşimi Vizesi",
+    "Eş ve çocuklarla birleşme için vize ve belgeler",
+    VIZE, "#0ea5e9",
+    "📌 «подать на + önerme» — ...için başvurmak: подать на воссоединение.\n«вместе с + araç hâli» — ile birlikte.",
+    [
+      ["воссоединение семьи", "vassayedinyéniye syem'í", "aile birleşimi", "Ailenin aynı ülkede toplanması."],
+      ["супруг", "suprúg", "eş (koca)", "Dişil biçimi: супруга."],
+      ["близкий родственник", "blízkıy rastvyénnik", "yakın akraba", "Aile birleşiminde tanımlanır."],
+      ["свидетельство о браке", "svidyétel'stva a brákye", "evlilik cüzdanı", "Eş birleşiminde kanıttır."],
+      ["подтвердить", "padtverdít'", "doğrulamak", "Akrabalığı belgeyle kanıtlamak."],
+      ["несовершеннолетний", "nisavyrshennalyyétniy", "reşit olmayan", "18 yaşından küçük çocuk."],
+    ],
+    [
+      ["Мы подали заявление о воссоединении семьи.", "Aile birleşimi başvurusu yaptık."],
+      ["Нужно подтвердить родство документами.", "Akrabalığı belgelerle doğrulamak gerekir."],
+      ["Дети получают визу вместе с родителями.", "Çocuklar vizeyi ebeveynlerle birlikte alır."],
+    ],
+    [
+      ["Заявитель", "Я хочу подать на воссоединение семьи.", "Ya khachú padát' na vassayedinyéniye syem'í", "Aile birleşimi için başvurmak istiyorum."],
+      ["Сотрудник", "Принесите свидетельство о браке.", "Prinyesítye svidyétel'stva a brákye", "Evlilik cüzdanını getirin."],
+      ["Заявитель", "Хорошо, все документы готовы.", "Harashó, fsye dakumyéntı gotóvy", "Tamam, tüm belgeler hazır."],
+    ]),
+
+  U("cit_09", 608, "B1", "🌍", "Schengen ve Vize Bölgeleri",
+    "Schengen vizesi, sınır geçişi ve vize bölgeleri",
+    VIZE, "#0ea5e9",
+    "📌 «по + çoğul önerme» — ...lere/lara: по многим странам — birçok ülkeye.\n«стоять» — damga «duruyor»: В паспорте стоит штамп.",
+    [
+      ["шенгенская виза", "şyéngenskaya víza", "Schengen vizesi", "Birden çok ülkeye girişi sağlar."],
+      ["зона", "zóna", "bölge", "Vize bölgesi anlamında."],
+      ["граница", "granítsa", "sınır", "İki ülke arasındaki çizgidir."],
+      ["пересекать границу", "pyeryisykáть granítsu", "sınırı geçmek", "Sınır kontrolünden geçmek."],
+      ["штамп", "ştamp", "sınır damgası", "Giriş/çıkış kanıtıdır."],
+      ["страна назначения", "straná naznachyéniya", "varış ülkesi", "Gitmeyi planladığınız ülke."],
+    ],
+    [
+      ["Шенгенская виза позволяет ездить по многим странам.", "Schengen vizesi birçok ülkeye gitmeye izin verir."],
+      ["Мы пересекли границу ночью.", "Sınırı gece geçtik."],
+      ["В паспорте стоит штамп о въезде.", "Pasaportta giriş damgası var."],
+    ],
+    [
+      ["Пограничник", "Цель вашей поездки?", "Tsél' váşey poyézdki", "Seyahatinizin amacı?"],
+      ["Путешественник", "Туризм. Вот шенгенская виза.", "Turízm. Vot şyéngenskaya víza", "Turizm. İşte Schengen vizesi."],
+      ["Пограничник", "Добро пожаловать!", "Dabró pajálavat'", "Hoş geldiniz!"],
+    ]),
+
+  U("cit_10", 609, "A2", "🏢", "Vize Başvuru Merkezi ve Randevu",
+    "Başvuru merkezinde randevu, sıra ve teslim",
+    VIZE, "#0ea5e9",
+    "📌 «записаться на + önerme» — randevuya yazılmak (reflexive -ся).\nSaat ifadesi: на десять часов — saate on için.",
+    [
+      ["визовый центр", "vízavıy tséntr", "vize başvuru merkezi", "Başvurular burada teslim edilir."],
+      ["записаться на приём", "zapissátsa na priyóm", "randevu almak", "Önce randevu şarttır."],
+      ["очередь", "achyérd'", "sıra", "Bekleme sırasıdır."],
+      ["приём документов", "priyóm dakumyéntof", "evrak teslim", "Belgelerin kabul edilmesi."],
+      ["талон", "talón", "sıra numarası", "Elektronik sıra fişidir."],
+      ["оператор", "apyrátar", "görevli", "Karşıdaki yetkili kişi."],
+    ],
+    [
+      ["Я записался на приём на вторник.", "Salı günü için randevu aldım."],
+      ["Возьмите талон и ждите очереди.", "Sıra numarası alın ve sıranızı bekleyin."],
+      ["Визовый центр работает до шести часов.", "Başvuru merkezi saate altıya kadar açık."],
+    ],
+    [
+      ["Оператор", "Здравствуйте! У вас есть запись?", "Zdrástvuytye! U vas yest' zapis'?", "Merhaba! Randevunuz var mı?"],
+      ["Клиент", "Да, на десять часов.", "Da, na dyésit' časóf", "Evet, saate on."],
+      ["Оператор", "Возьмите талон номер семь.", "Vaz'mítye talón nómyer séм'", "Yedi numaralı fişi alın."],
+    ]),
+
+  U("cit_11", 610, "B1", "🎤", "Vize Görüşmesi",
+    "Konsolosluk görüşmesi ve sorulara hazırlık",
+    VIZE, "#0ea5e9",
+    "📌 «спросить о + önerme» — ...sormak: спросить о цели визита.\n«длиться» — sürmek: Интервью длилось десять минут.",
+    [
+      ["интервью", "intyrvyú", "görüşme (mülakat)", "Konsolosluk görüşmesidir."],
+      ["консульский отдел", "kansúl'skıy atdyél", "konsolosluk bölümü", "Vize işlemlerinin yapıldığı birim."],
+      ["консул", "kansúl", "konsolos", "Kararı veren yetkilidir."],
+      ["ответить на вопросы", "atvyétit' na vaprósı", "soruları yanıtlamak", "Görüşmede beklenir."],
+      ["цель визита", "tsél' vízita", "ziyaret amacı", "En çok sorulan sorudur."],
+      ["уверенно", "uvyérenna", "kendinden emin", "Görüşmede önemli tavırdır."],
+    ],
+    [
+      ["Собеседование длилось десять минут.", "Görüşme on dakika sürdü."],
+      ["Нужно уверенно отвечать на вопросы.", "Sorulara kendinden emin yanıt vermek gerekir."],
+      ["Консул спросил о цели визита.", "Konsolos ziyaret amacını sordu."],
+    ],
+    [
+      ["Консул", "Почему вы хотите поехать в эту страну?", "Pachimú vy khatíti poyéhat' v étu stranú", "Bu ülkeye neden gitmek istiyorsunuz?"],
+      ["Заявитель", "Я хочу учиться и работать там.", "Ya khachú uchítsa i rabótat' tam", "Orada okumak ve çalışmak istiyorum."],
+      ["Консул", "Спасибо, ваши документы в порядке.", "Spasíba, váşi dakumyéntı v paryádkye", "Teşekkürler, belgeleriniz uygun."],
+    ]),
+
+  U("cit_12", 611, "B2", "⛔", "Vize Reddi ve İtiraz",
+    "Ret nedenleri, itiraz süreci ve apelasyon",
+    VIZE, "#0ea5e9",
+    "📌 «отказать кому в чём» — ...den ret vermek: Мне отказали в визе.\n«в течение + önerme» — süresi içinde: в течение месяца.",
+    [
+      ["отказ", "atkáz", "ret", "Olumsuz karardır."],
+      ["причина отказа", "prichína atkáza", "ret nedeni", "Yazılı bildirilir."],
+      ["обжаловать", "abjalávat'", "itiraz etmek", "Karara karşı çıkmak."],
+      ["апелляция", "apyellyátsiya", "itiraz başvurusu", "Üst mercie yapılan başvuru."],
+      ["недостаточно средств", "nyidastátachna sryédstv", "yetersiz finansal garanti", "Sık görülen ret nedenidir."],
+      ["подозрение", "padazryéniye", "şüphe", "Gerekçeler arasında sayılır."],
+    ],
+    [
+      ["Мне отказали в визе без объяснения.", "Bana viseden gerekçesiz ret verildi."],
+      ["Причину отказа указали в письме.", "Ret nedeni mektupta belirtildi."],
+      ["Решение можно обжаловать в течение месяца.", "Karara bir ay içinde itiraz edilebilir."],
+    ],
+    [
+      ["Заявитель", "Почему мне отказали?", "Pachimú mnye atkazáli", "Bana neden ret verildi?"],
+      ["Юрист", "Здесь указана причина: недостаточно средств.", "Zdyés' ukazána prichína: nyidastátachna sryédstv", "Burada neden yazıyor: yetersiz finansal garanti."],
+      ["Заявитель", "Я подам апелляцию.", "Ya padám apyellyátsyı", "İtiraz başvurusu yapacağım."],
+    ]),
+
+  U("cit_13", 612, "B1", "🏠", "Oturma İzni",
+    "Oturma izni türleri, göç kartı ve kayıt",
+    VIZE, "#0ea5e9",
+    "📌 «сначала... потом» — önce... sonra (sıralama).\n«по месту жительства» — ikametgâh üzerine.",
+    [
+      ["вид на жительство", "vit na zhítel'stva", "oturma izni", "Uzun süreli kalma hakkı."],
+      ["временный вид", "vryéminnıy vit", "geçici oturma izni", "Süreli oturma iznidir."],
+      ["миграционная карта", "migratsiónnaya kárta", "göç kartı", "Girişte doldurulur."],
+      ["регистрация", "ragistrátsiya", "kayıt/tescil", "Adres kaydıdır."],
+      ["уведомление", "uyedyamléniye", "bildirim", "Makamlara verilir."],
+      ["продлить срок", "pradlít' srak", "süreyi uzatmak", "Bitmeden yapılmalıdır."],
+    ],
+    [
+      ["Я получил вид на жительство на три года.", "Üç yıllık oturma izni aldım."],
+      ["Миграционную карту заполняют на границе.", "Göç kartı sınırda doldurulur."],
+      ["Срок регистрации нужно продлевать.", "Kayıt süresi uzatılmalı."],
+    ],
+    [
+      ["Мигрант", "Я хочу оформить вид на жительство.", "Ya khachú aformít' vit na zhítel'stva", "Oturma izni almak istiyorum."],
+      ["Инспектор", "Сначала нужна регистрация по месту жительства.", "Snachála nujná ragistrátsiya pa myéstу zhítel'stva", "Önce ikametgâh kaydı gerekir."],
+      ["Мигрант", "У меня уже есть регистрация.", "U manyá užye yest' ragistrátsiya", "Kaydım zaten var."],
+    ]),
+
+  U("cit_14", 613, "B2", "🔑", "Daimi Oturma İzni",
+    "Daimi ikamet için kesintisiz süre ve gelir şartı",
+    VIZE, "#0ea5e9",
+    "📌 Passive anlam -ся ile: подтверждается — kanıtlanır.\n«уже + süre + лет»: уже пять лет — beş yıldır.",
+    [
+      ["постоянный вид на жительство", "pastóyannıy vit na zhítel'stva", "daimi oturma izni", "Süresiz kalma hakkıdır."],
+      ["непрерывный", "nipryérıvnıy", "kesintisiz", "Süre hesabında önemlidir."],
+      ["стаж проживания", "staж prajıvániya", "ikamet süresi (kıdem)", "Ülkede geçen süredir."],
+      ["проживание", "prajıvániye", "ikamet", "Ülkede yaşamaktır."],
+      ["подтверждённый доход", "padtvyerjdónnıy dakhót", "kanıtlanmış gelir", "Belgeyle gösterilir."],
+      ["права", "práva", "haklar", "Statüyle kazanılır."],
+    ],
+    [
+      ["Для постоянного вида нужен непрерывный стаж проживания.", "Daimi izin için kesintisiz ikamet süresi gerekir."],
+      ["Доход подтверждается справкой с работы.", "Gelir iş yeri belgesiyle kanıtlanır."],
+      ["Постоянный вид даёт больше прав.", "Daimi izin daha çok hak verir."],
+    ],
+    [
+      ["Заявитель", "Я живу здесь уже пять лет.", "Ya jivú zdyés' užye pyat' lyeт", "Beş yıldır burada yaşıyorum."],
+      ["Инспектор", "Ваш доход подтверждён?", "Vash dakhót padtvyerjdyón", "Geliriniz kanıtlandı mı?"],
+      ["Заявитель", "Да, вот справка за весь год.", "Da, vot spráfka za ves' got", "Evet, işte yıl boyu belge."],
+    ]),
+
+  U("cit_15", 614, "A2", "✈️", "Sınır Kontrolü ve Gümrük",
+    "Pasaport kontrolü, gümrük ve beyanname",
+    VIZE, "#0ea5e9",
+    "📌 «нечего + fiil» — yapacak ... yok: Нечего декларировать.\n«через + önerme» — içinden/üzerinden: через границу.",
+    [
+      ["паспортный контроль", "pásportnıy kantról'", "pasaport kontrolü", "Sınırda ilk duraktır."],
+      ["таможня", "tamójnya", "gümrük", "Eşya kontrol noktasıdır."],
+      ["декларация", "dyeklarátsiya", "beyanname", "Bildirim formudur."],
+      ["вещи", "vyéşçi", "eşyalar", "Kişisel eşyalarınız."],
+      ["провозить", "pravazít'", "geçirmek (gümrükten)", "Eşya taşıma anlamında."],
+      ["свободный въезд", "svabódnıy vyezd", "serbest giriş", "Yasak olmayan giriş."],
+    ],
+    [
+      ["На паспортном контроле показывают паспорт и визу.", "Pasaport kontrolünde pasaport ve vize gösterilir."],
+      ["Нечего декларировать.", "Beyan edecek bir şey yok."],
+      ["Это мои личные вещи.", "Bunlar kişisel eşyalarım."],
+    ],
+    [
+      ["Офицер", "Что у вас в багаже?", "Shto u vas v bagajyé", "Bagajınızda ne var?"],
+      ["Пассажир", "Только личные вещи.", "Tól'ka lichnıyye vyéşçi", "Sadece kişisel eşyalar."],
+      ["Офицер", "Пройдите через зелёный коридор.", "praydyítye chyeryez zyilyónıy karídor", "Yeşil koridordan geçin."],
+    ]),
+
+  U("cit_16", 615, "B1", "📍", "Adres ve İkamet Kaydı",
+    "İkametgâh kaydı, kira sözleşmesi ve mal sahibi onayı",
+    VIZE, "#0ea5e9",
+    "📌 Kısa passive geçmiş cinsiyete göre: прописан (eril) / прописана (dişil) — kayıtlı.",
+    [
+      ["прописка", "prapíska", "ikamet kaydı", "Resmî adres kaydıdır."],
+      ["по месту жительства", "pa myéstu zhítel'stva", "ikametgâh üzerine", "Resmî ifadedir."],
+      ["аренда квартиры", "aryénda kvartírı", "daire kirası", "Konaklama biçimidir."],
+      ["договор аренды", "dagavór aryéndı", "kira sözleşmesi", "Kayıt için gerekir."],
+      ["собственник", "sabstyévnik", "mal sahibi", "Onayı istenir."],
+      ["коммунальные услуги", "kamunál'nıyye úslugi", "ortak giderler", "Elektrik, su vb. faturalar."],
+    ],
+    [
+      ["Для прописки нужен договор аренды.", "İkamet kaydı için kira sözleşmesi gerekir."],
+      ["Я прописан по новому адресу.", "Yeni adrese kayıtlıyım."],
+      ["Коммунальные услуги оплачиваются каждый месяц.", "Ortak giderler her ay ödenir."],
+    ],
+    [
+      ["Арендатор", "Мне нужна прописка для документов.", "Mnye nujná prapíska dlya dakumyéntof", "Belgeler için ikamet kaydına ihtiyacım var."],
+      ["Собственник", "Я дам согласие и договор.", "Ya dam saglásiye i dagavór", "Onay ve sözleşme vereceğim."],
+      ["Арендатор", "Спасибо, завтра подадим заявление.", "Spasíba, záftra padádim zayavlyéniye", "Teşekkürler, yarın başvuruyu veririz."],
+    ]),
+
+  U("cit_17", 616, "A2", "🏛️", "Vatandaşlık: Temel Kavramlar",
+    "Vatandaşlık, vatandaş, hak ve görevler",
+    VAT, "#8b5cf6",
+    "📌 Düzensiz çoğul: гражданин → граждане (vatandaşlar).\nDişil biçim: гражданка.",
+    [
+      ["гражданство", "grajdánstva", "vatandaşlık", "Kişi ile ülke arasındaki hukuki bağ."],
+      ["гражданин", "grajdanín", "vatandaş", "Dişil biçimi: гражданка."],
+      ["национальность", "natsiyal'nast'", "milliyet", "Kimlikte yazan kökendir."],
+      ["права и обязанности", "práva i abyázannastí", "haklar ve görevler", "Vatandaşlıkla gelir."],
+      ["конституция", "kanstitútsiya", "anayasa", "En üst yasadır."],
+      ["родина", "radína", "vatan", "Doğup büyüldüğünüz yer."],
+    ],
+    [
+      ["Гражданство даёт права и обязанности.", "Vatandaşlık haklar ve görevler verir."],
+      ["Я гражданин этой страны.", "Bu ülkenin vatandaşıyım."],
+      ["Конституция защищает права всех.", "Anayasa herkesin haklarını korur."],
+    ],
+    [
+      ["Учитель", "Что такое гражданство?", "Shtó takóye grajdánstva", "Vatandaşlık nedir?"],
+      ["Студент", "Это связь человека со страной.", "Éta svyáz' chilavyéka sa stranóy", "İnsanın ülkeyle bağıdır."],
+      ["Учитель", "Верно. У гражданина есть права и обязанности.", "Vyérна. U grajdanína yest' práva i abyázannastí", "Doğru. Vatandaşın hakları ve görevleri var."],
+    ]),
+
+  U("cit_18", 617, "B1", "✅", "Vatandaşlık Başvuru Şartları",
+    "Başvuru koşulları: süre, dil, gelir ve yasalara uyum",
+    VAT, "#8b5cf6",
+    "📌 «должен + fiil» — ...meli: должен / должна / должны (cinsiyet ve çoğula göre).",
+    [
+      ["условия", "uslóviya", "şartlar/koşullar", "Başvurunun temelidir."],
+      ["требование", "tryibávaniye", "gereklilik", "Her şart ayrı belirtilir."],
+      ["соответствовать", "satvyétstvavat'", "uygun olmak/karşılamak", "Şartları karşılamak demektir."],
+      ["законный источник дохода", "zakónnıy istóchnik dakhóta", "yasal gelir kaynağı", "Belgeyle gösterilir."],
+      ["знание языка", "znániye yazyká", "dil bilgisi", "Sınavla kanıtlanır."],
+      ["соблюдать законы", "sablyudát' zakónı", "yasalara uymak", "Başvuru boyunca istenir."],
+    ],
+    [
+      ["Нужно соответствовать всем требованиям.", "Tüm şartları karşılamak gerekir."],
+      ["Требуется знание языка и законов.", "Dil ve yasa bilgisi gerekiyor."],
+      ["Заявитель должен соблюдать законы страны.", "Başvuran ülkenin yasalarına uymalı."],
+    ],
+    [
+      ["Консультант", "Вы соответствуете условиям?", "Vy satvyétstvuyetye uslóviyam", "Şartlara uygun musunuz?"],
+      ["Заявитель", "Да, я живу здесь давно и знаю язык.", "Da, ya jivú zdyés' davнó i znáyu yazyk", "Evet, uzun süredir burada yaşıyorum ve dili biliyorum."],
+      ["Консультант", "Тогда можно подавать заявление.", "Tagdá mójna padávаt' zayavlyéniye", "O zaman başvurabilirsiniz."],
+    ]),
+
+  U("cit_19", 618, "B1", "📂", "Başvuru Dosyası ve Evraklar",
+    "Evrak dosyası: onaylı kopya, çeviri ve sabıka kaydı",
+    VAT, "#8b5cf6",
+    "📌 «не хватает + ilgi hâli» — eksik: Не хватает справки.\nKısa passive: заверены — onaylanmış.",
+    [
+      ["пакет документов", "pakyét dakumyéntof", "evrak dosyası", "Tüm belgelerin bütünü."],
+      ["нотариус", "natárius", "noter", "Kopyaları onaylar."],
+      ["заверенная копия", "zavyérennaya kópiya", "onaylı kopya", "Noter onaylı örnek."],
+      ["перевод", "piryevót", "çeviri", "Yetkili çevirmen yapar."],
+      ["оригинал", "ariginal", "asıl (original) belge", "Kopyayla birlikte istenir."],
+      ["справка о несудимости", "spráfka a nyisudímastí", "sabıka kaydı", "Adli sicil belgesidir."],
+    ],
+    [
+      ["Все копии должны быть заверены у нотариуса.", "Tüm kopyalar noter onaylı olmalı."],
+      ["Переводы делает аккредитованный переводчик.", "Çevirileri yetkili çevirmen yapar."],
+      ["В пакете документов не хватает одной справки.", "Evrak dosyasında bir belge eksik."],
+    ],
+    [
+      ["Сотрудник", "Где заверенная копия диплома?", "Gdye zavyérennaya kópiya diplóма", "Diplomun onaylı kopyası nerede?"],
+      ["Заявитель", "Ой, я забыл. Принесу завтра.", "Oy, ya zabých. Prinyesú záftra", "Ah, unuttum. Yarın getiririm."],
+      ["Сотрудник", "Хорошо, без неё заявление не примут.", "Harashó, byez yeyó zayavlyéniye ni primút", "Peki, onsuz başvuru kabul edilmez."],
+    ]),
+
+  U("cit_20", 619, "B1", "🗣️", "Dil Şartı ve Dil Sınavı",
+    "Dil sınavı: sözlü ve yazılı bölümler, sertifika",
+    VAT, "#8b5cf6",
+    "📌 «сдать экзамен» — sınavı geçmek (karşıtı: провалить — başarısız olmak).\nKısa sıfat: сдан / сдана — geçildi.",
+    [
+      ["экзамен", "yekzámin", "sınav", "Dil sınavı zorunludur."],
+      ["сертификат", "syirtifikát", "sertifika", "Seviyeyi belgeler."],
+      ["уровень владения", "úryivin' vladyéniya", "yeterlilik seviyesi", "A1'den C2'ye kadardır."],
+      ["устная часть", "ústnaya chást'", "sözlü bölüm", "Konuşma sınavıdır."],
+      ["письменная часть", "pisyénnaya chást'", "yazılı bölüm", "Okuma-yazma sınavıdır."],
+      ["подтвердить знание", "padtvyerdít' znániye", "bilgiyi belgelemek", "Sertifikayla yapılır."],
+    ],
+    [
+      ["Я сдал экзамен по языку.", "Dil sınavını geçtim."],
+      ["Устная часть была трудной, но письменная — лёгкой.", "Sözlü bölüm zordu ama yazılı kolaydı."],
+      ["Сертификат подтверждает уровень B1.", "Sertifika B1 seviyesini belgeler."],
+    ],
+    [
+      ["Преподаватель", "Вы готовы к устной части?", "Vy gatóvy k ústnay chástí", "Sözlü bölüme hazır mısınız?"],
+      ["Кандидат", "Да, я много занимался.", "Da, ya mnóga zanimálsa", "Evet, çok çalıştım."],
+      ["Преподаватель", "Тогда начнём с простых вопросов.", "Tagdá nachnyóm s próstıh vaprósof", "O zaman basit sorularla başlayalım."],
+    ]),
+
+  U("cit_21", 620, "B2", "📚", "Vatandaşlık Sınavı: Tarih ve Toplum",
+    "Ülke tarihi, devlet düzeni ve semboller sınavı",
+    VAT, "#8b5cf6",
+    "📌 «спрашивать о + önerme» — ...sormak. «означать» — demek olmak/temsil etmek.",
+    [
+      ["история страны", "istóriya stranı", "ülke tarihi", "Sınav konusudur."],
+      ["государственный строй", "gasudárstvyennıy stroy", "devlet düzeni", "Yönetim biçimidir."],
+      ["символика", "simvólika", "semboller", "Bayrak, arma vb."],
+      ["флаг и герб", "flag i gyerp", "bayrak ve arma", "En önemli semboller."],
+      ["конституционный", "kanstitutsiónnıy", "anayasal", "Düzenle ilgili sıfattır."],
+      ["общество", "apşçyéstva", "toplum", "Ülkenin bütünüdür."],
+    ],
+    [
+      ["На экзамене спрашивают историю и символику.", "Sınavda tarih ve semboller sorulur."],
+      ["Нужно знать основы конституционного строя.", "Anayasal düzenin temelleri bilinmeli."],
+      ["Флаг и герб — главные символы страны.", "Bayrak ve arma ülkenin ana sembolleridir."],
+    ],
+    [
+      ["Экзаменатор", "Что означает этот флаг?", "Shtó aznacháyét état flag", "Bu bayrak neyi temsil ediyor?"],
+      ["Кандидат", "Это государственный флаг страны.", "Éta gasudárstvyennıy flag stranı", "Bu ülkenin devlet bayrağı."],
+      ["Экзаменатор", "Правильно. Следующий вопрос...", "Právil'nа. Slyédующий vaprós", "Doğru. Sonraki soru..."],
+    ]),
+
+  U("cit_22", 621, "B1", "👆", "Biyometri ve Parmak İzi",
+    "Biyometrik veriler: parmak izi, tarama, dijital fotoğraf",
+    VAT, "#8b5cf6",
+    "📌 «данные» — yalnız çoğul bir isimdir (veriler).\n«нельзя + fiil» — ...memeli: нельзя двигаться.",
+    [
+      ["биометрия", "bayamyétriya", "biyometri", "Kimlik verilerinin dijitali."],
+      ["отпечатки пальцев", "atpyechátki pál'tsyef", "parmak izleri", "Başvuruda verilir."],
+      ["сдать отпечатки", "zdat' atpyechátki", "parmak izi vermek", "Yerinde yapılır."],
+      ["сканирование", "skaníravaniye", "tarama", "Cihazla okumadır."],
+      ["цифровое фото", "tsifróvaye fóta", "dijital fotoğraf", "Anında çekilir."],
+      ["база данных", "báza dánnyh", "veri tabanı", "Veriler burada saklanır."],
+    ],
+    [
+      ["Отпечатки пальцев сдают на месте.", "Parmak izleri yerinde verilir."],
+      ["Биометрические данные хранятся в базе.", "Biyometrik veriler veri tabanında saklanır."],
+      ["Во время сканирования нельзя двигаться.", "Tarama sırasında hareket edilmemeli."],
+    ],
+    [
+      ["Оператор", "Положите палец на сканер.", "Palójitye pályets na skanyér", "Parmağınızı tarayıcıya koyun."],
+      ["Заявитель", "Так?", "Tak", "Böyle mi?"],
+      ["Оператор", "Да, отлично. Теперь цифровое фото.", "Da, atlíçna. Tipyér' tsifróvaye fóta", "Evet, harika. Şimdi dijital fotoğraf."],
+    ]),
+
+  U("cit_23", 622, "A2", "💳", "Başvuru Ücretleri ve Harçlar",
+    "Harç, hizmet bedeli, makbuz ve ödeme",
+    VAT, "#8b5cf6",
+    "📌 «оплатить + isim» — direkt nesne alır: оплатить пошлину.\n«заплатить за + önerme» — öderken: заплатить за визу.",
+    [
+      ["оплата", "apláta", "ödeme", "İşlemin para kısmı."],
+      ["квитанция", "kvitánsiya", "makbuz (dekont)", "Ödeme kanıtıdır."],
+      ["сбор", "sbor", "hizmet ücreti", "Konsolosluk/merkez bedeli."],
+      ["возврат", "vazvrát", "iade", "Bazı durumlarda verilir."],
+      ["льгота", "l'góta", "indirim/muafiyet", "Bazı gruplara tanınır."],
+      ["оплатить онлайн", "aplatít' anlayn", "internetten ödemek", "En kolay yoldur."],
+    ],
+    [
+      ["Госпошлина оплачивается через банк или онлайн.", "Harç banka veya internetten ödenir."],
+      ["Сохраните квитанцию об оплате.", "Ödeme makbuzunu saklayın."],
+      ["Сбор не возвращается при отказе.", "Ret durumunda ücret iade edilmez."],
+    ],
+    [
+      ["Клиент", "Сколько стоит оформление?", "Skól'ka stóit aformlyéniye", "İşlem ne kadara mal oluyor?"],
+      ["Оператор", "Пошлина — пять тысяч, сервисный сбор — тысяча.", "Pashlína — pyat' týsyach, syérvisnıy sbor — týsyaça", "Harç beş bin, hizmet bedeli bin."],
+      ["Клиент", "Я оплачу онлайн.", "Ya aplačú anlayn", "İnternetten ödeyeceğim."],
+    ]),
+
+  U("cit_24", 623, "B1", "🏢", "Göç İdaresi ve Devlet Daireleri",
+    "Göç idaresi, resmî kurumlar ve gişeler",
+    VAT, "#8b5cf6",
+    "📌 «обратиться в + önerme» — ...e başvurmak: обратиться в службу.\n«по будням» — hafta içi.",
+    [
+      ["миграционная служба", "migratsiónnaya slújba", "göç idaresi", "Oturma/vatandaşlık işlemleri."],
+      ["ведомство", "vyédamstva", "resmî kurum", "Devlet dairelerinin genel adı."],
+      ["подразделение", "padrazyélyéniye", "birim/şube", "Kurumun bölümüdür."],
+      ["официальный сайт", "afitsiál'nıy sayt", "resmî site", "Randevular buradan alınır."],
+      ["электронная очередь", "yiktrónnaya ačhyérd'", "elektronik sıra", "Uzun bekleme çözümüdür."],
+      ["окно приёма", "ókna priyóma", "teslim gişesi", "Evrak verilen pencere."],
+    ],
+    [
+      ["Миграционная служба принимает по будням.", "Göç idaresi hafta içi kabul eder."],
+      ["Запись идёт через официальный сайт.", "Randevu resmî siteden alınır."],
+      ["Обратитесь в третье окно.", "Üçüncü gişeye başvurun."],
+    ],
+    [
+      ["Посетитель", "Куда подать заявление?", "Kudá padát' zayavlyéniye", "Başvuru nereye verilir?"],
+      ["Секретарь", "В миграционную службу, окно номер три.", "F migratsiónnuу slújbu, ókna nómyer trí", "Göç idaresine, üç numaralı gişe."],
+      ["Посетитель", "Спасибо большое!", "Spasíba bal'shóye", "Çok teşekkürler!"],
+    ]),
+
+  U("cit_25", 624, "B1", "🎉", "Yemin Töreni ve Yeni Pasaport",
+    "Yemin töreni, vatandaşlık ve yeni pasaport",
+    VAT, "#8b5cf6",
+    "📌 «повторять за кем» — birinin ardından tekrar etmek.\n«поздравлять с + önerme» — ...ile tebrik etmek.",
+    [
+      ["присяга", "prisyága", "yemin", "Vatandaşlık yemini."],
+      ["церемония", "tserimóniya", "tören", "Resmî kutlamadır."],
+      ["клятва", "klyátva", "yemin (söz)", "Verilen sözdür."],
+      ["торжественно", "tarjyéstvenna", "törenle/resmî şekilde", "Törenin havasını anlatır."],
+      ["получить паспорт", "paluchít' pásport", "pasaportu almak", "Son adımdır."],
+      ["поздравление", "pazdravlyéniye", "tebrik", "Yakınlar da eder."],
+    ],
+    [
+      ["Церемония принятия присяги прошла торжественно.", "Yemin töreni görkemli geçti."],
+      ["Новые граждане дали клятву.", "Yeni vatandaşlar yemin etti."],
+      ["Поздравляю с получением гражданства!", "Vatandaşlığı almanızın kutlu olsun!"],
+    ],
+    [
+      ["Ведущий", "Повторяйте за мной клятву.", "Piftyaryáytye za mnóy klyátvu", "Yemini benden sonra tekrar edin."],
+      ["Кандидат", "Я клянусь быть верным гражданином.", "Ya klyanús' byt' vyérnym grajdanínam", "Sadık bir vatandaş olacağıma yemin ederim."],
+      ["Ведущий", "Поздравляю! Вот ваш новый паспорт.", "Pazdravlyáyu! Vot vaş nóvıy pásport", "Tebrikler! İşte yeni pasaportunuz."],
+    ]),
+];

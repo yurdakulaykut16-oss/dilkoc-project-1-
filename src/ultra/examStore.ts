@@ -19,7 +19,9 @@ export interface ExamAttempt {
   ultra: boolean;                   // ultra modda çözüldüyse ayrıca işaretlenir
 }
 
-const EXAM_KEY = 'dilkoc_exams_v1';
+import { isEnglish } from '../content/activeLanguage';
+
+const EXAM_KEY = isEnglish() ? 'dilkoc_exams_en_v1' : 'dilkoc_exams_v1';
 const MAX_ATTEMPTS = 60; // deposu şişmesin: en yeni 60 deneme tutulur
 
 export function loadExamAttempts(): ExamAttempt[] {

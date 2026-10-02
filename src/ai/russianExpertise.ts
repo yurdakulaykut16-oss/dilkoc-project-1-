@@ -1,9 +1,12 @@
+// DilKoç © 2026 — Bu kaynak kod telif hakkıyla korunur. İzinsiz kopyalama,
+// dağıtma ve türev çalışma üretme yasaktır (bkz. LICENSE).
 /**
  * Token bütçesini şişirmeden çalışan yerel Rusça uzmanlık kütüphanesi.
  * Bilgi uygulamaya gömülüdür; her soruda yalnızca ilgili bölümler seçilir.
  */
 
 import { UNITS_DATA } from '../curriculumData';
+import { isEnglish } from '../content/activeLanguage';
 
 export interface RussianKnowledgeEntry {
   id: string;
@@ -136,6 +139,73 @@ const RUSSIAN_CORE_KNOWLEDGE: RussianKnowledgeEntry[] = [
   },
 ];
 
+// ============================================================================
+// 🇬🇧 İNGİLİZCE ÇEKİRDEK BİLGİ BANKASI — Rusça çekirdeğiyle aynı görev:
+// dilin "olmazsa olmaz" konularını her soruda aranabilir kısa kayıtlarla taşır.
+// ============================================================================
+const ENGLISH_CORE_KNOWLEDGE: RussianKnowledgeEntry[] = [
+  {
+    id: 'alphabet-phonetics', title: 'İngilizce ses sistemi ve okuma kuralları',
+    keywords: ['alfabe', 'harf', 'okunuş', 'telaffuz', 'ses', 'th', 'magic e', 'sessiz harf', 'schwa'],
+    content: 'İngilizce 26 harflidir ama 44 sesi vardır: harf ≠ ses. TH iki sestir: sessiz θ (think) ve sesli ð (this). Kapalı hecede a→"e", o→"a", u→"a" gibi okunur (cat→KET, hot→HAT). Magic E kuralı: hat→hate (heyt). KN/WR/GH/MB sessiz harf taşır: know→NOU, light→LAYT. Türkçe okunuşlar yalnızca yaklaşıktır.',
+  },
+  {
+    id: 'tense-system', title: 'Zaman sistemi: 3 zaman × 4 görünüş',
+    keywords: ['zaman', 'zamanlar', 'tense', 'present', 'past', 'future', 'perfect', 'continuous'],
+    content: 'İngilizce 12 zaman = 3 zaman (present/past/future) × 4 görünüş (simple/continuous/perfect/perfect continuous). Simple genel gerçek, continuous şu an sürme, perfect bitmiş-etkisi süren, perfect continuous süreç vurgusudur. Kalıplar: V1 / be+V-ing / have+V3 / have been+V-ing.',
+  },
+  {
+    id: 'present-simple', title: 'Present Simple ve 3. tekil -s',
+    keywords: ['present simple', 'şimdiki zaman', 'alışkanlık', 'third person', 's eki'],
+    content: 'Present Simple alışkanlık ve genel doğrular içindir: I work every day. he/she/it öznesinde fiile -s gelir: he works (watch→watches, study→studies, go→goes). Olumsuz/soru do/does ile: She doesn\'t work. / Does she work? — fiil her zaman 1. hâlde kalır.',
+  },
+  {
+    id: 'present-continuous', title: 'Present Continuous ve Present Perfect',
+    keywords: ['continuous', 'ing', 'şu an', 'present perfect', 'have has', 'v3'],
+    content: 'Present Continuous şu anı anlatır: I am studying now. Present Perfect (have/has + V3) geçmişin şimdiki etkisini verir: I have lost my keys (=hâlâ bulamadım). just/already/yet/ever/never/since/for bu zamanın sinyalidir. ago/yesterday ise Past Simple ister.',
+  },
+  {
+    id: 'past-tenses', title: 'Past Simple ve Past Continuous',
+    keywords: ['geçmiş zaman', 'past simple', 'ed', 'düzensiz fiil', 'was were', 'past continuous'],
+    content: 'Past Simple bitmiş geçmiş: worked (düzgün), went/saw/had (düzensiz). didn\'t + fiil, Did + özne + fiil. Past Continuous arka plan: was/were + V-ing — "I was sleeping when you called." while + continuous, when + simple klasik ikilisidir.',
+  },
+  {
+    id: 'future-forms', title: 'Gelecek: will, going to, Present Continuous',
+    keywords: ['gelecek', 'will', 'going to', 'future', 'plan', 'tahmin'],
+    content: 'will: anlık karar, tahmin, söz (I will help you). be going to: önceden plan ve kanıta dayalı tahmin (We are going to move). Present Continuous: kesinleşmiş randevu/plan (I am meeting him tomorrow). won\'t = will not.',
+  },
+  {
+    id: 'modals', title: 'Kip fiilleri: can, must, should, might',
+    keywords: ['modal', 'kip', 'can', 'must', 'should', 'might', 'izin', 'zorunluluk'],
+    content: 'Kip fiilleri mastarla kullanılır ve 3. tekil -s ALMAZ: She can swim (✗ cans). can yetenek/izin, must güçlü zorunluluk, should tavsiye, might olasılık, have to dış zorunluluk. Olumsuzları anlamı değiştirebilir: mustn\'t (yasak) ≠ don\'t have to (gerek yok).',
+  },
+  {
+    id: 'prepositions', title: 'Edatlar: in, on, at',
+    keywords: ['edat', 'preposition', 'in', 'on', 'at', 'zaman', 'yer'],
+    content: 'Zaman merdiveni: in (ayı/yılı: in July, in 2025), on (gün/tarih: on Monday), at (saat/an: at 7, at night). Yer: in (boşluk: in the room), on (yüzey: on the table), at (nokta: at the bus stop). Sabit eşdizimler ezberlenir: listen to, depend on, interested in, good at, afraid of.',
+  },
+  {
+    id: 'phrasal-verbs', title: 'Phrasal verbs ve eşdizimler',
+    keywords: ['phrasal verb', 'deyim', 'equivalan', 'eşdizim', 'collocation'],
+    content: 'Phrasal verb = fiil + zarf/edat: put up with (katlanmak), figure out (çözmek), run into (tesadüfen karşılaşmak). Ayrılabilirlerde zamir ortada: figure it out. Eşdizimler kelimelerin resmi evliliğidir: make progress (✗ do progress), heavy rain (✗ strong rain), pay attention, meet a deadline.',
+  },
+  {
+    id: 'word-order', title: 'Söz dizimi: SVO, soru ve sıfat sırası',
+    keywords: ['söz dizimi', 'word order', 'svo', 'soru', 'sıfat', 'düzen'],
+    content: 'İngilizce SVO\'dur: The dog bites the man ≠ The man bites the dog. Soru: (Wh-) + yardımcı + özne + fiil: Where do you live? Sıfatlar isimden önce gelir ve belirli bir sıra izler: görüş→boyut→yaş→renk (a beautiful big old red car). Zaman zarfı genelde sondadır.',
+  },
+  {
+    id: 'false-friends', title: 'Türkçe öğrenci tuzakları (yalancı dostlar)',
+    keywords: ['yalancı dost', 'false friend', 'sympathetic', 'actually', 'pretend', 'gym'],
+    content: 'Yalancı dostlar: actually = aslında (aktüel değil), sympathetic = anlayışlı (sempatik değil), sensible = mantıklı (hassas değil), pretend = -mış gibi yapmak (iddia etmek değil), gym = spor salonu (jimnastik değil). Anlam kayması yaşamış bu kelimeleri tek tek ezberle.',
+  },
+  {
+    id: 'translation-method-en', title: 'Türkçe-İngilizce çeviri yöntemi',
+    keywords: ['çeviri', 'çevir', 'ingilizcesi', 'türkçesi', 'nasıl denir'],
+    content: 'Çeviride önce zaman ve görünüş seçilir; sonra özne (İngilizcede asla gizlenmez!), edat, artikel (a/an/the) ve doğal eşdizim kontrol edilir. Türkçenin SOV dizilimi İngilizce SVO\'ya dönüştürülmelidir. Bağlam eksikse en olası nötr seçenek önce verilir.',
+  },
+];
+
 const RUSSIAN_KNOWLEDGE_TARGET = 230;
 const expansionCount = Math.max(0, RUSSIAN_KNOWLEDGE_TARGET - RUSSIAN_CORE_KNOWLEDGE.length);
 
@@ -181,10 +251,9 @@ const RUSSIAN_CURRICULUM_KNOWLEDGE: RussianKnowledgeEntry[] = Array.from(
   },
 );
 
-export const RUSSIAN_KNOWLEDGE_BASE: RussianKnowledgeEntry[] = [
-  ...RUSSIAN_CORE_KNOWLEDGE,
-  ...RUSSIAN_CURRICULUM_KNOWLEDGE,
-];
+export const RUSSIAN_KNOWLEDGE_BASE: RussianKnowledgeEntry[] = isEnglish()
+  ? [...ENGLISH_CORE_KNOWLEDGE, ...RUSSIAN_CURRICULUM_KNOWLEDGE]
+  : [...RUSSIAN_CORE_KNOWLEDGE, ...RUSSIAN_CURRICULUM_KNOWLEDGE];
 
 /**
  * Yerel motorun arayabildiği atomik bilgi sayısı. Bir kelimenin iki yönlü
@@ -219,27 +288,44 @@ const SEARCH_STOP_WORDS = new Set([
   'rusca', 'ruscada', 'turkce', 'nedir', 'demek', 'nasil', 'neden', 'hangi', 'icin',
   'kullanilir', 'kullanimi', 'acikla', 'anlat', 'ornek', 'ver', 'ile', 'bir', 'bu',
   'su', 'mi', 'mu', 'mı', 'mü', 'ne', 've', 'veya', 'olarak',
+  // İngilizce modu durak kelimeleri:
+  'ingilizce', 'ingilizcede', 'ingilizcesi', 'kac', 'vardir', 'anlamda',
+  'what', 'does', 'mean', 'the', 'is', 'are', 'how', 'do', 'you', 'say',
 ]);
+
+// HIZ İNDEKSİ — normalize işlemi modül yüklenirken bir kez yapılır; her
+// sorguda yalnız hazır dizgiler karşılaştırılır (230+ kaydın uzun gövdeleri
+// sorgu başına yeniden işlenmez).
+const KNOWLEDGE_INDEX = RUSSIAN_KNOWLEDGE_BASE.map((entry, order) => ({
+  entry,
+  order,
+  isCore: !entry.id.startsWith('curriculum-expert-'),
+  title: normalizeKnowledgeText(entry.title),
+  keys: entry.keywords.map(normalizeKnowledgeText),
+  body: normalizeKnowledgeText(entry.content),
+}));
 
 export function searchRussianKnowledge(query: string, limit = 7): RussianKnowledgeMatch[] {
   const normalized = normalizeKnowledgeText(query);
   const rawTokens = normalized.split(/\s+/).filter(token => token.length > 1);
   const meaningful = rawTokens.filter(token => !SEARCH_STOP_WORDS.has(token));
   const tokens = meaningful.length > 0 ? meaningful : rawTokens;
-  return RUSSIAN_KNOWLEDGE_BASE
-    .map((entry, order) => {
-      const title = normalizeKnowledgeText(entry.title);
-      const keys = entry.keywords.map(normalizeKnowledgeText);
-      const body = normalizeKnowledgeText(entry.content);
+  return KNOWLEDGE_INDEX
+    .map((item) => {
       let score = 0;
       for (const token of tokens) {
-        if (title.includes(token)) score += 8;
-        if (keys.some(key => key.includes(token) || token.includes(key))) score += 10;
-        if (body.includes(token)) score += 2;
+        if (item.title.includes(token)) score += 8;
+        if (item.keys.some(key => key.includes(token) || token.includes(key))) score += 10;
+        // Kısa tokenların (in, on, at...) gövde içindeki rastgele alt-dizi
+        // eşleşmeleri gürültüdür; yalnız anlamlı uzunlukta puanlanır.
+        if (token.length >= 4 && item.body.includes(token)) score += 2;
       }
       const phrase = normalized.trim();
-      if (phrase.length > 3 && (title.includes(phrase) || keys.some(key => key.includes(phrase)))) score += 20;
-      return { entry, order, score };
+      if (phrase.length > 3 && (item.title.includes(phrase) || item.keys.some(key => key.includes(phrase)))) score += 20;
+      // Elle yazılan çekirdek kayıtlar, otomatik üretimli müfredat kayıtlarına
+      // karşı önceliklidir: "in on at farkı" sorusunda konu kaydı kazanmalı.
+      if (item.isCore) score += 12;
+      return { entry: item.entry, order: item.order, score };
     })
     .filter(item => item.score > 0)
     .sort((a, b) => b.score - a.score || a.order - b.order)
@@ -252,7 +338,10 @@ export function buildRussianExpertContext(query: string, maxChars = 6200): strin
   let selected = searchRussianKnowledge(query, 7);
   // Genel/belirsiz soruda da temel bir çekirdek sağla; bütün bankayı gönderme.
   if (selected.length === 0) {
-    selected = ['translation-method', 'register-naturalness', 'aspect', 'genitive']
+    const fallbackIds = isEnglish()
+      ? ['translation-method-en', 'tense-system', 'present-simple', 'word-order']
+      : ['translation-method', 'register-naturalness', 'aspect', 'genitive'];
+    selected = fallbackIds
       .map(id => RUSSIAN_KNOWLEDGE_BASE.find(entry => entry.id === id))
       .filter((entry): entry is RussianKnowledgeEntry => Boolean(entry))
       .map(entry => ({ entry, score: 0 }));
@@ -278,27 +367,32 @@ export type RussianQuestionIntent =
   | 'general';
 
 export function detectRussianQuestionIntent(query: string): RussianQuestionIntent {
-  const q = query.toLocaleLowerCase('tr-TR');
-  if (/yanlış|doğru mu|düzelt|hata|kontrol et|исправ/.test(q)) return 'correction';
-  if (/çevir|çeviri|rusçası|rusça nasıl|ne demek|anlamı|перев/.test(q)) return 'translation';
-  if (/okunuş|telaffuz|vurgu|nasıl okun|произнош|ударен/.test(q)) return 'pronunciation';
-  if (/gramer|hâl|hal |çekim|ek |neden|farkı|aspect|görünüş|zaman|edat|падеж|вид /.test(q)) return 'grammar';
-  if (/kelime|eş anlam|zıt anlam|fiil|isim|sıfat|sözlük/.test(q)) return 'vocabulary';
-  if (/konuş|diyalog|sohbet|rol yap|pratik|cevap vereyim/.test(q)) return 'conversation';
-  if (/ünite|ders|müfredat|nerede kald|seviyem|ilerleme/.test(q)) return 'course';
+  // Türkçe karakterler katlanır: kullanıcı "dogru mu" / "cevir" yazsa da
+  // niyet yakalanır (klavye Türkçe karakter üretmeyebilir).
+  const q = query.toLocaleLowerCase('tr-TR')
+    .replace(/ı/g, 'i').replace(/ş/g, 's').replace(/ç/g, 'c').replace(/ğ/g, 'g').replace(/ö/g, 'o').replace(/ü/g, 'u')
+    .replace(/[âä]/g, 'a').replace(/[î]/g, 'i').replace(/[û]/g, 'u');
+  if (/yanlis|dogru mu|duzelt|hata|kontrol et|isprav|what.*wrong|is.*correct/.test(q)) return 'correction';
+  if (/cevir|ceviri|ruscasi|\brusca\b|\bruscaya\b|ingilizcesi|\bingilizce\b|\bingilizceye\b|ne demek|nedir|ne anlama|anlami|nasil denir|перев|what does .* mean|what is .* mean|how do (you|i) say|translate/.test(q)) return 'translation';
+  if (/okunus|telaffuz|vurgu|nasil okun|произнош|ударен|how.*pronounce|pronunciation|read out/.test(q)) return 'pronunciation';
+  if (/gramer|hal\b|hal |cekim|ek |neden|farki|fark |aspect|gorunus|zaman|edat|падеж|вид |tense|modal|passive|relative/.test(q)) return 'grammar';
+  if (/kelime|es anlam|zit anlam|fiil|isim|sifat|sozluk|vocabulary|phrasal|collocation|irregular/.test(q)) return 'vocabulary';
+  if (/konus|diyalog|sohbet|rol yap|pratik|cevap vereyim|dialog|conversation practice/.test(q)) return 'conversation';
+  if (/unite|ders|mufredat|nerede kald|seviyem|ilerleme|curriculum|lesson/.test(q)) return 'course';
   return 'general';
 }
 
 export function responsePlanForIntent(intent: RussianQuestionIntent): string {
+  const tgt = isEnglish() ? 'İngilizce' : 'Rusça';
   const plans: Record<RussianQuestionIntent, string> = {
-    translation: 'Önce en doğal Rusça/Türkçe karşılığı ver. Ardından bağlama bağlı alternatifleri; cinsiyet, resmiyet, hâl ve görünüş farklarını yalnız gerekiyorsa açıkla. Rusça örneklerin Türkçesini ekle.',
+    translation: `Önce en doğal ${tgt}/Türkçe karşılığı ver. Ardından bağlama bağlı alternatifleri; cinsiyet, resmiyet, hâl ve görünüş farklarını yalnız gerekiyorsa açıkla. ${tgt} örneklerin Türkçesini ekle.`,
     correction: 'Önce düzeltilmiş cümleyi ver. Sonra hatayı parça parça teşhis et, ilgili kuralı açıkla ve aynı kurala ait bir doğru örnek daha ver. Doğal ama farklı alternatif varsa ayır.',
     grammar: 'Kuralı önce tek cümlede özetle; sonra biçim/ek tablosu veya karşılaştırmalı örneklerle açıkla. İstisnayı ana kuraldan ayır ve öğrencinin seviyesine göre ilerle.',
     vocabulary: 'Vurgulu biçim, anlam, söz türü; isimse cinsiyet/çoğul, fiilse görünüş çifti ve yönetim bilgisi ver. Doğal eşdizim ve örnek cümle ekle.',
     pronunciation: 'Kiril biçimi ve vurgu yerini göster; Türkçe yaklaşık okunuşu bunun yalnız yaklaşım olduğunu belirterek ver. Ses indirgenmesi/yumuşama varsa açıkla.',
-    conversation: 'Diyaloğu doğal ve seviyeye uygun Rusça yürüt. Her turda tek veya iki kısa soru sor; kullanıcı istemedikçe uzun ders anlatma. Belirgin hatayı nazikçe, konuşmayı kesmeden düzelt.',
+    conversation: `Diyaloğu doğal ve seviyeye uygun ${tgt} yürüt. Her turda tek veya iki kısa soru sor; kullanıcı istemedikçe uzun ders anlatma. Belirgin hatayı nazikçe, konuşmayı kesmeden düzelt.`,
     course: 'Öğrenenin gerçek ilerleme ve yerel müfredat bağlamını kullan. Var olmayan ünite uydurma; en ilgili kartı ve kısa çalışma önerisini söyle.',
-    general: 'Sorunun asıl amacını belirleyip doğrudan yanıtla. Gereksiz konu listesi çıkarma; açıklamayı doğal Rusça örneklerle kanıtla.',
+    general: `Sorunun asıl amacını belirleyip doğrudan yanıtla. Gereksiz konu listesi çıkarma; açıklamayı doğal ${tgt} örneklerle kanıtla.`,
   };
   return plans[intent];
 }

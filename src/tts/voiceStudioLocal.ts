@@ -2,6 +2,7 @@
 // Tarayıcı her zaman göreli /voicestudio URL'sini çağırır; Vite bunu geliştirmede
 // localhost:3900'a proxy'ler. Böylece browser kodunda localhost hard-code edilmez.
 
+import { detectSpeechTag } from '../content/activeLanguage';
 export interface LocalVoiceStudioVoice {
   voice_id: string;
   name: string;
@@ -126,7 +127,7 @@ export async function speakWithLocalVoiceStudio(
       console.warn('VoiceStudio OmniVoice modeli kurulu değil; uzun TTS isteği başlatılmadı.');
       return false;
     }
-    const isRussian = /[а-яё]/i.test(clean);
+    const speechTag = detectSpeechTag(clean);
     const response = await fetch(endpoint('/v1/audio/speech'), {
       method: 'POST',
       signal: controller.signal,
@@ -137,7 +138,7 @@ export async function speakWithLocalVoiceStudio(
         input: clean,
         response_format: 'mp3',
         speed: Math.min(4, Math.max(0.25, rate)),
-        language: isRussian ? 'ru' : 'tr',
+        language: speechTag === 'ru-RU' ? 'ru' : speechTag === 'en-US' ? 'en' : 'tr',
         ...(instruct ? { instruct } : {}),
       }),
     });

@@ -13,6 +13,10 @@ import { useEffect, useMemo, useRef, useState } from 'react';
 import { UNITS_DATA } from '../curriculumData';
 import { PREPOSITIONS } from '../learnerModel';
 import type { SRSItem } from '../App';
+import { isEnglish } from '../content/activeLanguage';
+
+/** WordGraph için yaygın İngilizce fiiller (Rusça -ть fiil tespitinin karşılığı). */
+const EN_COMMON_VERBS = new Set(['be', 'have', 'do', 'go', 'say', 'get', 'make', 'know', 'think', 'take', 'see', 'come', 'want', 'use', 'find', 'give', 'tell', 'work', 'call', 'try', 'ask', 'need', 'feel', 'become', 'leave', 'put', 'mean', 'keep', 'let', 'begin', 'seem', 'help', 'show', 'hear', 'play', 'run', 'move', 'live', 'believe', 'bring', 'happen', 'write', 'provide', 'sit', 'stand', 'lose', 'pay', 'meet', 'learn', 'lead', 'understand', 'speak', 'read', 'spend', 'grow', 'open', 'walk', 'win', 'teach', 'offer', 'remember', 'consider', 'appear', 'buy', 'serve', 'die', 'send', 'build', 'stay', 'fall', 'cut', 'reach', 'kill', 'raise', 'pass', 'decide', 'return', 'explain', 'hope', 'develop', 'carry', 'break', 'receive', 'agree', 'support', 'hit', 'produce', 'eat', 'cover', 'catch', 'draw', 'choose', 'work', 'travel', 'cook', 'clean', 'watch', 'study', 'start', 'finish', 'love', 'like', 'enjoy', 'visit', 'talk', 'listen', 'buy', 'sell', 'drive', 'drink', 'sleep', 'wake', 'wear', 'wash']);
 
 const DAY_MS = 24 * 60 * 60 * 1000;
 
@@ -177,7 +181,10 @@ export default function WordGraph3D({ srsBank, errorStats, completedUnits, onSta
       // Gramer bağlantıları
       const low = item.ru.trim().toLowerCase();
       if (PREPOSITIONS.includes(low)) link(techIdx.get('tech_prep')!, wi, weak);
-      if (/[а-яё]+(ть|л|ла|ли|ю|ет|ит|ют|ят)(ся|сь)?$/i.test(low) && low.includes(' ') === false && low.length > 4 && (low.endsWith('ть') || low.endsWith('ться'))) {
+      const isVerbLike = isEnglish()
+        ? (/ing$/.test(low) || /(ize|ise|ate|ify)$/.test(low) || EN_COMMON_VERBS.has(low))
+        : (/[а-яё]+(ть|л|ла|ли|ю|ет|ит|ют|ят)(ся|сь)?$/i.test(low) && (low.endsWith('ть') || low.endsWith('ться')));
+      if (isVerbLike && !low.includes(' ')) {
         link(techIdx.get('tech_tense')!, wi, weak);
       }
       // SRS tekniği: vade takibindeki her kelime zayıfsa SRS düğümüne kırmızı bağ

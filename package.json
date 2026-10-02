@@ -6,9 +6,11 @@
   "scripts": {
     "dev": "node scripts/dev-with-voicestudio.mjs",
     "dev:vite": "vite",
-    "build": "tsc && vite build",
+    "build": "tsc && vite build && node scripts/obfuscate.mjs",
     "preview": "vite preview",
-    "tauri": "tauri"
+    "tauri": "tauri",
+    "integrity:manifest": "node scripts/integrity.mjs manifest",
+    "integrity:check": "node scripts/integrity.mjs check"
   },
   "dependencies": {
     "@capacitor-community/speech-recognition": "^7.0.1",
@@ -27,6 +29,8 @@
     "@types/react": "^18.3.3",
     "@types/react-dom": "^18.3.0",
     "@vitejs/plugin-react": "^4.3.1",
+    "javascript-obfuscator": "^5.8.1",
+    "terser": "^5.51.2",
     "typescript": "^5.5.4",
     "vite": "^5.4.1"
   }
