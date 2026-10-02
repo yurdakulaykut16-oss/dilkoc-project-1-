@@ -9,11 +9,6 @@ type Sprint = {
   sentences: [ru: string, tr: string][];
 };
 
-/**
- * Kalıcılık Sprintleri aynı kelimeyi yalnız kartta değil; hatırlama, cümle ve
- * mini diyalog kanallarında yeniden kullandırır. Ünitenin sonundaki mevcut
- * dinleme/yazma/bağlam sınavları ve SRS motoru da bu içerikleri otomatik alır.
- */
 function makeSprint(s: Sprint): UnitModule {
   const words: WordDetail[] = s.words.map((w, i) => ({
     id: `ret_${s.id}_${i + 1}`,

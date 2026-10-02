@@ -1,15 +1,8 @@
-// ==========================================
-// 🎤 KONUŞMA KONTROL MOTORU — Ağız Jimnastiği için
-// • Edge tarayıcı/kapasitörlü konuşma tanıma (SR) ile kullanıcının söylediğini
-//   metne çevirir ve hedefle karşılaştırır (benzerlik + hız ölçümü).
-// • SR yoksa/izin verilmezse zarifçe "kendi kendini değerlendir" moduna düşer.
-// ==========================================
-
 import { SpeechRecognition as NativeSpeechRecognition } from '@capacitor-community/speech-recognition';
 
 export interface SpeechAttempt {
   transcript: string;
-  durationMs: number;   // mikrofon açılışından sonuca kadarki süre (yaklaşık konuşma süresi)
+  durationMs: number;
   engine: 'native' | 'browser';
 }
 
@@ -37,10 +30,8 @@ export function isSpeechCoachAvailable(): boolean {
   return Boolean(getSRConstructor());
 }
 
-/** Tek atımlık Rusça dinleme: native (Capacitor) → tarayıcı Web Speech zinciri. */
 export async function listenOnceRu(lang = 'ru-RU', timeoutMs = 9000): Promise<SpeechAttempt> {
   const started = Date.now();
-  // 1) Native plugin (Android APK) — web preview'da çöker, yutarız
   try {
     const availability = await NativeSpeechRecognition.available();
     if (availability.available) {
@@ -61,7 +52,6 @@ export async function listenOnceRu(lang = 'ru-RU', timeoutMs = 9000): Promise<Sp
     if ((e as Error)?.message === 'mic-denied') throw e;
   }
 
-  // 2) Tarayıcı Web Speech
   const Ctor = getSRConstructor();
   if (!Ctor) throw new Error('unsupported');
   return new Promise<SpeechAttempt>((resolve, reject) => {
@@ -102,13 +92,9 @@ export async function listenOnceRu(lang = 'ru-RU', timeoutMs = 9000): Promise<Sp
   });
 }
 
-// ---------- Benzerlik + hız puanı ----------
-
-/** Kiril katlamalı normalizasyon (ё→е, noktalama temizliği). */
 export const normSpeech = (s: string): string =>
   (s || '').toLowerCase().replace(/ё/g, 'е').replace(/[.,!?«»"“”()\-–—:;']/g, ' ').replace(/\s+/g, ' ').trim();
 
-/** Levenshtein mesafesi (küçük metinler için yeterli). */
 function lev(a: string, b: string): number {
   const m = a.length, n = b.length;
   if (!m) return n;
@@ -126,7 +112,6 @@ function lev(a: string, b: string): number {
   return dp[n];
 }
 
-/** Söylenen metnin hedefe benzerliği: token örtüşmesi × karakter benzerliği (0-1). */
 export function speechSimilarity(spokenRaw: string, targetRaw: string): number {
   const spoken = normSpeech(spokenRaw);
   const target = normSpeech(targetRaw);
@@ -141,10 +126,9 @@ export function speechSimilarity(spokenRaw: string, targetRaw: string): number {
   return Math.max(0, Math.min(1, tokenScore * 0.65 + Math.max(0, charScore) * 0.35));
 }
 
-/** Hız puanı: hedef metin kaç harf/sn hızla söylendi (motor tanıma gecikmesi telafili). */
 export function speedCharsPerSec(targetRaw: string, durationMs: number): number {
   const chars = normSpeech(targetRaw).replace(/\s/g, '').length;
-  const eff = Math.max(0.7, durationMs / 1000 - 0.9); // tanıma/buton gecikmesi telafisi
+  const eff = Math.max(0.7, durationMs / 1000 - 0.9);
   return chars / eff;
 }
 

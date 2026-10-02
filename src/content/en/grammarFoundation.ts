@@ -1,13 +1,3 @@
-// ============================================================================
-// 🇬🇧 İNGİLİZCE CÜMLE TEMELİ + ZAMANLAR PAKETİ — 17 ÜNİTE
-// ----------------------------------------------------------------------------
-// Rusça grammarFoundationData.ts ile BİREBİR aynı akış: özne/yüklem temeli,
-// sayılar, 10 zaman ünitesi, edatlar ve cümle laboratuvarı.
-// ÖNEMLİ: id'ler Rusça paketlerle aynı şemayı izler (num_*, gram_*,
-// tense_*) — RescueTest, skillKeyForGrammarUnit ve FOUNDATION_ORDER
-// eşlemeleri böylece İngilizce modunda da aynen çalışır.
-// ============================================================================
-
 import type { GrammarFoundationUnit } from '../../grammarFoundationData';
 
 export const EN_GRAMMAR_FOUNDATION_UNITS: GrammarFoundationUnit[] = [
@@ -182,8 +172,6 @@ export const EN_GRAMMAR_FOUNDATION_UNITS: GrammarFoundationUnit[] = [
       { prompt: '"1000" İngilizce nedir?', correct: 'thousand', options: ['thousand', 'million', 'hundred', 'ten hundred'] }
     ]
   },
-  // ZAMANLAR (TENSES) PAKETİ — İngilizce fiil zamanları: 12 zaman sisteminin
-  // temeli burada atılır: present/past/future × simple/continuous/perfect.
   {
     id: 'tense_overview',
     levelGroup: 'A1',

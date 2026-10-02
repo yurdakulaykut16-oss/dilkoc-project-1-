@@ -1,10 +1,3 @@
-// ==========================================
-// 🗓️ GÜNLÜK AĞIZ ÖDEVİ — deterministik günlük antrenman üreteci
-// Her gün gece yarısı yenilenen 7 görev: 3 kelime zinciri (×3 hızlı
-// tekrar), 2 tekerleme, 2 cümle zinciri (×2). Kelimeler TAMAMLANAN
-// ünitelerden gelir ama EZBER ÖLÇÜLMEZ — ölçülen şey TEMPO ve AKICILIK.
-// ==========================================
-
 import { UNITS_DATA, ALL_WORDS } from '../curriculumData';
 import type { WordDetail } from '../curriculumData';
 import { TWISTERS } from './twisters';
@@ -14,22 +7,21 @@ import { isEnglish } from '../content/activeLanguage';
 export interface SpeechDrill {
   id: string;
   kind: 'chain' | 'twister' | 'sentence';
-  title: string;          // kısa görev başlığı, örn. "×3 HIZLI TEKRAR"
-  target: string;         // söylenecek tam metin (tekrarlar dahil)
-  base: string;           // tek birim (kelime/cümle/tekerleme) — model seslendirme
+  title: string;
+  target: string;
+  base: string;
   reps: number;
   reading?: string;
-  tr?: string;            // gösterilir ama ezber gerekmez
+  tr?: string;
   tip?: string;
 }
 
-// Günlük ağız ödevi kaydı dillere göre ayrılır.
 const DAY_KEY = isEnglish() ? 'dilkoc_speech_en_v1' : 'dilkoc_speech_v1';
 
 export interface SpeechDayState {
   day: string;
-  done: string[];         // tamamlanan drill id'leri
-  bestCps: number;        // günün en iyi harf/sn rekoru
+  done: string[];
+  bestCps: number;
 }
 
 export function todayStrLocal(): string {
@@ -64,17 +56,15 @@ function pickSeeded<T>(arr: T[], n: number, rand: () => number): T[] {
   return idx.slice(0, Math.min(n, idx.length)).map(i => arr[i]);
 }
 
-/** Zor telaffuz edilen, 2+ heceli kelimelere öncelik (kalın I, ь, щ, кümeler içerenler). */
 function mouthScore(w: WordDetail): number {
   let s = 0;
   const ru = w.ru.toLowerCase();
   if (isEnglish()) {
-    // İngilizce: TH, W, sessiz harfler ve ünsüz kümeleri ağız jimnastiğidir.
     if (/th/.test(ru)) s += 3;
     if (/^wr|^kn|gh|mb$/.test(ru)) s += 2;
     if (/(str|spr|scr|thr|shr|bl|cl|fl|gl|pl|sl)/.test(ru)) s += 2;
     if (/w/.test(ru)) s += 1;
-    if (/[aeiou]{2,}/.test(ru)) s += 1; // ünlü takımları
+    if (/[aeiou]{2,}/.test(ru)) s += 1;
   } else {
     if (/[ы]/i.test(ru)) s += 3;
     if (/[щ]/i.test(ru)) s += 3;
@@ -91,7 +81,6 @@ export function buildDailyDrills(completedIds: string[], day = todayStrLocal()):
   const drills: SpeechDrill[] = [];
   let n = 0;
 
-  // Kelime havuzu: önce tamamlanan ünitelerin "ağız yoran" kelimeleri, yoksa A1 havuzu
   const known = UNITS_DATA.filter(u => completedIds.includes(u.id)).flatMap(u => u.words);
   const hardPool = (arr: WordDetail[]) =>
     [...new Map(arr.map(w => [w.ru, w])).values()]
@@ -100,7 +89,6 @@ export function buildDailyDrills(completedIds: string[], day = todayStrLocal()):
   const poolHard = hardPool(known.length > 0 ? known : ALL_WORDS);
   const poolAny = hardPool(ALL_WORDS);
 
-  // 3 kelime zinciri: zor havuzun ilk %40'ından günün seçimi (yoksa genel havuzdan)
   const zone = poolHard.length >= 12 ? poolHard.slice(0, Math.ceil(poolHard.length * 0.4)) : poolAny;
   pickSeeded(zone.length >= 3 ? zone : poolAny, 3, rand).forEach(w => {
     drills.push({
@@ -116,7 +104,6 @@ export function buildDailyDrills(completedIds: string[], day = todayStrLocal()):
     });
   });
 
-  // 2 tekerleme (günün deterministik seçimi)
   const two = pickSeeded(TWISTERS, 2, rand);
   two.forEach((t: Twister) => {
     drills.push({
@@ -132,7 +119,6 @@ export function buildDailyDrills(completedIds: string[], day = todayStrLocal()):
     });
   });
 
-  // 2 cümle zinciri ×2 (kısa, konuşmalık cümleler; önce tamamlanan ünitelerden)
   const sentPool = (known.length > 0
     ? UNITS_DATA.filter(u => completedIds.includes(u.id)).flatMap(u => [...u.sentences.map(s => s.ru), ...(u.dialogue || []).map(d => d.ru)])
     : UNITS_DATA.slice(0, 8).flatMap(u => u.sentences.map(s => s.ru))
@@ -155,8 +141,6 @@ export function buildDailyDrills(completedIds: string[], day = todayStrLocal()):
   return drills;
 }
 
-// ---------- günlük durum deposu ----------
-
 export function loadSpeechDay(): SpeechDayState {
   const day = todayStrLocal();
   try {
@@ -165,12 +149,12 @@ export function loadSpeechDay(): SpeechDayState {
       const d = JSON.parse(raw) as SpeechDayState;
       if (d.day === day && Array.isArray(d.done)) return { day, done: d.done, bestCps: d.bestCps || 0 };
     }
-  } catch { /* yoksay */ }
+  } catch {}
   return { day, done: [], bestCps: 0 };
 }
 
 export function saveSpeechDay(state: SpeechDayState): void {
-  try { localStorage.setItem(DAY_KEY, JSON.stringify(state)); } catch { /* yoksay */ }
+  try { localStorage.setItem(DAY_KEY, JSON.stringify(state)); } catch {}
 }
 
 export function markDrillDone(id: string, cps: number): SpeechDayState {

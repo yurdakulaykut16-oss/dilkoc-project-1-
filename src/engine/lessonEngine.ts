@@ -28,9 +28,6 @@ export interface LessonOptions {
   now?: Date;
 }
 
-
-/** Round-robins across buckets (in priority order) so a lesson mixes
- *  reviews/mistakes/weak-skills/new material instead of grouping by type. */
 function interleave(buckets: LessonActivity[][], budget: number): LessonActivity[] {
   const selected: LessonActivity[] = [];
   const cursors = buckets.map(() => 0);
@@ -48,19 +45,11 @@ function interleave(buckets: LessonActivity[][], budget: number): LessonActivity
   return selected;
 }
 
-/**
- * Builds today's personalized lesson from due reviews, weak skills, repeated
- * mistakes, and curriculum progression. Language-agnostic: all language
- * differences live in the LessonContext data (vocab, curriculum, mistakes),
- * not in this function.
- */
 export function generateLesson(ctx: LessonContext, options: LessonOptions = {}): Lesson {
   const maxActivities = options.maxActivities ?? DEFAULT_MAX_ACTIVITIES;
   const now = options.now ?? new Date();
   const dateSeed = seedFromString(`${ctx.languageCode}-${now.toISOString().slice(0, 10)}`);
 
-  // Priority order: due reviews (spaced repetition) > repeated mistakes >
-  // weakest skills > curriculum progression > brand-new vocabulary.
   const reviewBucket = generateReviewActivities(ctx);
   const mistakeBucket = generateMistakeReviewActivities(ctx);
   const weakSkillBucket = generateWeakSkillActivities(ctx);

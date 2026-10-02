@@ -10,13 +10,6 @@ import {
 import { xpGain, isUltraMode } from '../ultra/ultraMode';
 import { langMeta } from '../content/activeLanguage';
 
-// ==========================================
-// 🗣️ AĞIZ JİMNASTİĞİ — günlük konuşma ödevi
-// Kelime EZBERİ ölçülmez: ölçülen şey AKICILIK (benzerlik) + TEMPO (harf/sn).
-// Her gün 7 görev: kelime zincirleri ×3, tekerlemeler, cümle zincirleri ×2.
-// Konuşma tanıma yoksa kendi kendini değerlendirme modu açılır.
-// ==========================================
-
 interface Props {
   completedUnits: string[];
   onXp: (n: number) => void;
@@ -25,8 +18,8 @@ interface Props {
 
 interface AttemptResult {
   transcript: string;
-  similarity: number;   // 0-1
-  cps: number;          // harf/sn
+  similarity: number;
+  cps: number;
   passed: boolean;
   engine: 'voice' | 'self';
 }
@@ -50,7 +43,6 @@ const SpeechGym: React.FC<Props> = ({ completedUnits, onXp, onRecordResult }) =>
   const allDone = doneCount >= drills.length;
   const ultra = isUltraMode();
 
-  // 🎁 Tüm ödev bittiğinde tek seferlik gün bonusu
   useEffect(() => {
     if (allDone && dayState.done.length === drills.length) {
       const bonusKey = `speech_bonus_${dayState.day}`;
@@ -59,7 +51,6 @@ const SpeechGym: React.FC<Props> = ({ completedUnits, onXp, onRecordResult }) =>
         onXp(xpGain(40));
       }
     }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [allDone]);
 
   const completeDrill = (cps: number) => {
@@ -120,7 +111,6 @@ const SpeechGym: React.FC<Props> = ({ completedUnits, onXp, onRecordResult }) =>
     setIdx(next === -1 ? 0 : next);
   };
 
-  // ================= ÖZET (ödev bitti) =================
   if (allDone && drills.length > 0) {
     return (
       <div style={{ ...cardBox, textAlign: 'center', border: '1px solid #10b98166', background: 'linear-gradient(135deg, rgba(16,185,129,0.14), #1e293b)' }}>
@@ -148,7 +138,6 @@ const SpeechGym: React.FC<Props> = ({ completedUnits, onXp, onRecordResult }) =>
 
   return (
     <div>
-      {/* Başlık + ilerleme */}
       <div style={{ background: 'linear-gradient(135deg, rgba(16,185,129,0.14), rgba(56,189,248,0.1), #1e293b)', border: '1px solid #10b98155', borderRadius: '16px', padding: '16px', marginBottom: '14px' }}>
         <div style={{ display: 'flex', alignItems: 'center', gap: '10px', flexWrap: 'wrap' }}>
           <div style={{ fontSize: '26px' }}>🗣️</div>
@@ -175,7 +164,6 @@ const SpeechGym: React.FC<Props> = ({ completedUnits, onXp, onRecordResult }) =>
         </div>
       </div>
 
-      {/* Görev kartı */}
       <div style={cardBox}>
         <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '10px', flexWrap: 'wrap' }}>
           <span style={{ fontSize: '11px', fontWeight: 900, color: drill.kind === 'twister' ? '#f59e0b' : drill.kind === 'chain' ? '#38bdf8' : '#a78bfa', background: '#0f172a', border: '1px solid #334155', borderRadius: '8px', padding: '4px 10px' }}>
@@ -191,14 +179,12 @@ const SpeechGym: React.FC<Props> = ({ completedUnits, onXp, onRecordResult }) =>
         </div>
         {drill.tip && <div style={{ fontSize: '12px', color: '#94a3b8', marginTop: '10px', lineHeight: 1.5 }}>💡 {drill.tip}</div>}
 
-        {/* Model sesler */}
         <div style={{ display: 'flex', gap: '8px', marginTop: '12px', flexWrap: 'wrap' }}>
           <button onClick={() => speakModel('slow')} style={{ flex: 1, minWidth: '100px', padding: '12px', borderRadius: '12px', border: '1px solid #334155', background: '#0f172a', color: '#cbd5e1', fontWeight: 800, cursor: 'pointer', fontSize: '13px' }}>🐢 Model (yavaş)</button>
           <button onClick={() => speakModel('normal')} style={{ flex: 1, minWidth: '100px', padding: '12px', borderRadius: '12px', border: '1px solid #38bdf866', background: 'rgba(56,189,248,0.12)', color: '#7dd3fc', fontWeight: 800, cursor: 'pointer', fontSize: '13px' }}>🎵 Model (normal)</button>
           <button onClick={() => speakModel('fast')} style={{ flex: 1, minWidth: '100px', padding: '12px', borderRadius: '12px', border: '1px solid #f59e0b66', background: 'rgba(245,158,11,0.1)', color: '#fbbf24', fontWeight: 800, cursor: 'pointer', fontSize: '13px' }}>⚡ Model (hedef hız)</button>
         </div>
 
-        {/* 🎤 Konuşma denemesi */}
         {srOk && !result && (
           <button onClick={runVoiceAttempt} disabled={listening}
             style={{ width: '100%', marginTop: '12px', padding: '16px', borderRadius: '12px', border: 'none',
@@ -211,7 +197,6 @@ const SpeechGym: React.FC<Props> = ({ completedUnits, onXp, onRecordResult }) =>
           <div style={{ marginTop: '10px', padding: '12px', borderRadius: '10px', background: 'rgba(239,68,68,0.1)', border: '1px solid #ef444466', fontSize: '13px', color: '#fca5a5', fontWeight: 700 }}>{micMsg}</div>
         )}
 
-        {/* Sonuç kartı */}
         {result && (
           <div style={{ marginTop: '12px', padding: '16px', borderRadius: '14px', background: result.passed ? 'rgba(16,185,129,0.1)' : 'rgba(239,68,68,0.08)', border: `1px solid ${result.passed ? '#10b98166' : '#ef444466'}` }}>
             <div style={{ display: 'flex', alignItems: 'center', gap: '12px', flexWrap: 'wrap' }}>
@@ -238,7 +223,6 @@ const SpeechGym: React.FC<Props> = ({ completedUnits, onXp, onRecordResult }) =>
           </div>
         )}
 
-        {/* Kendi kendini değerlendirme (SR yoksa / izin yoksa) */}
         {(!srOk || micMsg) && !result && (
           <div style={{ marginTop: '12px' }}>
             <div style={{ fontSize: '11px', fontWeight: 800, color: '#64748b', marginBottom: '8px' }}>🎤 Konuşma tanıma kapalı — modeli dinleyip kendini değerlendir:</div>
@@ -249,7 +233,6 @@ const SpeechGym: React.FC<Props> = ({ completedUnits, onXp, onRecordResult }) =>
           </div>
         )}
 
-        {/* Navigasyon */}
         <div style={{ display: 'flex', gap: '8px', marginTop: '14px' }}>
           <button onClick={() => { setIdx(i => (i - 1 + drills.length) % drills.length); setResult(null); setMicMsg(null); }}
             style={{ flex: 1, padding: '11px', borderRadius: '10px', border: '1px solid #334155', background: 'transparent', color: '#94a3b8', fontWeight: 800, cursor: 'pointer', fontSize: '12px' }}>← Önceki görev</button>
@@ -258,7 +241,6 @@ const SpeechGym: React.FC<Props> = ({ completedUnits, onXp, onRecordResult }) =>
         </div>
       </div>
 
-      {/* Açıklama */}
       <div style={{ marginTop: '12px', padding: '14px', borderRadius: '14px', background: '#0f172a', border: '1px solid #334155', fontSize: '12px', color: '#64748b', lineHeight: 1.7 }}>
         🧠 <b style={{ color: '#94a3b8' }}>Neden hız odaklı?</b> Ağız alışkanlığı (motor öğrenme) kelime ezberinden ayrı bir kastır: dilin Rusça ses kümelerine (стр-, здр-, вств-, щ, ы) alışması için
         aynı diziyi <b>hızlı ve tekrarlı</b> söylemek gerekir. Ödev kelimeleri zaten gördüğün ünitelerden gelir — yeni ezber YOK, sadece tempo var. Her gece yarısı görevler yenilenir.

@@ -1,7 +1,3 @@
-// ==========================================================
-// A SEVİYESİ BÜYÜK GENİŞLEME — BÖLÜM 2/3 (18 ünite, A1 iletişim & şehir)
-// unitNumber 10.9619-10.9636 — A1 finali (A1 kelime paketi) öncesi.
-// ==========================================================
 import type { UnitModule } from '../curriculumData';
 import { S, W } from './expansion50a';
 

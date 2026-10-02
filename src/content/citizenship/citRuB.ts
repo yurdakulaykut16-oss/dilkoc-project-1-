@@ -1,9 +1,3 @@
-// DilKoç © 2026 — Bu kaynak kod telif hakkıyla korunur. İzinsiz kopyalama,
-// dağıtma ve türev çalışma üretme yasaktır (bkz. LICENSE).
-// ============================================================================
-// 🛂 VİZE & PASAPORT / VATANDAŞLIK / GÖÇ PAKETİ — RUSÇA (2/2: ünite 26-50)
-// ============================================================================
-
 import type { UnitModule } from '../../curriculumData';
 import { makeCitUnit, type CitWord, type CitSent, type CitLine } from './makeCitUnit';
 

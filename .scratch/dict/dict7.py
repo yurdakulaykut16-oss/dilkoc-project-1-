@@ -1,5 +1,3 @@
-# -*- coding: utf-8 -*-
-# tr -> en sözlük PARÇA 7 (ekler/fixes)
 D.update({
 'araçla gidip gelmek': 'to travel back and forth',
 'Haber': 'news',

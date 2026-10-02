@@ -1,22 +1,4 @@
 #!/usr/bin/env node
-/**
- * DilKoç © 2026 — Derleme Sonrası Kod Karartma (Obfuscation) Katmanı
- * ------------------------------------------------------------------
- * `npm run build` sonunda dist/assets/*.js dosyalarını javascript-obfuscator
- * ile karartır. Dağıtılan pakette (APK/exe/web) kaynak kod okunamaz hâle gelir:
- *
- *   • Tüm string'ler (müfredat, AI metinleri, mesajlar) base64 kodlanmış
- *     gizli bir diziye taşınır — düz metin araması (`grep "nasılsın"`)
- *     artık HİÇBİR sonuç vermez.
- *   • Tüm değişken/fonksiyon adları hex kodlara dönüşür (terser katmanının
- *     üzerine ikinci isim karıştırma).
- *   • Sayısal ifadeler hesaplamalara dönüşür.
- *
- * Performans koruması (AI ajanın hızını korumak için bilinçli olarak KAPALI):
- *   controlFlowFlattening, deadCodeInjection, selfDefending, debugProtection
- *   yok — bunlar çalışma süresini 5-20x yavaşlatır. String dizisi erişimi
- *   yalnızca sabit yük bindirir; algoritmik hız değişmez.
- */
 import { readdirSync, readFileSync, writeFileSync, statSync } from 'node:fs';
 import { join } from 'node:path';
 import JavaScriptObfuscator from 'javascript-obfuscator';
@@ -53,7 +35,7 @@ const OPTIONS = {
   debugProtection: false,
   controlFlowFlattening: false,
   deadCodeInjection: false,
-  renameProperties: false, // asla açılmamalı: API/property erişimlerini bozar
+  renameProperties: false,
   renameGlobals: false,
   sourceMap: false,
 };

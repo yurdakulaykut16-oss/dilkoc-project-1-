@@ -7,13 +7,10 @@ import type { VocabItem } from "../engine/types";
 
 interface Props {
   activity: Activity;
-  vocabItem?: VocabItem; // required if this activity carries a vocabItemId
+  vocabItem?: VocabItem;
   onGraded?: (evaluation: AnswerEvaluation) => void;
 }
 
-/** Generic runner: works for any flashcard, grammar, reading, or writing
- *  activity by reading its `data` payload. New activity types just need a
- *  branch here, not a new engine. */
 export default function ActivityRunner({ activity, vocabItem, onGraded }: Props) {
   const [answer, setAnswer] = useState("");
   const [result, setResult] = useState<AnswerEvaluation | null>(null);

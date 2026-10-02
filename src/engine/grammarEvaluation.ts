@@ -20,8 +20,6 @@ function similarityRatio(a: string, b: string): number {
   return Math.round((1 - levenshtein(a, b) / maxLen) * 100) / 100;
 }
 
-/** Grades a grammar exercise answer. sentence_building reuses the same
- *  token-sequence logic as the flashcard evaluator (right words/wrong order). */
 export function evaluateGrammarAnswer(
   type: GrammarExerciseType,
   expectedAnswer: string,

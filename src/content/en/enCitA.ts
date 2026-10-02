@@ -1,12 +1,3 @@
-// DilKoç © 2026 — Bu kaynak kod telif hakkıyla korunur. İzinsiz kopyalama,
-// dağıtma ve türev çalışma üretme yasaktır (bkz. LICENSE).
-// ============================================================================
-// 🛂 VISA & PASSPORT / CITIZENSHIP / MIGRATION PACK — ENGLISH (1/2: units 1-25)
-// ----------------------------------------------------------------------------
-// Rusça paketinin aynası: aynı 50 ünite / numara / seviye / başlık; hedef dil
-// İngilizce. Rusça kardeşi: content/citizenship/citRuA.ts
-// ============================================================================
-
 import type { UnitModule } from '../../curriculumData';
 import { makeCitUnit, type CitWord, type CitSent, type CitLine } from '../citizenship/makeCitUnit';
 

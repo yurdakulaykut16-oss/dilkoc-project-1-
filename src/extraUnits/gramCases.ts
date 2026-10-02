@@ -1,11 +1,3 @@
-// ==========================================================
-// EK MÜFREDAT — İSMİN 6 HALİ (ПАДЕЖИ) + VURGU OKULU (Ünite 12-21, A2 başı)
-// "Alfabeden sonra" gelen temel blok: Rusçanın 6 ismin hali TEK TEK,
-// CÜMLE ÜZERİNDEN öğretilir (aynı kelimenin cümleden cümleye değişimi
-// gösterilir) + 4 ünitelik vurgu okulu (anlam değiştiren vurgu, hareketli
-// vurgu, Ё meselesi, fiil vurguları).
-// Format, curriculumData.ts'teki UNITS_DATA ile BİREBİR aynıdır.
-// ==========================================================
 import type { UnitModule } from '../curriculumData';
 
 export const EXTRA_GRAM_CASES: UnitModule[] = [

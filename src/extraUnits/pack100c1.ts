@@ -1,8 +1,3 @@
-// ==========================================================
-// 100 ÜNİTELİK BÜYÜK PAKET — BÖLÜM 5 / C1-C2 (20 ünite)
-// unitNumber: 180.9601 – 180.9620 (C1 bölgesinin sonu)
-// Akademik/bürokratik üslup + derin CÜMLEDE ANLAM + KÜLTÜR + DİN
-// ==========================================================
 import type { UnitModule } from '../curriculumData';
 import { S, W } from './expansion50a';
 

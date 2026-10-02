@@ -19,12 +19,6 @@ export interface FlashcardSubmissionResult {
   updatedVocabularySkillScore: number;
 }
 
-/**
- * Grades a flashcard answer, then propagates the result into the existing
- * systems: SRS schedule (vocabRepo), vocabulary skill score, and — on
- * failure — a mistake record. The lesson engine picks all of this up
- * automatically next time it reads due vocab / skill scores / mistakes.
- */
 export async function submitFlashcardAnswer(
   submission: FlashcardSubmission,
   now = new Date()

@@ -1,11 +1,3 @@
-// ============================================================================
-// 🎬 KOÇ AKIŞI — kişiye özel, AI ÜRETİMİ 15-30 saniyelik DİKEY video/animasyon dersleri
-// Kullanıcının hata yaptığı gramer (zaman/edat) ve kelime konularından otomatik
-// ders senaryoları üretilir; her ders 9:16 dikey bir "short" olarak animasyonlu
-// sahneler + Edge TTS seslendirmesiyle (RU: Svetlana/Dmitry, TR: Emel/Ahmet)
-// oynatılır. Reels/Shorts gibi kaydırarak (▲▼) ders ders ilerlenir.
-// ============================================================================
-
 import { useEffect, useMemo, useRef, useState } from 'react';
 import { ALL_WORDS, ALL_SENTENCES } from '../curriculumData';
 import { skillSummary } from '../learnerModel';
@@ -14,16 +6,16 @@ import { isEnglish, isTargetScript } from '../content/activeLanguage';
 
 interface Narr { lang: 'ru' | 'tr'; text: string }
 interface Scene {
-  kicker?: string;      // üstteki küçük etiket
-  big: string;          // ekrandaki büyük metin
-  sub?: string;         // alt açıklama
-  accent?: string;      // vurgu rengi
-  narr: Narr[];         // seslendirme sırası
-  minMs: number;        // sahnenin minimum süresi
+  kicker?: string;
+  big: string;
+  sub?: string;
+  accent?: string;
+  narr: Narr[];
+  minMs: number;
 }
 interface ShortLesson {
   id: string;
-  tag: string;          // '🩹 KELİME' | '⏳ ZAMAN' | '📍 EDAT'
+  tag: string;
   title: string;
   color: string;
   scenes: Scene[];
@@ -31,13 +23,9 @@ interface ShortLesson {
 
 function trunc(s: string, n: number) { return s.length > n ? s.slice(0, n - 1).trimEnd() + '…' : s; }
 
-// ---------------------------------------------------------------------------
-// DERS ÜRETİCİ — hatalardan senaryo yazar (deterministik "AI senarist")
-// ---------------------------------------------------------------------------
 function buildLessons(errorStats: Record<string, { count: number; tr: string; last: number }>): ShortLesson[] {
   const lessons: ShortLesson[] = [];
 
-  // 1) KELİME DERSLERİ — kronik hatalı kelimeler
   const weakWords = Object.entries(errorStats)
     .map(([ru, v]) => ({ ru, tr: v.tr, count: v.count }))
     .filter(w => w.count >= 1 && isTargetScript(w.ru))
@@ -76,7 +64,6 @@ function buildLessons(errorStats: Record<string, { count: number; tr: string; la
     lessons.push({ id: `word_${w.ru}`, tag: '🩹 KELİME', title: `«${w.ru}» kurtarma dersi`, color: '#f97316', scenes });
   }
 
-  // 2) GRAMER DERSLERİ — zayıf zaman/edat becerileri
   const weakSkills = skillSummary().filter(r => r.total > 0 && r.status !== 'strong').slice(0, 5);
   for (const r of weakSkills) {
     if (r.group === 'zaman') {
@@ -128,7 +115,6 @@ function buildLessons(errorStats: Record<string, { count: number; tr: string; la
   return lessons.slice(0, 12);
 }
 
-// Basit yedek: Edge TTS çalışmazsa tarayıcı sesi
 function fallbackSpeak(text: string, lang: 'ru' | 'tr'): Promise<void> {
   return new Promise(resolve => {
     if (!('speechSynthesis' in window)) { resolve(); return; }
@@ -187,7 +173,6 @@ export default function CoachShorts({ errorStats }: Props) {
       if (elapsed < sc.minMs) await new Promise(r => setTimeout(r, sc.minMs - elapsed));
     }
     if (token !== tokenRef.current) return;
-    // otomatik sıradaki derse geç
     if (lessonIdx + 1 < lessons.length) void playLesson(lessonIdx + 1);
     else { setPlaying(false); setSi(0); }
   };
@@ -218,7 +203,6 @@ export default function CoachShorts({ errorStats }: Props) {
       </div>
 
       <div style={{ display: 'flex', gap: '14px', justifyContent: 'center', alignItems: 'stretch' }}>
-        {/* DİKEY VİDEO KARTI (9:16) */}
         <div style={{
           width: 'min(360px, 78vw)', aspectRatio: '9 / 16', borderRadius: '22px', overflow: 'hidden', position: 'relative',
           border: `1px solid ${lesson.color}66`, boxShadow: `0 22px 55px ${lesson.color}33`,
@@ -226,7 +210,6 @@ export default function CoachShorts({ errorStats }: Props) {
           backgroundSize: '220% 220%', animation: playing ? 'shortsGlow 7s ease infinite' : 'none',
           display: 'flex', flexDirection: 'column',
         }}>
-          {/* sahne ilerleme çubukları (story tarzı) */}
           <div style={{ display: 'flex', gap: '4px', padding: '10px 12px 0' }}>
             {lesson.scenes.map((_, i) => (
               <div key={i} style={{ flex: 1, height: '3px', borderRadius: '2px', background: i < si ? '#fff' : i === si && playing ? `${lesson.color}` : 'rgba(255,255,255,0.22)', transition: 'background 0.3s' }} />
@@ -237,7 +220,6 @@ export default function CoachShorts({ errorStats }: Props) {
             <span style={{ fontSize: '10px', fontWeight: 800, color: 'rgba(255,255,255,0.75)' }}>~{Math.min(30, Math.max(15, totalSec))} sn</span>
           </div>
 
-          {/* SAHNE */}
           <div key={`${li}_${si}`} style={{ flex: 1, display: 'flex', flexDirection: 'column', justifyContent: 'center', alignItems: 'center', textAlign: 'center', padding: '18px', gap: '12px' }}>
             {sc.kicker && <div style={{ fontSize: '11px', fontWeight: 900, color: lesson.color, animation: 'shortsKicker 0.5s ease both' }}>{sc.kicker}</div>}
             <div style={{ fontSize: sc.big.length > 40 ? '20px' : sc.big.length > 14 ? '26px' : '44px', fontWeight: 950, color: '#fff', lineHeight: 1.25, whiteSpace: 'pre-line', animation: 'shortsFadeUp 0.55s ease both', textShadow: '0 4px 24px rgba(0,0,0,0.5)' }}>
@@ -246,7 +228,6 @@ export default function CoachShorts({ errorStats }: Props) {
             {sc.sub && <div style={{ fontSize: '14px', color: 'rgba(255,255,255,0.85)', lineHeight: 1.55, animation: 'shortsFadeUp 0.55s 0.12s ease both', maxWidth: '92%' }}>{sc.sub}</div>}
           </div>
 
-          {/* alt bilgi + oynat */}
           <div style={{ padding: '0 14px 14px' }}>
             <div style={{ fontSize: '12px', fontWeight: 800, color: '#fff', marginBottom: '8px' }}>{lesson.title}</div>
             <div style={{ display: 'flex', gap: '8px' }}>
@@ -263,7 +244,6 @@ export default function CoachShorts({ errorStats }: Props) {
           </div>
         </div>
 
-        {/* SAĞ KENAR: reels tarzı gezinme */}
         <div style={{ display: 'flex', flexDirection: 'column', justifyContent: 'center', gap: '10px' }}>
           <button onClick={() => goto(-1)} disabled={li === 0} style={{ width: '46px', height: '46px', borderRadius: '50%', border: '1px solid #334155', background: '#0f172a', color: li === 0 ? '#475569' : '#fff', fontSize: '18px', cursor: li === 0 ? 'not-allowed' : 'pointer' }}>▲</button>
           <div style={{ textAlign: 'center', fontSize: '11px', fontWeight: 900, color: '#94a3b8' }}>{li + 1}/{lessons.length}</div>
@@ -271,7 +251,6 @@ export default function CoachShorts({ errorStats }: Props) {
         </div>
       </div>
 
-      {/* DERS LİSTESİ */}
       <div style={{ marginTop: '18px', display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(210px, 1fr))', gap: '8px' }}>
         {lessons.map((L, i) => (
           <button key={L.id} onClick={() => void playLesson(i)} style={{

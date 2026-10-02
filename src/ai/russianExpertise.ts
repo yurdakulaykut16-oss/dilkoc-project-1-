@@ -1,10 +1,3 @@
-// DilKoç © 2026 — Bu kaynak kod telif hakkıyla korunur. İzinsiz kopyalama,
-// dağıtma ve türev çalışma üretme yasaktır (bkz. LICENSE).
-/**
- * Token bütçesini şişirmeden çalışan yerel Rusça uzmanlık kütüphanesi.
- * Bilgi uygulamaya gömülüdür; her soruda yalnızca ilgili bölümler seçilir.
- */
-
 import { UNITS_DATA } from '../curriculumData';
 import { isEnglish } from '../content/activeLanguage';
 
@@ -15,12 +8,6 @@ export interface RussianKnowledgeEntry {
   content: string;
 }
 
-/**
- * Uygulamanın içine gömülü yerel Rusça bilgi bankası. Bu kayıtların tamamı
- * modele her soruda gönderilmez. Soruya en yakın kayıtlar seçilerek küçük bir
- * bağlam paketi oluşturulur; böylece bilgi kapasitesi büyürken token tüketimi
- * sabit bir üst sınırda kalır.
- */
 const RUSSIAN_CORE_KNOWLEDGE: RussianKnowledgeEntry[] = [
   {
     id: 'alphabet-pronunciation', title: 'Alfabe, vurgu ve telaffuz',
@@ -139,10 +126,6 @@ const RUSSIAN_CORE_KNOWLEDGE: RussianKnowledgeEntry[] = [
   },
 ];
 
-// ============================================================================
-// 🇬🇧 İNGİLİZCE ÇEKİRDEK BİLGİ BANKASI — Rusça çekirdeğiyle aynı görev:
-// dilin "olmazsa olmaz" konularını her soruda aranabilir kısa kayıtlarla taşır.
-// ============================================================================
 const ENGLISH_CORE_KNOWLEDGE: RussianKnowledgeEntry[] = [
   {
     id: 'alphabet-phonetics', title: 'İngilizce ses sistemi ve okuma kuralları',
@@ -209,13 +192,6 @@ const ENGLISH_CORE_KNOWLEDGE: RussianKnowledgeEntry[] = [
 const RUSSIAN_KNOWLEDGE_TARGET = 230;
 const expansionCount = Math.max(0, RUSSIAN_KNOWLEDGE_TARGET - RUSSIAN_CORE_KNOWLEDGE.length);
 
-/**
- * Müfredatın tamamına eşit aralıklarla yayılan 207 ek uzmanlık kaydı üretir.
- * Bunlar boş başlık veya tekrar değildir: her kayıt gerçek bir ünitenin gramer
- * açıklamasını, sözcüklerini, örnek cümlelerini ve varsa diyaloğunu taşır.
- * Eşit aralıklı seçim A1'den C1/C2'ye kadar tek bir seviyenin baskın olmasını
- * önler. Çekirdek 23 kayıtla birlikte bilgi bankası tam 230 bölümdür.
- */
 const RUSSIAN_CURRICULUM_KNOWLEDGE: RussianKnowledgeEntry[] = Array.from(
   { length: expansionCount },
   (_, index) => {
@@ -255,11 +231,6 @@ export const RUSSIAN_KNOWLEDGE_BASE: RussianKnowledgeEntry[] = isEnglish()
   ? [...ENGLISH_CORE_KNOWLEDGE, ...RUSSIAN_CURRICULUM_KNOWLEDGE]
   : [...RUSSIAN_CORE_KNOWLEDGE, ...RUSSIAN_CURRICULUM_KNOWLEDGE];
 
-/**
- * Yerel motorun arayabildiği atomik bilgi sayısı. Bir kelimenin iki yönlü
- * anlamı, okunuşu, kullanım notu ve seviyesi; her cümlenin iki yönlü karşılığı;
- * diyaloglar ve gramer açıklamaları ayrı bilgi noktalarıdır.
- */
 export const LOCAL_RUSSIAN_FACT_COUNT = UNITS_DATA.reduce((total, unit) => {
   const wordFacts = unit.words.reduce((sum, word) => sum + 2 + (word.reading ? 1 : 0) + (word.usageNote ? 1 : 0) + (word.level ? 1 : 0), 0);
   const sentenceFacts = unit.sentences.length * 2;
@@ -283,19 +254,14 @@ export interface RussianKnowledgeMatch {
   score: number;
 }
 
-/** Soruya en yakın bilgi kayıtlarını tamamen cihazda sıralar. */
 const SEARCH_STOP_WORDS = new Set([
   'rusca', 'ruscada', 'turkce', 'nedir', 'demek', 'nasil', 'neden', 'hangi', 'icin',
   'kullanilir', 'kullanimi', 'acikla', 'anlat', 'ornek', 'ver', 'ile', 'bir', 'bu',
   'su', 'mi', 'mu', 'mı', 'mü', 'ne', 've', 'veya', 'olarak',
-  // İngilizce modu durak kelimeleri:
   'ingilizce', 'ingilizcede', 'ingilizcesi', 'kac', 'vardir', 'anlamda',
   'what', 'does', 'mean', 'the', 'is', 'are', 'how', 'do', 'you', 'say',
 ]);
 
-// HIZ İNDEKSİ — normalize işlemi modül yüklenirken bir kez yapılır; her
-// sorguda yalnız hazır dizgiler karşılaştırılır (230+ kaydın uzun gövdeleri
-// sorgu başına yeniden işlenmez).
 const KNOWLEDGE_INDEX = RUSSIAN_KNOWLEDGE_BASE.map((entry, order) => ({
   entry,
   order,
@@ -316,14 +282,10 @@ export function searchRussianKnowledge(query: string, limit = 7): RussianKnowled
       for (const token of tokens) {
         if (item.title.includes(token)) score += 8;
         if (item.keys.some(key => key.includes(token) || token.includes(key))) score += 10;
-        // Kısa tokenların (in, on, at...) gövde içindeki rastgele alt-dizi
-        // eşleşmeleri gürültüdür; yalnız anlamlı uzunlukta puanlanır.
         if (token.length >= 4 && item.body.includes(token)) score += 2;
       }
       const phrase = normalized.trim();
       if (phrase.length > 3 && (item.title.includes(phrase) || item.keys.some(key => key.includes(phrase)))) score += 20;
-      // Elle yazılan çekirdek kayıtlar, otomatik üretimli müfredat kayıtlarına
-      // karşı önceliklidir: "in on at farkı" sorusunda konu kaydı kazanmalı.
       if (item.isCore) score += 12;
       return { entry: item.entry, order: item.order, score };
     })
@@ -333,10 +295,8 @@ export function searchRussianKnowledge(query: string, limit = 7): RussianKnowled
     .map(({ entry, score }) => ({ entry, score }));
 }
 
-/** Soruya en yakın yerel uzmanlık parçalarını, sabit karakter bütçesiyle getirir. */
 export function buildRussianExpertContext(query: string, maxChars = 6200): string {
   let selected = searchRussianKnowledge(query, 7);
-  // Genel/belirsiz soruda da temel bir çekirdek sağla; bütün bankayı gönderme.
   if (selected.length === 0) {
     const fallbackIds = isEnglish()
       ? ['translation-method-en', 'tense-system', 'present-simple', 'word-order']
@@ -367,8 +327,6 @@ export type RussianQuestionIntent =
   | 'general';
 
 export function detectRussianQuestionIntent(query: string): RussianQuestionIntent {
-  // Türkçe karakterler katlanır: kullanıcı "dogru mu" / "cevir" yazsa da
-  // niyet yakalanır (klavye Türkçe karakter üretmeyebilir).
   const q = query.toLocaleLowerCase('tr-TR')
     .replace(/ı/g, 'i').replace(/ş/g, 's').replace(/ç/g, 'c').replace(/ğ/g, 'g').replace(/ö/g, 'o').replace(/ü/g, 'u')
     .replace(/[âä]/g, 'a').replace(/[î]/g, 'i').replace(/[û]/g, 'u');

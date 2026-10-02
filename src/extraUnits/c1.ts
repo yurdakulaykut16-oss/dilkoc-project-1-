@@ -1,7 +1,3 @@
-// ==========================================================
-// EK MÜFREDAT — C1/C2 GENİŞLEME PAKETİ (Ünite 121-132)
-// Üst düzey iş, ticaret, finans ve derin ilişki dili.
-// ==========================================================
 import type { UnitModule } from '../curriculumData';
 
 export const EXTRA_C1: UnitModule[] = [

@@ -20,8 +20,6 @@ function similarityRatio(a: string, b: string): number {
   return Math.round((1 - levenshtein(a, b) / maxLen) * 100) / 100;
 }
 
-/** Comprehension question / translation grading: exact normalized match,
- *  with similarity for near-miss feedback. Same approach as flashcards/grammar. */
 export function evaluateReadingAnswer(expectedAnswer: string, userAnswer: string): AnswerEvaluation {
   const normExpected = normalize(expectedAnswer);
   const normUser = normalize(userAnswer);
@@ -34,7 +32,6 @@ export function evaluateReadingAnswer(expectedAnswer: string, userAnswer: string
   };
 }
 
-/** Sentence writing: deterministically checkable — did the required words appear? */
 export function evaluateSentenceWriting(requiredWords: string[], userAnswer: string): AnswerEvaluation {
   const normUser = normalize(userAnswer);
   const userWords = new Set(normUser.split(" ").filter(Boolean));
@@ -48,12 +45,6 @@ export function evaluateSentenceWriting(requiredWords: string[], userAnswer: str
   };
 }
 
-/**
- * Free writing has no single correct answer, so it can't be marked
- * correct/incorrect deterministically. This only checks the objective,
- * automatable part (minimum length) and leaves correctness null-like
- * (correct=false, similarity=coverage) — never claims to grade quality.
- */
 export function evaluateFreeWriting(minWords: number, userAnswer: string): AnswerEvaluation {
   const wordCount = userAnswer.trim().split(/\s+/).filter(Boolean).length;
   const meetsLength = wordCount >= minWords;

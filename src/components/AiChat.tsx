@@ -1,5 +1,3 @@
-// DilKoç © 2026 — Bu kaynak kod telif hakkıyla korunur. İzinsiz kopyalama,
-// dağıtma ve türev çalışma üretme yasaktır (bkz. LICENSE).
 import { SpeechRecognition as NativeSpeechRecognition } from '@capacitor-community/speech-recognition';
 import React, { useEffect, useMemo, useRef, useState } from 'react';
 import { answerWithLocalRussianAgent } from '../ai/localRussianAgent';
@@ -116,11 +114,7 @@ function visemeDelayForChar(char: string, lang: 'tr-TR' | 'ru-RU' | 'en-US') {
 type SpeechSegment = { text: string; lang: 'tr-TR' | 'ru-RU' | 'en-US' };
 const TURKISH_TEXT_RE = /[çğıöşüâîûÇĞİÖŞÜ]/;
 
-/** Türkçe açıklamayı ve içindeki Rusça örnekleri aynı seçili profille ayrı dil
- * segmentleri olarak okur. Böylece tek bir Rusça örnek, bütün cevabı Rusça
- * aksanıyla okutmaz. */
 function splitSpeechSegments(text: string): SpeechSegment[] {
-  // Türkçe'ye özgü harf yoksa segment hedef dil (EN'de en-US, RU'da ru-RU) sayılır.
   const targetTag: SpeechSegment['lang'] = isEnglish() ? 'en-US' : 'ru-RU';
   const labelLatin = (chunk: string): SpeechSegment['lang'] =>
     TURKISH_TEXT_RE.test(chunk) ? 'tr-TR' : targetTag;
@@ -141,8 +135,6 @@ function splitSpeechSegments(text: string): SpeechSegment[] {
 }
 
 export default function AiChat(props: AiChatProps) {
-  // Sohbet geçmişi artık localStorage'a yazılmaz. Böylece her yeni localhost
-  // oturumunda kullanıcı eski/bozuk offline cevapları görmez.
   const [messages, setMessages] = useState<ChatEntry[]>(initialChat);
   const [input, setInput] = useState('');
   const [busy, setBusy] = useState(false);
@@ -286,9 +278,7 @@ export default function AiChat(props: AiChatProps) {
   const persist = (next: ChatEntry[]) => {
     const trimmed = next.slice(-24);
     setMessages(trimmed);
-    // Eski sürümlerde kaydedilmiş sohbeti de temizle; yeni oturumlar yalnızca
-    // o sayfada yazılan konuşmayı taşır.
-    try { localStorage.removeItem(CHAT_KEY); } catch { /* depolama isteğe bağlı */ }
+    try { localStorage.removeItem(CHAT_KEY); } catch {}
   };
 
   const speakAnswer = async (text: string) => {
@@ -302,8 +292,6 @@ export default function AiChat(props: AiChatProps) {
         animateMouth(segment.text, segment.lang);
         const usedAiVoice = await speakWithBotVoice(segment.text, 1);
         if (!usedAiVoice) {
-          // Tarayıcı/Edge sesine düşme: gerçek VoiceStudio veya ücretsiz cloud
-          // sesi yoksa bunu açıkça bildir; yanlış ses tonuyla sessizce okumayız.
           setStatus('VoiceStudio sesi hazır değil; tarayıcı sesi kullanılmadı.');
         }
       }
@@ -330,8 +318,6 @@ export default function AiChat(props: AiChatProps) {
     setBusy(true);
     setStatus(langMeta().code === 'en' ? 'Yerel İngilizce motoru bilgi bankasını tarıyor…' : 'Yerel Rusça motoru bilgi bankasını tarıyor…');
 
-    // Tamamen yerel motor: ağ isteği, API anahtarı, LLM ve token kullanmaz.
-    // Daha önce sorulan sorular 1 GB sınırındaki yerel önbellekten anında gelir.
     const cacheable = !/nerede kald|seviyem|ilerlemem|hangi ünite|hangi unite|konumum/i.test(query);
     const cached = cacheable ? await getLocalAnswerCache(query, props.learningFocus.title) : null;
     if (controller.signal.aborted) return;

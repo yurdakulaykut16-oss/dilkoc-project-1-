@@ -1,15 +1,8 @@
-// ==========================================
-// 🗣️ TEKERLEMELER + AĞIZ JİMNASTİĞİ VERİSİ
-// Gerçek Rusça tekerlemeler (скороговорки): amaç kelime EZBERİ DEĞİL —
-// ağız/dil kaslarının Rusça ses dizilerine ALIŞMASI (motor öğrenme).
-// Her tekerleme: Rusça metin + Latin okunuş + kısa Türkçe anlam.
-// ==========================================
-
 export interface Twister {
   ru: string;
-  reading: string;      // Latin alfabesiyle yaklaşık okunuş
-  tr: string;           // Türkçe anlamı (öğrenmek zorunda DEĞİLSİN)
-  tip: string;          // hangi sesleri çalıştırdığı (1 satır)
+  reading: string;
+  tr: string;
+  tip: string;
 }
 
 import { isEnglish } from '../content/activeLanguage';
@@ -40,11 +33,6 @@ const RU_TWISTERS: Twister[] = [
   { ru: 'Хриплый хорь хрустит хлебом', reading: 'Hripılıy hór’ hrustít hlyebam', tr: 'Hırıltılı gelincik ekmekle çıtırdıyor', tip: 'H-HR: gırtlak sesleri — Türkçeye en uzak seri' },
   { ru: 'Забыл Панкрат домкрат', reading: 'Zabıl Pankrát damkrát', tr: 'Pankrat krikoyu unuttu', tip: 'N-KR-D kümeleri' },
 ]
-// ==========================================
-// 🇬🇧 İNGİLİZCE TEKERLEMELER (tongue twisters)
-// Amaç aynı: ağız/dil kaslarının İngilizce ses dizilerine (TH, W, R-L,
-// sessiz kümeleri) alışması. Okunuşlar Türkçe harflerle, vurgu BÜYÜK.
-// ==========================================
 const EN_TWISTERS: Twister[] = [
   { ru: 'She sells seashells by the seashore', reading: 'Şİ SELS SİİşELZ bay di SİIşor', tr: 'Kız sahilde deniz kabuğu satıyor', tip: 'S-Ş: İngilizcenin en klasik tekerlemesi' },
   { ru: 'Peter Piper picked a peck of pickled peppers', reading: 'PIİtır PAYpır PİKT e PEK ıv PİKıld PEPırz', tr: 'Peter Piper bir kap turşu biber aldı', tip: 'P patlamaları: dudak Jimnastiği' },
@@ -65,4 +53,3 @@ const EN_TWISTERS: Twister[] = [
 ];
 
 export const TWISTERS: Twister[] = isEnglish() ? EN_TWISTERS : RU_TWISTERS;
-

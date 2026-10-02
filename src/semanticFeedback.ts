@@ -1,10 +1,3 @@
-// ============================================================================
-// ANLAMSAL FARK ANALİZİ — Türkçe-Rusça cümle egzersizlerinde salt "doğru/yanlış"
-// yerine, kullanıcının kurduğu cümle ile İDEAL cümle arasındaki farkı ANLAM
-// düzeyinde açıklar: eksik/fazla kelime, zaman kayması, edat hatası, hâl eki
-// (kelime sonu) farkı ve dizilim/vurgu farkı ayrı ayrı raporlanır.
-// ============================================================================
-
 import { detectTenses, detectPreps, PREPOSITIONS } from './learnerModel';
 
 export interface DiffPoint {
@@ -14,9 +7,9 @@ export interface DiffPoint {
 }
 
 export interface SentenceAnalysis {
-  verdictTr: string;       // tek cümlelik anlamsal özet
-  points: DiffPoint[];     // madde madde analiz
-  closeness: number;       // 0-100: ideal cümleye anlamsal yakınlık
+  verdictTr: string;
+  points: DiffPoint[];
+  closeness: number;
 }
 
 const TENSE_TR: Record<string, string> = {
@@ -37,24 +30,15 @@ function stemLike(a: string, b: string): boolean {
   return x.slice(0, shared) === y.slice(0, shared);
 }
 
-/**
- * Kullanıcının kurduğu cümle (kelime listesi) ile ideal cümleyi karşılaştırır.
- * @param built    kullanıcının seçtiği kelimeler (sıralı)
- * @param correct  ideal cümlenin kelimeleri (sıralı)
- * @param idealRu  ideal cümlenin tam hâli
- * @param idealTr  cümlenin Türkçe anlamı
- */
 export function analyzeSentenceDiff(built: string[], correct: string[], idealRu: string, idealTr: string): SentenceAnalysis {
   const points: DiffPoint[] = [];
   const b = built.map(norm).filter(Boolean);
   const c = correct.map(norm).filter(Boolean);
   const builtRu = built.join(' ');
 
-  // 1) Küme karşılaştırması: eksik & fazla kelimeler
   const missing = c.filter(w => !b.includes(w));
   const extra = b.filter(w => !c.includes(w));
 
-  // 1a) Hâl eki / çekim farkı: aynı kökten ama sonu farklı kelime çiftleri
   const caseSwaps: { used: string; ideal: string }[] = [];
   for (const m of [...missing]) {
     const pair = extra.find(e => stemLike(e, m));
@@ -65,7 +49,6 @@ export function analyzeSentenceDiff(built: string[], correct: string[], idealRu:
     }
   }
 
-  // 2) Zaman (tense) kayması analizi
   const userTenses = detectTenses(builtRu);
   const idealTenses = detectTenses(idealRu);
   const tenseMissing = idealTenses.filter(t => !userTenses.includes(t));
@@ -81,7 +64,6 @@ export function analyzeSentenceDiff(built: string[], correct: string[], idealRu:
     });
   }
 
-  // 3) Edat analizi
   const userPreps = detectPreps(builtRu);
   const idealPreps = detectPreps(idealRu);
   const prepMissing = idealPreps.filter(p => !userPreps.includes(p));
@@ -102,7 +84,6 @@ export function analyzeSentenceDiff(built: string[], correct: string[], idealRu:
     });
   }
 
-  // 4) Hâl eki farkları
   for (const s of caseSwaps) {
     points.push({
       type: 'err', icon: '🔤',
@@ -110,7 +91,6 @@ export function analyzeSentenceDiff(built: string[], correct: string[], idealRu:
     });
   }
 
-  // 5) Eksik / fazla içerik kelimeleri (edatlar yukarıda ele alındı)
   const missContent = missing.filter(w => !PREPOSITIONS.includes(w));
   const extraContent = extra.filter(w => !PREPOSITIONS.includes(w));
   if (missContent.length > 0) {
@@ -126,7 +106,6 @@ export function analyzeSentenceDiff(built: string[], correct: string[], idealRu:
     });
   }
 
-  // 6) Dizilim: aynı kelimeler ama farklı sıra
   const sameSet = missing.length === 0 && extra.length === 0 && caseSwaps.length === 0;
   const sameOrder = b.join(' ') === c.join(' ');
   if (sameSet && !sameOrder) {
@@ -136,7 +115,6 @@ export function analyzeSentenceDiff(built: string[], correct: string[], idealRu:
     });
   }
 
-  // 7) Doğru giden kısımlar (motivasyon + hangi kısım anlamı taşıyor)
   const correctUsed = c.filter(w => b.includes(w));
   if (correctUsed.length > 0 && points.length > 0) {
     points.push({
@@ -145,7 +123,6 @@ export function analyzeSentenceDiff(built: string[], correct: string[], idealRu:
     });
   }
 
-  // Yakınlık skoru: kelime örtüşmesi + sıra + gramer cezaları
   let closeness = c.length > 0 ? (correctUsed.length / c.length) * 70 : 0;
   if (sameSet) closeness += 15;
   if (sameOrder) closeness += 15;
@@ -153,7 +130,6 @@ export function analyzeSentenceDiff(built: string[], correct: string[], idealRu:
   if (prepProblem) closeness -= 10;
   closeness = Math.max(0, Math.min(100, Math.round(closeness)));
 
-  // Tek cümlelik anlamsal özet
   let verdictTr: string;
   if (sameSet && sameOrder) {
     verdictTr = 'Cümlen ideal cümleyle birebir aynı — anlam tam olarak yerinde. 🎯';

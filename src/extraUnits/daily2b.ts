@@ -1,9 +1,3 @@
-// ==========================================================
-// EK MÜFREDAT — GÜNDELİK YAŞAM 2 KAT PAKETİ, PARTİ 2/3 (B1, Ünite 62-71)
-// Kira/ev sahibi, otel resepsiyonu, banka şubesi, belge fotoğrafı,
-// ayakkabı tamircisi, gözlükçü, araba servisi, çilingir, belediye/MFC
-// ve sinema gişesi. Format, UNITS_DATA ile BİREBİR aynıdır.
-// ==========================================================
 import type { UnitModule } from '../curriculumData';
 
 export const EXTRA_DAILY2B: UnitModule[] = [

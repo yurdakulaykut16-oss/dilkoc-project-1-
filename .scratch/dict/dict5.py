@@ -1,5 +1,3 @@
-# -*- coding: utf-8 -*-
-# tr -> en sözlük PARÇA 5 (S-Y başlangıcı)
 D.update({
 'Sepet': 'basket',
 'Serbest meslek mükellefi': 'self employed',

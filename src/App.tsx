@@ -1,19 +1,12 @@
-// DilKoç © 2026 — Bu kaynak kod telif hakkıyla korunur. İzinsiz kopyalama,
-// dağıtma ve türev çalışma üretme yasaktır (bkz. LICENSE).
 import { TextToSpeech } from '@capacitor-community/text-to-speech';
 import React, { useState, useEffect, useMemo, useRef } from 'react';
 import AiTutor from './components/AiTutor';
-// 🔥 GERÇEK SERİ TAKİBİ: XP kazanılan günler sayılır, gün atlanırsa seri sıfırlanır
 import { effectiveStreak, loadStats, recordXpGain, todayStr } from './statsStore';
 
-// Ses yolu: seçili VoiceStudio profili → cloud AI → metnin diline uygun cihaz sesi.
-// Microsoft Edge websocket TTS kullanılmaz.
 import { stopEdgeSpeech } from './tts/edgeTts';
 import { speakWithBotVoice } from './tts/voiceStudio';
 import { stopWebSpeech, webSpeak } from './tts/webSpeech';
-// ÖĞRENEN MODELİ: çözülen sorulardan zaman/edat eksik haritası + kişisel rota
 import { recordWordResult, recordSkill, recordSentenceResult, skillKeyForGrammarUnit, resetLearner } from './learnerModel';
-// ANLAMSAL FARK ANALİZİ: cümle egzersizlerinde "doğru/yanlış" yerine anlam farkı raporu
 import { analyzeSentenceDiff } from './semanticFeedback';
 import type { SentenceAnalysis } from './semanticFeedback';
 import LearningRoute from './components/LearningRoute';
@@ -22,10 +15,8 @@ import type { RescueTarget } from './components/WordGraph3D';
 import RescueTest from './components/RescueTest';
 import type { RescueResult } from './components/RescueTest';
 import CoachShorts from './components/CoachShorts';
-// ⚡ ULTRA PAKET: deneme sınavları + kart evi + ultra zorluk modu
 import MockExamScreen from './components/MockExamScreen';
 import FlashcardArena from './components/FlashcardArena';
-// 🗣️ AĞIZ JİMNASTİĞİ: günlük hız odaklı konuşma ödevi (tekerleme + kelime/cümle zinciri)
 import SpeechGym from './components/SpeechGym';
 import { buildDailyDrills, loadSpeechDay } from './speech/dailyDrills';
 import { isUltraMode, setUltraMode, subscribeUltra, storyPassRatio, topicPassPct, gatePassNeed, retentionDose, srsIntervalFor, xpGain } from './ultra/ultraMode';
@@ -33,12 +24,9 @@ import { clearExamAttempts } from './ultra/examStore';
 import { TOPICS_100, TOPICS_100_TOTAL, topicCatInfo, buildTopicDrills, topicFullText, LEVELS, LETTER_GLYPHS, topicSourceUnits, sourceUnitInfo } from './topics100';
 import type { Topic100, Topic100Question, CefrTag } from './topics100';
 
-// HİKAYE MODÜLÜ (Story & Summary): her 10 ünitede bir açılan kontrol noktası hikayeleri
-// + Türkçe özet analiz motoru. Tüm mantık src/storyModule içinde modüler tutulur.
 import { STORIES, STORY_CAST, gateStoryForLevel, evaluateTurkishSummary } from './storyModule';
 import type { CheckpointStory, SummaryEvaluation } from './storyModule';
 
-// Seviye renkleri (tek yol kartlarındaki seviye etiketlerinde ortak kullanılır)
 const LEVEL_COLORS: Record<CefrTag, string> = {
   A1: '#10b981',
   A2: '#38bdf8',
@@ -56,34 +44,18 @@ import { ALPHABET_LESSONS_EXTRA2 } from './alphabetExtra2';
 import { UNITS_DATA, ALL_WORDS, ALL_SENTENCES } from './curriculumData';
 import { GRAMMAR_FOUNDATION_UNITS } from './grammarFoundationData';
 import type { WordDetail, DialogueLine, SmesharikiQuestion, SmesharikiScene, UnitModule } from './curriculumData';
-// Dışarıdan bu isimleri App'ten alan kodlar için geriye uyum re-export'ları:
 export { UNITS_DATA, ALL_WORDS, ALL_SENTENCES };
 export type { WordDetail, DialogueLine, SmesharikiQuestion, SmesharikiScene, UnitModule };
-
-// ==========================================
-// 1. VERİ MODELLERİ & TİPLER
-// ==========================================
-
-// ==========================================
-// 2. SADE HARF KARTLARI — Kalıcı öğrenme için minimalist yapı:
-//    HARF → SES İPUCU → NET FONETİK KURAL → 1-2 TEMEL ÖRNEK KELİME.
-//    (Uzun açıklamalar ve yoğun metinler bilerek kaldırıldı.)
-// ==========================================
 
 export interface AlphabetLetter {
   id: string;
   upper: string;
   lower: string;
-  translit: string;      // Kısa ses kodu: "A", "O / A"
-  soundHint: string;     // Kısa ses ipucu (tek satır, kafa karıştırmaz)
-  phoneticRule: string;  // Net ve tek cümlelik fonetik kural
-  examples: { ru: string; reading: string; tr: string }[]; // 1-2 temel örnek kelime
+  translit: string;
+  soundHint: string;
+  phoneticRule: string;
+  examples: { ru: string; reading: string; tr: string }[];
 }
-
-
-// ==========================================
-// 2. HARF DERSLERİ & FONETİK (Tüm Kiril Alfabesi - 33 Harf, 8 Ünite)
-// ==========================================
 
 export interface ReadingDrill {
   word: string;
@@ -409,25 +381,16 @@ const RU_ALPHABET_LESSONS: { id: string; title: string; subtitle: string; letter
       { word: 'здоровье', correct: 'Zdaróvye', distractors: ['Zdórovye', 'Zdaravyé', 'Zıdorovye'], tr: 'Sağlık' }
     ]
   },
-  // 30 EK OKUMA DERSİ (17-46): sayılar, günler, renkler, isimler, menüler, hız turları
   ...ALPHABET_LESSONS_EXTRA,
-  // 30 EK OKUMA DERSİ (47-76): havaalanı, otel, kafe, banka, acil durum, vurgu ikizleri, sessiz harfler, mezuniyet
   ...ALPHABET_LESSONS_EXTRA2
 ];
 
-// İNGİLİZCE modunda 30 derslik İngilizce fonetik paketi kullanılır (16 çekirdek
-// fonetik + 14 tematik okuma); Rusça paketi (76 ders) hiç yüklenmez.
 export const ALPHABET_LESSONS: { id: string; title: string; subtitle: string; letters: AlphabetLetter[]; readingDrills: ReadingDrill[] }[] =
   isEnglish() ? EN_ALPHABET_LESSONS : RU_ALPHABET_LESSONS;
 
 export const ALL_ALPHA_LETTERS = ALPHABET_LESSONS.flatMap(x => x.letters);
 
-// GERÇEK ALFABE DERSİ SAYISI: 33 harfin tamamı ilk 16 derste öğretilir.
-// 17. dersten itibarenki "dersler" (sayılar, aylar, renkler, menü, tabela,
-// hız turları...) harf değil TEMATİK KELİME OKUMA pratiğidir; yol üzerinde
-// alfabe bloğuna değil, müfredat ünitelerinin arasına yerleştirilirler.
 export const CORE_ALPHA_LESSON_COUNT = 16;
-
 
 function shuffle<T>(arr: T[]): T[] {
   const a = [...arr];
@@ -438,7 +401,6 @@ function shuffle<T>(arr: T[]): T[] {
   return a;
 }
 
-// Kayıt anahtarı DİLE GÖRE ayrılır: Rusça ve İngilizce ilerlemeleri birbirini ezmez.
 const SAVE_KEY = isEnglish() ? 'ENGLISH_MASTER_DUO_V1' : 'RUSSIAN_MASTER_DUO_V1';
 
 interface SaveState {
@@ -449,43 +411,31 @@ interface SaveState {
   completedGrammar: string[];
   completedUnits: string[];
   completedTopics: string[];
-  completedStories: string[]; // tamamlanan hikaye modülü kontrol noktaları (story_cp1...)
+  completedStories: string[];
   mistakes: { id: string; ru: string; tr: string; reason: string }[];
   srsBank: SRSItem[];
-  // ZAYIF NOKTA İSTATİSTİĞİ: kelime bazında TOPLAM hata sayacı.
-  // "Unutulanlar" kütüğünden farkı: kelime doğru cevaplanıp kütükten silinse bile
-  // buradaki sayaç kalır — hangi kelimelerde KRONİK olarak zorlandığını gösterir.
   errorStats?: Record<string, { count: number; tr: string; last: number }>;
 }
 
 export interface SRSItem {
   ru: string;
   tr: string;
-  box: number; // 1-5 arası "kutu" (Leitner sistemi): kutu arttıkça tekrar aralığı büyür
-  nextReview: number; // bir sonraki tekrarın yapılacağı zaman (timestamp)
+  box: number;
+  nextReview: number;
   type: 'word' | 'letter';
-  // Eski kayıtlarla uyumlu opsiyonel hafıza sinyalleri:
-  correctStreak?: number; // terfi için art arda iki başarılı geri çağırma gerekir
-  lapses?: number;       // kaç kez unutuldu; sonraki aralığı kişiselleştirir
-  reviews?: number;      // RU→TR ve TR→RU yönünü dönüşümlü seçmek için
+  correctStreak?: number;
+  lapses?: number;
+  reviews?: number;
   lastReview?: number;
 }
 
-// Leitner kutu aralıkları artık src/ultra/ultraMode.ts içindeki srsIntervalFor(box) ile hesaplanır:
-// normalde 1-3-7-16-35 gün; ⚡ ULTRA MOD açıkken 1-2-4-8-14 güne SIKILAŞIR.
 const DAY_MS = 24 * 60 * 60 * 1000;
 const TEN_MINUTES_MS = 10 * 60 * 1000;
 
-// Kronik unutulan kelimeler daha kısa aralıklarla geri gelir. Böylece herkes için aynı
-// takvim yerine, kelimenin gerçek unutma geçmişine göre uyarlanan bir tekrar planı oluşur.
 const adaptiveReviewMs = (box: number, lapses = 0) => {
   const lapsePenalty = Math.max(0.35, 1 / (1 + lapses * 0.22));
   return Math.max(TEN_MINUTES_MS, srsIntervalFor(box) * DAY_MS * lapsePenalty);
 };
-
-// ==========================================
-// 4. ANA UYGULAMA BİLEŞENİ
-// ==========================================
 
 const SceneBanner: React.FC<{ icon: string; color: string; label: string }> = ({ icon, color, label }) => (
   <div style={{
@@ -507,9 +457,6 @@ const SceneBanner: React.FC<{ icon: string; color: string; label: string }> = ({
   </div>
 );
 
-// İngilizce üniteler için THEMATİK görsel eşlemesi: İngilizce paketi, Rusça
-// müfredatın aynı temalı görsellerini kullanır (selamlaşma, aile, yemek...).
-// Eşleme yoksa görsel yine ikonlu SceneBanner'a geri düşer.
 const EN_ART_MAP: Record<string, string> = {
   en_mod_a1_1: 'mod_a1_1', en_mod_a1_2: 'mod_a1_2', en_mod_a1_3: 'mod_a1_3',
   en_mod_a1_4: 'mod_a1_4', en_mod_a1_5: 'mod_a1_5', en_mod_a1_6: 'mod_a1_6',
@@ -531,8 +478,6 @@ const EN_ART_MAP: Record<string, string> = {
   en_mod_c12_47: 'mod_c1_15', en_mod_c12_48: 'mod_c1_16',
 };
 
-// Ünite banner'ı: /unit-art/{unitId}.webp görselini gösterir; görsel yoksa
-// (veya yüklenemezse) otomatik olarak ikonlu SceneBanner'a geri döner.
 const UnitBanner: React.FC<{ unitId: string; icon: string; color: string; label: string }> = ({ unitId, icon, color, label }) => {
   const artId = EN_ART_MAP[unitId] || unitId;
   const [imgOk, setImgOk] = useState(true);
@@ -568,9 +513,6 @@ const UnitBanner: React.FC<{ unitId: string; icon: string; color: string; label:
 
 const ALPHA_BANNER_COLORS = ['#3b82f6', '#10b981', '#f59e0b', '#8b5cf6', '#ec4899', '#14b8a6', '#f97316', '#64748b'];
 
-// 🎧 DİNLEME HIZI DÜĞMESİ — sadece dinleme ekranlarında görünür.
-// Perde korumalı (preservesPitch) çalışır: ses yavaşlarken/hızlanırken kelimenin
-// tınısı BOZULMAZ (incelme/kalınlaşma olmaz). 1× = normal ders temposu.
 const LISTEN_SPEEDS = [0.5, 0.75, 1, 1.25, 1.5];
 const ListenSpeedControl: React.FC<{ speed: number; onChange: (s: number) => void }> = ({ speed, onChange }) => (
   <div style={{ display: 'flex', alignItems: 'center', gap: '6px', flexWrap: 'wrap', background: '#0f172a', border: '1px solid #334155', borderRadius: '12px', padding: '8px 12px', margin: '0 0 14px' }}>
@@ -593,20 +535,6 @@ const ListenSpeedControl: React.FC<{ speed: number; onChange: (s: number) => voi
   </div>
 );
 
-// ==========================================
-// TEK MÜFREDAT YOLU (SINGLE PATH)
-// "Aşama 1 / Aşama 2 / Aşama 3" gruplandırması YOK: alfabe + dinleme konuları +
-// müfredat üniteleri tek bir sıralı çizgi üzerinde "Ünite 1, Ünite 2, ..."
-// olarak akar ve her kart bir önceki tamamlanınca açılır.
-//   SIRALAMA (yeni başlayan dostu):
-//   1) Alfabe dersi 1 → o derste öğrenilen harflerin dinleme konuları → Alfabe dersi 2 → ...
-//      (ÖNCE harfi öğren, HEMEN ARDINDAN kulağını o harfe alıştır — henüz
-//       öğrenilmemiş harflerin/ileri seviye kelimelerin konusu ÖNE GELMEZ)
-//   2) Fonetik dinleme konuları (heceler + akanje/ikanje vb. kurallar)
-//   3) Cümlede özne + yüklem → sayılar → zamanlar/fiiller → edatlar (A1 temeli)
-//   4) Tüm A1 okuma pratikleri
-//   5) Müfredat üniteleri; kesin seviye sırası A1 → A2 → B1 → B2 → C1 → C2
-// ==========================================
 export type PathStep =
   | { kind: 'alpha'; lessonIdx: number }
   | { kind: 'grammar'; grammarIdx: number }
@@ -616,13 +544,7 @@ export type PathStep =
 export const PATH: PathStep[] = (() => {
   const steps: PathStep[] = [];
   const usedTopics = new Set<number>();
-  // GERÇEK ALFABE = ilk 16 ders (33 harfin tamamı burada öğretilir).
-  // 17. dersten itibaren gelenler (aylar, renkler, aile, menü, tabela...)
-  // harf dersi DEĞİL, tematik KELİME OKUMA pratiğidir — yolun başına yığılmaz,
-  // müfredat ünitelerinin arasına serpiştirilir (aşağıda).
   const CORE_ALPHA = CORE_ALPHA_LESSON_COUNT;
-  // 1) ALFABE ÖNCE: her GERÇEK alfabe dersinin HEMEN ARDINDAN, o derste öğrenilen
-  //    harflerin 🎧 dinleme konuları gelir (harfini bilmediğin sesi dinlemezsin).
   ALPHABET_LESSONS.slice(0, CORE_ALPHA).forEach((lesson, li) => {
     steps.push({ kind: 'alpha', lessonIdx: li });
     lesson.letters.forEach(l => {
@@ -633,22 +555,15 @@ export const PATH: PathStep[] = (() => {
       }
     });
   });
-  // Güvenlik ağı: alfabe derslerinde karşılığı bulunmayan harf konusu kaldıysa sona ekle
   TOPICS_100.forEach((t, idx) => {
     if (t.cat === 'harf' && !usedTopics.has(idx)) { usedTopics.add(idx); steps.push({ kind: 'topic', topicIdx: idx }); }
   });
-  // 2) HECE PRATİĞİ (2 fonetik hece konusu) — harfleri sese bağlama köprüsü
   TOPICS_100.forEach((t, idx) => { if (t.cat === 'fonetik' && t.num < 36) steps.push({ kind: 'topic', topicIdx: idx }); });
-  // 3) TÜM A1 OKUMA PRATİKLERİ EN BAŞTA: A2'nin içine A1 etiketli okuma kartı karışmaz.
   for (let i = CORE_ALPHA; i < ALPHABET_LESSONS.length; i++) steps.push({ kind: 'alpha', lessonIdx: i });
-  // 4) ALFABEDEN HEMEN SONRA: CÜMLE İSKELETİ (ÖZNE + YÜKLEM) → SAYILAR →
-  //    ZAMANLAR/FİİLLER → EDATLAR. Dinleme kural konuları bu temellerden SONRA gelir.
   for (let i = 0; i < GRAMMAR_FOUNDATION_UNITS.length; i++) steps.push({ kind: 'grammar', grammarIdx: i });
-  // 4) Fonetik ses kuralı konuları (akanje, ikanje, sedasızlaşma...) — temellerden sonra
   TOPICS_100.forEach((t, idx) => { if (t.cat === 'fonetik' && t.num >= 36) steps.push({ kind: 'topic', topicIdx: idx }); });
   const previewByUnit = new Map<string, number>();
   TOPICS_100.forEach((t, idx) => { if (t.cat === 'mufredat' && t.unitId && !previewByUnit.has(t.unitId)) previewByUnit.set(t.unitId, idx); });
-  // 6) MÜFREDAT: üniteler CEFR sırasıyla akar; A1 okuma kartları artık bu bloğa serpiştirilmez.
   UNITS_DATA.forEach((u, uIdx) => {
     const pIdx = previewByUnit.get(u.id);
     if (pIdx !== undefined) steps.push({ kind: 'topic', topicIdx: pIdx });
@@ -657,18 +572,15 @@ export const PATH: PathStep[] = (() => {
   return steps;
 })();
 
-// Yoldaki her adımın global "ÜNİTE N" numarası (kart etiketleri + ekran içi referanslar ortak sayacı kullanır)
 export const UNIT_PATH_POS: number[] = UNITS_DATA.map((_, i) => PATH.findIndex(s => s.kind === 'unit' && s.unitIdx === i) + 1);
 export const TOPIC_PATH_POS: number[] = TOPICS_100.map((_, i) => PATH.findIndex(s => s.kind === 'topic' && s.topicIdx === i) + 1);
 
-// Bu adımın seviye etiketi (kart çipi + seviye renkleri için)
 const stepLevel = (s: PathStep): CefrTag =>
   s.kind === 'unit' ? UNITS_DATA[s.unitIdx].levelGroup
   : s.kind === 'grammar' ? GRAMMAR_FOUNDATION_UNITS[s.grammarIdx].levelGroup
   : s.kind === 'topic' ? (TOPICS_100[s.topicIdx].levelGroup || 'A1')
   : 'A1';
 
-// Her seviyenin yoldaki İLK adımı — seviye çiplerine tıklayınca oraya kaydırılır
 const LEVEL_ANCHORS: Partial<Record<CefrTag, number>> = (() => {
   const a = {} as Partial<Record<CefrTag, number>>;
   for (const lv of LEVELS) a[lv] = PATH.findIndex(s => stepLevel(s) === lv);
@@ -727,15 +639,11 @@ function nextLevelLabel(story: CheckpointStory): string {
 export default function App() {
   const [activeTab, setActiveTab] = useState<'MAP' | 'PROFILE' | 'MISTAKES' | 'METHODS' | 'CONNECTIONS'>('MAP');
   const [screen, setScreen] = useState<'MAP' | 'AI_TUTOR' | 'ALPHA' | 'ALPHA_CHECK' | 'ALPHA_READING' | 'GRAMMAR' | 'TOPIC' | 'TOPIC_TEST' | 'STORY' | 'DIALOG' | 'SMESHARIKI' | 'FLASHCARD' | 'MATCH' | 'TYPING' | 'SENTENCE' | 'QUIZ' | 'UNIT_STORY' | 'STORY_TEST' | 'STORY_RESULT' | 'CHECKPOINT_STORY' | 'ROUTE' | 'GRAPH' | 'SHORTS' | 'RESCUE' | 'MOCK' | 'CARDS' | 'SPEAK'>('MAP');
-  // Sınav/test motorunun hangi bağlamda çalıştığını belirtir: her biri bittiğinde farklı bir sonraki adıma geçer
   const [quizContext, setQuizContext] = useState<'ALPHA_FINAL' | 'GRAMMAR_FOUNDATION' | 'LISTENING' | 'UNIT_FINAL' | 'REVIEW' | 'SRS_REVIEW' | 'MARATHON' | 'WEAKSPOT'>('UNIT_FINAL');
-  // Harf bazlı anlık tanıma testi
   const [alphaCheckQ, setAlphaCheckQ] = useState<{ type: 'reading' | 'listen'; prompt: string; correct: string; options: string[] } | null>(null);
-  // Okuma testi (kelime okuma alıştırması) durumu
   const [readingDrillIdx, setReadingDrillIdx] = useState(0);
   const [readingOptions, setReadingOptions] = useState<string[]>([]);
 
-  // İlerleme & Oyunlaştırma
   const [xp, setXp] = useState(0);
   const [streak, setStreak] = useState(1);
   const [gems, setGems] = useState(250);
@@ -746,29 +654,21 @@ export default function App() {
   const [completedStories, setCompletedStories] = useState<string[]>([]);
   const [mistakes, setMistakes] = useState<{ id: string; ru: string; tr: string; reason: string }[]>([]);
   const [srsBank, setSrsBank] = useState<SRSItem[]>([]);
-  // Kelime bazlı kronik hata sayaçları (Zayıf Noktalarım paneli bunu okur)
   const [errorStats, setErrorStats] = useState<Record<string, { count: number; tr: string; last: number }>>({});
 
-  // 📊 GERÇEK SERİ: XP kazanımlarını statsStore'a akıtan delta takibi
   const prevXpRef = useRef<number | null>(null);
-  // 🔊 KELİME KARTI OTOMATİK SESLENDİRME tercihi (localStorage'da saklanır)
   const [autoSpeak, setAutoSpeak] = useState(() => localStorage.getItem('dilkoc_autospeak') !== '0');
-  // ⚡ ULTRA MOD: tüm barajlar yükselir, SRS aralıkları sıkılaşır, XP ×1.5
   const [ultra, setUltra] = useState(isUltraMode());
   useEffect(() => subscribeUltra(() => setUltra(isUltraMode())), []);
 
-  // KULAĞI ALIŞTIR — 100 KONU (sesli dinleme + "dinle & seç" test) durumu
-  const [topicIdx, setTopicIdx] = useState(0);              // seçili 100'lük konu (TOPICS_100 indeksi)
-  const [topicQs, setTopicQs] = useState<Topic100Question[]>([]); // testin 5 dinleme sorusu
+  const [topicIdx, setTopicIdx] = useState(0);
+  const [topicQs, setTopicQs] = useState<Topic100Question[]>([]);
   const [topicQIdx, setTopicQIdx] = useState(0);
   const [topicQCorrect, setTopicQCorrect] = useState(0);
   const [topicQDone, setTopicQDone] = useState(false);
-  // Ses testi sonucu (harita: "🔊 Ses Testi" butonu)
   const [soundTest, setSoundTest] = useState<'idle' | 'ok' | 'error'>('idle');
-  // Harita seviye sekmelerinin scroll hedefleri
   const levelRefs = useRef<Record<string, HTMLDivElement | null>>({});
 
-  // İndeksler
   const [alphaIdx, setAlphaIdx] = useState(0);
   const [letterIdx, setLetterIdx] = useState(0);
   const [grammarIdx, setGrammarIdx] = useState(0);
@@ -777,45 +677,32 @@ export default function App() {
   const [cardIdx, setCardIdx] = useState(0);
   const [isFlipped, setIsFlipped] = useState(false);
 
-  // Egzersiz Durumları
   const [matchPairs, setMatchPairs] = useState<{ ru: string; tr: string }[]>([]);
   const [selectedRu, setSelectedRu] = useState<string | null>(null);
   const [selectedTr, setSelectedTr] = useState<string | null>(null);
   const [donePairs, setDonePairs] = useState<string[]>([]);
 
-  // NOT: Rusça (veya Türkçe) klavyesi olmayan öğrenciler için bu adım YAZARAK değil,
-  // 4 seçenek arasından SEÇEREK yapılır — klavye derdi olmadan da "üretici hatırlama"
-  // (kelimeyi görüp anlamını aktif olarak bulma) gerçekleşir.
   const [typingIdx, setTypingIdx] = useState(0);
   const [typingOptions, setTypingOptions] = useState<string[]>([]);
 
   const [sentIdx, setSentIdx] = useState(0);
   const [builtWords, setBuiltWords] = useState<string[]>([]);
-  // ANLAMSAL FARK ANALİZİ: cümle egzersizinde son yanlış denemenin detaylı raporu
   const [sentenceAnalysis, setSentenceAnalysis] = useState<SentenceAnalysis | null>(null);
 
-  // 🎧 DİNLEME HIZI (sadece dinleme ekranlarında): perde korumalı — kelime bozulmadan
-  // yavaşlar/hızlanır. 1 = normal.
   const [listenSpeed, setListenSpeed] = useState(1);
   const listenSpeedRef = useRef(1);
   useEffect(() => { listenSpeedRef.current = listenSpeed; }, [listenSpeed]);
-  const listenContextRef = useRef(false); // o an dinleme ekranında mıyız?
+  const listenContextRef = useRef(false);
 
-  // ⚡ HIZLI KURTARMA TESTİ: 3D ağda tıklanan kırmızı/zayıf düğüm
   const [rescueTarget, setRescueTarget] = useState<RescueTarget | null>(null);
 
-  // Смешарики (Smeshariki) sahnesi anlama sorusu ilerlemesi
   const [smeshQIdx, setSmeshQIdx] = useState(0);
 
-  // Sınav Durumu
   const [quizQuestions, setQuizQuestions] = useState<any[]>([]);
   const [quizIdx, setQuizIdx] = useState(0);
   const [feedback, setFeedback] = useState<{ isError: boolean; message: string } | null>(null);
   const [showResetConfirm, setShowResetConfirm] = useState(false);
 
-  // ÜNİTE HİKAYESİ & TÜRKÇELEŞTİRME SINAVI (A1 hariç her ünitede): ünitede öğrenilen kelime/cümlelerle
-  // kurulmuş kısa bir sahne/hikaye okutulur, ardından her cümle Türkçeye çevrilerek sınanır.
-  // Minimum %90 başarı gerekir (⚡ ultra: %95); altında kalınırsa ünite kelimeleri karıştırılıp baştan tekrar ettirilir.
   const [storyLines, setStoryLines] = useState<{ speaker: string; ru: string; reading?: string; tr: string }[]>([]);
   const [storyTestQuestions, setStoryTestQuestions] = useState<{ prompt: string; correct: string; options: string[] }[]>([]);
   const [storyTestIdx, setStoryTestIdx] = useState(0);
@@ -823,23 +710,19 @@ export default function App() {
   const [storyChosenAnswer, setStoryChosenAnswer] = useState<string | null>(null);
   const [storyResult, setStoryResult] = useState<{ passed: boolean; percent: number; correctCount: number; total: number } | null>(null);
 
-  // HİKAYE MODÜLÜ (Story & Summary) DURUMU — her 10 ünitede bir açılan kontrol noktası hikayesi:
-  // Rusça hikaye okunur (Türkçesi satır satır gizli), altındaki sözlük kartlarından yeni
-  // kelimeler öğrenilir, ardından kullanıcının yazdığı TÜRKÇE ÖZET analiz edilir.
-  const [storyCheckpointIdx, setStoryCheckpointIdx] = useState(0);        // STORIES indeksi
-  const [storyRevealed, setStoryRevealed] = useState<number[]>([]);        // çevirisi açılmış satırlar
-  const [storySummaryText, setStorySummaryText] = useState('');            // kullanıcının Türkçe özeti
-  const [storyEvalResult, setStoryEvalResult] = useState<SummaryEvaluation | null>(null); // analiz sonucu
-  const [storyQuizPassed, setStoryQuizPassed] = useState(false); // bölüm finali: isteğe bağlı seviye tekrar sınavı geçildi mi
-  const [levelQuiz, setLevelQuiz] = useState<{ questions: { ru: string; tr: string; options: string[] }[]; idx: number; correctCount: number; picked: string | null; finished: boolean } | null>(null); // bölüm finali seviye tekrar sınavı
-  // KAYIT YÜKLE
+  const [storyCheckpointIdx, setStoryCheckpointIdx] = useState(0);
+  const [storyRevealed, setStoryRevealed] = useState<number[]>([]);
+  const [storySummaryText, setStorySummaryText] = useState('');
+  const [storyEvalResult, setStoryEvalResult] = useState<SummaryEvaluation | null>(null);
+  const [storyQuizPassed, setStoryQuizPassed] = useState(false);
+  const [levelQuiz, setLevelQuiz] = useState<{ questions: { ru: string; tr: string; options: string[] }[]; idx: number; correctCount: number; picked: string | null; finished: boolean } | null>(null);
   useEffect(() => {
     const raw = localStorage.getItem(SAVE_KEY);
     if (raw) {
       try {
         const d: SaveState = JSON.parse(raw);
         setXp(d.xp || 0);
-        prevXpRef.current = d.xp || 0; // XP-delta takibi kayıtlı değerden başlasın (yükleme "kazanç" sayılmasın)
+        prevXpRef.current = d.xp || 0;
         setStreak(d.streak || 1);
         setGems(d.gems || 250);
         setCompletedAlpha(d.completedAlpha || []);
@@ -856,22 +739,16 @@ export default function App() {
     }
   }, []);
 
-  // OTOMATİK KAYIT
   useEffect(() => {
     const d: SaveState = { xp, streak, gems, completedAlpha, completedGrammar, completedUnits, completedTopics, completedStories, mistakes, srsBank, errorStats };
     localStorage.setItem(SAVE_KEY, JSON.stringify(d));
   }, [xp, streak, gems, completedAlpha, completedGrammar, completedUnits, completedTopics, completedStories, mistakes, srsBank, errorStats]);
 
-  // 📊 AÇILIŞTA SERİ TAZELEME: statsStore'daki gerçek seri (dün/bugün çalışıldı mı?)
-  // eski kayıttaki sabit değerin yerine geçer.
   useEffect(() => {
     const s = loadStats();
     setStreak(Math.max(1, effectiveStreak(s)));
   }, []);
 
-  // 📊 XP-DELTA KANCASI: xp her arttığında kazancı güne yazar, seriyi günceller.
-  // Böylece TÜM ekranlardaki (quiz, eşleştirme, kurtarma...) setXp çağrıları tek
-  // noktadan istatistiğe akar — ayrı ayrı elden geçirmek gerekmez.
   useEffect(() => {
     if (prevXpRef.current === null) { prevXpRef.current = xp; return; }
     const delta = xp - prevXpRef.current;
@@ -882,12 +759,8 @@ export default function App() {
     }
   }, [xp]);
 
-  // 🔊 Kelime kartı otomatik seslendirme tercihini kalıcılaştır
   useEffect(() => { localStorage.setItem('dilkoc_autospeak', autoSpeak ? '1' : '0'); }, [autoSpeak]);
 
-  // Dinleme bağlamı takibi: hız düğmesi SADECE dinleme ekranlarında sesi etkiler
-  // (TOPIC = dinleme konusu, TOPIC_TEST = dinle&seç, DIALOG/SMESHARIKI = sahne dinleme,
-  //  QUIZ yalnızca LISTENING bağlamındayken).
   useEffect(() => {
     listenContextRef.current =
       screen === 'TOPIC' || screen === 'TOPIC_TEST' || screen === 'DIALOG' || screen === 'SMESHARIKI' ||
@@ -901,11 +774,8 @@ export default function App() {
     void TextToSpeech.stop().catch(() => undefined);
   };
 
-  // Ekran değişince çalan sesleri kes (yarım kalmış uzun dinlemeler sürmesin).
   useEffect(() => { stopAllSpeech(); }, [screen]);
 
-  // SESLENDİRME — seçili VoiceStudio profili ve metnin dili korunur.
-  // Türkçe açıklamalar Türkçe, Rusça tekrar kelimeleri Rusça okunur.
   const speak = async (txt: string, rate = 0.85, onEnd?: () => void, onError?: () => void) => {
     const speechTag = detectSpeechTag(txt);
     const isTargetLang = speechTag !== 'tr-TR';
@@ -930,10 +800,8 @@ export default function App() {
     }
     if (rest) chunks.push(rest);
 
-    // Yedek zincir de dinleme hız çarpanına uyar (TTS motoru hızı perdeyi bozmadan uygular)
     const effRate = rate * (listenContextRef.current ? listenSpeedRef.current : 1);
     try {
-      // Mobil (APK) için native TTS
       await TextToSpeech.stop();
       for (const c of chunks) {
         await TextToSpeech.speak({
@@ -947,7 +815,6 @@ export default function App() {
       }
       onEnd?.();
     } catch (e) {
-      // Tarayıcıda çalışırken web TTS'ine düş (parçalar sırayla kuyruklanır)
       if ('speechSynthesis' in window) {
         window.speechSynthesis.cancel();
         let last = chunks.length - 1;
@@ -968,8 +835,6 @@ export default function App() {
   };
 
   const addMistake = (ru: string, tr: string, reason: string) => {
-    // Kronik hata sayacı: kütükte zaten olsa bile HER yanlışta +1 —
-    // böylece "en çok hangi kelimede takılıyorum?" sorusunun gerçek cevabı birikir.
     setErrorStats(prev => {
       const cur = prev[ru];
       return { ...prev, [ru]: { count: (cur?.count || 0) + 1, tr, last: Date.now() } };
@@ -980,21 +845,17 @@ export default function App() {
     });
   };
 
-  // Bir kelime/harf tamamen öğrenildiğinde (ünite/alfabe dersi bitince) ARALIKLI TEKRAR havuzuna eklenir.
-  // Buradan itibaren gün/hafta sonra otomatik olarak tekrar karşımıza çıkacak — kalıcı hafıza için asıl motor budur.
   const addToSRS = (ru: string, tr: string, type: 'word' | 'letter') => {
     setSrsBank(prev => {
       if (prev.some(x => x.ru === ru)) return prev;
-      // İlk tekrar aynı gün yapılır: yeni bilginin ilk 10 dakikadaki hızlı kaybını yakalar.
       return [...prev, { ru, tr, box: 1, nextReview: Date.now() + TEN_MINUTES_MS, type, correctStreak: 0, lapses: 0, reviews: 0 }];
     });
   };
 
-  // TÜM İLERLEMEYİ BAŞA SARAR: XP, seri, elmas, tamamlanan üniteler, hatalar ve tekrar havuzu — hepsi sıfırlanır.
   const resetProgress = () => {
     localStorage.removeItem(SAVE_KEY);
-    clearExamAttempts(); // deneme sınavı geçmişi de temizlenir
-    resetLearner(); // zaman/edat beceri haritası ve kelime hafıza modeli de sıfırlanır
+    clearExamAttempts();
+    resetLearner();
     setXp(0);
     setStreak(1);
     setGems(250);
@@ -1016,32 +877,24 @@ export default function App() {
     setScreen('MAP');
   };
 
-  // İLERLEME HESAPLAMA (tek yol: alfabe dersleri + dinleme konuları + müfredat üniteleri;
-  // sayılar UNITS_DATA'dan otomatik türetilir — hikaye kontrol noktaları hariç)
   const totalTasks = PATH.length;
   const completedCount = completedAlpha.length + completedGrammar.length + completedTopics.length + completedUnits.length;
   const progressPercent = Math.round((completedCount / totalTasks) * 100);
 
-  // TEK YOL KİLİT MANTIĞI: her kart, yolda kendinden önceki kart bitince açılır.
   const isStepDone = (s: PathStep): boolean =>
     s.kind === 'alpha' ? completedAlpha.includes(ALPHABET_LESSONS[s.lessonIdx].id)
     : s.kind === 'grammar' ? completedGrammar.includes(GRAMMAR_FOUNDATION_UNITS[s.grammarIdx].id)
     : s.kind === 'topic' ? completedTopics.includes(TOPICS_100[s.topicIdx].id)
     : completedUnits.includes(UNITS_DATA[s.unitIdx].id);
-  // BÖLÜM FİNALİ KAPISI: bir adım, gerçek CEFR seviyesinden önceki bölüm finali
-  // TAMAMLANMADIYSA kilitli kalır. Genişleme paketlerinin unitNumber değerleri
-  // sonradan üretildiği için kilitler artık numaraya değil seviye sırasına bakar:
-  // A1 → A2 → B1 → B2 → C1 → C2.
   const isStepUnlocked = (pos: number) => {
     if (pos === 0 || isStepDone(PATH[pos - 1])) {
       const gate = gateStoryForLevel(stepLevel(PATH[pos]));
-      if (gate && !completedStories.includes(gate.id)) return false; // bölüm finali kapısı kilitli
+      if (gate && !completedStories.includes(gate.id)) return false;
       return true;
     }
     return false;
   };
 
-  // Yoldaki bir adımı (alfabe / konu / ünite) içeriğiyle aç
   const openStep = (s: PathStep) => {
     setFeedback(null);
     if (s.kind === 'alpha') { setAlphaIdx(s.lessonIdx); setLetterIdx(0); setScreen('ALPHA'); }
@@ -1050,9 +903,6 @@ export default function App() {
     else { setUnitIdx(s.unitIdx); setCardIdx(0); setIsFlipped(false); setScreen('STORY'); }
   };
 
-  // AKIŞ KONTROLLERİ
-
-  // Harfi gördükten sonra rastgele ya "okunuşu seç" ya da "dinle ve harfi seç" testi üretir
   const buildAlphaCheck = (l: AlphabetLetter) => {
     const wantsListening = Math.random() < 0.5;
     if (wantsListening) {
@@ -1072,7 +922,6 @@ export default function App() {
     };
   };
 
-  // Bir harfi öğrendikten sonra "Devam Et" ile anlık tanıma testine geçilir
   const startAlphaCheck = () => {
     const l = ALPHABET_LESSONS[alphaIdx].letters[letterIdx];
     setAlphaCheckQ(buildAlphaCheck(l));
@@ -1095,8 +944,6 @@ export default function App() {
       options: shuffle([l.translit, ...shuffle(ALL_ALPHA_LETTERS.filter(x => x.translit !== l.translit)).slice(0, 3).map(x => x.translit)]),
       ru: `${l.upper} ${l.lower}`, tr: l.translit
     }));
-    // KALICI ÖĞRENME TÜM PROJEDE: bitiş sınavına ÖNCEKİ derslerden 2 harf + 2 okuma sorusu karışır —
-    // alfabe dersleri de asla "emekli" olmaz, eski harfler düzenli geri döner.
     if (alphaIdx > 0) {
       const prevLessons = ALPHABET_LESSONS.slice(0, alphaIdx);
       shuffle(prevLessons.flatMap(x => x.letters)).slice(0, 2).forEach(l => q.push({
@@ -1118,7 +965,6 @@ export default function App() {
     setScreen('QUIZ');
   };
 
-  // CÜMLE TEMELLERİ — özne/yüklem/edat mini üniteleri için 4 soruluk hızlı kontrol.
   const startGrammarQuiz = () => {
     const unit = GRAMMAR_FOUNDATION_UNITS[grammarIdx];
     if (!unit) return;
@@ -1136,7 +982,6 @@ export default function App() {
     setScreen('QUIZ');
   };
 
-  // Anlık harf tanıma testi cevabı: yanlışta AYNI soru tekrar sorulur (ilerlemez)
   const handleAlphaCheckAnswer = (ans: string) => {
     if (!alphaCheckQ) return;
     const les = ALPHABET_LESSONS[alphaIdx];
@@ -1158,7 +1003,6 @@ export default function App() {
     }
   };
 
-  // Okuma testi cevabı: yanlışta AYNI kelime tekrar sorulur (ilerlemez)
   const handleReadingAnswer = (ans: string) => {
     const les = ALPHABET_LESSONS[alphaIdx];
     const drill = les.readingDrills[readingDrillIdx];
@@ -1175,20 +1019,12 @@ export default function App() {
     }
   };
 
-  // ==========================================
-  // KULAĞI ALIŞTIR — 100 KONU (sesli dinleme) AKIŞI
-  // Konu: kelimeleri + Rusça dinleme metnini normal/yavaş tempoda dinle,
-  // ardından 4 "dinle & seç" sorusundan geç. Kulağın sese alışması burda tamamlanır.
-  // ==========================================
   const currentTopic: Topic100 | null = TOPICS_100[topicIdx] ?? null;
   const currentTopicDone = currentTopic ? completedTopics.includes(currentTopic.id) : false;
 
-  // Tümü normal tempoda: kelimeler + cümleler (tek TTS çağrısı)
   const playTopicNormal = () => { if (currentTopic) speak(topicFullText(currentTopic), 0.85); };
-  // Tümü yavaş tempoda: kulağın her heceyi ayırt edebilmesi için
   const playTopicSlow = () => { if (currentTopic) speak(topicFullText(currentTopic), 0.55); };
 
-  // Teste başla: 5 "dinle & seç" sorusu üret (harf konularında 1 harf sorusu dahil)
   const startTopicTest = () => {
     if (!currentTopic) return;
     setTopicQs(buildTopicDrills(currentTopic));
@@ -1199,7 +1035,6 @@ export default function App() {
     setScreen('TOPIC_TEST');
   };
 
-  // Yeni soruya geçince hedef sesi otomatik çal (kulağı dinlemeye zorlar)
   useEffect(() => {
     if (screen === 'TOPIC_TEST' && !topicQDone && topicQs.length > 0) {
       const q = topicQs[topicQIdx];
@@ -1210,11 +1045,9 @@ export default function App() {
     }
   }, [screen, topicQIdx, topicQDone, topicQs]);
 
-  // "Dinle & seç" sorusu cevabı: yanlışta AYNI soru tekrar sorulur (sesi tekrar dinle)
   const handleTopicAnswer = (ans: string) => {
     const q = topicQs[topicQIdx];
     if (!q || !currentTopic) return;
-    // ÖĞRENEN MODELİ: dinleme cevabı da kelime hafıza haritasına işlenir
     recordWordResult(q.audio, q.answer !== q.audio ? q.answer : '', ans === q.answer);
     if (ans === q.answer) {
       setXp(x => x + 5);
@@ -1224,7 +1057,6 @@ export default function App() {
       if (topicQIdx + 1 < topicQs.length) {
         setTopicQIdx(topicQIdx + 1);
       } else {
-        // Test bitti — temel baraj %80, ⚡ ultra modda %90 (topicPassPct)
         const percent = Math.round((correctSoFar / topicQs.length) * 100);
         const passed = percent >= topicPassPct();
         setTopicQDone(true);
@@ -1232,8 +1064,6 @@ export default function App() {
           setCompletedTopics(prev => [...prev, currentTopic.id]);
           setXp(x => x + 20);
           setGems(g => g + 12);
-          // Konunun kelimeleri ARALIKLI TEKRAR havuzuna eklenir (kalıcı hafıza motoru):
-          // dinlediğin kelime günler sonra tekrar karşına çıkar.
           currentTopic.items.slice(0, 8).forEach(it => addToSRS(it.ru, it.tr, 'word'));
         }
       }
@@ -1257,7 +1087,6 @@ export default function App() {
     }
   };
 
-  // Bir kelime kartı için 4 seçenekli tanıma testi hazırlar (yazmaya gerek kalmadan)
   const loadTypingOptions = (idx: number) => {
     const word = UNITS_DATA[unitIdx].words[idx];
     setTypingOptions(shuffle([word.tr, ...shuffle(ALL_WORDS.filter(x => x.tr !== word.tr)).slice(0, 3).map(x => x.tr)]));
@@ -1283,7 +1112,6 @@ export default function App() {
   const checkSentence = () => {
     const s = UNITS_DATA[unitIdx].sentences[sentIdx];
     const isCorrect = builtWords.join(' ') === s.correct.join(' ');
-    // ÖĞRENEN MODELİ: cümlenin ölçtüğü zaman/edat becerileri haritaya işlenir
     recordSentenceResult(s.ru, isCorrect);
     if (isCorrect) {
       setXp(x => x + 25); setBuiltWords([]); setFeedback(null); setSentenceAnalysis(null);
@@ -1294,15 +1122,11 @@ export default function App() {
       }
     } else {
       addMistake(s.ru, s.tr, 'Cümle Dizilim Hatası');
-      // ANLAMSAL FARK ANALİZİ: salt "yanlış" demek yerine, kullanıcının cümlesi ile
-      // ideal cümle arasındaki farkı anlam düzeyinde raporla (zaman kayması, edat,
-      // çekim, eksik/fazla kelime, dizilim/vurgu farkı).
       setSentenceAnalysis(analyzeSentenceDiff(builtWords, s.correct, s.ru, s.tr));
       setFeedback({ isError: true, message: `🚨 İdeal cümle: "${s.ru}" — aşağıda cümlenin anlamsal analizi var.` });
     }
   };
 
-  // Смешарики sahnesindeki anlama sorusuna verilen cevabı kontrol eder
   const handleSmeshAnswer = (ans: string) => {
     const mod = UNITS_DATA[unitIdx];
     const scene = mod.smeshariki!;
@@ -1322,7 +1146,6 @@ export default function App() {
     }
   };
 
-  // Kelime kartlarını bitirince sesli dinleme testine geçilir (metin gizli, sadece ses)
   const startListening = () => {
     const mod = UNITS_DATA[unitIdx];
     const uWords = mod.words;
@@ -1332,7 +1155,6 @@ export default function App() {
       options: shuffle([w.tr, ...shuffle(ALL_WORDS.filter(x => x.tr !== w.tr)).slice(0, 3).map(x => x.tr)]),
       ru: w.ru, tr: w.tr, audioOnly: true
     }));
-    // KALICI ÖĞRENME TÜM PROJEDE: dinleme testine de eski ünitelerden 8 tekrar sorusu karışır (⚡ ultra modda 12).
     const reviewQ = buildReviewInjection(mod, retentionDose(8));
     setQuizContext('LISTENING');
     setQuizQuestions(shuffle([...q, ...reviewQ]));
@@ -1340,21 +1162,7 @@ export default function App() {
     setScreen('QUIZ');
   };
 
-  // ==========================================
-  // KALICI ÖĞRENME — KARMA TEKRAR ENJEKSİYONU (Interleaving + Genişleyen Aralık)
-  // Bir ünite %100 doğru tamamlansa BİLE kelimeleri kaybolmaz: sonraki HER ünitenin
-  // bitiş sınavına, önceki ünitelerden seçilen "🔁 KALICI TEKRAR" soruları karışır.
-  // Seçim iki bilimsel ilkeye dayanır:
-  //  1) Genişleyen aralık (expanding retrieval): 1, 2, 3, 5, 8, 13, 21 ünite geriden kelime çekilir —
-  //     yeni öğrenilen sık, eskiden öğrenilen seyrek ama DÜZENLİ sorulur.
-  //  2) Kümülatif rastgele örnekleme (RST — araştırmalarda kümülatif sınavdan daha dengeli
-  //     bulunmuştur): TÜM geçmiş ünitelerden rastgele örnek eklenir, hiçbir kelime "emekli" olmaz.
-  //  + Üretim etkisi (production effect): soruların yarısı ters yönde (TR → RU) sorulur.
-  //  + Vadesi gelen Aralıklı Tekrar (SRS) kelimeleri öncelik alır; doğru cevap kutu atlatır.
   const buildReviewInjection = (mod: UnitModule, count: number) => {
-    // CEFR sıralaması artık mutlak: A1 → A2 → B1 → B2 → C1 → C2. Bu yüzden
-    // "önceki ünite" hesabında unitNumber değil, UNITS_DATA içindeki gerçek
-    // yol sırası kullanılır; A2 tekrarlarına yanlışlıkla C1 kelimesi karışmaz.
     const currentIdx = UNITS_DATA.findIndex(u => u.id === mod.id);
     const prevUnits = currentIdx > 0 ? UNITS_DATA.slice(0, currentIdx) : [];
     if (prevUnits.length === 0 || count <= 0) return [] as any[];
@@ -1369,7 +1177,6 @@ export default function App() {
     const prioritized = [...uniq].sort((a, b) => (dueRu.has(b.ru) ? 1 : 0) - (dueRu.has(a.ru) ? 1 : 0));
     return prioritized.slice(0, count).map((w, i) => {
       if (i % 2 === 1) {
-        // Üretim etkisi: Türkçeden Rusçayı GERİ ÇAĞIRMAK, pasif tanımadan çok daha güçlü iz bırakır.
         return {
           prompt: `🔁 KALICI TEKRAR (eski üniteden) — "${w.tr}" kelimesinin ${langMeta().wordLabelUpper} hangisi?`,
           correct: w.ru,
@@ -1386,43 +1193,33 @@ export default function App() {
     });
   };
 
-  // ÜNİTE BİTİŞ SINAVI — GENİŞLETİLMİŞ: her kelime İKİ yönde sorulur (tanıma RU→TR
-  // + üretim TR→RU), araya dinleme soruları ve cümle anlama soruları eklenir,
-  // üstüne 10 adet "eski kelime" kalıcı tekrar sorusu karışır. Amaç: bir üniteyi
-  // geçmek için kelimeyi yalnızca TANIMAK yetmez — GERİ ÇAĞIRMAK, DUYMAK ve
-  // BAĞLAMDA ANLAMAK da gerekir (test etkisi × 4 kanal = kalıcı iz).
   const startUnitQuiz = () => {
     const mod = UNITS_DATA[unitIdx];
     const uWords = mod.words;
-    // 1) TANIMA: RU → TR (her kelime)
     const q: any[] = uWords.map(w => ({
       prompt: `"${w.ru}" kelimesinin Türkçe karşılığı nedir?`,
       correct: w.tr,
       options: shuffle([w.tr, ...shuffle(ALL_WORDS.filter(x => x.tr !== w.tr)).slice(0, 3).map(x => x.tr)]),
       ru: w.ru, tr: w.tr
     }));
-    // 2) ÜRETİM: TR → RU (her kelime — geri çağırma, pasif tanımadan çok daha güçlü iz bırakır)
     uWords.forEach(w => q.push({
       prompt: `✍️ ÜRETİM — "${w.tr}" kelimesinin ${langMeta().wordLabelUpper} hangisi?`,
       correct: w.ru,
       options: shuffle([w.ru, ...shuffle(ALL_WORDS.filter(x => x.ru !== w.ru)).slice(0, 3).map(x => x.ru)]),
       ru: w.ru, tr: w.tr
     }));
-    // 3) DİNLEME: ünitenin 5 kelimesi yalnız SESLE sorulur (kulak kanalı da sınanır)
     shuffle([...uWords]).slice(0, 5).forEach(w => q.push({
       prompt: '',
       correct: w.tr,
       options: shuffle([w.tr, ...shuffle(ALL_WORDS.filter(x => x.tr !== w.tr)).slice(0, 3).map(x => x.tr)]),
       ru: w.ru, tr: w.tr, audioOnly: true
     }));
-    // 4) BAĞLAM: ünite cümleleri anlama soruları (kelime cümle içinde tanınmalı)
     shuffle([...mod.sentences]).slice(0, 4).forEach(s => q.push({
       prompt: `📖 BAĞLAM — «${s.ru}» cümlesi ne anlatıyor?`,
       correct: s.tr,
       options: shuffle([s.tr, ...shuffle(ALL_SENTENCES.filter(x => x.tr !== s.tr)).slice(0, 3).map(x => x.tr)]),
       ru: s.ru, tr: s.tr
     }));
-    // 5) KALICI TEKRAR: eski ünitelerden 12 soru (⚡ ultra modda 18) — genişleyen aralık + SRS öncelikli
     const reviewQ = buildReviewInjection(mod, retentionDose(12));
     setQuizContext('UNIT_FINAL');
     setQuizQuestions(shuffle([...q, ...reviewQ]));
@@ -1430,15 +1227,8 @@ export default function App() {
     setScreen('QUIZ');
   };
 
-  // ==========================================
-  // ÜNİTE HİKAYESİ & TÜRKÇELEŞTİRME SINAVI (A1 hariç)
-  // ==========================================
-
-  // Geçmek için gereken minimum başarı: temelde %90, ⚡ ULTRA modda %95 (src/ultra/ultraMode.ts)
   const STORY_PASS_THRESHOLD = storyPassRatio();
 
-  // O ünitede zaten yazılmış olan dizi sahnesi (dialogue) ve örnek cümlelerden (sentences),
-  // ünitenin kelime dağarcığıyla doğrudan bağlantılı, akıcı okunan kısa bir "hikaye/sahne" kurar.
   const buildUnitStory = (mod: UnitModule) => {
     const lines: { speaker: string; ru: string; reading?: string; tr: string }[] = [];
     if (mod.dialogue && mod.dialogue.length > 0) {
@@ -1448,8 +1238,6 @@ export default function App() {
     return lines;
   };
 
-  // Hikayedeki her cümle için 4 seçenekli "bu cümlenin Türkçesi hangisi?" sorusu üretir.
-  // Yanlış şıklar, o hikayeye ait olmayan başka ünitelerin cümlelerinden seçilir.
   const buildStoryTest = (lines: { ru: string; tr: string }[]) => {
     const distractPool = ALL_SENTENCES.filter(s => !lines.some(l => l.tr === s.tr));
     return shuffle(lines).map(l => {
@@ -1458,14 +1246,12 @@ export default function App() {
     });
   };
 
-  // Ünitenin kelime/cümle/sınav akışı bitince çağrılır: hikaye ekranını hazırlar.
   const startUnitStory = () => {
     const mod = UNITS_DATA[unitIdx];
     setStoryLines(buildUnitStory(mod));
     setScreen('UNIT_STORY');
   };
 
-  // Hikaye okunduktan sonra Türkçeleştirme sınavını başlatır.
   const startStoryTest = () => {
     const lines = storyLines.length > 0 ? storyLines : buildUnitStory(UNITS_DATA[unitIdx]);
     setStoryTestQuestions(buildStoryTest(lines));
@@ -1476,12 +1262,9 @@ export default function App() {
     setScreen('STORY_TEST');
   };
 
-  // Sınavda bir cümleye cevap verilince (doğru/yanlış fark etmeksizin sonraki cümleye geçilebilir;
-  // asıl değerlendirme sınav sonunda toplam yüzdeye göre yapılır).
   const handleStoryTestAnswer = (ans: string) => {
-    if (storyChosenAnswer) return; // Aynı soru için tekrar sayılmasın
+    if (storyChosenAnswer) return;
     const q = storyTestQuestions[storyTestIdx];
-    // ÖĞRENEN MODELİ: Rusça hikaye cümlesinin ölçtüğü zaman/edat becerileri haritaya işlenir
     if (isTargetScript(q.prompt)) recordSentenceResult(q.prompt, ans === q.correct);
     setStoryChosenAnswer(ans);
     if (ans === q.correct) {
@@ -1492,7 +1275,6 @@ export default function App() {
     }
   };
 
-  // "Devam Et" ile sonraki cümleye geçilir; son cümledeyse sınav sonucu hesaplanır.
   const continueStoryTest = () => {
     const isLast = storyTestIdx + 1 >= storyTestQuestions.length;
     if (!isLast) {
@@ -1515,8 +1297,6 @@ export default function App() {
     setScreen('STORY_RESULT');
   };
 
-  // Baraj geçilemezse: ünitenin kelimeleri KARIŞTIRILIR ve tüm ünite (kartlar → eşleştirme →
-  // hızlı tanıma → cümle kurma → sınav → hikaye) baştan tekrar ettirilir; böylece daha iyi ezberlenir.
   const retryUnitShuffled = () => {
     const mod = UNITS_DATA[unitIdx];
     mod.words = shuffle(mod.words);
@@ -1532,24 +1312,11 @@ export default function App() {
     setScreen('FLASHCARD');
   };
 
-  // ==========================================
-  // HİKAYE MODÜLÜ (Story & Summary) — HER 10 ÜNİTEDE BİR OTOMATİK AÇILIR
-  // Kullanıcı 10 müfredat ünitesini (kelime/cümle içerikli) tamamlayınca sistem,
-  // o 10 ünitenin kelimeleriyle yazılmış HIMYM tarzı bir hikaye modülü açar.
-  // Hikayede en fazla 3 yeni kelime vardır; anlamları sözlük kartı olarak gösterilir.
-  // Kullanıcı Rusça metni okur → Türkçe özetini yazar → analiz motoru
-  // "X doğru nokta / Y eksik-yanlış" şeklinde yapıcı geri bildirim üretir.
-  // ==========================================
-
-  // Tamamlanan müfredat ünitesi sayısı (yol doğrusal olduğu için bu, ilk N ünitenin
-  // tamamlandığı anlamına gelir → N=10,20,30... anlarında kontrol noktası hikayesi açılır).
   const completedUnitsCount = completedUnits.length;
   const storyDone = (s: CheckpointStory) => completedStories.includes(s.id);
 
-  // Haritada "okunmayı bekleyen" ilk hikaye (varsa üstte uyarı kartı çizer)
   const pendingCheckpointStory = nextPendingStoryOnPath(completedUnitsCount, completedStories);
 
-  // Bir kontrol noktası hikayesini ekranla: satır çevirileri kapanır, özet alanı sıfırlanır.
   const openCheckpointStory = (s: CheckpointStory) => {
     setStoryCheckpointIdx(STORIES.findIndex(x => x.id === s.id));
     setStoryRevealed([]);
@@ -1561,7 +1328,6 @@ export default function App() {
     setScreen('CHECKPOINT_STORY');
   };
 
-  // Özeti analiz et: "X doğru nokta / Y eksik-yanlış anlaşılan yer" geri bildirimini üretir.
   const analyzeStorySummary = () => {
     const story = STORIES[storyCheckpointIdx];
     if (!story) return;
@@ -1571,13 +1337,9 @@ export default function App() {
 
   const LEVEL_FINAL_SUMMARY_PASS_PERCENT = 70;
 
-  // Bölüm finali kapısı: kullanıcı konuşma metninden sonra Türkçe özet/çeviri yazar;
-  // analiz skoru %70 ve üstündeyse sonraki seviyeye geçebilir.
   const isSummaryPassing = (ev: SummaryEvaluation | null): boolean =>
     !!ev && !ev.tooShort && !ev.wrongLanguage && ev.scorePercent >= LEVEL_FINAL_SUMMARY_PASS_PERCENT;
 
-  // Hikaye modülünü tamamla: ödül + yeni kelimeler Aralıklı Tekrar (SRS) havuzuna eklenir.
-  // BÖLÜM FİNALİ ise kapı kuralı işler: Türkçe özet/çeviri analizi en az %70 olmalıdır.
   const completeCheckpointStory = () => {
     const story = STORIES[storyCheckpointIdx];
     if (!story) { setScreen('MAP'); return; }
@@ -1598,9 +1360,6 @@ export default function App() {
     setActiveTab('MAP');
   };
 
-  // SEVİYE TEKRAR SINAVI (bölüm finalleri) — önceki bölümlerdekiler dahil tüm öğrenilen
-  // kelimelerden karışık sorular: 6 soru bitirilen bölümden, 4 soru önceki bölümlerden.
-  // Amaç: A'dan öğrenilen kelimeler B'de de tekrar edilerek KALICI hale gelsin.
   const buildLevelQuiz = (story: CheckpointStory) => {
     const range = storyDynamicRange(story);
     const completedScope = UNITS_DATA.slice(0, range.to);
@@ -1620,9 +1379,8 @@ export default function App() {
     setLevelQuiz({ questions, idx: 0, correctCount: 0, picked: null, finished: false });
   };
 
-  // Sınavda bir şıkka tıklanınca: doğruysa +5 XP, yanlışsa "Unutulanlar" kütüğüne girer.
   const answerLevelQuiz = (opt: string) => {
-    if (!levelQuiz || levelQuiz.picked !== null) return; // aynı soruya çift tıklama engeli
+    if (!levelQuiz || levelQuiz.picked !== null) return;
     const q = levelQuiz.questions[levelQuiz.idx];
     const isCorrect = opt === q.tr;
     if (isCorrect) setXp(x => x + 5);
@@ -1630,28 +1388,23 @@ export default function App() {
     setLevelQuiz(lq => lq ? { ...lq, picked: opt, correctCount: lq.correctCount + (isCorrect ? 1 : 0) } : null);
   };
 
-  // Sınavda sonraki soruya geç / sınavı bitir (temelde >= 8/10, ⚡ ultrada 9/10 → geçti).
   const advanceLevelQuiz = () => {
     if (!levelQuiz) return;
     if (levelQuiz.idx + 1 < levelQuiz.questions.length) {
       setLevelQuiz(lq => lq ? { ...lq, idx: lq.idx + 1, picked: null } : null);
     } else {
-      const passed = levelQuiz.correctCount >= gatePassNeed(); // ⚡ ultra modda baraj 9/10
+      const passed = levelQuiz.correctCount >= gatePassNeed();
       if (passed) setStoryQuizPassed(true);
       setLevelQuiz(lq => lq ? { ...lq, finished: true } : null);
     }
   };
 
-  // Haritaya dönüş: BEKLEYEN bir hikaye kontrol noktası varsa onu OTOMATİK AÇ
-  // ("her 10 ünite tamamlanınca sistem otomatik hikaye modülü açsın" kuralı burada çalışır).
   const returnToMapOrStory = () => {
     const pending = nextPendingStoryOnPath(completedUnits.length, completedStories);
     if (pending) openCheckpointStory(pending);
     else { setScreen('MAP'); setActiveTab('MAP'); }
   };
 
-  // GENEL TEKRAR MOTORU: "Unutulanlar" kütüğündeki HER şey doğru cevaplanana kadar tekrar tekrar sorulur.
-  // Doğru cevaplanan kelime kütükten tamamen silinir (ustalaşıldı sayılır); yanlış cevaplanan kalır ve aynı soru yeniden sorulur.
   const startGlobalReview = () => {
     if (mistakes.length === 0) return;
     const q = shuffle(mistakes).map(m => ({
@@ -1667,12 +1420,6 @@ export default function App() {
     setScreen('QUIZ');
   };
 
-  // ==========================================
-  // ZAYIF NOKTA MOTORU — KİŞİSELLEŞTİRİLMİŞ EK TEST
-  // errorStats'taki kronik hata sayaçlarına göre EN ÇOK yanlış yapılan ~12 kelimeden
-  // kişiye özel bir sınav kurar. Sorular iki yönlü sorulur (tanıma + üretim) ve her
-  // kelime doğru cevaplandıkça sayaç 1 azalır — panel zamanla "iyileşmeyi" gösterir.
-  // ==========================================
   const weakWords = Object.entries(errorStats)
     .map(([ru, v]) => ({ ru, tr: v.tr, count: v.count, last: v.last }))
     .filter(w => w.count > 0)
@@ -1688,7 +1435,6 @@ export default function App() {
         options: shuffle([w.tr, ...shuffle(ALL_WORDS.filter(x => x.tr !== w.tr)).slice(0, 3).map(x => x.tr)]),
         ru: w.ru, tr: w.tr
       };
-      // Üretim etkisi: en kronik ilk 6 kelime TERS yönde de sorulur (TR → RU)
       if (w.count >= 2 && ALL_WORDS.some(x => x.ru === w.ru)) {
         return [rec, {
           prompt: `🎯 ZAYIF NOKTA (üretim) — "${w.tr}" kelimesinin ${langMeta().wordLabelUpper} hangisi?`,
@@ -1706,20 +1452,15 @@ export default function App() {
     setScreen('QUIZ');
   };
 
-  // Zayıf kelimenin hangi ünite/kategoriden geldiğini bulur (panelde rozet olarak gösterilir)
   const findWordHome = (ru: string) => {
     const u = UNITS_DATA.find(x => x.words.some(w => w.ru === ru));
     return u ? { title: u.title, category: u.category, icon: u.icon, color: u.color } : null;
   };
 
-  // ARALIKLI TEKRAR (SPACED REPETITION) OTURUMU: Sadece bugün "vadesi gelmiş" kelimeler sorulur.
-  // Bu, kalıcı hafızanın bilimsel temelidir — beyin bir bilgiyi unutmaya en yakın olduğu anda tekrar hatırlarsa iz kalıcılaşır.
   const dueSRS = srsBank.filter(i => i.nextReview <= Date.now());
   const matureSRS = srsBank.filter(i => i.box >= 5 && (i.correctStreak || 0) >= 1).length;
   const fragileSRS = srsBank.filter(i => (i.lapses || 0) >= 3).length;
 
-  // Aynı ünite/seviye ve benzer uzunluktaki seçenekler daha güçlü çeldiricidir.
-  // Rastgele, bariz biçimde alakasız seçenekler yerine gerçek ayrım yapmayı ölçer.
   const smartWordDistractors = (ru: string, field: 'ru' | 'tr'): string[] => {
     const home = UNITS_DATA.find(u => u.words.some(w => w.ru === ru));
     const target = ALL_WORDS.find(w => w.ru === ru);
@@ -1732,14 +1473,10 @@ export default function App() {
     return Array.from(new Set(ranked.map(x => x.value))).slice(0, 3);
   };
 
-  // 🗣️ GÜNLÜK AĞIZ ÖDEVİ durumu (haritadaki günlük plan kartı bunu okur)
   const todaysSpeechDrills = useMemo(() => buildDailyDrills(completedUnits), [completedUnits]);
   const speechDay = loadSpeechDay();
   const speechDoneCount = todaysSpeechDrills.filter(d => speechDay.done.includes(d.id)).length;
 
-  // AI koçu da haritadaki TEK SIRA öğrenme yolunu takip eder: Ünite 1 → Ünite {PATH.length}.
-  // Yani koç, sadece müfredat kelime ünitelerini değil; harf, fonetik dinleme, gramer ve ünite kartlarının
-  // hangisinde kaldıysan onu "şu anki ünite" kabul eder.
   const aiPathIndexRaw = PATH.findIndex(s => !isStepDone(s));
   const aiPathIndex = aiPathIndexRaw === -1 ? Math.max(0, PATH.length - 1) : aiPathIndexRaw;
   const aiStep = PATH[aiPathIndex];
@@ -1794,14 +1531,10 @@ export default function App() {
 
   const startSRSReview = () => {
     if (dueSRS.length === 0) return;
-    // Oturumu 30 kartla sınırla: bilişsel yorgunluk yerine her gün sürdürülebilir tekrar.
-    // Öncelik: çok unutulanlar → en fazla gecikenler → diğerleri.
     const session = [...dueSRS].sort((a, b) =>
       (b.lapses || 0) - (a.lapses || 0) || a.nextReview - b.nextReview
     ).slice(0, 30);
     const q = session.map(item => {
-      // Tanıma tek başına yanıltıcıdır. Her gelişte yön değişir: bir oturumda RU→TR,
-      // sonrakinde daha zor olan aktif üretim TR→RU sorulur.
       const production = ((item.reviews || 0) % 2) === 1;
       const context = ALL_SENTENCES.find(s => s.ru.toLocaleLowerCase('ru').includes(item.ru.toLocaleLowerCase('ru')));
       const leech = (item.lapses || 0) >= 3 ? '🩹 ZOR KELİME — ' : '';
@@ -1824,11 +1557,6 @@ export default function App() {
     setScreen('QUIZ');
   };
 
-  // 🔀 KARMA MARATON (Kümülatif Rastgele Örnekleme Sınavı):
-  // Tamamlanmış TÜM ünitelerin kelime havuzundan rastgele 15 soru çeker — vadesi gelmemiş
-  // olsa bile her kelime her an sorulabilir; hiçbir bilgi "bitti" rafına kalkmaz.
-  // Araştırmalar (randomly sampled tests), bu yöntemin tüm kelimeleri dengeli biçimde
-  // canlı tuttuğunu gösteriyor. Soruların yarısı üretim yönünde (TR → RU) sorulur.
   const startMarathon = () => {
     const doneUnits = UNITS_DATA.filter(u => completedUnits.includes(u.id));
     const pool = doneUnits.flatMap(u => u.words);
@@ -1859,18 +1587,15 @@ export default function App() {
 
   const handleQuizAnswer = (ans: string) => {
     const q = quizQuestions[quizIdx];
-    // ÖĞRENEN MODELİ: her çözülen soru (doğru + yanlış) zaman/edat/kelime haritasına işlenir —
-    // 🧭 Kişisel Rota ve 🕸️ 3D Kelime Ağı bu veriden beslenir.
     if ((q as any).ru) recordWordResult((q as any).ru, (q as any).tr || q.correct, ans === q.correct);
     if (quizContext === 'GRAMMAR_FOUNDATION') {
       const sk = skillKeyForGrammarUnit(GRAMMAR_FOUNDATION_UNITS[grammarIdx]?.id || '');
       if (sk) recordSkill(sk, ans === q.correct);
     }
     if (ans === q.correct) {
-      setXp(x => x + xpGain(quizContext === 'REVIEW' ? 5 : quizContext === 'SRS_REVIEW' ? 8 : 20)); // ⚡ ultra modda XP ×1.5
+      setXp(x => x + xpGain(quizContext === 'REVIEW' ? 5 : quizContext === 'SRS_REVIEW' ? 8 : 20));
       setFeedback(null);
       if (quizContext === 'WEAKSPOT') {
-        // İyileşme: zayıf nokta testinde doğru cevap sayacı 1 azaltır (0'a inince kelime panelden düşer)
         setErrorStats(prev => {
           const cur = prev[q.ru];
           if (!cur) return prev;
@@ -1880,12 +1605,9 @@ export default function App() {
         });
       }
       if (quizContext === 'REVIEW') {
-        // Ustalaşılan kelimeyi Unutulanlar kütüğünden kaldır
         setMistakes(prev => prev.filter(m => !(m.ru === q.ru && m.tr === q.tr)));
       }
       if (quizContext === 'SRS_REVIEW' || (q as any).review) {
-        // Tek bir şanslı doğru cevap terfi ettirmez: aynı kelime iki ayrı zamanda art arda
-        // hatırlanınca kutu yükselir. Unutma geçmişi yüksekse aralık otomatik kısalır.
         setSrsBank(prev => prev.map(item => {
           if (item.ru !== q.ru) return item;
           const streak = (item.correctStreak || 0) + 1;
@@ -1925,17 +1647,12 @@ export default function App() {
           const mod = UNITS_DATA[unitIdx];
           setGems(g => g + 50);
           if (mod.levelGroup === 'A1') {
-            // A1 seviyesinde hikaye/Türkçeleştirme sınavı yok — ünite doğrudan tamamlanır.
             if (!completedUnits.includes(mod.id)) setCompletedUnits(p => [...p, mod.id]);
             mod.words.forEach(w => addToSRS(w.ru, w.tr, 'word'));
-            // Bu ünite bir hikayenin son ünitesiyse (10. ünite → kontrol noktası 1,
-            // 6. ünite → A1 bölüm finali...) hikaye modülü OTOMATİK açılır.
             const s = primaryStoryTriggeredAfterUnit(mod.id);
             if (s && !completedStories.includes(s.id)) { openCheckpointStory(s); return; }
             setScreen('MAP');
           } else {
-            // A1 dışındaki her ünitede: ünite, kelimelerle bağlantılı bir hikaye + Türkçeleştirme sınavıyla biter.
-            // Ünite ancak bu sınavdan minimum %90 (⚡ ultra: %95) alınca tamamlanmış sayılır (SRS'e ekleme de o an yapılır).
             startUnitStory();
           }
         } else if (quizContext === 'SRS_REVIEW') {
@@ -1956,8 +1673,6 @@ export default function App() {
       const reason = (q as any).review ? 'Kalıcı Tekrarda Unutuldu (eski ünite)' : quizContext === 'LISTENING' ? 'Dinleme Hatası' : quizContext === 'REVIEW' ? 'Tekrar Testinde Yine Yanlış' : quizContext === 'ALPHA_FINAL' ? 'Alfabe Sınavı Hatası' : quizContext === 'GRAMMAR_FOUNDATION' ? 'Cümle Temeli Hatası' : quizContext === 'SRS_REVIEW' ? 'Aralıklı Tekrarda Unutuldu' : quizContext === 'MARATHON' ? 'Karma Maratonda Unutuldu' : quizContext === 'WEAKSPOT' ? 'Zayıf Nokta Testinde Yine Yanlış' : 'Sınav Hatası';
       addMistake(q.ru, q.tr, reason);
       if (quizContext === 'SRS_REVIEW' || quizContext === 'MARATHON' || (q as any).review) {
-        // Unutulan kelime yalnız yarına bırakılmaz: 10 dakika sonra yeniden öğrenme kuyruğuna
-        // girer; hata geçmişi tutulur ve sonraki uzun aralıklar da kişiye göre kısalır.
         setSrsBank(prev => prev.map(item => item.ru === q.ru ? {
           ...item,
           box: 1,
@@ -1968,10 +1683,6 @@ export default function App() {
           nextReview: Date.now() + TEN_MINUTES_MS,
         } : item));
       }
-      // KALICI ÖĞRENME — YENİDEN SORMA KURALI: yanlışlanan soru sınavın SONUNA
-      // (şıkları yeniden karılarak) bir kez daha eklenir. "Doğrusu buymuş" deyip
-      // geçmek yetmez; aynı bilgi sınav bitmeden bir kez daha GERİ ÇAĞRILMALIDIR.
-      // ⚡ ULTRA MOD: soru 1 değil 2 KEZ geri gelir — kaybetmek yok, öğrenmek var.
       const maxRequeue = isUltraMode() ? 2 : 1;
       const rqCount = (q as any).requeueCount || 0;
       if (rqCount < maxRequeue && (quizContext === 'UNIT_FINAL' || quizContext === 'LISTENING' || quizContext === 'ALPHA_FINAL' || quizContext === 'GRAMMAR_FOUNDATION' || quizContext === 'SRS_REVIEW')) {
@@ -1981,10 +1692,6 @@ export default function App() {
     }
   };
 
-  // ==========================================
-  // 🧭 ROTA + 🕸️ 3D AĞ + ⚡ KURTARMA TESTİ YARDIMCILARI
-  // ==========================================
-  // Rotadan bir gramer ünitesine atla (ör. zayıf çıkan "geçmiş zaman" ünitesi)
   const openGrammarById = (grammarUnitId: string) => {
     const gi = GRAMMAR_FOUNDATION_UNITS.findIndex(g => g.id === grammarUnitId);
     if (gi === -1) return;
@@ -1994,7 +1701,6 @@ export default function App() {
     setScreen('GRAMMAR');
   };
 
-  // 3D ağda kırmızı/zayıf düğüme tıklanınca: 1 dakikalık hedefli kurtarma testi
   const startRescue = (t: RescueTarget) => {
     stopEdgeSpeech();
     stopWebSpeech();
@@ -2003,8 +1709,6 @@ export default function App() {
     setScreen('RESCUE');
   };
 
-  // Kurtarma testi bitti: geçildiyse kelimenin SRS kutusu yükselir (ağda yeşile döner),
-  // kronik hata sayacı düşer; geçilemediyse kutu 1'e iner (yarın tekrar sorulur).
   const finishRescue = (r: RescueResult) => {
     const t = rescueTarget;
     if (t?.kind === 'word' && t.ru) {
@@ -2036,8 +1740,6 @@ export default function App() {
     setScreen('GRAPH');
   };
 
-  // 🃏 KART EVİ — kart modlarından gelen Leitner oyları: bildi → kutu yükselir,
-  // bilemedi → kutu 1'e düşer (yarın geri döner). Havuzda olmayan kelime önce eklenir.
   const handleSrsGrade = (ru: string, tr: string, good: boolean) => {
     setSrsBank(prev => {
       const box1 = good ? 2 : 1;
@@ -2052,8 +1754,6 @@ export default function App() {
     });
   };
 
-  // ⌨️ KLAVYE KISAYOLLARI: 1-4 tuşları test ekranlarındaki şıkları seçer
-  // (QUIZ tüm bağlamlarda + dinle&seç TOPIC_TEST). Girdi alanlarında devre dışıdır.
   useEffect(() => {
     const onKey = (e: KeyboardEvent) => {
       if (e.key < '1' || e.key > '4') return;
@@ -2072,19 +1772,14 @@ export default function App() {
     return () => window.removeEventListener('keydown', onKey);
   });
 
-  // 🔊 KELİME KARTI OTOMATİK SESLENDİRME: kart her değiştiğinde Rusça kelime
-  // otomatik okunur (kapatılabilir). Kulak + göz aynı anda çalışır.
   useEffect(() => {
     if (screen !== 'FLASHCARD' || !autoSpeak) return;
     const w = UNITS_DATA[unitIdx]?.words[cardIdx];
     if (!w) return;
     const t = setTimeout(() => { speak(w.ru); }, 300);
     return () => clearTimeout(t);
-    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [screen, unitIdx, cardIdx, autoSpeak]);
 
-  // 🗓️ GÜNÜN KELİMESİ: tarihin deterministik hash'i ile her gün TÜM havuzdan
-  // farklı bir kelime seçilir — herkes aynı gün aynı kelimeyi görür.
   const wordOfDay = useMemo(() => {
     const d = todayStr();
     let h = 0;
@@ -2092,12 +1787,10 @@ export default function App() {
     return ALL_WORDS[h % ALL_WORDS.length];
   }, []);
 
-  // 🔤/📖 AYRIMI: gerçek alfabe dersleri (ilk 16) ile tematik okuma pratiği ayrı sayılır
   const coreAlphaIds = new Set(ALPHABET_LESSONS.slice(0, CORE_ALPHA_LESSON_COUNT).map(l => l.id));
   const coreAlphaDone = completedAlpha.filter(id => coreAlphaIds.has(id)).length;
   const readingLessonsDone = completedAlpha.length - coreAlphaDone;
 
-  // STİLLER
   const containerStyle: React.CSSProperties = { maxWidth: '720px', margin: '0 auto', padding: '16px' };
   const cardBox: React.CSSProperties = { background: '#1e293b', borderRadius: '16px', padding: '24px', border: '1px solid #334155', boxShadow: '0 10px 25px -5px rgba(0,0,0,0.3)' };
   const primaryBtn: React.CSSProperties = { width: '100%', padding: '16px', borderRadius: '12px', border: 'none', background: '#3b82f6', color: '#fff', fontSize: '16px', fontWeight: 800, cursor: 'pointer', boxShadow: '0 4px 14px rgba(59,130,246,0.4)', transition: 'transform 0.1s' };
@@ -2105,7 +1798,6 @@ export default function App() {
   return (
     <div style={{ backgroundColor: '#0f172a', minHeight: '100vh', color: '#f8fafc', fontFamily: 'system-ui, -apple-system, sans-serif' }}>
 
-      {/* ÜST İLERLEME & İSTATİSTİK BARI (DUOLINGO TARZI) */}
       <div style={{ position: 'sticky', top: 0, zIndex: 100, background: '#1e293b', borderBottom: '1px solid #334155', padding: '12px 20px', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
         <div style={{ display: 'flex', alignItems: 'center', gap: '8px', cursor: 'pointer' }} onClick={() => { setScreen('MAP'); setActiveTab('MAP'); }}>
           <span style={{ fontSize: '24px' }}>{langMeta().flag}</span>
@@ -2142,19 +1834,16 @@ export default function App() {
         </div>
       </div>
 
-      {/* İLERLEME ÇUBUĞU */}
       <div style={{ background: '#0f172a', height: '6px', width: '100%' }}>
         <div style={{ background: 'linear-gradient(90deg, #3b82f6, #10b981)', height: '100%', width: `${progressPercent}%`, transition: 'width 0.3s' }} />
       </div>
 
       <div style={containerStyle}>
 
-        {/* ANA HARİTA GÖRÜNÜMÜ */}
         {screen === 'MAP' && activeTab === 'MAP' && (
           <div>
             <SceneBanner icon={langMeta().flag} color={langMeta().accentColor} label={langMeta().banner} />
 
-            {/* 🗓️ GÜNÜN KELİMESİ — tarihe göre deterministik seçilir, dinlenebilir */}
             <div style={{ ...cardBox, marginBottom: '16px', border: '1px solid #f59e0b55', background: 'linear-gradient(135deg, rgba(245,158,11,0.12), #1e293b)' }}>
               <div style={{ display: 'flex', alignItems: 'center', gap: '14px', flexWrap: 'wrap' }}>
                 <div style={{ fontSize: '30px' }}>🗓️</div>
@@ -2168,7 +1857,6 @@ export default function App() {
               </div>
             </div>
 
-            {/* 📋 GÜNLÜK AKILLI PLAN — vadesi gelen SRS + zayıf kelimeler + sıradaki adım */}
             <div style={{ ...cardBox, marginBottom: '16px', border: '1px solid #22c55e55' }}>
               <div style={{ fontWeight: 900, marginBottom: '10px' }}>📋 Bugünün Planı — unutmadan tekrar et</div>
               <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))', gap: '10px' }}>
@@ -2198,7 +1886,6 @@ export default function App() {
               </div>
             </div>
 
-            {/* ⚡ ULTRA ÖĞRENME MERKEZİ — 📝 deneme sınavları + 🃏 kart evi + ultra zorluk modu */}
             <div style={{ ...cardBox, marginBottom: '16px', border: `1px solid ${ultra ? '#f97316' : '#22d3ee'}55`, background: ultra ? 'linear-gradient(135deg, rgba(249,115,22,0.14), #1e293b)' : 'linear-gradient(135deg, rgba(34,211,238,0.1), rgba(245,158,11,0.06), #1e293b)' }}>
               <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: '10px', flexWrap: 'wrap', marginBottom: '10px' }}>
                 <div style={{ fontWeight: 900 }}>⚡ Ultra Öğrenme Merkezi {ultra && <span style={{ fontSize: '10px', fontWeight: 900, color: '#fff', background: 'linear-gradient(135deg,#f97316,#ef4444)', padding: '3px 8px', borderRadius: '999px', marginLeft: '6px' }}>ULTRA AKTİF · XP ×1.5</span>}</div>
@@ -2223,7 +1910,6 @@ export default function App() {
               </div>
             </div>
 
-            {/* SESLİ YAPAY ZEKA KOÇU — kullanıcının ilerlemesine göre günlük konuşma/çeviri/telaffuz tekrarı */}
             <div style={{ ...cardBox, marginBottom: '24px', border: '1px solid #38bdf8', background: 'linear-gradient(135deg, rgba(56,189,248,0.18), rgba(168,85,247,0.12), #1e293b)' }}>
               <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: '14px', flexWrap: 'wrap' }}>
                 <div style={{ display: 'flex', alignItems: 'center', gap: '14px' }}>
@@ -2242,7 +1928,6 @@ export default function App() {
               </div>
             </div>
 
-            {/* GÜNLÜK ARALIKLI TEKRAR (SPACED REPETITION) KARTI — KALICI HAFIZANIN KALBİ */}
             {srsBank.length > 0 && (
               <div style={{ ...cardBox, marginBottom: '24px', border: dueSRS.length > 0 ? '1px solid #f59e0b' : '1px solid #334155', background: dueSRS.length > 0 ? 'linear-gradient(135deg, rgba(245,158,11,0.15), #1e293b)' : '#1e293b' }}>
                 <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: '12px' }}>
@@ -2269,8 +1954,6 @@ export default function App() {
               </div>
             )}
 
-            {/* HİKAYE MODÜLÜ UYARISI — 10 ünitelik kontrol noktası tamamlandıysa ve hikaye henüz
-                okunmadıysa üstte göz alıcı bir kartla hatırlatılır (otomatik açılış kaçırılsa bile). */}
             {pendingCheckpointStory && (
               <div style={{ ...cardBox, marginBottom: '24px', border: '1px solid #f59e0b', background: 'linear-gradient(135deg, rgba(245,158,11,0.18), rgba(217,70,239,0.10))' }}>
                 <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: '12px' }}>
@@ -2290,7 +1973,6 @@ export default function App() {
               </div>
             )}
 
-            {/* İLERLEME ÖZET KARTI */}
             <div style={{ ...cardBox, marginBottom: '24px', background: 'linear-gradient(135deg, #1e293b, #0f172a)', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
               <div>
                 <div style={{ fontSize: '12px', color: '#94a3b8', fontWeight: 700 }}>GENEL KURS İLERLEMESİ</div>
@@ -2301,7 +1983,6 @@ export default function App() {
               </button>
             </div>
 
-            {/* BAŞA SARMA / İLERLEMEYİ SIFIRLAMA */}
             <div style={{ textAlign: 'right', marginBottom: '24px' }}>
               {!showResetConfirm ? (
                 <button onClick={() => setShowResetConfirm(true)} style={{ background: 'transparent', border: '1px solid #475569', color: '#94a3b8', padding: '8px 14px', borderRadius: '10px', fontWeight: 700, cursor: 'pointer', fontSize: '12px' }}>
@@ -2318,8 +1999,6 @@ export default function App() {
               )}
             </div>
 
-            {/* TEK MÜFREDAT YOLU — "Aşama 1/2/3" gruplandırması YOK: Ünite 1 → {PATH.length} ard arda tek sıra.
-                Tüm kartlar aynı renkli ünite kartı tasarımını kullanır; seviye etiketleri LEVEL_COLORS ile renklendirilir. */}
             <div>
               <div style={{ ...cardBox, padding: '14px 18px', marginBottom: '14px' }}>
                 <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', gap: '10px', flexWrap: 'wrap' }}>
@@ -2331,7 +2010,6 @@ export default function App() {
                     🔤 {coreAlphaDone}/{CORE_ALPHA_LESSON_COUNT} alfabe • 📖 {readingLessonsDone}/{ALPHABET_LESSONS.length - CORE_ALPHA_LESSON_COUNT} okuma pratiği • 🧩 {completedGrammar.length}/{GRAMMAR_FOUNDATION_UNITS.length} cümle temeli • 🎧 {completedTopics.length}/{TOPICS_100_TOTAL} dinleme • 📚 {completedUnits.length}/{UNITS_DATA.length} ünite • 📕 {completedStories.length}/{STORIES.length} hikaye
                   </div>
                 </div>
-                {/* Seviye sıçrama çipleri + ses testi */}
                 <div style={{ display: 'flex', gap: '6px', marginTop: '12px', flexWrap: 'wrap', alignItems: 'center' }}>
                   {LEVELS.map(lv => (
                     <button key={lv} onClick={() => levelRefs.current[lv]?.scrollIntoView({ behavior: 'smooth', block: 'start' })} style={{
@@ -2348,8 +2026,6 @@ export default function App() {
                 </div>
               </div>
 
-              {/* Yol kartları — her 10. müfredat ünitesinin hemen ardından bir HİKAYE KONTROL
-                  NOKTASI kartı gelir (kilitli/açık/tamamlanlı durumlarıyla). */}
               <div style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}>
                 {PATH.map((step, pos) => {
                   const done = isStepDone(step);
@@ -2360,8 +2036,6 @@ export default function App() {
                     const les = ALPHABET_LESSONS[step.lessonIdx];
                     const isCoreAlpha = step.lessonIdx < CORE_ALPHA_LESSON_COUNT;
                     color = ALPHA_BANNER_COLORS[step.lessonIdx % ALPHA_BANNER_COLORS.length];
-                    // Gerçek harf dersi: harf ikonlu ALFABE kartı. Tematik ders: 📖 OKUMA PRATİĞİ
-                    // (kelime öğrenme — müfredat aralarına serpiştirilmiştir, alfabe DEĞİLDİR).
                     icon = isCoreAlpha ? les.letters[0].upper : '📖';
                     title = les.title;
                     desc = les.subtitle;
@@ -2389,7 +2063,6 @@ export default function App() {
                     desc = mod.description;
                     kindTag = '📚 MÜFREDAT';
                   }
-                  // Bu ünite bir hikayenin (kontrol noktası ya da bölüm finali) sonuncusuysa hikaye kartını/kartlarını da çiz.
                   const cpStories = step.kind === 'unit' ? storiesTriggeredAfterUnit(UNITS_DATA[step.unitIdx].id) : [];
                   return (
                     <React.Fragment key={pos}>
@@ -2461,7 +2134,6 @@ export default function App() {
           </div>
         )}
 
-        {/* KALICI HAFIZA YÖNTEMLERİ — BİLİMSEL AÇIKLAMA VE UYGULAMA REHBERİ */}
         {activeTab === 'METHODS' && (
           <div style={cardBox}>
             <button onClick={() => setActiveTab('MAP')} style={{ background: 'transparent', border: 'none', color: '#94a3b8', fontWeight: 700, cursor: 'pointer', marginBottom: '12px' }}>← Haritaya Dön</button>
@@ -2506,7 +2178,6 @@ export default function App() {
           </div>
         )}
 
-        {/* HİKAYE BAĞLANTI HARİTASI — hangi hikaye hangisine bağlanır (ÖZET YOK) */}
         {activeTab === 'CONNECTIONS' && (
           <div style={cardBox}>
             <button onClick={() => setActiveTab('MAP')} style={{ background: 'transparent', border: 'none', color: '#94a3b8', fontWeight: 700, cursor: 'pointer', marginBottom: '12px' }}>← Haritaya Dön</button>
@@ -2517,7 +2188,6 @@ export default function App() {
               Aşağıda yalnızca hikayelerin <b>birbirine nasıl bağlandığı</b> gösterilir — içerik/özet yoktur, sürpriz bozulmaz.
             </p>
 
-            {/* İKİ ANLATI KOLU */}
             <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(260px, 1fr))', gap: '14px', marginTop: '16px' }}>
               <div style={{ background: '#0f172a', border: '1px solid #eab308', borderRadius: '12px', padding: '16px' }}>
                 <div style={{ fontWeight: 900, color: '#eab308', marginBottom: '8px' }}>🎙️ KOL 1 — HIMYM Çerçevesi</div>
@@ -2543,7 +2213,6 @@ export default function App() {
               </div>
             </div>
 
-            {/* BAĞLANTILAR */}
             <h3 style={{ color: '#f472b6', margin: '22px 0 10px' }}>🔗 Bağlantılar</h3>
             <div style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}>
               {[
@@ -2573,11 +2242,9 @@ export default function App() {
           </div>
         )}
 
-        {/* HATA / UNUTULANLAR KÜTÜĞÜ */}
         {activeTab === 'MISTAKES' && (
           <div style={cardBox}>
             <button onClick={() => setActiveTab('MAP')} style={{ background: 'transparent', border: 'none', color: '#94a3b8', fontWeight: 700, cursor: 'pointer', marginBottom: '12px' }}>← Haritaya Dön</button>
-            {/* 🎯 ZAYIF NOKTALARIM — kronik hata panosu + kişiye özel ek test */}
             <div style={{ background: '#0f172a', borderRadius: '14px', padding: '18px', border: '1px solid #f97316', marginBottom: '22px' }}>
               <h2 style={{ color: '#f97316', marginTop: 0, marginBottom: '6px' }}>🎯 Zayıf Noktalarım</h2>
               <p style={{ color: '#cbd5e1', fontSize: '13px', marginTop: 0 }}>
@@ -2629,7 +2296,6 @@ export default function App() {
           </div>
         )}
 
-        {/* DERS EKRANLARI */}
         {screen !== 'MAP' && activeTab === 'MAP' && (
           <div style={cardBox}>
             <button onClick={() => setScreen('MAP')} style={{ background: 'transparent', border: 'none', color: '#94a3b8', fontWeight: 700, cursor: 'pointer', marginBottom: '16px' }}>← {screen === 'AI_TUTOR' ? 'Haritaya Dön' : 'Dersten Çık'}</button>
@@ -2640,7 +2306,6 @@ export default function App() {
               </div>
             )}
 
-            {/* 🧭 KİŞİSELLEŞTİRİLMİŞ ÖĞRENİM ROTASI — çözülen sorulardan zaman/edat eksik haritası */}
             {screen === 'ROUTE' && (
               <LearningRoute
                 errorStats={errorStats}
@@ -2650,7 +2315,6 @@ export default function App() {
               />
             )}
 
-            {/* 🕸️ 3D KELİME AĞI — bildiklerin bölüm/teknik/seviye bağlarıyla; unutulanlar kırmızı */}
             {screen === 'GRAPH' && (
               <WordGraph3D
                 srsBank={srsBank}
@@ -2660,10 +2324,8 @@ export default function App() {
               />
             )}
 
-            {/* 🎬 KOÇ AKIŞI — hatalara özel AI üretimi 15-30 sn dikey mikro dersler */}
             {screen === 'SHORTS' && <CoachShorts errorStats={errorStats} />}
 
-            {/* ⚡ HIZLI KURTARMA TESTİ — 3D ağda tıklanan kırmızı/zayıf düğüme 60 sn hedefli test */}
             {screen === 'RESCUE' && rescueTarget && (
               <RescueTest
                 target={rescueTarget}
@@ -2673,7 +2335,6 @@ export default function App() {
               />
             )}
 
-            {/* 📝 DENEME SINAVLARI — tamamlanan ünitelerden süreli, 6 bölümlü karma sınav */}
             {screen === 'MOCK' && (
               <MockExamScreen
                 completedUnits={completedUnits}
@@ -2683,7 +2344,6 @@ export default function App() {
               />
             )}
 
-            {/* 🃏 KART EVİ — klasik / yıldırım / üretim-yazma / eşleştirme kart modları */}
             {screen === 'CARDS' && (
               <FlashcardArena
                 completedUnits={completedUnits}
@@ -2695,7 +2355,6 @@ export default function App() {
               />
             )}
 
-            {/* 🗣️ AĞIZ JİMNASTİĞİ — günlük hız odaklı konuşma ödevi (ezber değil tempo) */}
             {screen === 'SPEAK' && (
               <SpeechGym
                 completedUnits={completedUnits}
@@ -2719,7 +2378,6 @@ export default function App() {
               />
             )}
 
-            {/* CÜMLE TEMELLERİ — alfabeden sonra gelen özne/yüklem/edat mini üniteleri */}
             {screen === 'GRAMMAR' && (() => {
               const g = GRAMMAR_FOUNDATION_UNITS[grammarIdx];
               if (!g) return null;
@@ -2821,8 +2479,6 @@ export default function App() {
               );
             })()}
 
-            {/* 100 KONU — KONU DETAYI (sesli dinleme + test) */}
-            {/* Format BİREBİR ünitelerle aynı: KELİMELER + CÜMLELER + SAHNE/DİYALOG. */}
             {screen === 'TOPIC' && currentTopic && (() => {
               const cat = topicCatInfo(currentTopic.cat);
               const relatedUnit = currentTopic.unitId ? UNITS_DATA.find(u => u.id === currentTopic.unitId) : undefined;
@@ -2831,7 +2487,7 @@ export default function App() {
               const relatedUnlocked = relatedStepPos >= 0 && isStepUnlocked(relatedStepPos);
               const srcUnits = topicSourceUnits(currentTopic).slice(0, 4);
               const isSyllable = currentTopic.cat === 'fonetik' && currentTopic.items.every(i => i.ru.length <= 4);
-              const pathPos = TOPIC_PATH_POS[topicIdx]; // yoldaki global "ÜNİTE N" numarası
+              const pathPos = TOPIC_PATH_POS[topicIdx];
               const prevStep = pathPos > 1 ? PATH[pathPos - 2] : null;
               const nextStep = pathPos < PATH.length ? PATH[pathPos] : null;
               return (
@@ -2868,19 +2524,16 @@ export default function App() {
                     )}
                   </div>
 
-                  {/* 🎚️ Dinleme hızı — kelime bozulmadan yavaşlat/hızlandır (perde korumalı) */}
                   <div style={{ marginTop: '18px' }}>
                     <ListenSpeedControl speed={listenSpeed} onChange={setListenSpeed} />
                   </div>
 
-                  {/* SESLİ DİNLEME BUTONLARI — kulağı alıştırmanın kalbi */}
                   <div style={{ display: 'flex', gap: '10px', flexWrap: 'wrap', margin: '0 0 18px' }}>
                     <button onClick={playTopicNormal} style={{ flex: 1, minWidth: '150px', padding: '14px', borderRadius: '12px', background: '#3b82f6', border: 'none', color: '#fff', fontSize: '15px', fontWeight: 900, cursor: 'pointer' }}>🎧 Konuyu Dinle</button>
                     <button onClick={playTopicSlow} style={{ flex: 1, minWidth: '150px', padding: '14px', borderRadius: '12px', background: '#8b5cf6', border: 'none', color: '#fff', fontSize: '15px', fontWeight: 900, cursor: 'pointer' }}>🐢 Yavaşça Dinle</button>
                   </div>
                   <p style={{ color: '#64748b', fontSize: '12px', marginTop: '-8px', marginBottom: '18px' }}>İpucu: dinlerken aynı sözleri yüksek sesle tekrarla (gölgeleme / shadowing) — kulağın bu konuda en hızlı gelişir.</p>
 
-                  {/* KELİME LİSTESİ — her kelimenin kendi 🔊 butonu + seviye etiketi var */}
                   <div style={{ fontSize: '12px', color: '#94a3b8', fontWeight: 700, marginBottom: '8px' }}>
                     {isSyllable ? 'HECELER & SESLER' : 'KELİMELER'} — yanındaki 🔊 ile sesini dinle:
                   </div>
@@ -2902,7 +2555,6 @@ export default function App() {
                     ))}
                   </div>
 
-                  {/* CÜMLELER — ünitelerdeki sentences bloğuyla aynı format */}
                   {currentTopic.sentences.length > 0 && (
                     <>
                       <div style={{ fontSize: '12px', color: '#94a3b8', fontWeight: 700, marginBottom: '8px' }}>CÜMLELER — dinle, durdur ve aynen tekrarla:</div>
@@ -2918,7 +2570,6 @@ export default function App() {
                     </>
                   )}
 
-                  {/* SAHNE / DİYALOG — ünitelerdeki dialogue bloğuyla aynı format */}
                   {currentTopic.dialogue.length > 0 && (
                     <>
                       <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', gap: '10px', marginBottom: '8px', flexWrap: 'wrap' }}>
@@ -2943,7 +2594,6 @@ export default function App() {
                     </>
                   )}
 
-                  {/* İLGİLİ MÜFREDAT ÜNİTESİ — müfredat ön-hazırlık konularında */}
                   {relatedUnit && (
                     <div style={{ ...cardBox, padding: '14px 18px', margin: '18px 0 0', display: 'flex', justifyContent: 'space-between', alignItems: 'center', gap: '12px', flexWrap: 'wrap', border: `1px solid ${relatedUnlocked ? `${LEVEL_COLORS[relatedUnit.levelGroup]}88` : '#334155'}` }}>
                       <div>
@@ -2967,7 +2617,6 @@ export default function App() {
                     ▶️ Teste Başla (5 Soruluk "Dinle & Seç") →
                   </button>
 
-                  {/* ÖNCEKİ / SONRAKİ ADIM — tek yol üzerinde gezinme (sonraki adım, bu konu bitince açılır) */}
                   <div style={{ display: 'flex', gap: '10px', marginTop: '14px' }}>
                     {prevStep && (
                       <button onClick={() => openStep(prevStep)} style={{ flex: 1, padding: '12px', borderRadius: '12px', background: '#334155', border: 'none', color: '#cbd5e1', fontWeight: 800, cursor: 'pointer', fontSize: '13px' }}>
@@ -2984,7 +2633,6 @@ export default function App() {
               );
             })()}
 
-            {/* 100 KONU — "DİNLE & SEÇ" TESTİ */}
             {screen === 'TOPIC_TEST' && currentTopic && (() => {
               const cat = topicCatInfo(currentTopic.cat);
               const q = topicQs[topicQIdx];
@@ -3046,7 +2694,6 @@ export default function App() {
               );
             })()}
 
-            {/* HARF EKRANI — Sade yapı: HARF → SES İPUCU → NET KURAL → 1-2 ÖRNEK KELİME */}
             {screen === 'ALPHA' && (
               <div>
                 {(() => {
@@ -3057,25 +2704,21 @@ export default function App() {
                       <SceneBanner icon={`${ALPHABET_LESSONS[alphaIdx].letters[0].upper}${ALPHABET_LESSONS[alphaIdx].letters[0].lower}`} color={lesColor} label={ALPHABET_LESSONS[alphaIdx].title} />
                       <div style={{ fontSize: '12px', color: '#38bdf8', fontWeight: 800 }}>HARF {letterIdx + 1} / {ALPHABET_LESSONS[alphaIdx].letters.length}</div>
 
-                      {/* 1) HARF */}
                       <div style={{ background: '#0f172a', padding: '26px', borderRadius: '16px', border: '1px solid #334155', textAlign: 'center', margin: '16px 0 12px' }}>
                         <div style={{ fontSize: '84px', fontWeight: 900, color: '#3b82f6', lineHeight: 1.1 }}>{l.upper} {l.lower}</div>
                         <button onClick={() => speak(l.upper)} style={{ padding: '8px 18px', borderRadius: '8px', background: '#3b82f6', border: 'none', color: '#fff', cursor: 'pointer', fontWeight: 800, marginTop: '14px' }}>🔊 Harfi Dinle</button>
                       </div>
 
-                      {/* 2) SES İPUCU */}
                       <div style={{ background: '#0f172a', padding: '14px 16px', borderRadius: '12px', border: '1px solid #334155', marginBottom: '10px', display: 'flex', alignItems: 'center', gap: '12px' }}>
                         <span style={{ fontSize: '10px', fontWeight: 900, color: '#38bdf8', background: '#1e293b', border: '1px solid #38bdf855', padding: '3px 8px', borderRadius: '6px', whiteSpace: 'nowrap' }}>SES İPUCU</span>
                         <span style={{ fontWeight: 800, fontSize: '16px' }}>/{l.translit}/ — {l.soundHint}</span>
                       </div>
 
-                      {/* 3) NET FONETİK KURAL */}
                       <div style={{ background: '#0f172a', padding: '14px 16px', borderRadius: '12px', border: '1px solid #334155', marginBottom: '10px', display: 'flex', alignItems: 'center', gap: '12px' }}>
                         <span style={{ fontSize: '10px', fontWeight: 900, color: '#f59e0b', background: '#1e293b', border: '1px solid #f59e0b55', padding: '3px 8px', borderRadius: '6px', whiteSpace: 'nowrap' }}>KURAL</span>
                         <span style={{ fontSize: '14px', color: '#e2e8f0', lineHeight: '1.5' }}>{l.phoneticRule}</span>
                       </div>
 
-                      {/* 4) 1-2 TEMEL ÖRNEK KELİME */}
                       <div style={{ fontSize: '12px', color: '#94a3b8', fontWeight: 700, margin: '8px 0 8px' }}>ÖRNEK KELİMELER</div>
                       <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(180px, 1fr))', gap: '10px', marginBottom: '18px' }}>
                         {l.examples.map((ex, i) => (
@@ -3097,7 +2740,6 @@ export default function App() {
               </div>
             )}
 
-            {/* HARF ANLIK TANIMA TESTİ (her harften sonra tekrar tekrar sorulur) */}
             {screen === 'ALPHA_CHECK' && alphaCheckQ && (
               <div>
                 <SceneBanner icon={`${ALPHABET_LESSONS[alphaIdx].letters[0].upper}${ALPHABET_LESSONS[alphaIdx].letters[0].lower}`} color={ALPHA_BANNER_COLORS[alphaIdx % ALPHA_BANNER_COLORS.length]} label="⚡ Anlık Harf Testi" />
@@ -3120,7 +2762,6 @@ export default function App() {
               </div>
             )}
 
-            {/* HARF GRUBU BİTİNCE OKUMA TESTİ (fonetik kuralları gerçek kelimelerde uygulama) */}
             {screen === 'ALPHA_READING' && (
               <div>
                 {(() => {
@@ -3146,7 +2787,6 @@ export default function App() {
               </div>
             )}
 
-            {/* DERS ANLATIM EKRANI */}
             {screen === 'STORY' && (
               <div>
                 {(() => {
@@ -3170,7 +2810,6 @@ export default function App() {
               </div>
             )}
 
-            {/* DİZİ SAHNESİ EKRANI */}
             {screen === 'DIALOG' && (
               <div>
                 {(() => {
@@ -3182,7 +2821,6 @@ export default function App() {
                       <h2 style={{ marginTop: '8px', marginBottom: '2px', fontSize: '22px' }}>{mod.sceneTitle}</h2>
                       <p style={{ color: '#94a3b8', fontSize: '13px', marginTop: 0 }}>{mod.sceneContext}</p>
 
-                      {/* 🎚️ Dinleme hızı — kelime bozulmadan yavaşlat/hızlandır (sadece dinleme bölümü) */}
                       <ListenSpeedControl speed={listenSpeed} onChange={setListenSpeed} />
 
                       <div style={{ display: 'flex', flexDirection: 'column', gap: '12px', margin: '16px 0' }}>
@@ -3208,7 +2846,6 @@ export default function App() {
               </div>
             )}
 
-            {/* СМЕШАРИКИ (SMESHARIKI) VİDEO SAHNESİ + ANLAMA SORULARI — Anlaşılır Girdi (Comprehensible Input) yöntemi */}
             {screen === 'SMESHARIKI' && (
               <div>
                 {(() => {
@@ -3225,10 +2862,8 @@ export default function App() {
                       <div style={{ fontSize: '13px', color: '#94a3b8', marginBottom: '4px' }}>{scene.episodeTr} • Karakterler: {scene.characters.join(', ')}</div>
                       <p style={{ color: '#cbd5e1', fontSize: '13px' }}>{scene.contextTr}</p>
 
-                      {/* 🎚️ Dinleme hızı — kelime bozulmadan yavaşlat/hızlandır (sadece dinleme bölümü) */}
                       <ListenSpeedControl speed={listenSpeed} onChange={setListenSpeed} />
 
-                      {/* Кухня sahneleri için AI ile üretilmiş sahne görseli */}
                       {isK && (
                         <div style={{ borderRadius: '14px', overflow: 'hidden', border: `1px solid ${sceneColor}55`, marginBottom: '14px' }}>
                           <img src="scene/kuhnya-kitchen.jpg" alt="«Ван Гог» mutfağı sahnesi" style={{ width: '100%', maxHeight: '200px', objectFit: 'cover', display: 'block' }} />
@@ -3277,7 +2912,6 @@ export default function App() {
               </div>
             )}
 
-            {/* KELİME KARTLARI */}
             {screen === 'FLASHCARD' && (
               <div>
                 {(() => {
@@ -3288,7 +2922,6 @@ export default function App() {
                       <UnitBanner unitId={mod.id} icon={mod.icon} color={mod.color} label={mod.title} />
                       <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: '8px' }}>
                         <div style={{ fontSize: '12px', color: '#94a3b8', fontWeight: 700 }}>KELİME {cardIdx + 1} / {mod.words.length}</div>
-                        {/* 🔊 OTOMATİK SESLENDİRME AÇMA/KAPAMA: kart değişince kelime kendiliğinden okunur */}
                         <button onClick={() => setAutoSpeak(v => !v)}
                           title={`Kart her değiştiğinde ${langMeta().name} kelimesini otomatik okur`}
                           style={{ background: autoSpeak ? 'rgba(34,197,94,0.15)' : '#0f172a', border: `1px solid ${autoSpeak ? '#22c55e' : '#334155'}`, color: autoSpeak ? '#22c55e' : '#64748b', borderRadius: '999px', padding: '6px 12px', fontSize: '12px', fontWeight: 800, cursor: 'pointer' }}>
@@ -3323,7 +2956,6 @@ export default function App() {
               </div>
             )}
 
-            {/* EŞLEŞTİRME TESTİ */}
             {screen === 'MATCH' && (
               <div>
                 <UnitBanner unitId={UNITS_DATA[unitIdx].id} icon={UNITS_DATA[unitIdx].icon} color={UNITS_DATA[unitIdx].color} label={UNITS_DATA[unitIdx].title} />
@@ -3346,7 +2978,6 @@ export default function App() {
               </div>
             )}
 
-            {/* HIZLI TANIMA TESTİ (klavyesiz — Rusça/Kiril klavyesi olmayanlar için 4 seçenekli üretici hatırlama) */}
             {screen === 'TYPING' && (
               <div>
                 <UnitBanner unitId={UNITS_DATA[unitIdx].id} icon={UNITS_DATA[unitIdx].icon} color={UNITS_DATA[unitIdx].color} label={UNITS_DATA[unitIdx].title} />
@@ -3364,7 +2995,6 @@ export default function App() {
               </div>
             )}
 
-            {/* CÜMLE KURMA TESTİ */}
             {screen === 'SENTENCE' && (
               <div>
                 <UnitBanner unitId={UNITS_DATA[unitIdx].id} icon={UNITS_DATA[unitIdx].icon} color={UNITS_DATA[unitIdx].color} label={UNITS_DATA[unitIdx].title} />
@@ -3388,7 +3018,6 @@ export default function App() {
                       </div>
                       <button onClick={checkSentence} style={primaryBtn}>Cümleyi Tamamla</button>
 
-                      {/* 🔬 ANLAMSAL FARK ANALİZİ — "doğru/yanlış" değil, ANLAM farkı raporu */}
                       {sentenceAnalysis && (
                         <div style={{ marginTop: '16px', background: '#0f172a', border: '1px solid #f59e0b66', borderRadius: '14px', padding: '16px' }}>
                           <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', gap: '10px', flexWrap: 'wrap' }}>
@@ -3415,7 +3044,6 @@ export default function App() {
               </div>
             )}
 
-            {/* SARMAL QUIZ / DİNLEME TESTİ / ALFABE SINAVI / GENEL TEKRAR (hepsi aynı motoru kullanır) */}
             {screen === 'QUIZ' && quizQuestions[quizIdx] && (
               <div>
                 {quizContext === 'ALPHA_FINAL' && <SceneBanner icon={`${ALPHABET_LESSONS[alphaIdx].letters[0].upper}${ALPHABET_LESSONS[alphaIdx].letters[0].lower}`} color={ALPHA_BANNER_COLORS[alphaIdx % ALPHA_BANNER_COLORS.length]} label="Alfabe Bitiş Sınavı" />}
@@ -3456,7 +3084,6 @@ export default function App() {
               </div>
             )}
 
-            {/* ÜNİTE HİKAYESİ (A1 hariç, ünite bitince) — kelimelerle bağlantılı kısa sahne/hikaye, Türkçesi gizli */}
             {screen === 'UNIT_STORY' && (
               <div>
                 {(() => {
@@ -3490,7 +3117,6 @@ export default function App() {
               </div>
             )}
 
-            {/* TÜRKÇELEŞTİRME SINAVI — hikayenin her cümlesi için doğru Türkçe karşılığı seçilir */}
             {screen === 'STORY_TEST' && storyTestQuestions[storyTestIdx] && (
               <div>
                 {(() => {
@@ -3538,7 +3164,6 @@ export default function App() {
               </div>
             )}
 
-            {/* SINAV SONUCU — baraj (%90/⚡%95) üstü geçer; altındaysa kelimeler karıştırılıp tekrar ettirilir */}
             {screen === 'STORY_RESULT' && storyResult && (
               <div>
                 {(() => {
@@ -3570,12 +3195,6 @@ export default function App() {
               </div>
             )}
 
-            {/* ============================================================
-                HİKAYE MODÜLÜ (STORY & SUMMARY) — HER 10 ÜNİTEDE BİR AÇILIR
-                1) Hedef dilde hikaye (satır çevirileri tıklanınca açılır) + 🔊 dinleme
-                2) Sözlük kartları: hikayedeki en fazla 3 YENİ kelime
-                3) Türkçe özet alanı + analiz: "X doğru nokta / Y eksik-yanlış"
-                ============================================================ */}
             {screen === 'CHECKPOINT_STORY' && (() => {
               const story = STORIES[storyCheckpointIdx];
               if (!story) return null;
@@ -3591,7 +3210,6 @@ export default function App() {
                   <h2 style={{ marginTop: '8px', marginBottom: '2px', fontSize: '22px' }}>{story.titleTr} <span style={{ color: story.color, fontSize: '16px' }}>— {story.titleRu}</span></h2>
                   <p style={{ color: '#cbd5e1', fontSize: '13px', marginTop: 0, lineHeight: '1.6', fontStyle: 'italic' }}>{story.framingTr}</p>
 
-                  {/* Bölüm finali kapısı — kurallar */}
                   {isFinal && (
                     <div style={{ background: 'rgba(251,191,36,0.10)', border: '1px solid #fbbf2455', borderRadius: '12px', padding: '14px 16px', marginBottom: '16px' }}>
                       <div style={{ fontSize: '13px', fontWeight: 900, color: '#fbbf24' }}>🚧 BÖLÜM FİNALİ KAPISI</div>
@@ -3611,7 +3229,6 @@ export default function App() {
                     </div>
                   )}
 
-                  {/* KADRO — tekrarlayan karakterler, sitcom dinamikleri */}
                   <div style={{ background: '#0f172a', border: '1px solid #334155', borderRadius: '12px', padding: '12px 14px', marginBottom: '16px' }}>
                     <div style={{ fontSize: '11px', fontWeight: 800, color: '#94a3b8', marginBottom: '8px' }}>🎭 KADRO</div>
                     <div style={{ display: 'flex', gap: '8px', flexWrap: 'wrap' }}>
@@ -3623,13 +3240,11 @@ export default function App() {
                     </div>
                   </div>
 
-                  {/* SESLENDİRME */}
                   <div style={{ display: 'flex', gap: '10px', flexWrap: 'wrap', margin: '0 0 16px' }}>
                     <button onClick={() => speak(storyFullRu, 0.85)} style={{ flex: 1, minWidth: '150px', padding: '14px', borderRadius: '12px', background: '#3b82f6', border: 'none', color: '#fff', fontSize: '15px', fontWeight: 900, cursor: 'pointer' }}>🎧 Hikayeyi Dinle</button>
                     <button onClick={() => speak(storyFullRu, 0.55)} style={{ flex: 1, minWidth: '150px', padding: '14px', borderRadius: '12px', background: '#8b5cf6', border: 'none', color: '#fff', fontSize: '15px', fontWeight: 900, cursor: 'pointer' }}>🐢 Yavaşça Dinle</button>
                   </div>
 
-                  {/* HİKAYE METNİ — Türkçe çeviriler GİZLİ; satıra dokununca açılır */}
                   <div style={{ fontSize: '12px', color: '#94a3b8', fontWeight: 700, marginBottom: '8px' }}>📖 HİKAYE — önce hedef dilde oku; takıldığın satıra dokunup çevirisini açabilirsin:</div>
                   <div style={{ display: 'flex', flexDirection: 'column', gap: '10px', marginBottom: '22px' }}>
                     {story.paragraphs.map((line, i) => {
@@ -3658,7 +3273,6 @@ export default function App() {
                     })}
                   </div>
 
-                  {/* SÖZLÜK KARTLARI — hikaye başına en fazla 3 yeni kelime */}
                   <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', gap: '10px', marginBottom: '8px', flexWrap: 'wrap' }}>
                     <div style={{ fontSize: '12px', color: '#f59e0b', fontWeight: 800 }}>🃏 SÖZLÜK KARTLARI — bu hikayedeki <u>{story.newWords.length} yeni kelime</u>:</div>
                   </div>
@@ -3679,8 +3293,6 @@ export default function App() {
                     ))}
                   </div>
 
-                  {/* ESKİ KELİMELER TEKRARI — önceki bölümlerden bu hikayede geri dönen kelimeler
-                      (kalıcı öğrenme: B'deyken A kelimeleri unutulmasın diye her finalde tekrar) */}
                   {story.recycleWords && story.recycleWords.length > 0 && (
                     <div style={{ background: '#0f172a', border: '1px solid #3b82f655', borderRadius: '14px', padding: '16px', marginBottom: '18px' }}>
                       <div style={{ fontSize: '12px', fontWeight: 800, color: '#60a5fa', marginBottom: '4px' }}>🔁 ESKİ KELİMELER BU HİKAYEDE GERİ DÖNDÜ — tanıdık mı?</div>
@@ -3696,7 +3308,6 @@ export default function App() {
                     </div>
                   )}
 
-                  {/* TÜRKÇE ÖZET ALANI */}
                   <div style={{ background: '#0f172a', border: '1px solid #f59e0b55', borderRadius: '14px', padding: '16px' }}>
                     <div style={{ fontSize: '12px', color: '#f59e0b', fontWeight: 800, marginBottom: '6px' }}>📝 TÜRKÇELEŞTİR + ÖZETLE — konuşmaları kendi cümlelerinle Türkçe anlat:</div>
                     <p style={{ color: '#94a3b8', fontSize: '12px', marginTop: 0, marginBottom: '10px' }}>
@@ -3723,7 +3334,6 @@ export default function App() {
                     </div>
                   </div>
 
-                  {/* ANALİZ SONUCU — X doğru / Y eksik-yanlış + yapıcı geri bildirim */}
                   {ev && (
                     <div style={{ background: 'linear-gradient(135deg, rgba(245,158,11,0.10), #0f172a)', border: `1px solid ${ev.scorePercent >= 60 ? '#10b981' : ev.scorePercent >= 35 ? '#f59e0b' : '#ef4444'}`, borderRadius: '14px', padding: '18px', marginTop: '14px' }}>
                       <div style={{ display: 'flex', gap: '16px', alignItems: 'center', flexWrap: 'wrap' }}>
@@ -3736,7 +3346,6 @@ export default function App() {
                         </div>
                       </div>
 
-                      {/* Özet istatistikleri: X doğru / Y eksik-yanlış */}
                       <div style={{ display: 'flex', gap: '10px', marginTop: '14px', flexWrap: 'wrap' }}>
                         <div style={{ background: 'rgba(16,185,129,0.15)', border: '1px solid #10b981', borderRadius: '10px', padding: '10px 16px', flex: 1, minWidth: '150px', textAlign: 'center' }}>
                           <div style={{ fontSize: '24px', fontWeight: 900, color: '#10b981' }}>{ev.correctCount}</div>
@@ -3752,7 +3361,6 @@ export default function App() {
                         </div>
                       </div>
 
-                      {/* Doğru yakalanan noktalar */}
                       {ev.matched.length > 0 && (
                         <div style={{ marginTop: '14px' }}>
                           <div style={{ fontSize: '12px', fontWeight: 800, color: '#10b981', marginBottom: '6px' }}>✅ DOĞRU YAKALADIĞIN NOKTALAR ({ev.matched.length}):</div>
@@ -3762,7 +3370,6 @@ export default function App() {
                         </div>
                       )}
 
-                      {/* Yanlış anlaşılan yerler */}
                       {ev.misunderstood.length > 0 && (
                         <div style={{ marginTop: '12px' }}>
                           <div style={{ fontSize: '12px', fontWeight: 800, color: '#ef4444', marginBottom: '6px' }}>⚠️ YANLIŞ ANLAŞILAN YERLER ({ev.misunderstood.length}):</div>
@@ -3772,7 +3379,6 @@ export default function App() {
                         </div>
                       )}
 
-                      {/* Eksik noktalar (ipuçlarıyla — cevabı ifşa etmez) */}
                       {ev.missing.length > 0 && (
                         <div style={{ marginTop: '12px' }}>
                           <div style={{ fontSize: '12px', fontWeight: 800, color: '#f59e0b', marginBottom: '6px' }}>🧩 EKSİK NOKTALAR ({ev.missing.length}) — ipuçları:</div>
@@ -3782,14 +3388,12 @@ export default function App() {
                         </div>
                       )}
 
-                      {/* Gelişim önerileri */}
                       {ev.tips.length > 0 && (
                         <div style={{ marginTop: '12px', fontSize: '12px', color: '#94a3b8', lineHeight: 1.7 }}>
                           {ev.tips.map((t, i) => <div key={i}>💡 {t}</div>)}
                         </div>
                       )}
 
-                      {/* Aksiyon butonları — bölüm finalinde kapı kuralları işler */}
                       <div style={{ display: 'flex', gap: '10px', marginTop: '16px', flexWrap: 'wrap' }}>
                         <button
                           onClick={() => setStoryEvalResult(null)}
@@ -3820,8 +3424,6 @@ export default function App() {
                     </div>
                   )}
 
-                  {/* İSTEĞE BAĞLI SEVİYE TEKRARI — önceki bölümlerdekiler
-                      dahil tüm kelimelerden karışık sorular (kalıcı öğrenme pratiği) */}
                   {isFinal && summaryPassed && !storyQuizPassed && (
                     <div style={{ background: 'linear-gradient(135deg, rgba(59,130,246,0.12), #0f172a)', border: '1px solid #3b82f6', borderRadius: '14px', padding: '18px', marginTop: '14px' }}>
                       <div style={{ fontSize: '13px', fontWeight: 900, color: '#60a5fa' }}>🔁 İSTEĞE BAĞLI SEVİYE TEKRARI — {story.levelId}</div>
@@ -3871,8 +3473,6 @@ export default function App() {
                     </div>
                   )}
 
-                  {/* Analiz edilmeden tamamlama — YALNIZ kontrol noktası hikayelerinde
-                      (bölüm finallerinde %70 Türkçe özet/çeviri barajı zorunludur, geçilemez) */}
                   {!ev && !isFinal && (
                     <button onClick={completeCheckpointStory} style={{ ...primaryBtn, background: 'transparent', border: '1px solid #475569', color: '#94a3b8', marginTop: '12px' }}>
                       Hikayeyi sonra tekrar okuyacağım — haritaya dön

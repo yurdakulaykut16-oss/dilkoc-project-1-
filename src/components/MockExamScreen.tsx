@@ -10,13 +10,6 @@ import { isUltraMode, xpGain } from '../ultra/ultraMode';
 import { loadExamAttempts, saveExamAttempt, bestAttemptFor, fmtDate } from '../ultra/examStore';
 import type { ExamAttempt } from '../ultra/examStore';
 
-// ==========================================
-// 📝 DENEME SINAVLARI EKRANI
-// Seviyeni seç → süreli 6 bölümlü karma sınavı çöz → detaylı rapor al.
-// Yanlışlar hata kütüğüne + öğrenen modeline işlenir; puan geçmişi saklanır.
-// ⌨️ YAZMA bölümü ekran Kiril klavyesiyle çözülür — en zor bölüm budur.
-// ==========================================
-
 interface Props {
   completedUnits: string[];
   onXp: (n: number) => void;
@@ -49,7 +42,6 @@ const MockExamScreen: React.FC<Props> = ({ completedUnits, onXp, onMistake, onRe
   const advanceTimer = useRef<number | null>(null);
   const q = exam?.questions[idx];
 
-  // 🔗 Eşleştirme sorusu yerel durumu (sütunlar soru başına bir kez karılır)
   const [matchState, setMatchState] = useState<{ selRu: string | null; selTr: string | null; done: string[]; errs: number }>({ selRu: null, selTr: null, done: [], errs: 0 });
   const [matchCols, setMatchCols] = useState<{ left: string[]; right: string[] }>({ left: [], right: [] });
   useEffect(() => {
@@ -57,10 +49,8 @@ const MockExamScreen: React.FC<Props> = ({ completedUnits, onXp, onMistake, onRe
     if (q?.kind === 'match' && q.pairs) {
       setMatchCols({ left: shuffleArr(q.pairs.map(p => p.ru)), right: shuffleArr(q.pairs.map(p => p.tr)) });
     }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [idx, exam]);
 
-  // ---------- sınav başlat ----------
   const startExam = (level: ExamLevelId) => {
     const built = buildMockExam(level, completedUnits);
     if (!built) return;
@@ -76,7 +66,6 @@ const MockExamScreen: React.FC<Props> = ({ completedUnits, onXp, onMistake, onRe
     setFinished(false);
   };
 
-  // ---------- soru süresi ----------
   useEffect(() => {
     if (!exam || finished || !q) return;
     setTimeLeft(q.seconds);
@@ -90,20 +79,16 @@ const MockExamScreen: React.FC<Props> = ({ completedUnits, onXp, onMistake, onRe
       }
     }, 250);
     return () => window.clearInterval(t);
-    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [exam, idx, finished]);
 
-  // ---------- dinleme sorusu otomatik ses ----------
   useEffect(() => {
     if (!exam || finished || reveal) return;
     if (q?.audioOnly && q.speakText) {
       const t = window.setTimeout(() => { void edgeSpeak(q.speakText!, { prosodyRate: '-15%' }); }, 300);
       return () => window.clearTimeout(t);
     }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [exam, idx, finished]);
 
-  // ---------- klavye 1-4 ----------
   useEffect(() => {
     const onKey = (e: KeyboardEvent) => {
       if (!exam || finished || reveal || !q) return;
@@ -111,7 +96,7 @@ const MockExamScreen: React.FC<Props> = ({ completedUnits, onXp, onMistake, onRe
         if (e.key === 'Enter') { e.preventDefault(); submitTyping(); }
         return;
       }
-      if (q.kind === 'match') return; // eşleştirme dokunarak oynanır
+      if (q.kind === 'match') return;
       if (e.key < '1' || e.key > '4') return;
       const t = e.target as HTMLElement | null;
       if (t && (t.tagName === 'INPUT' || t.tagName === 'TEXTAREA')) return;
@@ -120,10 +105,8 @@ const MockExamScreen: React.FC<Props> = ({ completedUnits, onXp, onMistake, onRe
     };
     window.addEventListener('keydown', onKey);
     return () => window.removeEventListener('keydown', onKey);
-    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [exam, idx, finished, reveal, typed]);
 
-  // ---------- cevap kaydetme + sonraki soru ----------
   const recordAnswer = (ok: boolean) => {
     if (!q || !exam) return;
     const st = skillStats.current[q.skill];
@@ -176,8 +159,6 @@ const MockExamScreen: React.FC<Props> = ({ completedUnits, onXp, onMistake, onRe
     scheduleAdvance();
   };
 
-  // 🔗 Eşleştirme sorusu etkileşimi: RU seç → TR seç; yanlışta +1 hata.
-  // 3 çift bittiğinde: 0-1 hata = doğru sayılır (süreli baskı telafisi), 2+ hata = yanlış.
   const tryMatch = (side: 'ru' | 'tr', val: string) => {
     if (!q || q.kind !== 'match' || !q.pairs || reveal) return;
     const nRu = side === 'ru' ? val : matchState.selRu;
@@ -203,7 +184,6 @@ const MockExamScreen: React.FC<Props> = ({ completedUnits, onXp, onMistake, onRe
     }
   };
 
-  // ---------- bitiş + rapor ----------
   const finishExam = () => {
     if (!exam) return;
     const total = exam.questions.length;
@@ -221,7 +201,6 @@ const MockExamScreen: React.FC<Props> = ({ completedUnits, onXp, onMistake, onRe
     saveExamAttempt({ level: exam.level, total, correct, percent, passed, durationSec, skills, ultra: isUltraMode() });
     setAttempts(loadExamAttempts());
 
-    // XP: her doğru + bölüm bonusu + rekor bonusu (ultra modda ×1.5)
     let gain = 0;
     correctRef.current && exam.questions.forEach((qq) => {
       if (!wrongRef.current.includes(qq)) gain += qq.skill === 'typing' ? 12 : 7;
@@ -245,7 +224,6 @@ const MockExamScreen: React.FC<Props> = ({ completedUnits, onXp, onMistake, onRe
 
   const ultra = isUltraMode();
 
-  // ================= RAPOR EKRANI =================
   if (exam && finished) {
     const total = exam.questions.length;
     const correct = correctRef.current;
@@ -277,7 +255,6 @@ const MockExamScreen: React.FC<Props> = ({ completedUnits, onXp, onMistake, onRe
           </div>
         </div>
 
-        {/* Beceri kırılımı */}
         <div style={{ background: '#1e293b', border: '1px solid #334155', borderRadius: '16px', padding: '18px', marginBottom: '16px' }}>
           <div style={{ fontWeight: 900, marginBottom: '12px', fontSize: '14px' }}>📊 Beceri Karnesi</div>
           {(Object.keys(EXAM_SKILL_LABEL) as ExamSkillKey[]).filter(k => skillStats.current[k][1] > 0).map(k => {
@@ -297,7 +274,6 @@ const MockExamScreen: React.FC<Props> = ({ completedUnits, onXp, onMistake, onRe
           })}
         </div>
 
-        {/* Yanlış kartelası */}
         {wrongRef.current.length > 0 && (
           <div style={{ background: '#1e293b', border: '1px solid #ef444455', borderRadius: '16px', padding: '18px', marginBottom: '16px' }}>
             <div style={{ fontWeight: 900, marginBottom: '10px', fontSize: '14px', color: '#fca5a5' }}>🩹 Yanlışların ({wrongRef.current.length}) — hepsi hata kütüğüne ve aralıklı tekrara işlendi</div>
@@ -322,7 +298,6 @@ const MockExamScreen: React.FC<Props> = ({ completedUnits, onXp, onMistake, onRe
     );
   }
 
-  // ================= SINAV AKIŞI =================
   if (exam && q) {
     const pctQ = Math.round((idx / exam.questions.length) * 100);
     return (
@@ -442,7 +417,6 @@ const MockExamScreen: React.FC<Props> = ({ completedUnits, onXp, onMistake, onRe
     );
   }
 
-  // ================= SEVİYE SEÇİMİ =================
   const readiness = useMemo(() => EXAM_LEVELS.map(l => ({ def: l, ...examReadiness(l.id, completedUnits) })), [completedUnits]);
   const recent = attempts.slice(0, 6);
   return (

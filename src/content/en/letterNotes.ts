@@ -1,13 +1,5 @@
-// ============================================================================
-// 🇬🇧 İNGİLİZCE HARF NOTLARI + HECE KONULARI + İNCE HARF TAMAMLAYICILARI
-// ----------------------------------------------------------------------------
-// Rusça letterNotes.ts ile aynı format: her harf/diygraf için kısa fonetik
-// not. 26 harf + 6 diygraf (TH, SH, CH, PH, WH, NG) = 32 harf konusu.
-// ============================================================================
-
 import type { Topic100Item } from '../../topics100/types';
 
-/** 26 harf + 6 diygraf — İngilizce fonetik notları (Türkçe açıklamalı). */
 export const EN_LETTER_INFO: { glyph: string; note: string }[] = [
   { glyph: 'A', note: 'İki yüzü var: kısa "e" (cat → KET) ve magic E ile "ey" (name → NEYM). Harfin adı "ey".' },
   { glyph: 'B', note: 'Türkçe "b" ile birebir: book → BUK. Sürpriz yok, güvenli harf.' },
@@ -43,10 +35,6 @@ export const EN_LETTER_INFO: { glyph: string; note: string }[] = [
   { glyph: 'NG', note: 'Tek ses "ng": sing → SİNG. G ayrıca söylenmez; dil arkada kapanır.' },
 ];
 
-/**
- * İnce harf tamamlayıcıları — İngilizce müfredatta az geçen harfler
- * (Z, X, Q, J) için elle seçilmiş tamamlayıcı kelimeler.
- */
 export const EN_THIN_LETTER_SUPPLEMENT: Record<string, Topic100Item[]> = {
   Z: [
     { ru: 'zero', reading: 'ZIROU', tr: 'sıfır', level: 'A1' },
@@ -120,7 +108,6 @@ export const EN_THIN_LETTER_SUPPLEMENT: Record<string, Topic100Item[]> = {
   ],
 };
 
-/** İngilizce hece pratiği konuları (fonetik bölümünün ilk 2 konusu). */
 export const EN_SYLLABLE_TOPICS: {
   icon: string;
   titleRu: string;

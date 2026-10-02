@@ -5,14 +5,6 @@ const voiceStudioPort = Number(process.env.VOICESTUDIO_PORT || 3900)
 
 export default defineConfig({
   plugins: [react()],
-  // ========================================================================
-  // ÜRETİM GÜVENLİĞİ:
-  //  • sourcemap: false → derlenmiş koddan kaynağa geri gidilemez
-  //  • terser drop_console → tüm console.log/info çıktıları paketten silinir
-  //    (konsol mesajlarından iç yapı öğrenilemez)
-  //  • mangle toplevel → tüm üst düzey değişken/fonksiyon adları karıştırılır
-  //  • comments: false → telif/yorum satırları paketten çıkarılır
-  // ========================================================================
   build: {
     sourcemap: false,
     minify: 'terser',
@@ -21,9 +13,6 @@ export default defineConfig({
       mangle: { toplevel: true },
       format: { comments: false },
     },
-    // Tek paket: kod bölme (code splitting) kapatıldı → derleme çıktısında
-    // import/export kalmaz → build sonrası obfuscation güvenle uygulanabilir
-    // ve dağıtılan pakette uygulamanın tamamı tek, karartılmış dosyadır.
     rollupOptions: {
       output: {
         inlineDynamicImports: true,
@@ -35,9 +24,6 @@ export default defineConfig({
     port: 1420,
     strictPort: true,
     allowedHosts: true,
-    // Gerçek debpalash/VoiceStudio backend'i launcher'ın VOICESTUDIO_PORT
-    // değerinde çalışır. Browser localhost çağırmaz; /voicestudio göreli yolunu
-    // Vite güvenli şekilde proxy'ler.
     proxy: {
       '/voicestudio': {
         target: `http://127.0.0.1:${voiceStudioPort}`,
@@ -46,15 +32,9 @@ export default defineConfig({
       },
     },
     watch: {
-      // VoiceStudio's Python venv contains tens of thousands of headers and
-      // must never be watched by Vite (it can exhaust Linux inotify limits).
       ignored: ['**/src-tauri/target/**', '**/.runtime/**']
     }
   },
-  // `vite preview` (üretim derlemesinin yerel sunucusu) için güvenlik başlıkları.
-  // NOT: Bunlar dev sunucusuna uygulanmaz; canlı önizleme (HMR/WebSocket)
-  // etkilenmez. Gerçek dağıtımda (Netlify/Vercel/nginx) aynı başlıklar
-  // sunucu tarafında da ayarlanmalıdır.
   preview: {
     host: true,
     port: 1420,

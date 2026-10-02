@@ -1,10 +1,3 @@
-// ==========================================================
-// EK MÜFREDAT — TANIŞMA & İLK ADIM PAKETİ
-// B1: Ünite 73-75 (sokak, kafe/kitapçı, spor salonu/park)
-// B2: Ünite 111-113 (bar, kulüp/parti, uçak/tren)
-// Gerçek hayatta birine yaklaşıp sohbet başlatmanın Rusçası:
-// doğal açılış cümleleri, kibar ısrar/geri çekilme ve numara isteme.
-// ==========================================================
 import type { UnitModule } from '../curriculumData';
 
 export const EXTRA_FLIRT_B1: UnitModule[] = [

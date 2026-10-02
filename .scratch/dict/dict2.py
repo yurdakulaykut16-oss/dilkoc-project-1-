@@ -1,5 +1,3 @@
-# -*- coding: utf-8 -*-
-# tr -> en sözlük PARÇA 2 (D-H)
 D.update({
 'Dana eti': 'beef',
 'Dans etmek': 'to dance',

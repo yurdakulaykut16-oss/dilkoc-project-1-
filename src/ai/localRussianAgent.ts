@@ -1,5 +1,3 @@
-// DilKoç © 2026 — Bu kaynak kod telif hakkıyla korunur. İzinsiz kopyalama,
-// dağıtma ve türev çalışma üretme yasaktır (bkz. LICENSE).
 import { UNITS_DATA } from '../curriculumData';
 import { detectRussianQuestionIntent, searchRussianKnowledge } from './russianExpertise';
 import { isEnglish, isTargetScript } from '../content/activeLanguage';
@@ -31,11 +29,6 @@ function normalize(text: string) {
     .trim();
 }
 
-/** Hedef ifade, sorguda TAM kelime/öbek olarak geçiyor mu?
- *  Alt-dizi eşleşmesi YASAKTIR: "kitap" içindeki "tap" veya "nasılsın"
- *  içindeki "sin" gibi yanlış eşleşmeleri engeller.
- *  normalize edilmiş metinde ayraç yalnız boşluk olduğu için RegExp
- *  derlemeye gerek yok — indexOf + sınır kontrolü çok daha hızlıdır. */
 function containsWhole(haystack: string, needle: string): boolean {
   const n = needle.trim();
   if (!n) return false;
@@ -53,11 +46,6 @@ function containsWhole(haystack: string, needle: string): boolean {
 const allWords = UNITS_DATA.flatMap(unit => unit.words.map(word => ({ word, unit })));
 const allSentences = UNITS_DATA.flatMap(unit => unit.sentences.map(sentence => ({ sentence, unit })));
 
-// ============================================================================
-// HIZ İNDEKSİ — normalize işi modül yüklenirken BİR KEZ yapılır; her soruda
-// yalnızca hazır dizgiler karşılaştırılır (önceden ~4700 kelime + 230 bilgi
-// kaydı sorgu başına yeniden normalize ediliyordu; artık sorgu < 2 ms).
-// ============================================================================
 const WORD_INDEX = allWords.map(({ word, unit }) => ({
   ru: normalize(word.ru),
   tr: normalize(word.tr),
@@ -72,7 +60,6 @@ const SENTENCE_INDEX = allSentences.map(({ sentence, unit }) => ({
   unit,
 }));
 
-/** normalize edilmiş tam eşleşme → eşleşen kelime listesi (kalem → pen/pencil). */
 const RU_EXACT = new Map<string, typeof WORD_INDEX>();
 const TR_EXACT = new Map<string, typeof WORD_INDEX>();
 for (const item of WORD_INDEX) {
@@ -86,8 +73,6 @@ for (const item of WORD_INDEX) {
   }
 }
 
-/** Türkçe soru-kelimeleri: yazım hatası (fuzzy) aramasında içerik sayılmaz
- *  ("nedir" → "Nehir" gibi sahte eşleşmeleri engeller). */
 const TR_META_WORDS = new Set([
   'nedir', 'demek', 'anlami', 'ingilizcesi', 'ingilizce', 'rusca', 'ruscasini', 'turkce',
   'nasil', 'neden', 'nerede', 'hangi', 'yazdim', 'dogru', 'yanlis', 'cumle', 'cumlesi',
@@ -95,8 +80,6 @@ const TR_META_WORDS = new Set([
   'goster', 'ogren', 'bilgi', 'fark', 'farki', 'benzer', 'ornek', 'ornegi', 'yardim', 'lutfen',
 ]);
 
-/** Çok kelimeli formların iç kelimeleri → form ("kalem" → "Kurşun kalem").
- *  Tek kelimeli formlar zaten EXACT haritalarında; burada yalnız öbekler. */
 const WORD_TOKEN_INDEX = new Map<string, typeof WORD_INDEX>();
 for (const item of WORD_INDEX) {
   for (const form of [item.ru, item.tr]) {
@@ -112,7 +95,6 @@ for (const item of WORD_INDEX) {
   }
 }
 
-/** Sınırlı Levenshtein: eşik aşılırsa erken çıkar, maks. 2 farka izin verir. */
 function editDistanceWithin(a: string, b: string, max: number): boolean {
   if (Math.abs(a.length - b.length) > max) return false;
   if (a === b) return true;
@@ -131,8 +113,6 @@ function editDistanceWithin(a: string, b: string, max: number): boolean {
   return prev[b.length] <= max;
 }
 
-/** Yazım hatası toleransı: "kitab"→kitap, "waater"→water, "tcik"→tck.
- *  Yalnız aynı harfle başlayan ve uzunluğu ±2 olan adaylarla karşılaştırır. */
 function fuzzyTokenMatches(token: string): typeof WORD_INDEX {
   if (token.length < 4) return [];
   const max = token.length <= 5 ? 1 : 2;
@@ -152,8 +132,6 @@ function fuzzyTokenMatches(token: string): typeof WORD_INDEX {
 
 function matchingWords(query: string) {
   const q = normalize(query);
-  // 1) HIZLI YOL — sorgunun tamamı bir kelimeye eşitse anında dön (en yaygın
-  //    kullanım: kullanıcı doğrudan "water" / "su" yazar).
   const exact = RU_EXACT.get(q) ?? TR_EXACT.get(q);
   if (exact) {
     return exact.slice(0, 5).map(item => ({ word: item.word, unit: item.unit, score: 100 + q.length }));
@@ -161,8 +139,6 @@ function matchingWords(query: string) {
 
   const qTokenList = q.split(' ').filter(Boolean);
 
-  // 2) TOKEN YOLU — sorgu kelimeleri hazır indekslerden bakılır; 4700 kelimelik
-  //    tarama YOK. ("kalem" hem tek başına hem "Kurşun kalem" içinde bulunur.)
   const scores = new Map<typeof WORD_INDEX[number], number>();
   const addScore = (item: typeof WORD_INDEX[number], score: number) => {
     const cur = scores.get(item);
@@ -187,9 +163,6 @@ function matchingWords(query: string) {
 
   let list = rank();
 
-  // 3) FUZZY YOL — eşleşme yoksa ya da en iyi eşleşme zayıfsa (kısa/yardımcı
-  //    kelime çakışması: "waater ne demek" → 'ne'→what 52 puan) yazım hatası
-  //    toleransı devreye girer: "kitab"→kitap, "waater"→water.
   if (list.length === 0 || list[0].score < 60) {
     for (const token of qTokenList) {
       if (token.length < 4 || TR_META_WORDS.has(token)) continue;
@@ -219,15 +192,10 @@ function wordAnswer(query: string, minScore = 0) {
   if (matches.length === 0) return null;
   const q = normalize(query);
   const wantsAlternatives = /fark|karsilastir|alternatif|benzer|hangileri|hangi biri/.test(q);
-  // Eş anlamlılar: en iyi adayın puanına %78+ yakın tüm adaylar gösterilir
-  // ("kalem" → hem pen hem pencil; "hasta" → hem sick hem patient).
   const topScore = matches[0].score;
   const closeCount = Math.min(3, matches.filter(m => m.score >= topScore * 0.78).length);
   const shown = Math.max(1, wantsAlternatives ? 3 : closeCount);
   const lines = matches.slice(0, shown).map(({ word }, index) => {
-    // Önce HEDEF DİL tarafında örnek ara (kelimenin kendisi geçen cümle);
-    // yoksa Türkçe anlamı bütün kelime olarak geçen cümleyi kullan.
-    // SENTENCE_INDEX zaten normalize edilmiştir — sorgu anında normalize YOK.
     const ruForm = normalize(word.ru);
     const trForm = normalize(word.tr);
     const example = SENTENCE_INDEX.find(item =>
@@ -260,7 +228,6 @@ function sentenceAnswer(query: string) {
   };
 }
 
-/** İngilizce klasik hata kalıpları — deterministik düzeltmeler. */
 function deterministicCorrectionEn(query: string) {
   const latin = query.match(/[A-Za-z][A-Za-z\d\s.,!?'-]*/)?.[0]?.trim();
   if (!latin) return null;
@@ -281,20 +248,17 @@ function deterministicCorrectionEn(query: string) {
   if (/\bpeoples\b/.test(normalized)) {
     return 'Düzeltilmiş biçim: **people**\n\n"people" zaten çoğuldur; "peoples" yalnızca "halklar" (etnik gruplar) anlamında kullanılır.';
   }
-  // Sayılamayan isimler çoğul -s ALMAZ:
   const uncountable = normalized.match(/\b(informations|advices|furnitures|luggages|equipments|softwares|homeworks|knowledges)\b/);
   if (uncountable) {
     const wrong = uncountable[1];
     const right = wrong.replace(/s$/, '');
     return `Düzeltilmiş biçim: **${right}**\n\n"${right}" sayılamayan (uncountable) bir isimdir; çoğul -s eki almaz. Miktar için "a piece of ${right}" / "some ${right}" / "a lot of ${right}" denir.`;
   }
-  // did + V1 (düzensiz fiilin 2. hâli gelmez):
   const didV2 = normalized.match(/\bdidn ?t (went|saw|took|made|got|ate|bought|came|did|said|found|gave|knew|thought|wrote|read)\b/);
   if (didV2) {
     const v1: Record<string, string> = { went: 'go', saw: 'see', took: 'take', made: 'make', got: 'get', ate: 'eat', bought: 'buy', came: 'come', did: 'do', said: 'say', found: 'find', gave: 'give', knew: 'know', thought: 'think', wrote: 'write', read: 'read' };
     return `Düzeltilmiş biçim: **didn't ${v1[didV2[1]]}**\n\n"did/didn't" geçmişi zaten taşır; yanındaki fiil YALIN hâlde kalır: "I didn't ${v1[didV2[1]]}".`;
   }
-  // Çifte karşılaştırma:
   const doubleComp = normalized.match(/\b(more|most) (better|worse|easier|bigger|smaller|larger|faster|slower|best|worst)\b/);
   if (doubleComp) {
     return `Düzeltilmiş biçim: **${doubleComp[2]}** (tek başına)\n\n"${doubleComp[2]}" zaten karşılaştırma biçimidir; "more/most" ile birlikte kullanılmaz (more better ✗ → better ✓).`;
@@ -369,11 +333,6 @@ function conciseKnowledge(content: string, maxLength = 620) {
   return `${cut.slice(0, boundary > 260 ? boundary + 1 : maxLength).trim()}…`;
 }
 
-/**
- * Ağ, API, LLM veya token kullanmadan çalışan sembolik Rusça ajanı.
- * Yerel sözlük + cümle havuzu + 230 bölümlük bilgi bankasını arar ve sorunun
- * türüne göre deterministik cevap şablonu seçer.
- */
 function computeLocalAnswer(query: string, context: LocalRussianAgentContext): LocalRussianAnswer {
   const q = normalize(query);
   const intent = detectRussianQuestionIntent(query);
@@ -385,8 +344,6 @@ function computeLocalAnswer(query: string, context: LocalRussianAgentContext): L
     return { text: progressAnswer(context), confidence: 'yüksek', sources: ['Yerel öğrenen kaydı'] };
   }
 
-  // NOT: \b Kiril harfleriyle çalışmaz (JS \w yalnız Latince); harf olmayan
-  // lookahead kullanıyoruz.
   if (/^(merhaba|selamlar|selam|hey|привет|hello|hi)(?![a-zçğıöşüа-яё])/.test(q)) {
     return {
       text: isEnglish()
@@ -397,8 +354,6 @@ function computeLocalAnswer(query: string, context: LocalRussianAgentContext): L
     };
   }
 
-  // Çok sorulan temel gerçekler doğrudan kural motorunda tutulur; arama
-  // sonucunu yorumlamaya gerek kalmadan kesin cevap döner.
   if (/kac\s+(temel\s+)?hal|hal\s+sayisi/.test(q)) {
     return {
       text: isEnglish()
@@ -437,9 +392,6 @@ function computeLocalAnswer(query: string, context: LocalRussianAgentContext): L
     };
   }
 
-  // Hata kalıbı sorgunun içinde GEÇİYORSA niyet ne olursa olsun düzeltme öncelik
-  // alır ("informations kelimesini kullandım" → düzeltme). Yalnız çeviri/okunuş
-  // soruları ("... ne demek?") önce sözlüğe gider.
   if (intent !== 'translation' && intent !== 'pronunciation') {
     const patternCorrection = deterministicCorrection(query);
     if (patternCorrection) {
@@ -454,9 +406,6 @@ function computeLocalAnswer(query: string, context: LocalRussianAgentContext): L
     if (sentences) return { ...sentences, confidence: 'yüksek' };
   }
 
-  // Niyet belirsiz ama sorgu HEDEF DİLİN YAZISIYLA yazılmışsa ("как дела",
-  // "how are you", "спасибо") önce sözlük/örnek cümle cevap verir; bilgi
-  // bankası yalnız sözlük boş kalırsa devreye girer.
   if (intent === 'general') {
     const contentTokens = q.split(' ').filter(token => token.length >= 2 && !TR_META_WORDS.has(token));
     const targetTokens = contentTokens.filter(isTargetScript);
@@ -498,11 +447,6 @@ function computeLocalAnswer(query: string, context: LocalRussianAgentContext): L
   };
 }
 
-// ============================================================================
-// LRU CEVAP ÖNBELLEĞİ — aynı soru saniyede binlerce kez sorulsa bile cevap
-// anında döner; hesaplama yalnızca ilk kez yapılır (IndexedDB önbelleğinin
-// hemen altında RAM seviyesinde çalışır).
-// ============================================================================
 const AGENT_CACHE_LIMIT = 128;
 const agentCache = new Map<string, LocalRussianAnswer>();
 
@@ -518,7 +462,6 @@ export function answerWithLocalRussianAgent(query: string, context: LocalRussian
   const key = agentCacheKey(query, context);
   const hit = agentCache.get(key);
   if (hit) {
-    // LRU: en son kullanılanı sona taşı
     agentCache.delete(key);
     agentCache.set(key, hit);
     return hit;

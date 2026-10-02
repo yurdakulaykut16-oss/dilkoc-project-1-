@@ -1,10 +1,3 @@
-// ==========================================================
-// EK MÜFREDAT — GÜNDELİK YAŞAM 2 KAT PAKETİ, PARTİ 1/3 (A2, Ünite 32-41)
-// "Gündelik hayatta kullanacağım her şey" genişlemesi: metro rutini,
-// eczane, kart/ATM, sabah rutini, evcil hayvan, terzi, usta çağırma,
-// hediye seçme, mesajlaşma ve kayıp eşya.
-// Format, curriculumData.ts'teki UNITS_DATA ile BİREBİR aynıdır.
-// ==========================================================
 import type { UnitModule } from '../curriculumData';
 
 export const EXTRA_DAILY2A: UnitModule[] = [

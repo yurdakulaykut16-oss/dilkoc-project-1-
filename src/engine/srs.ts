@@ -10,7 +10,6 @@ type SrsFields = Pick<
   "easeFactor" | "repetitions" | "intervalDays" | "nextReviewDate" | "memoryStrength" | "mistakeCount" | "lastReviewedAt"
 >;
 
-/** Maps a boolean outcome + response speed to an SM-2 quality grade (0-5). */
 function toQuality(outcome: ReviewOutcome): number {
   if (!outcome.correct) return 2;
   if (outcome.responseTimeMs === undefined) return 4;
@@ -19,11 +18,6 @@ function toQuality(outcome: ReviewOutcome): number {
   return 3;
 }
 
-/**
- * Computes the next review schedule for a vocab item using SM-2, prioritizing
- * items the learner is likely to forget by shrinking intervals on mistakes
- * and tracking a 0-1 memoryStrength used for review-queue ordering.
- */
 export function scheduleReview(item: VocabItem, outcome: ReviewOutcome, now = new Date()): SrsFields {
   const quality = toQuality(outcome);
   let { easeFactor, repetitions, intervalDays } = item;
@@ -58,7 +52,6 @@ export function scheduleReview(item: VocabItem, outcome: ReviewOutcome, now = ne
   };
 }
 
-/** Returns due items sorted so weakest, most forgettable words come first. */
 export function getDueItems(items: VocabItem[], now = new Date()): VocabItem[] {
   return items
     .filter((item) => new Date(item.nextReviewDate).getTime() <= now.getTime())

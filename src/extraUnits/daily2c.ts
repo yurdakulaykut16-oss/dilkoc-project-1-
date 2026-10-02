@@ -1,11 +1,3 @@
-// ==========================================================
-// EK MÜFREDAT — GÜNDELİK YAŞAM 2 KAT PAKETİ, PARTİ 3/3 (FİNAL)
-//   B2 (Ünite 127-133): sigorta, ehliyet, apartman toplantısı,
-//     taşınma, dача/piknik, postane resmî işler, poliklinik kaydı
-//   C1 (Ünite 182-184): noter, vergi dairesi, tüketici hakları
-// Bu partiyle "gündelik yaşam ünitelerini iki katına çıkar" hedefi tamamlanır.
-// Format, UNITS_DATA ile BİREBİR aynıdır.
-// ==========================================================
 import type { UnitModule } from '../curriculumData';
 
 export const EXTRA_DAILY2C_B2: UnitModule[] = [

@@ -1,8 +1,3 @@
-// ==========================================================
-// GÜNDELİK HAYAT GENİŞLEMESİ — 60 ÜNİTE / BÖLÜM 2: A2 (20 ünite)
-// unitNumber: 40.9801 – 40.9820
-// Odak: kira, fatura, banka, tamir, randevu — yetişkinin gerçek işleri.
-// ==========================================================
 import type { UnitModule } from '../curriculumData';
 import { S, W } from './expansion50a';
 

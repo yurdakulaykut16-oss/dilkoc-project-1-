@@ -4,7 +4,6 @@ export function seedFromString(s: string): number {
   return h;
 }
 
-/** mulberry32 - small, fast, deterministic PRNG. */
 export function mulberry32(seed: number) {
   let t = seed;
   return function () {

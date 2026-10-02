@@ -1,5 +1,3 @@
-# -*- coding: utf-8 -*-
-# tr -> en sözlük PARÇA 8 (RU eşleşmeleri benzersizleştirilmiş TR varyantları)
 D.update({
 'Aidat': 'maintenance fee',
 'Aidat ve altyapı giderleri': 'utilities',

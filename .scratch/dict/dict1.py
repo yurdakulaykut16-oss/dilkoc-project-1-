@@ -1,5 +1,3 @@
-# -*- coding: utf-8 -*-
-# tr -> en sözlük PARÇA 1 (A-D başlangıcı)
 D = {
 '"Acı!" (düğün nidası)': 'Bitter! (wedding chant)',
 '(ben) olacağım': 'I will be',

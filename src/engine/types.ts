@@ -1,7 +1,3 @@
-// Shared types used by the language-agnostic learning engine.
-// Language-specific data (vocab, grammar, curriculum) lives under src/languages/<code>
-// and conforms to these shapes. No per-language engine logic should exist.
-
 export type LanguageCode = "en" | "ru";
 
 export type CEFRLevel = "A1" | "A2" | "B1" | "B2" | "C1" | "C2";
@@ -30,12 +26,12 @@ export interface VocabItem {
   translation: string;
   pronunciation?: string;
   exampleSentence?: string;
-  difficulty: number; // 0-1
-  memoryStrength: number; // 0-1, higher = better retained
-  easeFactor: number; // SM-2 ease factor, default 2.5
+  difficulty: number;
+  memoryStrength: number;
+  easeFactor: number;
   repetitions: number;
   intervalDays: number;
-  nextReviewDate: string; // ISO date
+  nextReviewDate: string;
   mistakeCount: number;
   lastReviewedAt?: string;
 }
@@ -43,7 +39,7 @@ export interface VocabItem {
 export interface LearnerProfile {
   languageCode: LanguageCode;
   cefrLevel: CEFRLevel;
-  cefrScore: number; // continuous 0-100 estimate underlying the CEFR level
+  cefrScore: number;
   streak: number;
   totalStudyMinutes: number;
 }
@@ -51,7 +47,7 @@ export interface LearnerProfile {
 export interface SkillScore {
   languageCode: LanguageCode;
   skillId: SkillId;
-  score: number; // 0-100
+  score: number;
 }
 
 export interface PlacementQuestion {
@@ -83,14 +79,14 @@ export interface CurriculumTopic {
   cefrLevel: CEFRLevel;
   skillId: SkillId;
   title: string;
-  prerequisites: string[]; // ids of CurriculumTopic
+  prerequisites: string[];
 }
 
 export interface TopicProgress {
   languageCode: LanguageCode;
   topicId: string;
   status: Extract<TopicStatus, "in_progress" | "completed">;
-  masteryScore: number; // 0-100
+  masteryScore: number;
 }
 
 export interface CurriculumTopicView {
@@ -110,9 +106,6 @@ export type ActivityType =
   | "listening_placeholder"
   | "writing_placeholder";
 
-/** Generic activity payload. The lesson engine never inspects `data` itself —
- *  only the (future) activity UI/grader needs to know its shape — so new
- *  activity types can be added without touching the engine. */
 export interface Activity {
   id: string;
   type: ActivityType;
@@ -133,7 +126,7 @@ export interface Lesson {
   id: string;
   languageCode: LanguageCode;
   cefrLevel: CEFRLevel;
-  estimatedDifficulty: number; // 0-1
+  estimatedDifficulty: number;
   targetSkills: SkillId[];
   activities: LessonActivity[];
   expectedDurationMinutes: number;
@@ -172,7 +165,7 @@ export interface FlashcardPrompt {
 
 export interface AnswerEvaluation {
   correct: boolean;
-  similarity: number; // 0-1, exact match = 1
+  similarity: number;
   feedback: string;
 }
 
@@ -186,11 +179,11 @@ export interface GrammarExercise {
   prompt: string;
   expectedAnswer: string;
   options?: string[];
-  incorrectSentence?: string; // for "correction" exercises
+  incorrectSentence?: string;
 }
 
 export interface GrammarTopicContent {
-  topicId: string; // matches CurriculumTopic.id
+  topicId: string;
   languageCode: LanguageCode;
   explanation: string;
   examples: string[];
@@ -207,7 +200,7 @@ export interface ComprehensionQuestion {
 
 export interface ReadingPassage {
   id: string;
-  topicId: string; // matches CurriculumTopic.id
+  topicId: string;
   languageCode: LanguageCode;
   cefrLevel: CEFRLevel;
   title: string;
@@ -225,6 +218,6 @@ export interface WritingPrompt {
   cefrLevel: CEFRLevel;
   type: WritingPromptType;
   instruction: string;
-  requiredWords?: string[]; // sentence_writing: words that must appear
-  minWords?: number; // free_writing: minimum length
+  requiredWords?: string[];
+  minWords?: number;
 }

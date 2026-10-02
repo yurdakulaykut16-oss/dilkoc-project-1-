@@ -47,11 +47,6 @@ export async function setTopicProgress(
   );
 }
 
-/**
- * Marks a topic completed, then checks whether the learner's current CEFR
- * level is now fully covered. If so, and curriculum data for the next level
- * already exists, advances the shared learner profile.
- */
 export async function completeTopic(languageCode: LanguageCode, topicId: string, masteryScore: number): Promise<void> {
   await setTopicProgress(languageCode, topicId, "completed", masteryScore);
 

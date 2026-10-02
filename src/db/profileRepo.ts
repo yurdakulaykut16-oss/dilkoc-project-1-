@@ -20,7 +20,6 @@ function fromRow(row: ProfileRow): LearnerProfile {
   };
 }
 
-/** Returns the profile for a language, creating a fresh A1 one if it doesn't exist yet. */
 export async function getOrCreateProfile(languageCode: LanguageCode): Promise<LearnerProfile> {
   const db = await getDb();
   const rows = await db.select<ProfileRow[]>(

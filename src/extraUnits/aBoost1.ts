@@ -1,8 +1,3 @@
-// ==========================================================
-// A SEVİYESİ BÜYÜK GENİŞLEME — BÖLÜM 1/3 (18 ünite, A1 temel)
-// unitNumber 10.9601-10.9618: temel A1 günlük kelime genişlemesi.
-// Selamlaşma, zaman, hava, alışveriş ve basit günlük kalıplar içerir.
-// ==========================================================
 import type { UnitModule } from '../curriculumData';
 import { S, W } from './expansion50a';
 

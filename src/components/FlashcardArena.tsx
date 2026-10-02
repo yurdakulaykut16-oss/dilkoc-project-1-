@@ -6,15 +6,6 @@ import type { WordDetail } from '../curriculumData';
 import { normalizeRu, typingMatches } from '../ultra/mockExam';
 import { xpGain } from '../ultra/ultraMode';
 
-// ==========================================
-// 🃏 KART EVİ — 4 modlu kelime kartı arenası
-//   📇 KLASİK: çevir-çalış kartları (bilince kutu yükselir, bilmezsen 1'e düşer)
-//   ⚡ YILDIRIM: 60 saniye içinde olabildiğince doğru + seri (streak)
-//   ✍️ ÜRETİM (ZOR): Türkçesi verilir, Rusçası KİRİLLE YAZILIR — kalıcılığın zirvesi
-//   🔗 EŞLEŞTİRME: 6 çifti kronometreye karşı eşleştir
-// Deste önceliği: vadesi gelen SRS kelimeleri → tamamlanan üniteler → tüm müfredat.
-// ==========================================
-
 interface Props {
   completedUnits: string[];
   dueSrs: { ru: string; tr: string }[];
@@ -37,7 +28,6 @@ const cardBox: React.CSSProperties = { background: '#1e293b', border: '1px solid
 const FlashcardArena: React.FC<Props> = ({ completedUnits, dueSrs, onXp, onMistake, onSrsGrade, onRecordResult }) => {
   const [mode, setMode] = useState<Mode>('MENU');
 
-  // ---------- DESTELER ----------
   const knownWords = useMemo(() => {
     const ws = UNITS_DATA.filter(u => completedUnits.includes(u.id)).flatMap(u => u.words);
     return [...new Map(ws.map(w => [w.ru, w])).values()];
@@ -65,13 +55,11 @@ const FlashcardArena: React.FC<Props> = ({ completedUnits, dueSrs, onXp, onMista
 
   const goMenu = () => { setMode('MENU'); };
 
-  // ================= KLASİK MOD =================
   if (mode === 'CLASSIC') return <ClassicMode words={deckWords} onXp={onXp} onMistake={onMistake} onSrsGrade={onSrsGrade} onRecordResult={onRecordResult} onExit={goMenu} />;
   if (mode === 'LIGHTNING') return <LightningMode words={deckWords} onXp={onXp} onMistake={onMistake} onRecordResult={onRecordResult} onExit={goMenu} />;
   if (mode === 'TYPING') return <TypingMode words={deckWords} onXp={onXp} onMistake={onMistake} onSrsGrade={onSrsGrade} onRecordResult={onRecordResult} onExit={goMenu} />;
   if (mode === 'MATCH') return <MatchMode words={deckWords} onXp={onXp} onMistake={onMistake} onRecordResult={onRecordResult} onExit={goMenu} />;
 
-  // ================= MENÜ =================
   const menuCard = (m: Mode, icon: string, title: string, desc: string, color: string) => (
     <div style={{ ...cardBox, border: `1px solid ${color}55`, background: `linear-gradient(135deg, ${color}14, #1e293b)` }}>
       <div style={{ display: 'flex', alignItems: 'center', gap: '12px', marginBottom: '8px' }}>
@@ -111,9 +99,6 @@ const FlashcardArena: React.FC<Props> = ({ completedUnits, dueSrs, onXp, onMista
   );
 };
 
-// =====================================================
-// 📇 KLASİK MOD — çevir-çalış + Leitner kutusu
-// =====================================================
 const ClassicMode: React.FC<{
   words: WordDetail[];
   onXp: (n: number) => void;
@@ -133,7 +118,6 @@ const ClassicMode: React.FC<{
   useEffect(() => {
     setFlipped(false);
     if (w) { const t = window.setTimeout(() => { void edgeSpeak(w.ru); }, 250); return () => window.clearTimeout(t); }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [idx]);
 
   const grade = (good: boolean) => {
@@ -142,7 +126,6 @@ const ClassicMode: React.FC<{
     setResults(r => ({ ok: r.ok + (good ? 1 : 0), bad: r.bad + (good ? 0 : 1) }));
     if (!good) {
       onMistake(w.ru, w.tr, '📇 Kart Evinde Bilinmedi');
-      // Kalıcı öğrenme kuralı: bilinmeyen kart deste sonuna 1 kez geri döner
       if (!requeued.has(w.ru)) {
         setRequeued(s => new Set(s).add(w.ru));
         setDeck(d => [...d, w]);
@@ -200,9 +183,6 @@ const ClassicMode: React.FC<{
 
 const badDose = (b: number) => b > 0;
 
-// =====================================================
-// ⚡ YILDIRIM MOD — 60 saniye, seri (streak) yakalama
-// =====================================================
 const LightningMode: React.FC<{
   words: WordDetail[];
   onXp: (n: number) => void;
@@ -238,7 +218,6 @@ const LightningMode: React.FC<{
       });
     }, 1000);
     return () => window.clearInterval(t);
-    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   const answer = (opt: string) => {
@@ -259,7 +238,6 @@ const LightningMode: React.FC<{
 
   useEffect(() => {
     if (done) onXp(xpGain(correct * 3 + bestStreak * 2));
-    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [done]);
 
   if (done) {
@@ -305,9 +283,6 @@ const LightningMode: React.FC<{
   );
 };
 
-// =====================================================
-// ✍️ ÜRETİM MOD (ZOR) — TR verilir, RU yazılır
-// =====================================================
 const TypingMode: React.FC<{
   words: WordDetail[];
   onXp: (n: number) => void;
@@ -326,7 +301,6 @@ const TypingMode: React.FC<{
 
   useEffect(() => {
     if (done) onXp(xpGain(score.ok * 10));
-    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [done]);
 
   const submit = () => {
@@ -396,9 +370,6 @@ const TypingMode: React.FC<{
   );
 };
 
-// =====================================================
-// 🔗 EŞLEŞTİRME MOD — kronometreli 6 çift
-// =====================================================
 const MatchMode: React.FC<{
   words: WordDetail[];
   onXp: (n: number) => void;
@@ -425,7 +396,6 @@ const MatchMode: React.FC<{
 
   useEffect(() => {
     if (finished) onXp(xpGain(Math.max(8, 36 - errs * 3 - Math.floor(secs / 10))));
-    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [finished]);
 
   const tryPick = (side: 'ru' | 'tr', val: string) => {

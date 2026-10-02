@@ -76,16 +76,12 @@ export default function VoiceStudioPanel() {
     setPlaying(true);
     try {
       if (profile.provider === 'voicestudio') {
-        // VoiceStudio repo'sundan projeye gömülen gerçek demo/design WAV'ını
-        // çal. Böylece model indirme/TLS beklenirken Edge'e yönlenmez.
         const previewUrl = profile.previewUrl
           || `/voicestudio/profiles/${encodeURIComponent(profile.voice)}/audio`;
         const played = await previewLocalVoiceStudioAudio(previewUrl);
         if (!played) console.warn('VoiceStudio yerel önizleme dosyası oynatılamadı');
         return;
       }
-      // Cloud kartları da yalnızca seçilen Puter provider'ını dener; başarısız
-      // olursa sessiz kalır, Edge/browser sesine gizlice geçmez.
       await speakWithBotVoice('Merhaba! Ben senin Rusça öğrenme ajanınım.', 1);
     } finally {
       setPlaying(false);

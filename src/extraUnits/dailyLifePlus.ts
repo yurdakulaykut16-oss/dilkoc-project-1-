@@ -16,14 +16,6 @@ type RawSpec = readonly [
   words: readonly WordPair[],
 ];
 
-// ==========================================================
-// GÜNDELİK HAYAT PLUS (60 yeni ünite):
-// Kullanıcı isteği: "gündelik hayatla alakalı çok daha fazla ünite,
-// kolay olanları A2'ye, zor olanları C'ye koy".
-// Dağılım: 12 A1 (çok kolay) + 14 A2 (kolay) + 14 B1 (orta) +
-// 12 B2 (üst-orta/resmî) + 8 C1/C2 (hukukî/malî/nüanslı).
-// DAILY_LIFE_90 ve diğer paketlerle BAŞLIK ÇAKIŞMASI YOK.
-// ==========================================================
 const COLORS: Record<Level, string> = {
   A1: '#22c55e',
   A2: '#06b6d4',
@@ -69,7 +61,6 @@ function sentence(ru: string, tr: string, offset: number): SentenceDrill {
   };
 }
 
-// ---- Seviyeye göre cümle şablonları (örüntü farklı seviyede farklı dil kullanır) ----
 type Template = (placeRu: string, placeTr: string, w: readonly WordPair[]) => { ru: string; tr: string };
 
 const A1_TEMPLATES: Template[] = [
@@ -123,7 +114,6 @@ const TEMPLATES_BY_LEVEL: Record<Level, Template[]> = {
 };
 
 const DAILY_LIFE_PLUS_SPECS = [
-  // ============ A1 — ÇOK KOLAY GÜNDELİK (12) ============
   ['rainy_day', 'A1', '🌧️', 'Evde Yağmurlu Gün', 'Yağmur, pencere, battaniye ve sıcak çay kelimeleri', 'в квартире в дождливый день', 'evde yağmurlu günde', ['Ev Arkadaşı', 'Arkadaş'], [['Дождь', 'Yağmur'], ['Зонт', 'Şemsiye'], ['Окно', 'Pencere'], ['Плед', 'Battaniye'], ['Горячий чай', 'Sıcak çay'], ['Книга', 'Kitap']]],
   ['snow_play', 'A1', '❄️', 'Kar Gününde Dışarıda', 'Kar topu, eldiven, atkı ve kızak tepesi', 'на улице в снегу', 'karlı sokakta', ['Çocuk', 'Arkadaş'], [['Снег', 'Kar'], ['Перчатки', 'Eldivenler'], ['Шарф', 'Atkı'], ['Снежок', 'Kartopu'], ['Свитер', 'Kazak'], ['Горка', 'Kızak tepesi']]],
   ['morning_walk', 'A1', '🚶', 'Sabah Yürüyüşü', 'Park, bank, temiz hava ve sessizlik', 'в парке утром', 'sabah parkta', ['Komşu', 'Kişi'], [['Парк', 'Park'], ['Скамейка', 'Banka (oturak)'], ['Воздух', 'Hava'], ['Тишина', 'Sessizlik'], ['Солнце', 'Güneş'], ['Шаги', 'Adımlar']]],
@@ -136,7 +126,6 @@ const DAILY_LIFE_PLUS_SPECS = [
   ['street_musician', 'A1', '🎸', 'Meydanda Sokak Müzisyeni', 'Gitar, şarkı, melodi, izleyiciler ve alkış', 'на площади', 'meydanda', ['Dinleyici', 'Müzisyen'], [['Гитара', 'Gitar'], ['Песня', 'Şarkı'], ['Мелодия', 'Melodi'], ['Зрители', 'İzleyenler'], ['Площадь', 'Meydan'], ['Аплодисменты', 'Alkış']]],
   ['ice_cream_stand', 'A1', '🍦', 'Dondurmacıda', 'Külah, çikolata, çilek ve sıra', 'у ларька с мороженым', 'dondurmacıda', ['Müşteri', 'Satıcı'], [['Мороженое', 'Dondurma'], ['Рожок', 'Külah'], ['Шоколад', 'Çikolata'], ['Клубника', 'Çilek'], ['Фисташки', 'Antep fıstığı'], ['Очередь', 'Sıra']]],
   ['neighbor_help', 'A1', '🤝', 'Komşudan Yardım İstemek', 'Ödünç almak, kapı sesi, teşekkür ve emanet', 'у соседской двери', 'komşu kapısında', ['Kişi', 'Komşu'], [['Одолжить', 'Ödünç almak'], ['Стук', 'Kapı sesi'], ['Спасибо', 'Teşekkür'], ['Яйца', 'Yumurtalar'], ['Сосед', 'Komşu'], ['Помочь', 'Yardım etmek']]],
-  // ============ A2 — KOLAY GÜNDELİK (14) ============
   ['optician', 'A2', '👓', 'Optik Mağazasında', 'Çerçeve, cam, göz muayenesi ve görüş', 'в оптике', 'optik mağazasında', ['Müşteri', 'Optisyen'], [['Очки', 'Gözlük'], ['Оправа', 'Çerçeve'], ['Линзы', 'Camlar'], ['Проверка зрения', 'Göz muayenesi'], ['Зрение', 'Görüş'], ['Солнцезащитные', 'Güneş gözlüğü']]],
   ['shoe_shopping', 'A2', '👟', 'Ayakkabı Alışverişi', 'Numara, deneme, dar-kalıp ve indirim', 'в обувном магазине', 'ayakkabı mağazasında', ['Müşteri', 'Satıcı'], [['Размер', 'Numara'], ['Примерить', 'Denemek'], ['Узкие', 'Dar'], ['Кеды', 'Spor ayakkabı'], ['Скидка', 'İndirim'], ['Чек', 'Fiş']]],
   ['id_photo', 'A2', '📸', 'Biyometrik Fotoğraf', 'Belge fotoğrafı, arka fon, baskı ve ebat', 'в фотоателье', 'fotoğraf stüdyosunda', ['Müşteri', 'Fotoğrafçı'], [['Фотограф', 'Fotoğrafçı'], ['Документ', 'Belge'], ['Фон', 'Arka fon'], ['Печать', 'Baskı'], ['Размер фото', 'Fotoğraf ebadı'], ['Улыбка', 'Gülümseme']]],
@@ -151,7 +140,6 @@ const DAILY_LIFE_PLUS_SPECS = [
   ['sunglasses_choice', 'A2', '😎', 'Güneş Gözlüğü Seçimi', 'UV koruma, renk, konfor ve denemek', 'в магазине очков', 'gözlük mağazasında', ['Müşteri', 'Satıcı'], [['Защита', 'Koruma'], ['УФ-лучи', 'UV ışınları'], ['Цвет', 'Renk'], ['Комфорт', 'Rahatlık'], ['Примерить', 'Denemek'], ['Жара', 'Sıcak']]],
   ['swim_class_signup', 'A2', '🏊', 'Yüzme Kursu Kaydı', 'Havuz, grup, bone, kart ve derinlik', 'в бассейне', 'yüzme havuzunda', ['Veli', 'Yönetici'], [['Бассейн', 'Havuz'], ['Группа', 'Grup'], ['Тренер', 'Antrenör'], ['Шапочка', 'Bone'], ['Абонемент', 'Üyelik kartı'], ['Глубина', 'Derinlik']]],
   ['city_tour', 'A2', '🗺️', 'Şehir Turuna Katılmak', 'Rehber, buluşma, merkez ve otobüs', 'на экскурсии', 'şehir turunda', ['Turist', 'Rehber'], [['Экскурсия', 'Tur / gezi'], ['Гид', 'Rehber'], ['Встреча', 'Buluşma'], ['Центр', 'Merkez'], ['Достопримечательность', 'Gezilecek yer'], ['Автобус', 'Otobüs']]],
-  // ============ B1 — ORTA GÜNDELİK (14) ============
   ['tenant_repair', 'B1', '🏠', 'Kiracı Olarak Arıza Bildirme', 'Arıza bildirme, malik, parça değişimi ve tarih', 'со звонком арендодателю', 'ev sahibini ararken', ['Kiracı', 'Ev Sahibi'], [['Поломка', 'Arıza'], ['Собственник', 'Malik / ev sahibi'], ['Когда придёте?', 'Ne zaman geleceksiniz?'], ['Договор аренды', 'Kira sözleşmesi'], ['Компенсация', 'Telafi'], ['Следующий месяц', 'Gelecek ay']]],
   ['car_inspection', 'B1', '🚗', 'Araç Muayene İstasyonu', 'Muayene, randevu, fren, far ve süre', 'на техническом осмотре', 'araç muayenesinde', ['Sürücü', 'Memur'], [['Осмотр', 'Muayene'], ['Талон', 'Sıra bileti'], ['Допуск', 'Geçiş hakkı'], ['Тормоза', 'Frenler'], ['Фары', 'Farlar'], ['Срок', 'Süre']]],
   ['teacher_meeting', 'B1', '👨‍👩‍👧', 'Öğretmenle Birebir Görüşme', 'Başarı durumu, dikkat, ödev ve destek', 'на родительском собрании', 'veli görüşmesinde', ['Veli', 'Öğretmen'], [['Встреча', 'Görüşme'], ['Успеваемость', 'Başarı durumu'], ['Внимание', 'Dikkat'], ['Домашняя работа', 'Ev ödevi'], ['Совет', 'Tavsiye'], ['Поддержка', 'Destek']]],
@@ -166,7 +154,6 @@ const DAILY_LIFE_PLUS_SPECS = [
   ['hardware_store', 'B1', '🔧', 'El Aletleri Alışverişi', 'Tornavida, çekiç, dübel ve şerit metre', 'в хозяйственном магазине', 'nalburda', ['Müşteri', 'Satıcı'], [['Отвёртка', 'Tornavida'], ['Молоток', 'Çekiç'], ['Дюбель', 'Dübel'], ['Шуруп', 'Vida'], ['Уровень', 'Su terazisi'], ['Рулетка', 'Şerit metre']]],
   ['open_uni_signup', 'B1', '🎓', 'Açık Öğretim Kaydı', 'Kayıt, sınav dönemi, ders kitabı ve diploma', 'при подаче документов в вуз', 'üniversiteye kayıt verirken', ['Öğrenci', 'Memur'], [['Регистрация', 'Kayıt'], ['Дистанционно', 'Uzaktan'], ['Сессия', 'Sınav dönemi'], ['Учебник', 'Ders kitabı'], ['Взнос', 'Ücret'], ['Диплом', 'Diploma']]],
   ['rent_raise_talk', 'B1', '📜', 'Kira Zammı Konuşması', 'Zam oranı, piyasa rayici ve uzlaşma', 'в разговоре о повышении аренды', 'kira zammı görüşmesinde', ['Kiracı', 'Ev Sahibi'], [['Повышение', 'Zam'], ['Индексация', 'Endeksleme'], ['По рынку', 'Piyasa rayici'], ['Договориться', 'Uzlaşmak'], ['Устно', 'Sözlü'], ['Письменно', 'Yazılı']]],
-  // ============ B2 — ÜST-ORTA / RESMÎ (12) ============
   ['notary_power', 'B2', '📜', 'Noterde Vekâletname', 'Vekâlet, mühür, ücret ve onay', 'у нотариуса', 'noter odasında', ['Vatandaş', 'Noter'], [['Доверенность', 'Vekâletname'], ['Подпись', 'İmza'], ['Печать', 'Mühür'], ['Тариф', 'Ücret tarifesi'], ['Удостоверить', 'Onaylamak'], ['Представитель', 'Temsilci']]],
   ['court_prep', 'B2', '⚖️', 'Mahkeme Gününe Hazırlık', 'Dosya, duruşma, tanık ve karar', 'накануне судебного заседания', 'duruşma öncesi', ['Davacı', 'Avukat'], [['Дело', 'Dosya / dava'], ['Заседание', 'Duruşma'], ['Свидетель', 'Tanık'], ['Иск', 'Dava'], ['Адвокат', 'Avukat'], ['Решение', 'Karar']]],
   ['customs_parcel', 'B2', '🛃', 'Gümrükte Kalan Paket', 'Vergi, beyan, limit ve gümrük işlemi', 'на таможне', 'gümrükte', ['Alıcı', 'Gümrük Memuru'], [['Таможня', 'Gümrük'], ['Пошлина', 'Gümrük vergisi'], ['Декларация', 'Beyan'], ['Растаможка', 'Gümrük işlemleri'], ['Лимит', 'Limit'], ['Проверка', 'Denetim']]],
@@ -179,7 +166,6 @@ const DAILY_LIFE_PLUS_SPECS = [
   ['school_transfer', 'B2', '🎓', 'Okul Nakil Başvurusu', 'Dosya, gerekçe, kontenjan ve danışman', 'с заявлением о переводе', 'nakil başvurusunda', ['Öğrenci', 'Sekreter'], [['Перевод', 'Nakil'], ['Личное дело', 'Öğrenci dosyası'], ['Основание', 'Gerekçe'], ['Свободное место', 'Boş kontenjan'], ['Куратор', 'Danışman'], ['Зачёт', 'Kredi saydırma']]],
   ['home_buying_deal', 'B2', '🏡', 'Evi Satın Alma Pazarlığı', 'Kapora, tapu kaydı, eksper ve satış işlemi', 'на переговорах о покупке', 'satın alma pazarlığında', ['Alıcı', 'Emlakçı'], [['Торг', 'Pazarlık'], ['Задаток', 'Kapora'], ['Кадастровая выписка', 'Tapu kaydı'], ['Агентство', 'Emlak ofisi'], ['Оценщик', 'Eksper'], ['Сделка', 'Satış işlemi']]],
   ['bill_dispute', 'B2', '🧾', 'Yanlış Faturaya İtiraz', 'Sayaç değeri, yeniden hesaplama ve ceza', 'в споре о счёте', 'fatura itirazında', ['Müşteri', 'Destek Hattı'], [['Перерасчёт', 'Yeniden hesaplama'], ['Показания', 'Sayaç değeri'], ['Начисление', 'Tahakkuk'], ['Штраф', 'Ceza'], ['Ошибка', 'Hata'], ['Линия поддержки', 'Destek hattı']]],
-  // ============ C1/C2 — ZOR / HUKUKÎ-NÜANSLI (8) ============
   ['inheritance_talk', 'C1/C2', '🕯️', 'Miras Paylaşımı Görüşmesi', 'Vasiyet, varis, pay ve eşit bölüşüm', 'в разговоре о наследстве', 'miras görüşmesinde', ['Varis', 'Avukat'], [['Наследство', 'Miras'], ['Завещание', 'Vasiyet'], ['Наследник', 'Varis'], ['Доля', 'Pay'], ['Свидетельство', 'Resmî belge'], ['Равные части', 'Eşit paylar']]],
   ['bankruptcy_meeting', 'C1/C2', '📉', 'İflas Sürecinde Görüşme', 'Alacaklı, varlıklar ve yeniden yapılandırma', 'при обсуждении банкротства', 'iflas görüşmesinde', ['Borçlu', 'Finans Danışmanı'], [['Банкротство', 'İflas'], ['Кредитор', 'Alacaklı'], ['Активы', 'Varlıklar'], ['Суд', 'Mahkeme'], ['Реструктуризация', 'Yeniden yapılandırma'], ['Расчёты', 'Ödemeler dengesi']]],
   ['urban_renewal', 'C1/C2', '🏗️', 'Kentsel Dönüşüm Toplantısı', 'Tahliye, müteahhit, tazmin ve yıkım', 'на собрании о реновации', 'kentsel dönüşüm toplantısında', ['Malik', 'Proje Temsilcisi'], [['Реновация', 'Kentsel dönüşüm'], ['Расселение', 'Tahliye'], ['Застройщик', 'Müteahhit'], ['Компенсация', 'Tazminat'], ['Единогласно', 'Oybirliği ile'], ['Снос', 'Yıkım']]],

@@ -1,32 +1,4 @@
 #!/usr/bin/env node
-/**
- * DilKoç © 2026 — Dosya Bütünlük ve Sahiplik Doğrulama Sistemi
- * ------------------------------------------------------------
- * Proje klasöründeki TÜM izlenen dosyaların (kaynak kod, müfredat verileri,
- * görseller, sesler) kriptografik parmak izlerini (SHA-256) kaydeder ve
- * sonradan doğrular:
- *
- *   node scripts/integrity.mjs manifest   → integrity.manifest.json üretir
- *   node scripts/integrity.mjs check      → dosyaları doğrular (başarısızsa kod 1)
- *
- * GÜÇLÜ KULLANIM (önerilen):
- *  manifest'i bir ANAHTARLA imzalayın — anahtar elinizde kalınca başkası
- *   dosyaları değiştirdikten sonra manifest'i yeniden üretemez:
- *
- *   DILKOC_INTEGRITY_KEY="gizli-anahtariniz" npm run integrity:manifest
- *   DILKOC_INTEGRITY_KEY="gizli-anahtariniz" npm run integrity:check
- *
- *   Anahtar asla depoya commit edilmez; sadece kendi bilgisayarınızda tutulur
- *   (örn. ~/.dilkoc_key dosyasında).
- *
- * SAHİPLİK KANITI: manifest, commit geçmişine gömülür. Git commit'lerinin
- * tarih + SHA kayıtları, dosyaların o tarihlerde sizde olduğunu noter gibi
- * kanıtlar. Çalınan içerik tespit edilirse bu kayıt + LICENSE, DMCA/ihtar
- * sürecinde birinci sınıf delildir.
- *
- * Not: Her meşru değişiklikten sonra `npm run integrity:manifest` çalıştırıp
- * manifest'i değişiklikle birlikte commit edin.
- */
 import { createHash, createHmac } from 'node:crypto';
 import { execFileSync } from 'node:child_process';
 import { readFileSync, writeFileSync, readdirSync, statSync } from 'node:fs';
@@ -37,7 +9,6 @@ const ROOT = new URL('..', import.meta.url).pathname;
 const KEY = process.env.DILKOC_INTEGRITY_KEY || '';
 
 function listTrackedFiles() {
-  // git ls-files: .gitignore kurallarına saygılı, yalnız depoya dahil dosyalar.
   let out;
   try {
     out = execFileSync('git', ['ls-files', '-z'], { cwd: ROOT, maxBuffer: 1 << 28 });

@@ -1,9 +1,3 @@
-// ==========================================================
-// EK MÜFREDAT — A1 BAŞLANGIÇ GRAMER PAKETİ (Ünite 2-6: sayılardan hemen sonra)
-// "Ben, benim, benimki, bende, bana, benimle..." — cümlelerde
-// hangi form NEDEN kullanılıyor? A2'ye geçmeden önce cümle
-// çözme anahtarı: zamirler, iyelik, у меня есть ve hâl mantığı.
-// ==========================================================
 import type { UnitModule } from '../curriculumData';
 
 export const EXTRA_A1_GRAM: UnitModule[] = [

@@ -1,7 +1,3 @@
-// ==========================================================
-// EK MÜFREDAT — B2 GENİŞLEME PAKETİ 1/2 (Ünite 89-95)
-// İleri iş hayatı, ticaret ve büyük para kararları.
-// ==========================================================
 import type { UnitModule } from '../curriculumData';
 
 export const EXTRA_B2A: UnitModule[] = [

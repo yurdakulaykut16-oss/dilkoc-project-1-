@@ -6,7 +6,6 @@ import { getRecentMistakes } from "./mistakesRepo";
 import { getSkillScores } from "./skillScoreRepo";
 import { getCurriculumView } from "./curriculumRepo";
 
-/** Assembles today's lesson for a language from profile, curriculum, SRS, and mistake data. */
 export async function generateDailyLesson(languageCode: LanguageCode, options?: LessonOptions): Promise<Lesson> {
   const profile = await getOrCreateProfile(languageCode);
 

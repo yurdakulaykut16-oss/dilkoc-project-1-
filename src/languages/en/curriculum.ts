@@ -67,7 +67,6 @@ const A1: CurriculumTopic[] = [
   },
 ];
 
-// A2-C2 will be added in later phases without changing the curriculum engine.
 export const enCurriculum: Record<CEFRLevel, CurriculumTopic[]> = {
   A1,
   A2: [],

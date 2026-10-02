@@ -1,7 +1,3 @@
-// Gerçek debpalash/VoiceStudio backend bağlantısı.
-// Tarayıcı her zaman göreli /voicestudio URL'sini çağırır; Vite bunu geliştirmede
-// localhost:3900'a proxy'ler. Böylece browser kodunda localhost hard-code edilmez.
-
 import { detectSpeechTag } from '../content/activeLanguage';
 export interface LocalVoiceStudioVoice {
   voice_id: string;
@@ -32,8 +28,6 @@ async function localOmniVoiceModelReady(signal: AbortSignal) {
     if (!response.ok) return true;
     const data = await response.json() as ModelCatalogResponse;
     const model = data.models?.find(item => item.repo_id === 'k2-fsa/OmniVoice');
-    // Older VoiceStudio builds may not expose the catalogue entry; in that case
-    // let /speech decide instead of blocking a compatible backend.
     return !model || model.installed === true;
   } catch {
     return true;
@@ -62,7 +56,6 @@ export function stopLocalVoiceStudio() {
     currentAudio.pause();
     currentAudio.currentTime = 0;
   } catch {
-    // Oynatılmamış ses durdurulmaya çalışılmış olabilir.
   }
   currentAudio = null;
 }
@@ -96,7 +89,6 @@ async function playVoiceStudioAudio(
   }
 }
 
-/** VoiceStudio repository's bundled voice-design/demo clipini önizler. */
 export async function previewLocalVoiceStudioAudio(
   previewUrl: string,
   rate = 1,
@@ -110,7 +102,6 @@ export async function previewLocalVoiceStudioAudio(
   }
 }
 
-/** VoiceStudio'nun gerçek yerel /v1/audio/speech endpoint'inden ses üretir. */
 export async function speakWithLocalVoiceStudio(
   text: string,
   voice = 'default',

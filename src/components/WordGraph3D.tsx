@@ -1,21 +1,9 @@
-// ============================================================================
-// 🕸️ 3D KELİME AĞI (Graph View)
-// Bildiğin kelimeleri; geldikleri BÖLÜMLERE (üniteler), çalışma TEKNİKLERİNE ve
-// SEVİYELERE bağlayan, döndürülebilir 3 boyutlu ağ grafiği.
-// - Unutulmaya yüz tutan kelimeler (SRS vadesi geçmiş / kronik hatalı) KIRMIZILAŞIR.
-// - Kırmızı veya zayıf bağlı bir düğüme tıklayınca 1 dakikalık hedefli
-//   "⚡ Hızlı Kurtarma Testi" başlatılabilir.
-// Hiçbir ek kütüphane kullanılmaz: kuvvet yönlendirmeli yerleşim + perspektif
-// projeksiyon doğrudan <canvas> üzerinde hesaplanır.
-// ============================================================================
-
 import { useEffect, useMemo, useRef, useState } from 'react';
 import { UNITS_DATA } from '../curriculumData';
 import { PREPOSITIONS } from '../learnerModel';
 import type { SRSItem } from '../App';
 import { isEnglish } from '../content/activeLanguage';
 
-/** WordGraph için yaygın İngilizce fiiller (Rusça -ть fiil tespitinin karşılığı). */
 const EN_COMMON_VERBS = new Set(['be', 'have', 'do', 'go', 'say', 'get', 'make', 'know', 'think', 'take', 'see', 'come', 'want', 'use', 'find', 'give', 'tell', 'work', 'call', 'try', 'ask', 'need', 'feel', 'become', 'leave', 'put', 'mean', 'keep', 'let', 'begin', 'seem', 'help', 'show', 'hear', 'play', 'run', 'move', 'live', 'believe', 'bring', 'happen', 'write', 'provide', 'sit', 'stand', 'lose', 'pay', 'meet', 'learn', 'lead', 'understand', 'speak', 'read', 'spend', 'grow', 'open', 'walk', 'win', 'teach', 'offer', 'remember', 'consider', 'appear', 'buy', 'serve', 'die', 'send', 'build', 'stay', 'fall', 'cut', 'reach', 'kill', 'raise', 'pass', 'decide', 'return', 'explain', 'hope', 'develop', 'carry', 'break', 'receive', 'agree', 'support', 'hit', 'produce', 'eat', 'cover', 'catch', 'draw', 'choose', 'work', 'travel', 'cook', 'clean', 'watch', 'study', 'start', 'finish', 'love', 'like', 'enjoy', 'visit', 'talk', 'listen', 'buy', 'sell', 'drive', 'drink', 'sleep', 'wake', 'wear', 'wash']);
 
 const DAY_MS = 24 * 60 * 60 * 1000;
@@ -35,7 +23,7 @@ interface GNode {
   sub?: string;
   color: string;
   size: number;
-  strength: number; // 0-1; sadece kelimelerde anlamlı
+  strength: number;
   weak: boolean;
   meta?: { ru?: string; tr?: string; skillKey?: string };
   x: number; y: number; z: number;
@@ -49,16 +37,15 @@ const LEVEL_COLORS: Record<string, string> = {
 };
 
 function strengthColor(s: number): string {
-  // 0 → kırmızı, 1 → yeşil (unutulma sınırında kırmızılaşma)
   const hue = Math.round(s * 125);
   return `hsl(${hue}, 85%, ${52 - s * 6}%)`;
 }
 
 export function computeWordStrength(item: SRSItem, errCount: number, now = Date.now()): number {
-  let s = 0.22 + item.box * 0.155; // kutu 1 → ~0.38, kutu 5 → ~1.0
+  let s = 0.22 + item.box * 0.155;
   if (now > item.nextReview) {
     const overdueDays = (now - item.nextReview) / DAY_MS;
-    s -= Math.min(0.62, 0.18 + overdueDays * 0.08); // vade geçtikçe kızarır
+    s -= Math.min(0.62, 0.18 + overdueDays * 0.08);
   }
   s -= Math.min(0.5, errCount * 0.16);
   return Math.max(0.03, Math.min(1, s));
@@ -76,9 +63,6 @@ export default function WordGraph3D({ srsBank, errorStats, completedUnits, onSta
   const [selected, setSelected] = useState<GNode | null>(null);
   const [hoverId, setHoverId] = useState<string | null>(null);
 
-  // ------------------------------------------------------------------
-  // GRAF KURULUMU (veriden düğüm + kenar üretimi)
-  // ------------------------------------------------------------------
   const graph = useMemo(() => {
     const nodes: GNode[] = [];
     const edges: GEdge[] = [];
@@ -87,7 +71,6 @@ export default function WordGraph3D({ srsBank, errorStats, completedUnits, onSta
 
     const add = (n: Omit<GNode, 'x' | 'y' | 'z' | 'vx' | 'vy' | 'vz'>): number => {
       if (idx.has(n.id)) return idx.get(n.id)!;
-      // Fibonacci küresi üzerinde başlangıç konumu (dengeli dağılım)
       const i = nodes.length;
       const phi = Math.acos(1 - 2 * ((i + 0.5) / 260));
       const theta = Math.PI * (1 + Math.sqrt(5)) * i;
@@ -104,10 +87,8 @@ export default function WordGraph3D({ srsBank, errorStats, completedUnits, onSta
     };
     const link = (a: number, b: number, weak = false) => { edges.push({ a, b, weak }); };
 
-    // Merkez: öğrencinin Rusçası
     const hub = add({ id: 'hub', kind: 'hub', label: '🧠 Benim Rusçam', color: '#38bdf8', size: 15, strength: 1, weak: false });
 
-    // Seviye düğümleri
     const levelIdx = new Map<string, number>();
     (['A1', 'A2', 'B1', 'B2', 'C1', 'C2'] as const).forEach(lv => {
       const i = add({ id: `lv_${lv}`, kind: 'level', label: lv, sub: 'Seviye', color: LEVEL_COLORS[lv], size: 11, strength: 1, weak: false });
@@ -115,7 +96,6 @@ export default function WordGraph3D({ srsBank, errorStats, completedUnits, onSta
       link(hub, i);
     });
 
-    // Teknik düğümleri
     const techDefs: [string, string, string][] = [
       ['tech_srs', '📅 Aralıklı Tekrar', '#f59e0b'],
       ['tech_listen', '🎧 Dinleme', '#14b8a6'],
@@ -135,13 +115,11 @@ export default function WordGraph3D({ srsBank, errorStats, completedUnits, onSta
       link(hub, i);
     });
 
-    // Kelime → ünite eşlemesi için hızlı arama
     const wordHome = new Map<string, { unitId: string; title: string; icon: string; color: string; level: string }>();
     for (const u of UNITS_DATA) for (const w of u.words) {
       if (!wordHome.has(w.ru)) wordHome.set(w.ru, { unitId: u.id, title: u.title, icon: u.icon, color: u.color, level: u.levelGroup });
     }
 
-    // Kelime seçimi: en zayıflar öncelikli, üst sınır ~150 (performans)
     const scored = srsBank.map(item => ({ item, s: computeWordStrength(item, errorStats[item.ru]?.count || 0, now) }));
     scored.sort((a, b) => a.s - b.s);
     const chosen = scored.slice(0, 150);
@@ -178,7 +156,6 @@ export default function WordGraph3D({ srsBank, errorStats, completedUnits, onSta
           link(techIdx.get('tech_listen')!, wi, weak);
         }
       }
-      // Gramer bağlantıları
       const low = item.ru.trim().toLowerCase();
       if (PREPOSITIONS.includes(low)) link(techIdx.get('tech_prep')!, wi, weak);
       const isVerbLike = isEnglish()
@@ -187,7 +164,6 @@ export default function WordGraph3D({ srsBank, errorStats, completedUnits, onSta
       if (isVerbLike && !low.includes(' ')) {
         link(techIdx.get('tech_tense')!, wi, weak);
       }
-      // SRS tekniği: vade takibindeki her kelime zayıfsa SRS düğümüne kırmızı bağ
       if (weak) link(techIdx.get('tech_srs')!, wi, true);
     }
 
@@ -197,9 +173,6 @@ export default function WordGraph3D({ srsBank, errorStats, completedUnits, onSta
   const weakCount = graph.nodes.filter(n => n.kind === 'word' && n.weak).length;
   const wordCount = graph.nodes.filter(n => n.kind === 'word').length;
 
-  // ------------------------------------------------------------------
-  // SİMÜLASYON + ÇİZİM DÖNGÜSÜ
-  // ------------------------------------------------------------------
   const viewRef = useRef({ yaw: 0.4, pitch: 0.18, zoom: 1, auto: true });
   const hoverRef = useRef<string | null>(null);
   const selectedRef = useRef<GNode | null>(null);
@@ -226,7 +199,6 @@ export default function WordGraph3D({ srsBank, errorStats, completedUnits, onSta
     window.addEventListener('resize', resize);
 
     const step = () => {
-      // Kuvvetler: yay (kenar) + itme (düğüm çiftleri) + merkeze çekim
       const k = 0.02 * cooling;
       if (cooling > 0.02) {
         for (const e of edges) {
@@ -254,14 +226,13 @@ export default function WordGraph3D({ srsBank, errorStats, completedUnits, onSta
           }
         }
         for (const n of nodes) {
-          n.vx -= n.x * 0.0012; n.vy -= n.y * 0.0012; n.vz -= n.z * 0.0012; // merkeze hafif çekim
+          n.vx -= n.x * 0.0012; n.vy -= n.y * 0.0012; n.vz -= n.z * 0.0012;
           n.x += n.vx * k * 22; n.y += n.vy * k * 22; n.z += n.vz * k * 22;
           n.vx *= 0.86; n.vy *= 0.86; n.vz *= 0.86;
         }
         cooling *= 0.996;
       }
 
-      // Görünüm
       const v = viewRef.current;
       if (v.auto) v.yaw += 0.0028;
       const rect = canvas.getBoundingClientRect();
@@ -278,9 +249,8 @@ export default function WordGraph3D({ srsBank, errorStats, completedUnits, onSta
         const s = (f / (f + z2 + 320)) * v.zoom;
         return { sx: W / 2 + x1 * s, sy: H / 2 + y2 * s, s, depth: z2 };
       });
-      (canvas as any).__proj = proj; // tıklama testi için sakla
+      (canvas as any).__proj = proj;
 
-      // Çizim
       ctx.clearRect(0, 0, W, H);
       const grad = ctx.createRadialGradient(W / 2, H / 2, 40, W / 2, H / 2, Math.max(W, H) / 1.2);
       grad.addColorStop(0, '#0b1226');
@@ -288,7 +258,6 @@ export default function WordGraph3D({ srsBank, errorStats, completedUnits, onSta
       ctx.fillStyle = grad;
       ctx.fillRect(0, 0, W, H);
 
-      // Kenarlar
       for (const e of edges) {
         const A = proj[e.a], B = proj[e.b];
         const alpha = Math.max(0.06, Math.min(0.4, (A.s + B.s) * 0.22));
@@ -300,13 +269,11 @@ export default function WordGraph3D({ srsBank, errorStats, completedUnits, onSta
         ctx.stroke();
       }
 
-      // Düğümler (derinliğe göre sırala: arkadakiler önce)
       const order = nodes.map((_, i) => i).sort((a, b) => proj[b].depth - proj[a].depth);
       const t = performance.now() / 1000;
       for (const i of order) {
         const n = nodes[i], p = proj[i];
         let r = n.size * p.s;
-        // Kırmızı (unutulmak üzere) düğümler nabız gibi atar
         if (n.kind === 'word' && n.weak) r *= 1 + 0.15 * Math.sin(t * 4 + i);
         const isSel = selectedRef.current?.id === n.id;
         const isHover = hoverRef.current === n.id;
@@ -335,7 +302,6 @@ export default function WordGraph3D({ srsBank, errorStats, completedUnits, onSta
           ctx.stroke();
         }
 
-        // Etiketler: büyük düğümler her zaman; kelimeler yakın/zayıf/seçili ise
         const showLabel = n.kind !== 'word' ? p.s > 0.55 : (n.weak && p.s > 0.5) || isSel || isHover || p.s > 1.05;
         if (showLabel) {
           ctx.font = `${n.kind === 'word' ? 700 : 900} ${Math.max(9, Math.min(15, (n.kind === 'word' ? 11 : 12) * p.s))}px system-ui`;
@@ -348,7 +314,6 @@ export default function WordGraph3D({ srsBank, errorStats, completedUnits, onSta
     };
     raf = requestAnimationFrame(step);
 
-    // Etkileşim
     let dragging = false, lastX = 0, lastY = 0, moved = 0;
     const pick = (mx: number, my: number): GNode | null => {
       const proj = (canvas as any).__proj as { sx: number; sy: number; s: number }[] | undefined;

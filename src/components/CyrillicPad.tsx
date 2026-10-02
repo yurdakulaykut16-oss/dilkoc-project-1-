@@ -1,11 +1,5 @@
 import React from 'react';
 
-// ==========================================
-// ⌨️ KİRİL EKRAN KLAVYESİ — fiziksel klavyesi olmayanlar için
-// tıklanabilir Rusça harf pad'i (ЙЦУКЕН dizilimi + Ё).
-// Yazma soruları ve üretim kartlarında kullanılır.
-// ==========================================
-
 const ROWS: string[][] = [
   ['й', 'ц', 'у', 'к', 'е', 'н', 'г', 'ш', 'щ', 'з', 'х', 'ъ'],
   ['ф', 'ы', 'в', 'а', 'п', 'р', 'о', 'л', 'д', 'ж', 'э'],

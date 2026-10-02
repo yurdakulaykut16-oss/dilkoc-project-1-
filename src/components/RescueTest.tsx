@@ -1,11 +1,3 @@
-// ============================================================================
-// ⚡ HIZLI KURTARMA TESTİ (1 dakika)
-// 3D kelime ağında kırmızılaşan (unutulmak üzere olan) veya zayıf bağlanan bir
-// kelime/gramer düğümüne tıklanınca açılır: 60 saniyelik geri sayım içinde
-// DOĞRUDAN o noktayı hedefleyen hızlı sorular sorulur. Amaç, unutulma anındaki
-// bilgiyi tam zamanında geri çağırıp hafıza izini tazelemek.
-// ============================================================================
-
 import { useEffect, useMemo, useRef, useState } from 'react';
 import { ALL_WORDS, ALL_SENTENCES } from '../curriculumData';
 import { GRAMMAR_FOUNDATION_UNITS } from '../grammarFoundationData';
@@ -15,7 +7,7 @@ import { langMeta } from '../content/activeLanguage';
 
 interface RescueQ {
   prompt: string;
-  audio?: string;       // varsa: soru ses ile sorulur
+  audio?: string;
   correct: string;
   options: string[];
 }
@@ -43,12 +35,10 @@ function buildQuestions(target: RescueTarget): RescueQ[] {
     const tr = target.tr || ALL_WORDS.find(w => w.ru === ru)?.tr || '';
     const trDistract = () => shuffle(ALL_WORDS.filter(x => x.tr !== tr)).slice(0, 3).map(x => x.tr);
     const ruDistract = () => shuffle(ALL_WORDS.filter(x => x.ru !== ru)).slice(0, 3).map(x => x.ru);
-    // 6 hızlı soru: tanıma → üretim → dinleme döngüsü (aynı hedef, farklı kaslar)
     qs.push({ prompt: `«${ru}» ne demek?`, correct: tr, options: shuffle([tr, ...trDistract()]) });
     qs.push({ prompt: `"${tr}" kelimesinin ${langMeta().wordLabelUpper} hangisi?`, correct: ru, options: shuffle([ru, ...ruDistract()]) });
     qs.push({ prompt: '🔊 Dinle — hangi kelimeyi duydun?', audio: ru, correct: ru, options: shuffle([ru, ...ruDistract()]) });
     qs.push({ prompt: '🔊 Dinle — duyduğun kelimenin TÜRKÇESİ ne?', audio: ru, correct: tr, options: shuffle([tr, ...trDistract()]) });
-    // Bağlam sorusu: kelimenin geçtiği gerçek bir cümle varsa
     const sent = ALL_SENTENCES.find(s => s.ru.toLowerCase().includes(ru.toLowerCase()));
     if (sent) {
       qs.push({ prompt: `«${sent.ru}» cümlesi ne anlatıyor?`, correct: sent.tr, options: shuffle([sent.tr, ...shuffle(ALL_SENTENCES.filter(s2 => s2.tr !== sent.tr)).slice(0, 3).map(s2 => s2.tr)]) });
@@ -57,23 +47,19 @@ function buildQuestions(target: RescueTarget): RescueQ[] {
     return qs;
   }
 
-  // GRAMER DÜĞÜMÜ (zaman / edat)
   const key = target.skillKey || '';
   if (key.startsWith('tense:')) {
-    // 1) Zaman tespiti soruları: gerçek müfredat cümleleri "hangi zamanda?"
     const opts = ['Şimdiki zaman', 'Geçmiş zaman', 'Gelecek zaman'];
     const pool = shuffle(ALL_SENTENCES).map(s => ({ s, t: detectTenses(s.ru) })).filter(x => x.t.length === 1).slice(0, 24);
     for (const { s, t } of shuffle(pool).slice(0, 4)) {
       qs.push({ prompt: `«${s.ru}» cümlesi hangi zamanda?`, correct: TENSE_LABEL[t[0]], options: shuffle([...opts]) });
     }
-    // 2) İlgili gramer ünitesinin kendi quiz soruları
     const unitId = key === 'tense:past' ? 'tense_past' : key === 'tense:future' ? 'tense_future_budu' : key === 'tense:aspect' ? 'tense_aspect' : 'tense_present_e';
     const gUnit = GRAMMAR_FOUNDATION_UNITS.find(u => u.id === unitId) || GRAMMAR_FOUNDATION_UNITS.find(u => u.id.startsWith('tense'));
     if (gUnit) for (const q of shuffle(gUnit.quiz).slice(0, 3)) qs.push({ prompt: q.prompt, correct: q.correct, options: shuffle([...q.options]) });
     return shuffle(qs);
   }
 
-  // EDAT DÜĞÜMÜ: boşluk doldurma — cümleden edat çıkarılır
   const prep = key.startsWith('prep:') ? key.slice(5) : 'в';
   const prepOptions = ['в', 'на', 'с', 'из', 'у', 'к', 'о', 'по', 'за', 'до', 'от', 'без'];
   const withPrep = shuffle(ALL_SENTENCES.filter(s => new RegExp(`(^|\\s)${prep}\\s`, 'i').test(s.ru))).slice(0, 5);
@@ -114,7 +100,6 @@ export default function RescueTest({ target, speak, onFinish, onExit }: Props) {
     setDone(true);
   };
 
-  // 60 saniyelik geri sayım
   useEffect(() => {
     const t = window.setInterval(() => {
       setTimeLeft(prev => {
@@ -125,7 +110,6 @@ export default function RescueTest({ target, speak, onFinish, onExit }: Props) {
     return () => window.clearInterval(t);
   }, []);
 
-  // Sesli soruları otomatik çal
   useEffect(() => {
     const q = questions[idx];
     if (q?.audio && !done) {
@@ -145,7 +129,6 @@ export default function RescueTest({ target, speak, onFinish, onExit }: Props) {
     if (ok) setCorrect(c => c + 1);
     setFlash(ok ? 'ok' : 'no');
     window.setTimeout(() => setFlash(null), 450);
-    // Öğrenen modeline işle
     if (target.kind === 'word' && target.ru) recordWordResult(target.ru, target.tr || '', ok);
     else if (target.skillKey) recordSkill(target.skillKey, ok);
 
@@ -153,7 +136,6 @@ export default function RescueTest({ target, speak, onFinish, onExit }: Props) {
     else finish();
   };
 
-  // ⌨️ KLAVYE KISAYOLU: 1-4 tuşları şıkları seçer (hızlı kurtarma testinde hız kritik!)
   useEffect(() => {
     const onKey = (e: KeyboardEvent) => {
       if (done || e.key < '1' || e.key > '4') return;
@@ -219,7 +201,6 @@ export default function RescueTest({ target, speak, onFinish, onExit }: Props) {
         </div>
       </div>
 
-      {/* Zaman çubuğu */}
       <div style={{ height: '8px', background: '#1e293b', borderRadius: '4px', margin: '10px 0 16px', overflow: 'hidden' }}>
         <div style={{ width: `${(timeLeft / 60) * 100}%`, height: '100%', background: urgent ? '#ef4444' : 'linear-gradient(90deg,#f59e0b,#ef4444)', transition: 'width 1s linear' }} />
       </div>

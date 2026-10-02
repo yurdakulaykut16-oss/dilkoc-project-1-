@@ -10,8 +10,6 @@ export interface GrammarSubmissionResult {
   updatedGrammarSkillScore: number;
 }
 
-/** Grades a grammar exercise answer, then updates the grammar skill score and,
- *  on failure, logs a topic-tagged mistake — same pattern as flashcardRepo. */
 export async function submitGrammarAnswer(exercise: GrammarExercise, userAnswer: string): Promise<GrammarSubmissionResult> {
   const evaluation = evaluateGrammarAnswer(exercise.type, exercise.expectedAnswer, userAnswer);
   const impact = evaluateGrammarMasteryImpact(evaluation, exercise);

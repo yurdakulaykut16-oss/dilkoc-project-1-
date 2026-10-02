@@ -1,5 +1,3 @@
-# -*- coding: utf-8 -*-
-# tr -> en sözlük PARÇA 6 (Y...Z, Ç, Ö, Ş, Ü, özel)
 D.update({
 'Yapraklar': 'leaves',
 'Yaptı (tamamlanmış)': 'he did',
