@@ -529,7 +529,7 @@ const EN_ART_MAP: Record<string, string> = {
   en_mod_c12_47: 'mod_c1_15', en_mod_c12_48: 'mod_c1_16',
 };
 
-// Ünite banner'ı: /unit-art/{unitId}.jpg görselini gösterir; görsel yoksa
+// Ünite banner'ı: /unit-art/{unitId}.webp görselini gösterir; görsel yoksa
 // (veya yüklenemezse) otomatik olarak ikonlu SceneBanner'a geri döner.
 const UnitBanner: React.FC<{ unitId: string; icon: string; color: string; label: string }> = ({ unitId, icon, color, label }) => {
   const artId = EN_ART_MAP[unitId] || unitId;
