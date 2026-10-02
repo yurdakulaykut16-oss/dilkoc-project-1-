@@ -12,6 +12,9 @@
 // ============================================================================
 
 import { STORIES, STORY_UNITS_PER_CHECKPOINT } from './storyData';
+import { isEnglish } from '../content/activeLanguage';
+
+const IS_ENGLISH = isEnglish();
 import type { CheckpointStory } from './types';
 
 export { STORIES, STORY_UNITS_PER_CHECKPOINT, STORY_CHECKPOINT_COUNT, STORY_CAST } from './storyData';
@@ -63,8 +66,18 @@ export function gateStoryForLevel(level: 'A1' | 'A2' | 'B1' | 'B2' | 'C1' | 'C2'
   return neededFinal ? STORIES.find((s) => s.kind === 'levelFinal' && s.levelId === neededFinal) : undefined;
 }
 
-/** Bir ünite numarasının ait olduğu müfredat bölümünü (A1..C1/C2) döndürür. */
+/** Bir ünite numarasının ait olduğu müfredat bölümünü (A1..C1/C2) döndürür.
+ *  Bantlar aktif müfredata göre: Rusça (genişletme paketleriyle 700+ ünite)
+ *  vs İngilizce (çekirdek 48 ünitenin numara bantları; 499 ayna + 175
+ *  pekiştirme ünitesi bu bantların ötesindeki numaralara düşer). */
 export function levelOfUnitNumber(unitNumber: number): 'A1' | 'A2' | 'B1' | 'B2' | 'C1/C2' {
+  if (IS_ENGLISH) {
+    if (unitNumber <= 8) return 'A1';
+    if (unitNumber <= 16) return 'A2';
+    if (unitNumber <= 24) return 'B1';
+    if (unitNumber <= 32) return 'B2';
+    return 'C1/C2';
+  }
   if (unitNumber <= 11) return 'A1';
   if (unitNumber <= 61) return 'A2';
   if (unitNumber <= 126) return 'B1';

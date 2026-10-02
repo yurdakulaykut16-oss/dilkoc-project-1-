@@ -11,6 +11,9 @@ import { EXTRA_UNITS } from './extraUnits';
 import { createDailyLifePlus } from './extraUnits/dailyLifePlus';
 import { createRestaurantService50 } from './extraUnits/restaurantService50';
 import { createDailyLife90 } from './extraUnits/dailyLife90';
+import { isEnglish } from './content/activeLanguage';
+import { EN_UNITS } from './content/en/units';
+import { EN_EXTRA_UNITS, EN_NEW_UNITS } from './content/en/enExtraUnits';
 
 export interface WordDetail {
   id: string;
@@ -3234,7 +3237,7 @@ const LEVEL_ORDER: Record<UnitModule['levelGroup'], number> = {
   'C1/C2': 5,
 };
 
-const C2_START_UNIT_NUMBER = 185;
+const C2_START_UNIT_NUMBER = isEnglish() ? 45 : 185;
 
 function splitAdvancedLevel(unit: UnitModule): UnitModule {
   if (unit.levelGroup !== 'C1/C2') return unit;
@@ -3246,7 +3249,8 @@ function splitAdvancedLevel(unit: UnitModule): UnitModule {
   };
 }
 
-export const UNITS_DATA: UnitModule[] = dedupeSimilarUnits([
+/** Rusça müfredatı: temel üniteler + ~30 genişletme paketi (kesirli numaralarla). */
+const RU_UNITS_DATA: UnitModule[] = dedupeSimilarUnits([
   ...ORIGINAL_UNITS,
   ...RESTAURANT_SERVICE_UNITS,
   ...DAILY_LIFE_90_UNITS,
@@ -3257,6 +3261,25 @@ export const UNITS_DATA: UnitModule[] = dedupeSimilarUnits([
   a.title.localeCompare(b.title, 'tr') ||
   a.id.localeCompare(b.id),
 );
+
+// İNGİLİZCE modunda Rusça genişletme paketleri YÜKLENMEZ: bellek ve "öğrenme
+// yolu" listesi tamamen İngilizce müfredata ayrılır. EN müfredatı:
+//   • 48 elle yazılmış çekirdek ünite (content/en/units*),
+//   • 499 Rusça ek ünitesinin İngilizce AYNASI (aynı id/numara/başlık/sıra,
+//     içerik İngilizce — content/en/enExtraSpecs* + enExtraUnits motoru),
+//   • 175 İngilizce'ye özel pekiştirme ünitesi (enNewSpecs)
+// → toplam 722 ünite = Rusça müfredatın hacmi (RU: 223 + 499).
+const EN_UNITS_DATA: UnitModule[] = [...EN_UNITS, ...EN_EXTRA_UNITS, ...EN_NEW_UNITS]
+  .map(splitAdvancedLevel)
+  .sort((a, b) =>
+    LEVEL_ORDER[a.levelGroup] - LEVEL_ORDER[b.levelGroup] ||
+    a.unitNumber - b.unitNumber ||
+    a.title.localeCompare(b.title, 'tr') ||
+    a.id.localeCompare(b.id));
+
+export const UNITS_DATA: UnitModule[] = isEnglish()
+  ? EN_UNITS_DATA
+  : RU_UNITS_DATA;
 
 export const ALL_WORDS = UNITS_DATA.flatMap(m => m.words);
 

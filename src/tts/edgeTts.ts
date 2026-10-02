@@ -15,6 +15,7 @@
 //   servis bir süre devre dışı bırakılır; her cümlede boşuna websocket açılmaz.
 // ============================================================================
 import { webSpeak, webSpeechSupported, stopWebSpeech } from './webSpeech';
+import { detectSpeechTag } from '../content/activeLanguage';
 
 export const RU_VOICES = [
   { id: 'ru-RU-SvetlanaNeural', label: 'Svetlana (kadın)' },
@@ -26,9 +27,18 @@ export const TR_VOICES = [
   { id: 'tr-TR-AhmetNeural', label: 'Ahmet (erkek)' },
 ] as const;
 
+export const EN_VOICES = [
+  // İngilizce TTS profilleri (VoiceStudio seçimleri; tarayıcı sesine düşerken
+  // yalnızca etiket olarak kullanılır: en-US).
+  { id: 'en-us-female-1', label: '🇺🇸 Aria (ABD, Kadın)' },
+  { id: 'en-us-male-1', label: '🇺🇸 Guy (ABD, Erkek)' },
+  { id: 'en-gb-female-1', label: '🇬🇧 Sonia (İngiltere, Kadın)' },
+  { id: 'en-gb-male-1', label: '🇬🇧 Ryan (İngiltere, Erkek)' },
+];
+
 const VOICE_PREF_KEY = 'dilkoc_edge_tts_voices_v1';
 
-export interface VoicePrefs { ru: string; tr: string }
+export interface VoicePrefs { ru: string; tr: string; en?: string }
 
 export function getVoicePrefs(): VoicePrefs {
   try {
@@ -38,10 +48,11 @@ export function getVoicePrefs(): VoicePrefs {
       return {
         ru: RU_VOICES.some(v => v.id === p.ru) ? p.ru : RU_VOICES[0].id,
         tr: TR_VOICES.some(v => v.id === p.tr) ? p.tr : TR_VOICES[0].id,
+        en: EN_VOICES.some(v => v.id === p.en) ? p.en : EN_VOICES[0].id,
       };
     }
   } catch { /* yok say */ }
-  return { ru: RU_VOICES[0].id, tr: TR_VOICES[0].id };
+  return { ru: RU_VOICES[0].id, tr: TR_VOICES[0].id, en: EN_VOICES[0].id };
 }
 
 export function setVoicePrefs(p: Partial<VoicePrefs>) {
@@ -91,6 +102,7 @@ function synthesizeOnce(text: string, voice: string, prosodyRate: string): Promi
       const ws = new WebSocket(url);
       ws.binaryType = 'arraybuffer';
       const audioChunks: ArrayBuffer[] = [];
+
       // 15 saniye beklemek, servis zaten reddediyorken konuşmayı çok geciktiriyordu.
       const timeout = window.setTimeout(() => { try { ws.close(); } catch { /* */ } fail(new Error('edge-tts-timeout')); }, 6000);
 
@@ -291,7 +303,9 @@ export interface EdgeSpeakOptions {
 
 export function detectVoiceForText(text: string): string {
   const prefs = getVoicePrefs();
-  return /[а-яё]/i.test(text) ? prefs.ru : prefs.tr;
+  const tag = detectSpeechTag(text);
+  if (tag === 'en-US') return prefs.en || prefs.tr;
+  return tag === 'ru-RU' ? prefs.ru : prefs.tr;
 }
 
 /**

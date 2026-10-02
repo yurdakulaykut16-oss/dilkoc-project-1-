@@ -5,7 +5,9 @@
 // (Lig / günlük hedef / rozet / istatistik ekranı kaldırıldı — kullanıcı isteği.)
 // ============================================================================
 
-const STATS_KEY = 'dilkoc_stats_v1';
+import { isEnglish } from './content/activeLanguage';
+
+const STATS_KEY = isEnglish() ? 'dilkoc_stats_en_v1' : 'dilkoc_stats_v1';
 
 export interface StatsState {
   lastActiveDay: string;            // 'YYYY-MM-DD' — en son XP kazanılan gün

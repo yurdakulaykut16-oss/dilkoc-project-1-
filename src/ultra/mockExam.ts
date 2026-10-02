@@ -15,6 +15,7 @@
 import { UNITS_DATA } from '../curriculumData';
 import type { WordDetail, UnitModule } from '../curriculumData';
 import { isUltraMode } from './ultraMode';
+import { langMeta } from '../content/activeLanguage';
 
 export type ExamLevelId = 'A1' | 'A2' | 'B1' | 'B2' | 'C1/C2' | 'GENEL' | 'GUNLUK';
 
@@ -313,7 +314,7 @@ export function buildMockExam(level: ExamLevelId, completedIds: string[], seed?:
     if (trio.length < 3) break;
     qs.push({
       id: `e_${i}`, skill: 'match', kind: 'match',
-      prompt: '🔗 EŞLEŞTİRME — Rusça ↔ Türkçe çiftlerini hatasız bağla:',
+      prompt: `🔗 EŞLEŞTİRME — ${langMeta().name} ↔ Türkçe çiftlerini hatasız bağla:`,
       pairs: trio.map(w => ({ ru: w.ru, tr: w.tr })),
       correct: `${trio.length}/${trio.length} çift`,
       ru: trio[0].ru, tr: trio[0].tr, seconds: 45,

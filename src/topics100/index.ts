@@ -11,6 +11,7 @@
 import { UNITS_DATA } from '../curriculumData';
 import type { Topic100, Topic100Question, Topic100Cat, CefrTag } from './types';
 import { LETTER_INFO, SYLLABLE_TOPICS } from './letterNotes';
+import { isEnglish } from '../content/activeLanguage';
 import {
   buildLetterTopic,
   buildPreviewTopic,
@@ -40,7 +41,7 @@ export function topicCatInfo(id: Topic100Cat) {
 export const LEVELS: CefrTag[] = ['A1', 'A2', 'B1', 'B2', 'C1', 'C2'];
 
 // ---------------------------------------------------------------------------
-// Dinleme konularının tam dizilişi: 33 harf + 8 fonetik + N müfredat ön-hazırlık.
+// Dinleme konularının tam dizilişi: 33 harf (İng: 32) + 8 fonetik + N müfredat ön-hazırlık.
 // (N, UNITS_DATA'daki B1/B2/C1 ünite sayısından otomatik türetilir.)
 // ---------------------------------------------------------------------------
 export const LETTER_GLYPHS: string[] = LETTER_INFO.map((l) => l.glyph);
@@ -133,6 +134,17 @@ const LETTER_NAME_RU: Record<string, string> = {
   Э: 'э', Ю: 'ю', Я: 'я',
 };
 
+/** İngilizce: tek harf → harfin kendisi (TTS adını okur: "A" → "ey"),
+ *  diygraflar → harf adları boşlukla ("TH" → "tee aych"). */
+const LETTER_NAME_EN: Record<string, string> = {
+  A: 'A', B: 'B', C: 'C', D: 'D', E: 'E', F: 'F', G: 'G', H: 'H', I: 'I',
+  J: 'J', K: 'K', L: 'L', M: 'M', N: 'N', O: 'O', P: 'P', Q: 'Q', R: 'R',
+  S: 'S', T: 'T', U: 'U', V: 'V', W: 'W', X: 'X', Y: 'Y', Z: 'Z',
+  TH: 'T H', SH: 'S H', CH: 'C H', PH: 'P H', WH: 'W H', NG: 'N G',
+};
+
+const LETTER_NAMES: Record<string, string> = isEnglish() ? LETTER_NAME_EN : LETTER_NAME_RU;
+
 export function buildTopicDrills(t: Topic100): Topic100Question[] {
   const rnd = mulberry32(t.num * 7919 + 13);
   const qs: Topic100Question[] = [];
@@ -148,7 +160,7 @@ export function buildTopicDrills(t: Topic100): Topic100Question[] {
       prompt: '🔤 Hangi harfin sesini duyuyorsun?',
       answer: g,
       options: seededShuffle([g, ...others], rnd),
-      audio: LETTER_NAME_RU[g] || g,
+      audio: LETTER_NAMES[g] || g,
       hint: `Harf ${g} — ${t.descTr}`,
     });
   }

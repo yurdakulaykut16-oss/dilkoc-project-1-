@@ -11,7 +11,8 @@
 // - Uzun metinleri böler: bazı tarayıcılar ~200 karakterden sonra susar.
 // ============================================================================
 
-export type SpeechLangTag = 'tr-TR' | 'ru-RU';
+import { detectSpeechTag } from '../content/activeLanguage';
+export type SpeechLangTag = 'tr-TR' | 'ru-RU' | 'en-US';
 
 let cachedVoices: SpeechSynthesisVoice[] | null = null;
 
@@ -169,7 +170,7 @@ export async function webSpeak(text: string, opts: WebSpeakOptions = {}): Promis
   if (!clean) return true;
   if (!webSpeechSupported()) return false;
 
-  const lang: SpeechLangTag = opts.lang || (/[а-яё]/i.test(clean) ? 'ru-RU' : 'tr-TR');
+  const lang: SpeechLangTag = opts.lang || detectSpeechTag(clean);
   const voice = await pickVoice(lang);
   // Dil sesi hiç yoksa yanlış aksanla okumaktansa çağırana false dönüp
   // native/cihaz TTS'ine şans vermek daha doğru.

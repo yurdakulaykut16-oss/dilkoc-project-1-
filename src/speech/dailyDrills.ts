@@ -9,6 +9,7 @@ import { UNITS_DATA, ALL_WORDS } from '../curriculumData';
 import type { WordDetail } from '../curriculumData';
 import { TWISTERS } from './twisters';
 import type { Twister } from './twisters';
+import { isEnglish } from '../content/activeLanguage';
 
 export interface SpeechDrill {
   id: string;
@@ -22,7 +23,8 @@ export interface SpeechDrill {
   tip?: string;
 }
 
-const DAY_KEY = 'dilkoc_speech_v1';
+// Günlük ağız ödevi kaydı dillere göre ayrılır.
+const DAY_KEY = isEnglish() ? 'dilkoc_speech_en_v1' : 'dilkoc_speech_v1';
 
 export interface SpeechDayState {
   day: string;
@@ -66,11 +68,20 @@ function pickSeeded<T>(arr: T[], n: number, rand: () => number): T[] {
 function mouthScore(w: WordDetail): number {
   let s = 0;
   const ru = w.ru.toLowerCase();
-  if (/[ы]/i.test(ru)) s += 3;
-  if (/[щ]/i.test(ru)) s += 3;
-  if (/[ь]/i.test(ru)) s += 2;
-  if (/(тр|др|стр|здр|вств|вств|кр|пр|бр)/i.test(ru)) s += 2;
-  if (/[ж]/i.test(ru)) s += 1;
+  if (isEnglish()) {
+    // İngilizce: TH, W, sessiz harfler ve ünsüz kümeleri ağız jimnastiğidir.
+    if (/th/.test(ru)) s += 3;
+    if (/^wr|^kn|gh|mb$/.test(ru)) s += 2;
+    if (/(str|spr|scr|thr|shr|bl|cl|fl|gl|pl|sl)/.test(ru)) s += 2;
+    if (/w/.test(ru)) s += 1;
+    if (/[aeiou]{2,}/.test(ru)) s += 1; // ünlü takımları
+  } else {
+    if (/[ы]/i.test(ru)) s += 3;
+    if (/[щ]/i.test(ru)) s += 3;
+    if (/[ь]/i.test(ru)) s += 2;
+    if (/(тр|др|стр|здр|вств|вств|кр|пр|бр)/i.test(ru)) s += 2;
+    if (/[ж]/i.test(ru)) s += 1;
+  }
   s += Math.min(3, Math.floor(ru.length / 3));
   return s;
 }

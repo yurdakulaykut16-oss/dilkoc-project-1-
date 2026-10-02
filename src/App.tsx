@@ -28,7 +28,7 @@ import SpeechGym from './components/SpeechGym';
 import { buildDailyDrills, loadSpeechDay } from './speech/dailyDrills';
 import { isUltraMode, setUltraMode, subscribeUltra, storyPassRatio, topicPassPct, gatePassNeed, retentionDose, srsIntervalFor, xpGain } from './ultra/ultraMode';
 import { clearExamAttempts } from './ultra/examStore';
-import { TOPICS_100, TOPICS_100_TOTAL, topicCatInfo, buildTopicDrills, topicFullText, LEVELS, topicSourceUnits, sourceUnitInfo } from './topics100';
+import { TOPICS_100, TOPICS_100_TOTAL, topicCatInfo, buildTopicDrills, topicFullText, LEVELS, LETTER_GLYPHS, topicSourceUnits, sourceUnitInfo } from './topics100';
 import type { Topic100, Topic100Question, CefrTag } from './topics100';
 
 // HİKAYE MODÜLÜ (Story & Summary): her 10 ünitede bir açılan kontrol noktası hikayeleri
@@ -48,6 +48,8 @@ const LEVEL_COLORS: Record<CefrTag, string> = {
 };
 
 import { ALPHABET_LESSONS_EXTRA } from './alphabetExtra';
+import { isEnglish, detectSpeechTag, isTargetScript, langMeta, requestMainMenu } from './content/activeLanguage';
+import { EN_ALPHABET_LESSONS } from './content/en/alphabetLessons';
 import { ALPHABET_LESSONS_EXTRA2 } from './alphabetExtra2';
 import { UNITS_DATA, ALL_WORDS, ALL_SENTENCES } from './curriculumData';
 import { GRAMMAR_FOUNDATION_UNITS } from './grammarFoundationData';
@@ -88,7 +90,7 @@ export interface ReadingDrill {
   tr: string;
 }
 
-export const ALPHABET_LESSONS: { id: string; title: string; subtitle: string; letters: AlphabetLetter[]; readingDrills: ReadingDrill[] }[] = [
+const RU_ALPHABET_LESSONS: { id: string; title: string; subtitle: string; letters: AlphabetLetter[]; readingDrills: ReadingDrill[] }[] = [
   {
     id: 'alpha_1',
     title: 'Temel Sesler',
@@ -411,6 +413,11 @@ export const ALPHABET_LESSONS: { id: string; title: string; subtitle: string; le
   ...ALPHABET_LESSONS_EXTRA2
 ];
 
+// İNGİLİZCE modunda 30 derslik İngilizce fonetik paketi kullanılır (16 çekirdek
+// fonetik + 14 tematik okuma); Rusça paketi (76 ders) hiç yüklenmez.
+export const ALPHABET_LESSONS: { id: string; title: string; subtitle: string; letters: AlphabetLetter[]; readingDrills: ReadingDrill[] }[] =
+  isEnglish() ? EN_ALPHABET_LESSONS : RU_ALPHABET_LESSONS;
+
 export const ALL_ALPHA_LETTERS = ALPHABET_LESSONS.flatMap(x => x.letters);
 
 // GERÇEK ALFABE DERSİ SAYISI: 33 harfin tamamı ilk 16 derste öğretilir.
@@ -429,7 +436,8 @@ function shuffle<T>(arr: T[]): T[] {
   return a;
 }
 
-const SAVE_KEY = 'RUSSIAN_MASTER_DUO_V1';
+// Kayıt anahtarı DİLE GÖRE ayrılır: Rusça ve İngilizce ilerlemeleri birbirini ezmez.
+const SAVE_KEY = isEnglish() ? 'ENGLISH_MASTER_DUO_V1' : 'RUSSIAN_MASTER_DUO_V1';
 
 interface SaveState {
   xp: number;
@@ -497,9 +505,34 @@ const SceneBanner: React.FC<{ icon: string; color: string; label: string }> = ({
   </div>
 );
 
+// İngilizce üniteler için THEMATİK görsel eşlemesi: İngilizce paketi, Rusça
+// müfredatın aynı temalı görsellerini kullanır (selamlaşma, aile, yemek...).
+// Eşleme yoksa görsel yine ikonlu SceneBanner'a geri düşer.
+const EN_ART_MAP: Record<string, string> = {
+  en_mod_a1_1: 'mod_a1_1', en_mod_a1_2: 'mod_a1_2', en_mod_a1_3: 'mod_a1_3',
+  en_mod_a1_4: 'mod_a1_4', en_mod_a1_5: 'mod_a1_5', en_mod_a1_6: 'mod_a1_6',
+  en_mod_a1_7: 'mod_a1_g1', en_mod_a1_8: 'mod_a1_g2',
+  en_mod_a2_9: 'mod_a2_1', en_mod_a2_10: 'mod_a2_2', en_mod_a2_11: 'mod_a2_3',
+  en_mod_a2_12: 'mod_a2_4', en_mod_a2_13: 'mod_a2_5', en_mod_a2_14: 'mod_a2_6',
+  en_mod_a2_15: 'mod_a2_7', en_mod_a2_16: 'mod_a2_8',
+  en_mod_b1_17: 'mod_b1_1', en_mod_b1_18: 'mod_b1_2', en_mod_b1_19: 'mod_b1_3',
+  en_mod_b1_20: 'mod_b1_4', en_mod_b1_21: 'mod_b1_5', en_mod_b1_22: 'mod_b1_6',
+  en_mod_b1_23: 'mod_b1_7', en_mod_b1_24: 'mod_b1_8',
+  en_mod_b2_25: 'mod_b2_1', en_mod_b2_26: 'mod_b2_2', en_mod_b2_27: 'mod_b2_3',
+  en_mod_b2_28: 'mod_b2_4', en_mod_b2_29: 'mod_b2_5', en_mod_b2_30: 'mod_b2_6',
+  en_mod_b2_31: 'mod_b2_7', en_mod_b2_32: 'mod_b2_8',
+  en_mod_c1_33: 'mod_c1_1', en_mod_c1_34: 'mod_c1_2', en_mod_c1_35: 'mod_c1_3',
+  en_mod_c1_36: 'mod_c1_4', en_mod_c1_37: 'mod_c1_5', en_mod_c1_38: 'mod_c1_6',
+  en_mod_c1_39: 'mod_c1_7', en_mod_c1_40: 'mod_c1_8',
+  en_mod_c12_41: 'mod_c1_9', en_mod_c12_42: 'mod_c1_10', en_mod_c12_43: 'mod_c1_11',
+  en_mod_c12_44: 'mod_c1_12', en_mod_c12_45: 'mod_c1_13', en_mod_c12_46: 'mod_c1_14',
+  en_mod_c12_47: 'mod_c1_15', en_mod_c12_48: 'mod_c1_16',
+};
+
 // Ünite banner'ı: /unit-art/{unitId}.jpg görselini gösterir; görsel yoksa
 // (veya yüklenemezse) otomatik olarak ikonlu SceneBanner'a geri döner.
 const UnitBanner: React.FC<{ unitId: string; icon: string; color: string; label: string }> = ({ unitId, icon, color, label }) => {
+  const artId = EN_ART_MAP[unitId] || unitId;
   const [imgOk, setImgOk] = useState(true);
   useEffect(() => { setImgOk(true); }, [unitId]);
   if (!imgOk) return <SceneBanner icon={icon} color={color} label={label} />;
@@ -513,7 +546,7 @@ const UnitBanner: React.FC<{ unitId: string; icon: string; color: string; label:
       background: `linear-gradient(135deg, ${color}35, ${color}0f)`
     }}>
       <img
-        src={`/unit-art/${unitId}.jpg`}
+        src={`/unit-art/${artId}.jpg`}
         alt={label}
         onError={() => setImgOk(false)}
         style={{ display: 'block', width: '100%', aspectRatio: '16 / 7', objectFit: 'cover' }}
@@ -872,14 +905,15 @@ export default function App() {
   // SESLENDİRME — seçili VoiceStudio profili ve metnin dili korunur.
   // Türkçe açıklamalar Türkçe, Rusça tekrar kelimeleri Rusça okunur.
   const speak = async (txt: string, rate = 0.85, onEnd?: () => void, onError?: () => void) => {
-    const isRussian = /[а-яё]/i.test(txt);
+    const speechTag = detectSpeechTag(txt);
+    const isTargetLang = speechTag !== 'tr-TR';
     const playbackRate = listenContextRef.current ? listenSpeedRef.current : 1;
     const selectedVoiceOk = await speakWithBotVoice(txt, rate * playbackRate);
     if (selectedVoiceOk) { onEnd?.(); return; }
     const deviceVoiceOk = await webSpeak(txt, {
-      lang: isRussian ? 'ru-RU' : 'tr-TR',
+      lang: speechTag,
       rate: rate * playbackRate,
-      pitch: isRussian ? 1 : 0.95,
+      pitch: isTargetLang ? 1 : 0.95,
     });
     if (deviceVoiceOk) { onEnd?.(); return; }
 
@@ -902,7 +936,7 @@ export default function App() {
       for (const c of chunks) {
         await TextToSpeech.speak({
           text: c,
-          lang: isRussian ? 'ru-RU' : 'tr-TR',
+          lang: speechTag === 'tr-TR' ? 'tr-TR' : speechTag,
           rate: effRate,
           pitch: 1.0,
           volume: 1.0,
@@ -917,7 +951,7 @@ export default function App() {
         let last = chunks.length - 1;
         chunks.forEach((c, i) => {
           const u = new SpeechSynthesisUtterance(c);
-          u.lang = isRussian ? 'ru-RU' : 'tr-TR';
+          u.lang = speechTag === 'tr-TR' ? 'tr-TR' : speechTag;
           u.rate = effRate;
           if (i === last) {
             u.onend = () => onEnd?.();
@@ -1335,7 +1369,7 @@ export default function App() {
       if (i % 2 === 1) {
         // Üretim etkisi: Türkçeden Rusçayı GERİ ÇAĞIRMAK, pasif tanımadan çok daha güçlü iz bırakır.
         return {
-          prompt: `🔁 KALICI TEKRAR (eski üniteden) — "${w.tr}" kelimesinin RUSÇASI hangisi?`,
+          prompt: `🔁 KALICI TEKRAR (eski üniteden) — "${w.tr}" kelimesinin ${langMeta().wordLabelUpper} hangisi?`,
           correct: w.ru,
           options: shuffle([w.ru, ...shuffle(ALL_WORDS.filter(x => x.ru !== w.ru)).slice(0, 3).map(x => x.ru)]),
           ru: w.ru, tr: w.tr, review: true
@@ -1367,7 +1401,7 @@ export default function App() {
     }));
     // 2) ÜRETİM: TR → RU (her kelime — geri çağırma, pasif tanımadan çok daha güçlü iz bırakır)
     uWords.forEach(w => q.push({
-      prompt: `✍️ ÜRETİM — "${w.tr}" kelimesinin RUSÇASI hangisi?`,
+      prompt: `✍️ ÜRETİM — "${w.tr}" kelimesinin ${langMeta().wordLabelUpper} hangisi?`,
       correct: w.ru,
       options: shuffle([w.ru, ...shuffle(ALL_WORDS.filter(x => x.ru !== w.ru)).slice(0, 3).map(x => x.ru)]),
       ru: w.ru, tr: w.tr
@@ -1446,7 +1480,7 @@ export default function App() {
     if (storyChosenAnswer) return; // Aynı soru için tekrar sayılmasın
     const q = storyTestQuestions[storyTestIdx];
     // ÖĞRENEN MODELİ: Rusça hikaye cümlesinin ölçtüğü zaman/edat becerileri haritaya işlenir
-    if (/[а-яё]/i.test(q.prompt)) recordSentenceResult(q.prompt, ans === q.correct);
+    if (isTargetScript(q.prompt)) recordSentenceResult(q.prompt, ans === q.correct);
     setStoryChosenAnswer(ans);
     if (ans === q.correct) {
       setXp(x => x + 20);
@@ -1655,7 +1689,7 @@ export default function App() {
       // Üretim etkisi: en kronik ilk 6 kelime TERS yönde de sorulur (TR → RU)
       if (w.count >= 2 && ALL_WORDS.some(x => x.ru === w.ru)) {
         return [rec, {
-          prompt: `🎯 ZAYIF NOKTA (üretim) — "${w.tr}" kelimesinin RUSÇASI hangisi?`,
+          prompt: `🎯 ZAYIF NOKTA (üretim) — "${w.tr}" kelimesinin ${langMeta().wordLabelUpper} hangisi?`,
           correct: w.ru,
           options: shuffle([w.ru, ...shuffle(ALL_WORDS.filter(x => x.ru !== w.ru)).slice(0, 3).map(x => x.ru)]),
           ru: w.ru, tr: w.tr
@@ -1770,7 +1804,7 @@ export default function App() {
       const context = ALL_SENTENCES.find(s => s.ru.toLocaleLowerCase('ru').includes(item.ru.toLocaleLowerCase('ru')));
       const leech = (item.lapses || 0) >= 3 ? '🩹 ZOR KELİME — ' : '';
       return production ? {
-        prompt: `${leech}🧠 AKTİF HATIRLAMA — "${item.tr}" ifadesinin RUSÇASI hangisi?${context ? `\nBağlam: ${context.ru}` : ''} (Kutu ${item.box}/5)`,
+        prompt: `${leech}🧠 AKTİF HATIRLAMA — "${item.tr}" ifadesinin ${langMeta().wordLabelUpper} hangisi?${context ? `\nBağlam: ${context.ru}` : ''} (Kutu ${item.box}/5)`,
         correct: item.ru,
         options: shuffle([item.ru, ...smartWordDistractors(item.ru, 'ru')]),
         ru: item.ru, tr: item.tr, production: true
@@ -1801,7 +1835,7 @@ export default function App() {
     const q = sample.map((w, i) => {
       if (i % 2 === 1) {
         return {
-          prompt: `🔀 MARATON — "${w.tr}" kelimesinin RUSÇASI hangisi?`,
+          prompt: `🔀 MARATON — "${w.tr}" kelimesinin ${langMeta().wordLabelUpper} hangisi?`,
           correct: w.ru,
           options: shuffle([w.ru, ...shuffle(ALL_WORDS.filter(x => x.ru !== w.ru)).slice(0, 3).map(x => x.ru)]),
           ru: w.ru, tr: w.tr
@@ -2072,8 +2106,8 @@ export default function App() {
       {/* ÜST İLERLEME & İSTATİSTİK BARI (DUOLINGO TARZI) */}
       <div style={{ position: 'sticky', top: 0, zIndex: 100, background: '#1e293b', borderBottom: '1px solid #334155', padding: '12px 20px', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
         <div style={{ display: 'flex', alignItems: 'center', gap: '8px', cursor: 'pointer' }} onClick={() => { setScreen('MAP'); setActiveTab('MAP'); }}>
-          <span style={{ fontSize: '24px' }}>🇷🇺</span>
-          <span style={{ fontWeight: 900, fontSize: '16px', color: '#38bdf8', letterSpacing: '0.5px' }}>RUSÇA AKADEMİSİ</span>
+          <span style={{ fontSize: '24px' }}>{langMeta().flag}</span>
+          <span style={{ fontWeight: 900, fontSize: '16px', color: langMeta().accentColor, letterSpacing: '0.5px' }}>{langMeta().academy}</span>
         </div>
 
         <div style={{ display: 'flex', gap: '12px', alignItems: 'center', fontWeight: 800, fontSize: '14px', flexWrap: 'wrap', justifyContent: 'flex-end' }}>
@@ -2086,6 +2120,7 @@ export default function App() {
           <button onClick={() => { setFeedback(null); setActiveTab('MAP'); setScreen('AI_TUTOR'); }} style={{ background: 'transparent', border: 'none', color: '#86efac', cursor: 'pointer', fontWeight: 900, fontSize: '13px' }} title="Ünitelerini ve bulunduğun yeri bilen çevrim içi AI ajanına soru sor">💬 AI Ajanı</button>
           <button onClick={() => { setActiveTab('METHODS'); setScreen('MAP'); }} style={{ background: 'transparent', border: 'none', color: '#a78bfa', cursor: 'pointer', fontWeight: 800, fontSize: '13px' }}>📚 Yöntemler</button>
           <button onClick={() => { setActiveTab('CONNECTIONS'); setScreen('MAP'); }} style={{ background: 'transparent', border: 'none', color: '#f472b6', cursor: 'pointer', fontWeight: 800, fontSize: '13px' }}>🕸️ Hikaye Bağları</button>
+          <button onClick={() => { if (window.confirm('Ana menüye dönüp dil seçimini değiştirmek ister misin? İlerlemen kayıtlı kalır.')) requestMainMenu(); }} style={{ background: 'transparent', border: 'none', color: '#94a3b8', cursor: 'pointer', fontWeight: 800, fontSize: '13px' }} title="Dil seçim ekranına dön (Rusça ↔ İngilizce)">🌐 Ana Menü</button>
           <span style={{ color: '#f59e0b', display: 'flex', alignItems: 'center', gap: '4px' }}>🔥 {streak}</span>
           <span style={{ color: '#38bdf8', display: 'flex', alignItems: 'center', gap: '4px' }}>💎 {gems}</span>
           <span style={{ color: '#10b981', display: 'flex', alignItems: 'center', gap: '4px' }}>⚡ {xp} XP</span>
@@ -2115,7 +2150,7 @@ export default function App() {
         {/* ANA HARİTA GÖRÜNÜMÜ */}
         {screen === 'MAP' && activeTab === 'MAP' && (
           <div>
-            <SceneBanner icon="🇷🇺" color="#38bdf8" label="Rusça Akademisi — Alfabeden Dizi Seviyesine" />
+            <SceneBanner icon={langMeta().flag} color={langMeta().accentColor} label={langMeta().banner} />
 
             {/* 🗓️ GÜNÜN KELİMESİ — tarihe göre deterministik seçilir, dinlenebilir */}
             <div style={{ ...cardBox, marginBottom: '16px', border: '1px solid #f59e0b55', background: 'linear-gradient(135deg, rgba(245,158,11,0.12), #1e293b)' }}>
@@ -2446,10 +2481,10 @@ export default function App() {
                 { icon: '🐰', title: '8. Anlaşılır Girdi (Comprehensible Input) — Смешарики (Smeshariki) Yöntemi', text: 'Dil edinimindeki en güçlü yöntemlerden biri, seviyenin biraz altındaki ama tamamen anlaşılır içeriği bol bol dinlemektir (Krashen\'in "i+1" hipotezi). Смешарики gerçek Rus çocuklarının bile ilk izlediği çizgi dizidir: kısa cümleler, yavaş tempo, net telaffuz. Her A1/A2 ünitesinin sonunda çıkan "🐰 Смешарики Sahnesi" bu yüzden var: önce basit bir örnek diyalogla ısın, sonra "Gerçek Bölümü Aç" butonuyla YouTube\'da o karakterlerin GERÇEK bölümünü izle. Anlamadığın kelimeler olsa bile durma, akışı takip et — beyin devam ede ede örüntüleri kendi kendine çözer.' },
                 { icon: '🔁', title: '9. Aynı İçeriği Tekrar İzleme (Repeated Viewing)', text: 'Bir Смешарики bölümünü bir kez izlemek yetmez. Aynı bölümü 2-3 gün arayla tekrar izlediğinde, ilk seferde kaçırdığın kelimeleri fark edersin — çünkü artık o kelimeler uygulamada öğrendiğin kelimeler haline geldi. Bu, pasif izlemeyi aktif bir "tanıma tatmini"ne çevirir ve kalıcılığı ciddi şekilde artırır.' },
                 { icon: '😴', title: '10. Uyku ve Hafıza Pekiştirmesi', text: 'Kısa süreli hafızadaki bilginin uzun süreli hafızaya "kaydedilmesi" büyük ölçüde UYKU sırasında gerçekleşir. Yeni bir üniteyi akşam bitirip hemen ardından uyumak, o bilgiyi sabaha kalıcılaştırma ihtimalini belirgin şekilde artırır.' },
-                { icon: '🎧', title: `11. Kulağı Alıştırma — ${TOPICS_100_TOTAL} Dinleme Konusu (yolun içinde)`, text: `Gözden önce KULAK öğrenir: Rusçaya maruz kalmak (exposure) beynin ses örüntülerini tanımasını sağlar. Öğrenme yolundaki önce 🧩 cümle temeli kartları (özne-yüklem-edat), sonra 🎧 rozetli kartlar bunu yapar — 33 harf + 8 fonetik konusu ve müfredat ön-hazırlık konuları (ilgili ünitenin hemen öncesinde, yani konuyu duyduktan saniyeler sonra ünitesine girersin). Toplam ${TOPICS_100_TOTAL} konunun her biri kelime kartları odaklıdır: tek tek 🔊 dinle, "Konuyu Dinle" / "Yavaşça Dinle" ile akışa bat, sonra 5 soruluk "dinle & seç" testiyle kanıtla. Günde 3-5 konu dinlemek, 2-3 hafta içinde doğal konuşma hızını kavraman için yeterlidir.` },
+                { icon: '🎧', title: `11. Kulağı Alıştırma — ${TOPICS_100_TOTAL} Dinleme Konusu (yolun içinde)`, text: `Gözden önce KULAK öğrenir: ${langMeta().name}ya maruz kalmak (exposure) beynin ses örüntülerini tanımasını sağlar. Öğrenme yolundaki önce 🧩 cümle temeli kartları (özne-yüklem-edat), sonra 🎧 rozetli kartlar bunu yapar — ${LETTER_GLYPHS.length} harf/ses konusu + 8 fonetik kuralı ve müfredat ön-hazırlık konuları (ilgili ünitenin hemen öncesinde, yani konuyu duyduktan saniyeler sonra ünitesine girersin). Toplam ${TOPICS_100_TOTAL} konunun her biri kelime kartları odaklıdır: tek tek 🔊 dinle, "Konuyu Dinle" / "Yavaşça Dinle" ile akışa bat, sonra 5 soruluk "dinle & seç" testiyle kanıtla. Günde 3-5 konu dinlemek, 2-3 hafta içinde doğal konuşma hızını kavraman için yeterlidir.` },
                 { icon: '📖', title: '12. Hikaye & Özet — Okuma Anlama + Üretici Çıktı (10\'lu kontrol noktaları + bölüm finalleri)', text: 'İki tür hikaye var: (1) Her 10 müfredat ünitesinin sonunda bir HİKAYE KONTROL NOKTASI açılır: o 10 ünitede öğrendiğin kelimelerle yazılmış, içinde en fazla 3 yeni kelime olan kısa bir konuşma. (2) Her bölümün (A1, A2, B1, B2, C1, C2) sonunda bir BÖLÜM FİNALİ açılır — burada yalnızca konuşma metnini okur, sonra Türkçe çeviri/özet yazarsın. Analiz skoru en az %70 olursa sonraki seviye açılır; %70 altıysa kilitli kalır. Hikayeler iki tarzda: Dima\'nın 2035\'te çocuklarına anlattığı HIMYM tadında bölümler VE «Кухня» dizisinden esinlenen mutfak komedileri (Şef Pyotr, garson Lyosha, Nina, Semyon — «Ван Гог» restoranı). Okurken istediğin satırın çevirisini açabilir, yeni kelimeleri sözlük kartlarından, ESKİ kelimeleri "Eski Kelimeler" bölümünden tekrar edersin — çünkü B\'deyken A kelimeleri unutulmasın diye finallere bilerek serpiştirildiler (kalıcı öğrenme!). Ardından en önemli adım: konuşmaları TÜRKÇELEŞTİRİP ÖZETLE — okuduğunu kendi cümlelerinle yeniden kurmak "üretici çıktı"dır ve pasif tanımadan çok daha güçlü kalıcılaşır. Analiz motoru özetini ana fikirlerle karşılaştırır: kaç doğru nokta yakaladığını, neyi kaçırdığını ve neleri yanlış anladığını söyler. İstersen finalden sonra 10 soruluk seviye tekrar pratiği de çözebilirsin: 6 soru bitirilen bölümden, 4 soru önceki bölümlerden gelir.' },
                 { icon: '♾️', title: '13. Hiçbir Kelime Emekli Olmaz — Sınav İçi Karma Tekrar (YENİ, OTOMATİK)', text: 'Bir üniteyi %100 doğru bitirsen bile o ünitenin kelimeleri seninle yolculuğa devam eder: SONRAKİ HER ünitenin bitiş sınavına, önceki ünitelerden seçilen 5 adet "🔁 KALICI TEKRAR" sorusu otomatik karışır. Seçim genişleyen aralık ilkesine göre yapılır: 1, 2, 3, 5, 8, 13 ve 21 ünite geriden kelimeler + TÜM geçmişten rastgele örnekler. Araştırmalar (spaced/expanding retrieval) bunun, bilgiyi tam unutma eşiğinde yakalayıp kalıcılaştırdığını gösteriyor. Bu sorularda yanılırsan kelime Aralıklı Tekrar kutusunda 1. kutuya düşer ve ertesi gün yeniden sorulur.' },
-                { icon: '🔄', title: '14. Üretim Etkisi (Production Effect) — Ters Yön Soruları (YENİ, OTOMATİK)', text: 'Rusça kelimeyi görüp Türkçesini TANIMAK kolaydır; zor ve asıl kalıcı olan, Türkçesinden Rusçasını GERİ ÇAĞIRMAKTIR. Bu yüzden karma tekrar ve maraton sorularının yarısı ters yönde sorulur: "Tuz kelimesinin Rusçası hangisi?" Beynin cevabı üretmek için harcadığı ekstra çaba (desirable difficulty), izi çok daha derin kazır.' },
+                { icon: '🔄', title: '14. Üretim Etkisi (Production Effect) — Ters Yön Soruları (YENİ, OTOMATİK)', text: `${langMeta().name} kelimesini görüp Türkçesini TANIMAK kolaydır; zor ve asıl kalıcı olan, Türkçesinden ${langMeta().name}sını GERİ ÇAĞIRMAKTIR. Bu yüzden karma tekrar ve maraton sorularının yarısı ters yönde sorulur: "${isEnglish() ? 'water' : 'tuz'}" kelimesinin ${langMeta().name}sı hangisi? Beynin cevabı üretmek için harcadığı ekstra çaba (desirable difficulty), izi çok daha derin kazır.` },
                 { icon: '🔀', title: '15. Karma Maraton — Kümülatif Rastgele Örnekleme Sınavı (YENİ, İSTEĞE BAĞLI)', text: 'Ana ekrandaki "🔀 Karma Maraton" butonu, tamamladığın TÜM ünitelerin kelime havuzundan rastgele 15 soru çeker — vadesi gelmemiş, çoktan "öğrenilmiş" kelimeler bile her an sorulabilir. Araştırmalar, rastgele örneklenmiş kümülatif testlerin (RST) tüm kelimeleri dengeli biçimde canlı tuttuğunu ve sınav kapsamı büyüdükçe zayıf kelimelerin kendiliğinden ortaya çıktığını gösteriyor. Haftada 2-3 maraton, "eskiden biliyordum" cümlesini sözlüğünden siler.' },
                 { icon: '🪜', title: '16. Ardışık Yeniden Öğrenme (Successive Relearning)', text: 'En güçlü kombinasyon: aynı kelimeyi FARKLI oturumlarda, FARKLI biçimlerde tekrar tekrar öğrenme kriterine ulaştırmak. Uygulamada bu döngü hazır: kelimeyi önce kartta görürsün → ünite sınavında tanırsın → sonraki ünitelerin karma tekrarlarında hatırlarsın → Aralıklı Tekrar gününde geri çağırırsın → bölüm finali hikayesinde bağlam içinde okursun. Aynı bilgiye 5 farklı kapıdan girmek, tek kapıdan 5 kez girmekten çok daha kalıcıdır.' }
               ].map((m, i) => (
@@ -2464,7 +2499,7 @@ export default function App() {
             </div>
 
             <div style={{ marginTop: '20px', padding: '14px', borderRadius: '10px', background: 'rgba(239,68,68,0.1)', border: '1px solid #ef4444', fontSize: '13px', color: '#fecaca' }}>
-              ⚠️ Not: Bu uygulamada hiçbir yerde Rusça (Kiril) klavyeyle bir şey YAZMAN istenmez — senin isteğin üzerine bilinçli olarak böyle tasarlandı. "Hızlı Tanıma Testi" dahil tüm alıştırmalar seçmeli (dokunmalı) çalışır. Kâğıda harf/kelime yazarak tekrar etme yöntemi de bu listeye dahil edilmedi. Ama merak edersen: motor hafıza (elle yazmak) da faydalıdır, sadece TEK BAŞINA yeterli değildir — yukarıdaki yöntemlerle birleştirilmelidir.
+              ⚠️ Not: Bu uygulamada hiçbir yerde hedef dilin kendisiyle klavyede bir şey YAZMAN istenmez — tüm ana alıştırmalar seçmeli (dokunmalı) çalışır. "Hızlı Tanıma Testi" dahil tüm alıştırmalar seçmeli (dokunmalı) çalışır. Kâğıda harf/kelime yazarak tekrar etme yöntemi de bu listeye dahil edilmedi. Ama merak edersen: motor hafıza (elle yazmak) da faydalıdır, sadece TEK BAŞINA yeterli değildir — yukarıdaki yöntemlerle birleştirilmelidir.
             </div>
           </div>
         )}
@@ -3253,7 +3288,7 @@ export default function App() {
                         <div style={{ fontSize: '12px', color: '#94a3b8', fontWeight: 700 }}>KELİME {cardIdx + 1} / {mod.words.length}</div>
                         {/* 🔊 OTOMATİK SESLENDİRME AÇMA/KAPAMA: kart değişince kelime kendiliğinden okunur */}
                         <button onClick={() => setAutoSpeak(v => !v)}
-                          title="Kart her değiştiğinde Rusça kelimeyi otomatik okur"
+                          title={`Kart her değiştiğinde ${langMeta().name} kelimesini otomatik okur`}
                           style={{ background: autoSpeak ? 'rgba(34,197,94,0.15)' : '#0f172a', border: `1px solid ${autoSpeak ? '#22c55e' : '#334155'}`, color: autoSpeak ? '#22c55e' : '#64748b', borderRadius: '999px', padding: '6px 12px', fontSize: '12px', fontWeight: 800, cursor: 'pointer' }}>
                           {autoSpeak ? '🔊 Otomatik ses: AÇIK' : '🔇 Otomatik ses: KAPALI'}
                         </button>
@@ -3535,7 +3570,7 @@ export default function App() {
 
             {/* ============================================================
                 HİKAYE MODÜLÜ (STORY & SUMMARY) — HER 10 ÜNİTEDE BİR AÇILIR
-                1) Rusça hikaye (satır çevirileri tıklanınca açılır) + 🔊 dinleme
+                1) Hedef dilde hikaye (satır çevirileri tıklanınca açılır) + 🔊 dinleme
                 2) Sözlük kartları: hikayedeki en fazla 3 YENİ kelime
                 3) Türkçe özet alanı + analiz: "X doğru nokta / Y eksik-yanlış"
                 ============================================================ */}
@@ -3593,7 +3628,7 @@ export default function App() {
                   </div>
 
                   {/* HİKAYE METNİ — Türkçe çeviriler GİZLİ; satıra dokununca açılır */}
-                  <div style={{ fontSize: '12px', color: '#94a3b8', fontWeight: 700, marginBottom: '8px' }}>📖 HİKAYE — önce Rusça oku; takıldığın satıra dokunup çevirisini açabilirsin:</div>
+                  <div style={{ fontSize: '12px', color: '#94a3b8', fontWeight: 700, marginBottom: '8px' }}>📖 HİKAYE — önce hedef dilde oku; takıldığın satıra dokunup çevirisini açabilirsin:</div>
                   <div style={{ display: 'flex', flexDirection: 'column', gap: '10px', marginBottom: '22px' }}>
                     {story.paragraphs.map((line, i) => {
                       const revealed = storyRevealed.includes(i);

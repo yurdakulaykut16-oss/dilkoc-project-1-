@@ -11,7 +11,9 @@
 // Tercih localStorage'da saklanır (dilkoc_ultra_v1).
 // ==========================================
 
-const ULTRA_KEY = 'dilkoc_ultra_v1';
+import { isEnglish } from '../content/activeLanguage';
+
+const ULTRA_KEY = isEnglish() ? 'dilkoc_ultra_en_v1' : 'dilkoc_ultra_v1';
 
 let _cache: boolean | null = null;
 const listeners = new Set<() => void>();

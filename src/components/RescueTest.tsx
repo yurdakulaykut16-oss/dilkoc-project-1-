@@ -11,6 +11,7 @@ import { ALL_WORDS, ALL_SENTENCES } from '../curriculumData';
 import { GRAMMAR_FOUNDATION_UNITS } from '../grammarFoundationData';
 import { detectTenses, recordSkill, recordWordResult } from '../learnerModel';
 import type { RescueTarget } from './WordGraph3D';
+import { langMeta } from '../content/activeLanguage';
 
 interface RescueQ {
   prompt: string;
@@ -44,7 +45,7 @@ function buildQuestions(target: RescueTarget): RescueQ[] {
     const ruDistract = () => shuffle(ALL_WORDS.filter(x => x.ru !== ru)).slice(0, 3).map(x => x.ru);
     // 6 hızlı soru: tanıma → üretim → dinleme döngüsü (aynı hedef, farklı kaslar)
     qs.push({ prompt: `«${ru}» ne demek?`, correct: tr, options: shuffle([tr, ...trDistract()]) });
-    qs.push({ prompt: `"${tr}" kelimesinin Rusçası hangisi?`, correct: ru, options: shuffle([ru, ...ruDistract()]) });
+    qs.push({ prompt: `"${tr}" kelimesinin ${langMeta().wordLabelUpper} hangisi?`, correct: ru, options: shuffle([ru, ...ruDistract()]) });
     qs.push({ prompt: '🔊 Dinle — hangi kelimeyi duydun?', audio: ru, correct: ru, options: shuffle([ru, ...ruDistract()]) });
     qs.push({ prompt: '🔊 Dinle — duyduğun kelimenin TÜRKÇESİ ne?', audio: ru, correct: tr, options: shuffle([tr, ...trDistract()]) });
     // Bağlam sorusu: kelimenin geçtiği gerçek bir cümle varsa

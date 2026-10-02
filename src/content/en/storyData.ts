@@ -1,0 +1,450 @@
+// ============================================================================
+// 🇬🇧 İNGİLİZCE HİKAYE MODÜLÜ — 9 HİKAYE (4 kontrol noktası + 5 bölüm finali)
+// ----------------------------------------------------------------------------
+// Rusça storyData.ts ile BİREBİR aynı format ve aynı sitcom ruhu:
+// 2035'te Daniel çocuklarına hikayeyi anlatır (HIMYM tarzı çerçeve).
+// Hikayeler İngilizce müfredatın kelimeleriyle kurulur; her hikayede en fazla
+// 3 YENİ kelime (sözlük kartı), ana fikirler (keyPoints) ve yanlış anlama
+// dedektörleri (misleading) bulunur.
+//
+// Yapı: cp1 (ünite 1-10) … cp4 (31-40) + bölüm finalleri A1/A2/B1/B2/C1-C2.
+// ============================================================================
+
+import type { CheckpointStory } from '../../storyModule/types';
+
+/** İngilizce hikayelerin tekrarlayan kadrosu. */
+export const EN_STORY_CAST: { name: string; emoji: string; desc: string }[] = [
+  { name: 'Daniel', emoji: '📐', desc: 'Romantik mimar. 2035\'te çocuklarına bu hikayeleri anlatıyor.' },
+  { name: 'Emma', emoji: '📰', desc: 'Zeki ve alaycı gazeteci. Hiçbir şaka onu es geçemez (genelde).' },
+  { name: 'Theo', emoji: '🤵', desc: 'Takım elbiseli efsanevi yakışıklı. Sözü: "It will be LEGENDARY!"' },
+  { name: 'Grace', emoji: '⚖️', desc: 'İyi kalpli, yemek düşkünü avukat. Lily\'nin eşi.' },
+  { name: 'Lily', emoji: '🎨', desc: 'Ana sınıfı öğretmeni; grubun annesi. Sürprizleri ve planları sever.' },
+  { name: 'Vera', emoji: '🎤', desc: 'İroni seven, oyun sevmeyen kadın; Theo\'nun kaderi.' },
+  { name: 'Chef Pierre', emoji: '🍳', desc: '"The Golden Spoon" restoranının efsanevi aşçısı. Bağırır ama kalbi altın (ve sosları mükemmel).' },
+  { name: 'Oliver', emoji: '🍽️', desc: '"The Golden Spoon"un şanssız ama iyi kalpli garsonu. Tepsi düşürme dünya rekoru sahibi (kendi beyanı).' },
+];
+
+// ---------------------------------------------------------------------------
+// KONTROL NOKTASI 1 — Ünite 1-10 (Tanışma, Aile, Kafe, Sayılar, Hava,
+//                          Alışveriş, Telefon, Ev, Zaman)
+// ---------------------------------------------------------------------------
+const EN_STORY_1: CheckpointStory = {
+  id: 'story_cp1',
+  kind: 'checkpoint',
+  checkpoint: 1,
+  unitFrom: 1,
+  unitTo: 10,
+  titleRu: 'How I Met Your Mother',
+  titleTr: 'Annenizle Nasıl Tanıştım',
+  framingTr: `Yıl 2035. Daniel, çocuklarına anneleriyle nasıl tanıştığını anlatmaya başlıyor — tıpkı eski bir sitcom gibi. Bu bölümde: yağmur, bir kafe ve bir telefon numarası.`,
+  icon: '🌧️',
+  color: '#38bdf8',
+  paragraphs: [
+    { speaker: 'Anlatıcı (2035)', narrator: true, ru: `Kids, tonight I will tell you a story. It is called: "How I met your mother."`, reading: `KİDS, tuNAYT ay UİL TEL yu e STORi. İT İZ KOLD: "hau ay MET yor MADır"`, tr: `Çocuklar, bu akşam size bir hikaye anlatacağım. Adı: "Annenizle nasıl tanıştım".` },
+    { speaker: 'Anlatıcı', narrator: true, ru: `Twelve years ago. A coffee shop. It was raining outside. I was drinking coffee and reading the menu for the fifth time.`, reading: `TUELv YIRZ eGOU. e KOFİ ŞOP. İT UOS REYning AUTSAYD. ay UOS DRINGking KOFi end RİIding di MENyu for di FIFθ TAYM`, tr: `On iki yıl önce. Bir kafe. Dışarıda yağmur yağıyordu. Kahve içiyor ve menüyü beşinci kez okuyordum.` },
+    { speaker: 'Daniel', ru: `Good evening! My name is Daniel. Can I sit here?`, reading: `GUD IIVning! may NEYM İZ DENyıl. KEN ay SİT HİR?`, tr: `İyi akşamlar! Benim adım Daniel. Buraya oturabilir miyim?` },
+    { speaker: 'Emma', ru: `Hi. I am Emma. But please, do not talk about the weather.`, reading: `HAY. ay EM Eme. BAT PLIIZ, du NOT TOK eBAUT di UEDır`, tr: `Merhaba. Ben Emma. Ama lütfen havadan bahsetme.` },
+    { speaker: 'Daniel', ru: `Today the sun, tomorrow the rain. Weather is like life!`, reading: `tuDEY di SAN, tuMOrow di REYN. UEDır İZ LAYK LAYF!`, tr: `Bugün güneş, yarın yağmur. Hava tıpkı hayat gibi!` },
+    { speaker: 'Emma', ru: `That is very strange. But I like it.`, reading: `det İZ VERi STREYNc. BAT ay LAYK İT`, tr: `Bu çok garip. Ama hoşuma gitti.` },
+    { speaker: 'Anlatıcı', narrator: true, ru: `We talked for two hours: about family, about the weather, even about the price of tea.`, reading: `ui TOKT for TUU AUırz: eBAUT FEMıli, eBAUT di UEDır, IIVın eBAUT di PRAYS ıv TII`, tr: `İki saat konuştuk: aileden, havadan, hatta çayın fiyatından.` },
+    { speaker: 'Emma', ru: `My phone number? Okay. But call me tomorrow — today I am busy.`, reading: `may FOUN NAMbır? OKEY. BAT KOL Mİ tuMOrow — tuDEY ay EM BİZi`, tr: `Numaram mı? Tamam. Ama yarın ara — bugün meşgulüm.` },
+    { speaker: 'Anlatıcı', narrator: true, ru: `I waited for tomorrow all day long. The longest day of my life.`, reading: `ay UEYtid for tuMOrow OL DEY LONG. di LONGıst DEY ıv may LAYF`, tr: `Yarını bütün gün bekledim. Hayatımdaki en uzun gün.` },
+    { speaker: 'Anlatıcı (2035)', narrator: true, ru: `And that, kids, is how rain, coffee and one phone call changed everything.`, reading: `end det, KİDZ, İZ hau REYN, KOFi end UAN FOUN KOL ÇEYNCD EVriting`, tr: `İşte böyle çocuklar: yağmur, kahve ve bir telefon araması her şeyi değiştirdi.` },
+  ],
+  newWords: [
+    { ru: 'story', reading: 'STORi', tr: 'hikaye', note: `Daniel'ın çocuklarına anlattığı her şeyin adı: a story.` },
+    { ru: 'to wait', reading: 'tu UEYT', tr: 'beklemek', note: `"I waited for tomorrow" — yarını bekledim.` },
+    { ru: 'longest', reading: 'LONGıst', tr: 'en uzun', note: `long → longer → longest: en üstünlük eki -est.` },
+  ],
+  keyPoints: [
+    { id: 'cp1_k1', textTr: 'Hikaye, Daniel\'ın (2035\'te) çocuklarına anneleriyle nasıl tanıştığını anlatmasıyla başlar.', hintTr: 'Hikayeyi kim, kime anlatıyor?', keywordGroups: [['çocuk'], ['anlat']] },
+    { id: 'cp1_k2', textTr: 'Tanışma, yağmurlu bir akşam bir kafede gerçekleşir.', hintTr: 'Buluşma nerede oldu ve havada ne vardı?', keywordGroups: [['kafe', 'kahve'], ['yağmur', 'yağmurlu']] },
+    { id: 'cp1_k3', textTr: 'Daniel kendini tanıtır ve Emma\'nın yanına oturmak ister.', hintTr: 'Daniel ilk olarak ne yaptı?', keywordGroups: [['daniel'], ['tanıt', 'adım', 'isim', 'otur']] },
+    { id: 'cp1_k4', textTr: 'Hava durumu sohbetin konusudur (Emma istememesine rağmen).', hintTr: 'Emma hangi konudan bahsetmemesini istedi? Peki Daniel ne yaptı?', keywordGroups: [['hava']] },
+    { id: 'cp1_k5', textTr: 'İki saat boyunca aile, hava ve çay fiyatları gibi konulardan konuşurlar.', hintTr: 'Ne kadar konuştular ve nelerden?', keywordGroups: [['iki', '2'], ['konuş', 'sohbet']] },
+    { id: 'cp1_k6', textTr: 'Emma numarasını verir ama bugün meşgul olduğunu, yarın aranmasını ister.', hintTr: 'Telefon numarası konusunda Emma ne şart koştu?', keywordGroups: [['numara', 'telefon'], ['yarın']] },
+    { id: 'cp1_k7', textTr: 'Daniel bu günü hayatının en uzun günü olarak tanımlar.', hintTr: 'Bekleyiş Daniel\'a nasıl geldi?', keywordGroups: [['uzun', 'bekle']] },
+  ],
+  misleading: [
+    { tokens: ['güneşli bir gün', 'hava güneşliydi', 'güneşliydi'], noteTr: 'O akşam dışarıda YAĞMUR vardı; hava güneşli değildi (güneş yalnızca Daniel\'ın esprisinde geçiyor).' },
+    { tokens: ['emma aradı', 'emma onu aradı', 'emma ilk aradı'], noteTr: 'Hikayede arama henüz gerçekleşmedi; Emma yalnızca numarasını verdi ve "yarın ara" dedi.' },
+    { tokens: ['restoranda'], noteTr: 'İlk tanışma bir KAFEDE (coffee shop) oldu, restoranda değil.' },
+  ],
+};
+
+// ---------------------------------------------------------------------------
+// KONTROL NOKTASI 2 — Ünite 11-20 (Yol tarifleri, Aile, Hastalık, Tavsiye,
+//                          Hava, Program yapmak, Geçmiş zaman, Duygular)
+// ---------------------------------------------------------------------------
+const EN_STORY_2: CheckpointStory = {
+  id: 'story_cp2',
+  kind: 'checkpoint',
+  checkpoint: 2,
+  unitFrom: 11,
+  unitTo: 20,
+  titleRu: 'The Dinner That Almost Burned',
+  titleTr: 'Neredeyse Yanan Akşam Yemeği',
+  framingTr: `Yıl 2035. Daniel anlatmaya devam ediyor: "Annenizle tanıştıktan sonraki ilk grup yemeği... ve neredeyse yanan bir tavuk." Grace ile Lily'nin evinde bir akşam yemeği.`,
+  icon: '🔥',
+  color: '#f97316',
+  paragraphs: [
+    { speaker: 'Anlatıcı (2035)', narrator: true, ru: `Kids, after the first date came the second problem: dinner at Grace and Lily's house.`, reading: `KİDZ, AFtır di FÖST DEYT keym di SEKınd PROblım: DİNır et GREYS end LİLız HAUS`, tr: `Çocuklar, ilk buluşmadan sonra ikinci sorun geldi: Grace ve Lily'nin evinde yemek.` },
+    { speaker: 'Grace', ru: `Lily, the guests are coming at seven! Is the sauce ready? Is the chicken ready?`, reading: `LİLİ, di GESTS AR KAMing et SEvın! İZ di SOS REDi? İZ di ÇIKın REDi?`, tr: `Lily, konuklar yedide geliyor! Sos hazır mı? Tavuk hazır mı?` },
+    { speaker: 'Lily', ru: `Almost! Help me — kitchen, quickly!`, reading: `OLmoust! HELP Mİ — KIÇın, KUİKli!`, tr: `Neredeyse! yardım et — mutfak, çabuk!` },
+    { speaker: 'Theo', ru: `Stay calm, I am a professional. Well... almost.`, reading: `STEY KAM, ay EM e prıFEşınıl. UEL... OLmoust`, tr: `Sakin olun, ben profesyonelim. Şey... neredeyse.` },
+    { speaker: 'Anlatıcı', narrator: true, ru: `The chicken was burning. There was smoke everywhere — even the neighbour knocked on the door.`, reading: `di ÇIKın UOS BERning. der UOS SMOUK EVriUER — IIVın di NEYbır NOKT on di DOR`, tr: `Tavuk yanıyordu. Her yerde duman vardı — kapıyı komşu bile çaldı.` },
+    { speaker: 'Komşu', ru: `Quiet, please! And... what is burning?`, reading: `KUAYıt, PLIIZ! end... UAT İZ BERning?`, tr: `Sessiz olun lütfen! Ve... ne yanıyor?` },
+    { speaker: 'Grace', ru: `We are sorry! A party, guests, the kitchen... Unfortunately, the chicken is now black.`, reading: `ui AR SOri! e PARti, GESTS, di KIÇın... AnFORçınıtli, di ÇIKın İZ NAU BLEK`, tr: `Özür dileriz! Bir parti, konuklar, mutfak... Ne yazık ki tavuk artık simsiyah.` },
+    { speaker: 'Lily', ru: `Luckily, we have a pizza in the fridge!`, reading: `LUKkili, ui HEV e PIITse in di FRIc!`, tr: `İyi ki buzdolabında bir pizzamız var!` },
+    { speaker: 'Emma', ru: `The best dinner of my life. Delicious, funny and a little smoky.`, reading: `di BEST DİNır ıv may LAYF. DiLİşıs, FANi end e LITıl SMOUki`, tr: `Hayatımdaki en iyi yemek. Lezzetli, eğlenceli ve biraz dumanlı.` },
+    { speaker: 'Theo', ru: `Daniel, remember: if a girl laughs at your burned chicken — that is love.`, reading: `DENyıl, riMEMbır: İF e GERL LEFS et yor BERND ÇIKın — det İZ LAV`, tr: `Daniel, hatırla: bir kız yanık tavuğuna gülüyorsa — bu aşktır.` },
+  ],
+  newWords: [
+    { ru: 'dinner', reading: 'DİNır', tr: 'akşam yemeği', note: `lunch öğle yemeği, dinner akşam yemeğidir.` },
+    { ru: 'almost', reading: 'OLmoust', tr: 'neredeyse, az kalsın', note: `"Ready? — Almost!" — "Hazır mı? — Neredeyse!"` },
+    { ru: 'to burn', reading: 'tu BERN', tr: 'yanmak', note: `"The chicken was burning" — tavuk yanıyordu.` },
+  ],
+  keyPoints: [
+    { id: 'cp2_k1', textTr: 'Hikaye, ilk buluşmadan sonraki grup yemeğiyle başlar: Grace ve Lily\'nin evinde yemek organize edilir.', hintTr: 'Bu bölümdeki yemek nerede, kimlerin evinde?', keywordGroups: [['grace'], ['lily'], ['ev', 'yemek']] },
+    { id: 'cp2_k2', textTr: 'Konuklar saat yedide gelecektir; sos ve tavuk henüz hazır değildir.', hintTr: 'Yemek kaçta ve ne hazır değildi?', keywordGroups: [['yedi', '7'], ['tavuk', 'sos']] },
+    { id: 'cp2_k3', textTr: 'Tavuk yanar ve ev dumanla dolar; komşu kapıyı çalar.', hintTr: 'Mutfakta ne oldu? Kim geldi?', keywordGroups: [['yan', 'duman'], ['komşu']] },
+    { id: 'cp2_k4', textTr: 'Grace durumu özürle açıklar; tavuk simsiyah olmuştur.', hintTr: 'Grace nasıl bir cümle kurdu?', keywordGroups: [['özür'], ['simsiyah', 'siyah']] },
+    { id: 'cp2_k5', textTr: 'Lily buzdolabındaki pizza ile günü kurtarır.', hintTr: 'Yemeği ne kurtardı?', keywordGroups: [['pizza', 'buzdolabı']] },
+    { id: 'cp2_k6', textTr: 'Emma bu yemeği hayatının en eğlenceli yemeği olarak tanımlar.', hintTr: 'Emma yemek hakkında ne dedi?', keywordGroups: [['emma'], ['en iyi', 'en güzel', 'eğlenceli', 'lezzetli']] },
+    { id: 'cp2_k7', textTr: 'Theo, yanık tavuğa gülen kızın aşkın işareti olduğunu söyler.', hintTr: 'Theo\'nun "tavuk teorisi" neydi?', keywordGroups: [['theo'], ['aşk', 'sevgi', 'gül']] },
+  ],
+  misleading: [
+    { tokens: ['restoranda yedi', 'restorandaydı'], noteTr: 'Yemek bir EVDE (Grace ve Lily\'nin evi) oldu, restoranda değil.' },
+    { tokens: ['daniel pişirdi', 'daniel yaktı'], noteTr: 'Tavuğu Daniel değil, mutfak ekibi (Grace, Lily, Theo) pişiriyordu.' },
+    { tokens: ['hayal kırıklığına uğradı', 'kızdı', ' Emma gitti'], noteTr: 'Emma gülerek en iyi yemek diye tanımladı; kızmadı, gitmedi.' },
+  ],
+};
+
+// ---------------------------------------------------------------------------
+// KONTROL NOKTASI 3 — Ünite 21-30 (İş Görüşmeleri, Gelecek Planları,
+//                          Koşul Cümleleri, Seyahat, Deneyimler)
+// ---------------------------------------------------------------------------
+const EN_STORY_3: CheckpointStory = {
+  id: 'story_cp3',
+  kind: 'checkpoint',
+  checkpoint: 3,
+  unitFrom: 21,
+  unitTo: 30,
+  titleRu: 'The Legendary Job Interview',
+  titleTr: 'Efsanevi İş Görüşmesi',
+  framingTr: `Yıl 2035. Daniel anlatıyor: "Theo bir iş görüşmesine girdi. Tabii ki her şey planlandığı gibi Gitmedi." İş, takım elbise ve bir bardak su.`,
+  icon: '💼',
+  color: '#6366f1',
+  paragraphs: [
+    { speaker: 'Anlatıcı (2035)', narrator: true, ru: `Kids, that spring Theo had a job interview at a big bank. He said — and I quote — "It will be legendary."`, reading: `KİDZ, det SPRING ÞİO HED e CAB INtırvyu et e BIG BENK. hi SED — end ay KUOT — "İT UİL Bİ LEDınderi"`, tr: `Çocuklar, o ilkbahar Theo büyük bir bankada iş görüşmesine girdi. Dedi ki — aynen alıntılıyorum — "Efsanevi olacak."` },
+    { speaker: 'Theo', ru: `Daniel, tie or no tie? This decision will change my life.`, reading: `DENyıl, TAY OR NOU TAY? Dis disiJın UİL ÇEYNC may LAYF`, tr: `Daniel, kravat mı kravatsız mı? Bu karar hayatımı değiştirecek.` },
+    { speaker: 'Daniel', ru: `Wear the tie. And please, do not tell jokes.`, reading: `UER di TAY. end PLIIZ, du NOT TEL COUKS`, tr: `Kravatı tak. Ve lütfen şaka yapma.` },
+    { speaker: 'Anlatıcı', narrator: true, ru: `He told three jokes. Then he dropped a glass of water on the manager's laptop.`, reading: `hi TOLD TRII COUKS. DEN hi DROPT e GLAS ıv UO-tır on di MEYnıcırz LEPtop`, tr: `Üç şaka yaptı. Sonra müdürün dizüstü bilgisayarına bir bardak su devirdi.` },
+    { speaker: 'Yönetici', ru: `Mr. Theo... this is the strangest interview of my career.`, reading: `MISTır ÞİOU... Dis İZ di STREYNcist INtırvyu ıv may kıRIR`, tr: `Theo Bey... bu kariyerimin en garip görüşmesi.` },
+    { speaker: 'Theo', ru: `Sir, I can explain. If you give me this job, I will explain everything. Every single day.`, reading: `SER, ay KEN ikSPLEYN. İF yu GİV Mİ dis CAB, ay UİL ikSPLEYN EVriting. EVri SINGıl DEY`, tr: `Efendim, açıklayabilirim. Bana bu işi verirseniz, her şeyi açıklayacağım. Her gün.` },
+    { speaker: 'Yönetici', ru: `That is... actually a very honest answer. We need honest people.`, reading: `det İZ... EKçucli e VERi ONist ANsır. UI NIID ONist PIIpıl`, tr: `Bu... aslında çok dürüst bir cevap. Dürüst insanlara ihtiyacımız var.` },
+    { speaker: 'Anlatıcı', narrator: true, ru: `Two weeks later, the bank called. Theo got the job. Legendary? Maybe. Lucky? Absolutely.`, reading: `TUU UIKS LEYtır, di BENK KOLD. ÞİO GOT di CAB. LEDınderi? MEYbi. LAKi? EBsıLUUtli`, tr: `İki hafta sonra banka aradı. Theo işi aldı. Efsanevi mi? Belki. Şanslı mı? Kesinlikle.` },
+    { speaker: 'Emma', ru: `So, honesty works. I have been wrong my whole life.`, reading: `SOU, ONisti UORKS. ay HEV BIN RONG may HOUL LAYF`, tr: `Yani dürüstlük işe yarıyor. Bütün hayatım boyunca yanılmışım.` },
+  ],
+  newWords: [
+    { ru: 'interview', reading: 'INtırvyu', tr: 'iş görüşmesi', note: `"a job interview" — iş görüşmesi.` },
+    { ru: 'honest', reading: 'ONist', tr: 'dürüst', note: `Okunuşu ON-ist: "h" sessizdir!` },
+    { ru: 'luckily', reading: 'LUKkili', tr: 'iyi ki, şansımıza', note: `luck (şans) → lucky (şanslı) → luckily (şansımıza).` },
+  ],
+  keyPoints: [
+    { id: 'cp3_k1', textTr: 'Theo büyük bir bankada iş görüşmesine girer ve görüşmeyi "efsanevi" ilan eder.', hintTr: 'Theo nerede görüşmeye girdi ve nasıl bir iddiada bulundu?', keywordGroups: [['banka'], ['efsanevi']] },
+    { id: 'cp3_k2', textTr: 'Daniel, Theo\'ya kravat takmasını ve şaka yapmamasını önerir.', hintTr: 'Daniel ne tavsiye etti?', keywordGroups: [['kravat'], ['şaka']] },
+    { id: 'cp3_k3', textTr: 'Theo üç şaka yapar ve müdürün dizüstüne su devirir.', hintTr: 'Görüşmede neler ters gitti?', keywordGroups: [['şaka', 'üç'], ['su', 'dizüstü', 'bilgisayar']] },
+    { id: 'cp3_k4', textTr: 'Theo dürüst bir cevap verir: işi alırsa her gün her şeyi açıklayacağını söyler.', hintTr: 'Theo nasıl bir söz verdi?', keywordGroups: [['dürüst'], ['açıkla']] },
+    { id: 'cp3_k5', textTr: 'İki hafta sonra banka arar; Theo işi alır.', hintTr: 'Sonuç ne oldu?', keywordGroups: [['banka', 'aradı', 'iş', 'aldı']] },
+    { id: 'cp3_k6', textTr: 'Emma sonunda dürüstlüğün işe yaradığını kabul eder.', hintTr: 'Emma ne düşündü?', keywordGroups: [['emma'], ['dürüst']] },
+  ],
+  misleading: [
+    { tokens: ['theo işi alamadı', 'reddedildi'], noteTr: 'Theo işİ ALDI — iki hafta sonra banka arayıp olumlu cevap verdi.' },
+    { tokens: ['emma görüşmedeydi'], noteTr: 'Görüşmede Emma yoktu; o sadece sonunda yorum yaptı.' },
+  ],
+};
+
+// ---------------------------------------------------------------------------
+// KONTROL NOKTASI 4 — Ünite 31-40 (Akademik Yazma, Deyimler, Retorik,
+//                          Ekonomi, Felsefe, Bilim, İroni)
+// ---------------------------------------------------------------------------
+const EN_STORY_4: CheckpointStory = {
+  id: 'story_cp4',
+  kind: 'checkpoint',
+  checkpoint: 4,
+  unitFrom: 31,
+  unitTo: 40,
+  titleRu: 'The Debate Night',
+  titleTr: 'Münazara Gecesi',
+  framingTr: `Yıl 2035. Daniel: "O yıl Emma bir münazara turnuvasında konuşmacıydı. Ben ise kalabalığın içinde bir bardak su tutuyordum. Şimdi anlatayım."`,
+  icon: '🎙️',
+  color: '#ef4444',
+  paragraphs: [
+    { speaker: 'Anlatıcı (2035)', narrator: true, ru: `Kids, your mother used to love debates. That autumn she joined a public speaking contest. I was there, holding a glass of water like a professional assistant.`, reading: `KİDZ, yor MADır YUST tu LAV dibEYTS. det O-tım Şİ COYND e PABLik SPIIking KONtest. ay UOS DER, HOLding e GLAS ıv UO-tır LAYK e prıFEşınıl eSIStınt`, tr: `Çocuklar, anneniz münazarayı severdi. O sonbahar bir hitabet yarışmasına katıldı. Ben de oradaydım, profesyonel bir asistan gibi bir bardak su tutuyordum.` },
+    { speaker: 'Emma', ru: `Admittedly, public transport is expensive. Nevertheless, it is the future of our city.`, reading: `edmITıdli, PABLik TRANsport İZ ikSPENsiv. NEvırdeLES, İT İZ di FYUçır ıv AUR SITi`, tr: `Elbette toplu taşıma pahalı. Buna rağmen, şehrimizin geleceğidir.` },
+    { speaker: 'Rakip', ru: `Whereas my opponent makes a compelling point, her data is five years old.`, reading: `UERez may ePOnınt MEYKS e kımPELing POYNT, hö DEYtı İZ FAYV YIRZ OLD`, tr: 'Rakibim ikna edici bir noktaya değinse de, verisi beş yıllık.' },
+    { speaker: 'Emma', ru: `Then I concede the point — and I redirect you to the new study from Oxford.`, reading: `DEN ay kınSIID di POYNT — end ay ridiREKT yu tu di NYU STADı from OKSfırd`, tr: `O zaman bu noktayı kabul ediyorum — ve sizi Oxford\'daki yeni çalışmaya yönlendiriyorum.` },
+    { speaker: 'Anlatıcı', narrator: true, ru: `The audience was silent. Then somebody started clapping. It was Theo, of course. He was clapping like a seal at a fish market.`, reading: `di Odiıns UOS SAYlınt. DEN SAMbadi STARtıd KLEPing. İT UOS ÞİOU, ıv KORS. hi UOS KLEPing LAYK e SIIL et e FİŞ MARKıt`, tr: `Seyirci sessizdi. Sonra biri alkışlamaya başladı. Theo, tabii ki. Balık pazarındaki bir fok gibi alkışlıyordu.` },
+    { speaker: 'Emma', ru: `To conclude: a city without good transport is a city without a future. Thank you.`, reading: `tu kınKLUUD: e SITI vidAUT GUD TRANsport İZ e SITI vidAUT e FYUçır. SENK yu`, tr: `Sonuç olarak: iyi toplu taşımasyon olmayan şehir, geleceği olmayan şehirdir. Teşekkürler.` },
+    { speaker: 'Jüri Başkanı', ru: `A masterful rebuttal. The jury will now deliberate.`, reading: `e MAS-tırful riBATıl. di CYURİ UİL NAU dilIBıreyt`, tr: `Ustaca bir karşı savunma. Jüri şimdi değerlendirecek.` },
+    { speaker: 'Anlatıcı (2035)', narrator: true, ru: `She won, kids. And on that stage, under the old lights, I understood: I had to marry this woman. It was, as Theo would say, legendary.`, reading: `Şİ UAN, KİDZ. end on det STEYC, ANdır di OLD LAYTS, ay andırSTUD: ay HED tu MEYRi Dis UUmin. İT UOS, ez ÞİOU UUD SEY, LEDınderi`, tr: `Kazandı çocuklar. Ve o sahvede, eski ışıkların altında anladım: bu kadınla evlenmek zorundayım. Theo\'nun deyişiyle: efsaneviydi.` },
+  ],
+  newWords: [
+    { ru: 'audience', reading: 'Odiıns', tr: 'seyirci, dinleyiciler', note: `Konuşmaların izleyicisi: the audience was silent.` },
+    { ru: 'to clap', reading: 'tu KLEP', tr: 'alkışlamak', note: `clap → clapping (tek p ile!).` },
+    { ru: 'to win (won)', reading: 'tu UİN (UAN)', tr: 'kazanmak', note: `Düzensiz fiil: win → won → won.` },
+  ],
+  keyPoints: [
+    { id: 'cp4_k1', textTr: 'Emma bir sonbahar hitabet/münazara yarışmasına katılır; Daniel su tutan asistandır.', hintTr: 'Yarışmaya kim katıldı, Daniel ne yapıyordu?', keywordGroups: [['emma', 'münazara', 'yarışma'], ['su', 'daniel']] },
+    { id: 'cp4_k2', textTr: 'Emma toplu taşımaya dair: pahalı olduğunu kabul eder ama gelecek olduğunu savunur.', hintTr: 'Emma\'nın tezi neydi?', keywordGroups: [['toplu taşıma', 'ulaşım', 'transport'], ['gelecek', 'pahalı']] },
+    { id: 'cp4_k3', textTr: 'Rakip, Emma\'nın verisinin eski olduğunu söyleyerek karşı çıkar.', hintTr: 'Rakip hangi eleştiriyi getirdi?', keywordGroups: [['rakip'], ['veri', 'eski', 'beş yıl']] },
+    { id: 'cp4_k4', textTr: 'Emma noktayı kabul eder ama Oxford\'daki yeni çalışmayla cevabı vurur.', hintTr: 'Emma nasıl bir hamle yaptı?', keywordGroups: [['kabul'], ['oxford', 'yeni çalışma']] },
+    { id: 'cp4_k5', textTr: 'Theo, fok gibi coşkulu bir şekilde alkışlar.', hintTr: 'Seyircinin sessizliğini kim, nasıl bozdu?', keywordGroups: [['theo', 'alkış']] },
+    { id: 'cp4_k6', textTr: 'Emma yarışmayı kazanır.', hintTr: 'Sonuç neydi?', keywordGroups: [['kazandı', 'ödül']] },
+    { id: 'cp4_k7', textTr: 'Daniel o sahvede Emma ile evlenmek istediğini anlar.', hintTr: 'Daniel o gece neyi fark etti?', keywordGroups: [['daniel'], ['evlen']] },
+  ],
+  misleading: [
+    { tokens: ['emma kaybetti', 'kazanamadı'], noteTr: 'Emma KAZANDI — jüri onu birincilikle ödüllendirdi.' },
+    { tokens: ['jüri üyesiydi', 'daniel jüri'], noteTr: 'Daniel jüri değildi; seyirci olarak bir bardak su tutuyordu.' },
+  ],
+};
+
+// ---------------------------------------------------------------------------
+// BÖLÜM FİNALİ — A1 (Ünite 1-8)
+// ---------------------------------------------------------------------------
+const EN_STORY_LF_A1: CheckpointStory = {
+  id: 'story_lf_a1',
+  kind: 'levelFinal',
+  checkpoint: null,
+  unitFrom: 1,
+  unitTo: 8,
+  levelId: 'A1',
+  nextLevelId: 'A2',
+  titleRu: 'The First Week',
+  titleTr: 'İlk Hafta',
+  framingTr: `A1 FİNALİ. Yıl 2035. Daniel: "Hikayenin en başında, daha annenizi tanımadan önce, yeni şehre taşınmıştım. Kelimelerle ilk haftam."`,
+  icon: '🌱',
+  color: '#22c55e',
+  paragraphs: [
+    { speaker: 'Anlatıcı (2035)', narrator: true, ru: `Kids, every story has a beginning. Mine starts with a bus ticket, a small flat and one word: "Hello."`, reading: `KİDZ, EVri STORi HEZ e biGINing. MAYN STARTS vid e BAS TİKıt, e SMOL FLET end UAN UORD: "heLOU"`, tr: `Çocuklar, her hikayenin bir başlangıcı vardır. Benimki bir otobüs bileti, küçük bir daire ve tek bir kelimeyle başlar: "Hello."` },
+    { speaker: 'Anlatıcı', narrator: true, ru: `It was Monday. I was new in the city. My flat was small but sunny. I had a bed, a table, two chairs and a big window.`, reading: `İT UOS MANDEY. ay UOS NYU in di SITI. may FLET UOS SMOL bat SANi. ay HED e BED, e TEYbıl, TUU ÇEIRZ end e BIG UINDOU`, tr: `Pazartesiydi. Şehirde yeniydim. Dairem küçüktü ama güneşliydi. Bir yatak, bir masa, iki sandalye ve büyük bir pencere vardı.` },
+    { speaker: 'Daniel', ru: `Good morning! I am Daniel. I live in flat 4.`, reading: `GUD MORning! ay EM DENyıl. ay LİV in FLET FOR`, tr: `Günaydın! Ben Daniel. 4 numaralı dairede oturuyorum.` },
+    { speaker: 'Lily', ru: `Oh, welcome! I am Lily. I live downstairs. This is my wife, Grace.`, reading: `OU, UELkım! ay EM LİLİ. ay LİV DAUNsteırz. Dis İZ may UAYF, GREYS`, tr: `Ah, hoş geldin! Ben Lily. Alt katta oturuyorum. Bu da eşim Grace.` },
+    { speaker: 'Grace', ru: `Nice to meet you! Do you need anything? A phone number? A taxi?`, reading: `NAYS tu MİT yu! du yu NIID ENiting? e FOUN NAMbır? e TEKSİ?`, tr: `Tanıştığımıza memnun oldum! Bir şeye ihtiyacın var mı? Telefon numarası? Taksi?` },
+    { speaker: 'Daniel', ru: `A map, please. Where is the market? And... where is the coffee?`, reading: `e MEP, PLIIZ. UER İZ di MARKıt? end... UER İZ di KOFİ?`, tr: `Bir harita lütfen. Market nerede? Ve... kahve nerede?` },
+    { speaker: 'Lily', ru: `The market is on Green Street. The coffee is in your heart, neighbour!`, reading: `di MARKıt İZ on GRIIN STRIIT. di KOFİ İZ in yor HART, NEYbır`, tr: `Market Green Caddesi\'nde. Kahve ise kalbinde, komşum!` },
+    { speaker: 'Anlatıcı (2035)', narrator: true, ru: `That was the first week: hello, a map and two new friends. Simple words. A simple beginning. But every big story starts small.`, reading: `det UOS di FÖST UIK: heLOU, e MEP end TUU NYU FRENDZ. SİMpıl UERDZ. e SİMpıl biGINing. BAT EVri BIG STORi STARTS SMOL`, tr: `İlk hafta buydu: merhaba, bir harita ve iki yeni arkadaş. Basit kelimeler. Basit bir başlangıç. Ama her büyük hikaye küçükten başlar.` },
+  ],
+  newWords: [
+    { ru: 'beginning', reading: 'biGINing', tr: 'başlangıç', note: `begin (başlamak) → beginning (başlangıç).` },
+    { ru: 'downstairs', reading: 'DAUNsteırz', tr: 'alt katta', note: `down + stairs: merdivenin altı → alt kat.` },
+    { ru: 'neighbour', reading: 'NEYbır', tr: 'komşu', note: `Amerikan yazımı: neighbor. "gh" sessiz!` },
+  ],
+  keyPoints: [
+    { id: 'lf_a1_k1', textTr: 'Daniel\'ın hikayesi yeni şehre taşınmasıyla başlar: otobüs bileti, küçük daire ve "Hello" kelimesi.', hintTr: 'Hikayenin başlangıcı neydi?', keywordGroups: [['şehir', 'taşın'], ['daire', 'otobüs'], ['hello', 'merhaba']] },
+    { id: 'lf_a1_k2', textTr: 'Daniel\'ın dairesi küçük ama güneşlidir; yatak, masa, iki sandalye ve büyük penceresi vardır.', hintTr: 'Daire nasıldı, içinde neler vardı?', keywordGroups: [['daire', 'küçük'], ['yatak', 'masa', 'pencere']] },
+    { id: 'lf_a1_k3', textTr: 'Daniel, Lily ve Grace ile tanışır; onlar alt katta oturan bir çifttir.', hintTr: 'Yeni komşular kimdi?', keywordGroups: [['lily'], ['grace'], ['komşu', 'alt kat']] },
+    { id: 'lf_a1_k4', textTr: 'Daniel bir harita ister: marketi ve kahveyi sorar.', hintTr: 'Daniel komşularından ne istedi?', keywordGroups: [['harita', 'market', 'kahve']] },
+    { id: 'lf_a1_k5', textTr: 'Lily marketin Green Caddesi\'nde olduğunu söyler.', hintTr: 'Market nerede?', keywordGroups: [['market', 'cadde', 'green']] },
+    { id: 'lf_a1_k6', textTr: 'Daniel ilk haftayı merhaba, harita ve iki yeni arkadaşla özetler.', hintTr: 'İlk hafta nasıl geçti?', keywordGroups: [['arkadaş', 'merhaba', 'harita']] },
+  ],
+  misleading: [
+    { tokens: ['karısını tanıştırdı', 'eşini tanıdığı'], noteTr: 'Daniel bu bölümde henüz kimseyle tanışmıyor; Lily ve Grace ise zaten birbirinin eşi.' },
+    { tokens: ['büyük bir evde'], noteTr: 'Daniel\'ın dairesi KÜÇÜKTÜ ama güneşliydi.' },
+  ],
+};
+
+// ---------------------------------------------------------------------------
+// BÖLÜM FİNALİ — A2 (Ünite 9-16)
+// ---------------------------------------------------------------------------
+const EN_STORY_LF_A2: CheckpointStory = {
+  id: 'story_lf_a2',
+  kind: 'levelFinal',
+  checkpoint: null,
+  unitFrom: 9,
+  unitTo: 16,
+  levelId: 'A2',
+  nextLevelId: 'B1',
+  titleRu: 'A Day in the City',
+  titleTr: 'Şehirde Bir Gün',
+  framingTr: `A2 FİNALİ. Daniel: "O yaz şehri keşfetmeye başladım. Bir gün sokaklarda kaybolmuştum — ve bu, hayatımın en iyi kazasıydı."`,
+  icon: '🗺️',
+  color: '#3b82f6',
+  paragraphs: [
+    { speaker: 'Anlatıcı (2035)', narrator: true, ru: `That summer I decided to explore the city. I took the bus, then the metro. My plan was simple: museum, park, coffee.`, reading: `det SAMır ay disAYDıd tu ikSPLOOR di SITi. ay TUUK di BAS, DEN di METrou. may PLEN UOS SİMpıl: myuZIım, PARK, KOFİ`, tr: `O yaz şehri keşfetmeye karar verdim. Otobüse bindim, sonra metroya. Planım basitti: müze, park, kahve.` },
+    { speaker: 'Anlatıcı', narrator: true, ru: `But I got lost. I asked a woman: "Excuse me, how do I get to the museum?" She answered... in Italian.`, reading: `BAT ay GOT LOST. ay ASKT e UUmin: "ikSKYUZ Mİ, hau du ay GET tu di myuZIım?" Şİ ANsırd... in itELYın`, tr: `Ama kayboldum. Bir kadına sordum: "Affedersiniz, müzeye nasıl giderim?" Cevabı... İtalyanca verdi.` },
+    { speaker: 'Daniel', ru: `Sorry, I do not speak Italian! English? Turkish?`, reading: `SORi, ay DU NOT SPIIK itELYın! INGliş? TERkiş?`, tr: `Üzgünüm, İtalyanca bilmiyorum! İngilizce? Türkçe?` },
+    { speaker: 'Emma', ru: `I speak both. And you look completely lost. Follow me — I am going that way anyway.`, reading: `ay SPIIK BOUθ. end yu LUK kımPLIITli LOST. FOLou Mİ — ay EM GOING det UAY ENiUEY`, tr: `İkisini de biliyorum. Ve tamamen kaybolmuş görünüyorsun. Beni takip et — zaten o yöne gidiyorum.` },
+    { speaker: 'Anlatıcı', narrator: true, ru: `We walked for an hour. We talked about the weather (of course), the prices and the best coffee in town.`, reading: `ui UOKT for en AUır. ui TOKT eBAUT di UEDır (ıv KORS), di PRAYSız end di BEST KOFİ in TAUN`, tr: `Bir saat yürüdük. Konuştuk: havadan (tabii ki), fiyatlardan ve şehrin en iyi kahvesinden.` },
+    { speaker: 'Daniel', ru: `Wait. You are the journalist who writes about city transport, aren't you?`, reading: `UEYT. yu AR di CÖRnılist hu RAYTS eBAUT SITi TRANSPORT, ARınt yu?`, tr: `Durun. Siz şehir ulaşması hakkında yazan gazeteci değilsiniz?` },
+    { speaker: 'Emma', ru: `Guilty. And you are the architect who asks strangers for directions. Nice to meet you, Daniel.`, reading: `GILti. end yu AR di ARkıtekt hu ASKS STREYncırz for diREKşınz. NAYS tu MİT yu, DENyıl`, tr: `Suçlu olduğunu kabul ediyorum. Sen de yabancılara yol soran mimarsın. Tanıştığımıza memnun oldum, Daniel.` },
+    { speaker: 'Anlatıcı (2035)', narrator: true, ru: `Kids, the museum was closed that day. But I found something better: a conversation. Sometimes getting lost is the best plan.`, reading: `KİDZ, di myuZIım UOS KLOUZD det DEY. BAT ay FAUND SAMing BEDır: e konvırSEYşın. SAMtayms GETing LOST İZ di BEST PLEN`, tr: `Çocuklar, müze o gün kapalıydı. Ama daha iyi bir şey buldum: bir sohbet. Bazen kaybolmak en iyi plandır.` },
+  ],
+  newWords: [
+    { ru: 'to get lost', reading: 'tu GET LOST', tr: 'kaybolmak', note: `"I got lost" — kayboldum (Past Simple).` },
+    { ru: 'stranger', reading: 'STREYncır', tr: 'yabancı, tanımadığın kişi', note: `strange (garip) → stranger (yabancı).` },
+    { ru: 'to follow', reading: 'tu FOLou', tr: 'takip etmek', note: `"Follow me" — beni takip et.` },
+  ],
+  keyPoints: [
+    { id: 'lf_a2_k1', textTr: 'Daniel o yaz şehri keşfetmeye karar verir: planı müze, park ve kahvedir.', hintTr: 'Plan neydi?', keywordGroups: [['müze', 'park', 'kahve'], ['şehir', 'keşif', 'gezi']] },
+    { id: 'lf_a2_k2', textTr: 'Kaybolur ve bir kadına yol sorar; kadın İtalyanca cevap verir.', hintTr: 'Nasıl bir aksilik oldu?', keywordGroups: [['kaybol'], ['italyanca', 'yol sordu']] },
+    { id: 'lf_a2_k3', textTr: 'Kadın Emma\'dır: hem İngilizce hem Türkçe konuşur ve Daniel\'a eşlik eder.', hintTr: 'Yardım eden kimdi?', keywordGroups: [['emma'], ['takip', 'geldi', 'yardım']] },
+    { id: 'lf_a2_k4', textTr: 'Bir saat boyunca hava, fiyatlar ve şehrin en iyi kahvesi hakkında konuşurlar.', hintTr: 'Nelerden konuştular?', keywordGroups: [['hava', 'fiyat', 'kahve'], ['bir saat', 'sohbet']] },
+    { id: 'lf_a2_k5', textTr: 'Daniel, Emma\'nın şehir ulaşması yazan gazeteci olduğunu fark eder.', hintTr: 'Daniel neyi fark etti?', keywordGroups: [['gazeteci'], ['ulaşım', 'transport', 'şehir']] },
+    { id: 'lf_a2_k6', textTr: 'Müze o gün kapalıdır ama Daniel daha iyi bir şey bulur: bir sohbet.', hintTr: 'Müze ne oldu? Daniel ne kazandı?', keywordGroups: [['kapalı'], ['sohbet', 'konuşma']] },
+  ],
+  misleading: [
+    { tokens: ['müzeye girdiler', 'müzeyi gezdiler'], noteTr: 'Müze O GÜN KAPALIYDI; gezemediler, bunun yerine konuştular.' },
+    { tokens: ['kadın italyandı'], noteTr: 'Kadın Emma\'ydı — İtalyanca cevap verdi diye İtalyan değildi; gazetecidir.' },
+  ],
+};
+
+// ---------------------------------------------------------------------------
+// BÖLÜM FİNALİ — B1 (Ünite 17-24)
+// ---------------------------------------------------------------------------
+const EN_STORY_LF_B1: CheckpointStory = {
+  id: 'story_lf_b1',
+  kind: 'levelFinal',
+  checkpoint: null,
+  unitFrom: 17,
+  unitTo: 24,
+  levelId: 'B1',
+  nextLevelId: 'B2',
+  titleRu: 'New Beginnings',
+  titleTr: 'Yeni Başlangıçlar',
+  framingTr: `B1 FİNALİ. Daniel: "Emma ile tekrar karşılaşmam bir iş görüşmesinde oldu. Ben mimar, o gazeteci. Şehir hastanesi projesi..."`,
+  icon: '🏗️',
+  color: '#8b5cf6',
+  paragraphs: [
+    { speaker: 'Anlatıcı (2035)', narrator: true, ru: `A year later, I was working on a new hospital project. The city wanted a journalist at the press conference. Guess who walked in.`, reading: `e YIR LEYtır, ay UOS UORking on e NYU HOSpital PROcekt. di SITI UONtıd e CÖRnılist et di PRES KONfirıns. GES hu UOKT İN`, tr: `Bir yıl sonra yeni bir hastane projesinde çalışıyordum. Şehir basın toplantısına bir gazeteci istedi. Tahmin edin kim girdi.` },
+    { speaker: 'Emma', ru: `Daniel? The lost tourist from Green Street? You are an architect now?`, reading: `DENyıl? di LOST TUUriSt from GRIIN STRIIT? yu AR en ARkıtekt NAU?`, tr: `Daniel? Green Caddesi\'ndeki kayıp turist? Şimdi mimarmısın?` },
+    { speaker: 'Daniel', ru: `Emma! The journalist who saves lost strangers! Yes, and this hospital is my project.`, reading: `EMe! di CÖRnılist hu SEYVZ LOST STREYncırz! YES, end Dis HOSpital İZ may PROcekt`, tr: `Emma! Kayıp yabancıları kurtaran gazeteci! Evet, ve bu hastane benim projem.` },
+    { speaker: 'Emma', ru: `Impressive. So, tell me: how many windows will this building have?`, reading: `imPREsiv. SU, TEL Mİ: hau MENi UINDOUZ UİL Dis BİLDing HEV?`, tr: `Etkileyici. Peki söyle bakalım: bu binada kaç pencere olacak?` },
+    { speaker: 'Daniel', ru: `Three hundred and twelve. Architects count everything.`, reading: `TRII HANdırıd end tuUELv. ARkıtekts KAUNT EVriting`, tr: `Üç yüz on iki. Mimarlar her şeyi sayar.` },
+    { speaker: 'Emma', ru: `Perfect. I will write: "A hospital with 312 windows of hope."`, reading: `PERfikt. ay UİL RAYT: "e HOSpital vid TRII HANdırıd end TUUELv UINDOUZ ıv HOUP"`, tr: `Mükemmel. Şöyle yazacağım: "Umut ışığından 312 pencereli bir hastane."` },
+    { speaker: 'Anlatıcı', narrator: true, ru: `After the conference, we drank coffee. It was raining again. Some stories really do repeat themselves — if you are lucky.`, reading: `AFtır di KONfirıns, ui DRENK KOFİ. İT UOS REYning eGEYN. SAM STORiIZ RİLİ DU ripiIT demSELVS — İF yu AR LAKi`, tr: `Konferanstan sonra kahve içtik. Yine yağmur yağıyordu. Bazı hikayeler gerçekten kendini tekrar eder — şanslıysan.` },
+    { speaker: 'Anlatıcı (2035)', narrator: true, ru: `That day, kids, I understood something: a beginning does not knock twice. You have to open the door.`, reading: `det DEY, KİDZ, ay andırSTUD SAMing: e biGINing DAZ NOT NOK TUAIS. yu HEV tu OUpın di DOR`, tr: `O gün çocuklar, bir şey anladım: başlangıç iki kez kapıyı çalmaz. Kapıyı senin açman gerekir.` },
+  ],
+  newWords: [
+    { ru: 'impressive', reading: 'imPREsiv', tr: 'etkileyici', note: `impress (etkilemek) → impressive (etkileyici).` },
+    { ru: 'to repeat', reading: 'tu ripIIT', tr: 'tekrarlamak', note: `"History repeats itself" — tarih kendini tekrar eder.` },
+    { ru: 'to knock', reading: 'tu NOK', tr: 'vurmak, çalmak (kapı)', note: `"to knock on the door" — kapıyı çalmak.` },
+  ],
+  keyPoints: [
+    { id: 'lf_b1_k1', textTr: 'Daniel bir yıl sonra bir hastane projesinde mimar olarak çalışır.', hintTr: 'Daniel ne yapıyordu?', keywordGroups: [['hastane', 'proje'], ['mimar']] },
+    { id: 'lf_b1_k2', textTr: 'Basın toplantısına gelen gazeteci Emma\'dır — Green Caddesi\'nden tanıdığı kadın.', hintTr: 'Basın toplantısına kim geldi?', keywordGroups: [['emma', 'gazeteci'], ['green', 'tanıdı']] },
+    { id: 'lf_b1_k3', textTr: 'Daniel hastanenin kendi projesi olduğunu söyler.', hintTr: 'Daniel proje hakkında ne söyledi?', keywordGroups: [['hastane', 'proje', 'benim']] },
+    { id: 'lf_b1_k4', textTr: 'Emma pencere sayısını sorar; Daniel 312 diye cevap verir.', hintTr: 'Kaç pencere?', keywordGroups: [['pencere', '312', 'üç yüz']] },
+    { id: 'lf_b1_k5', textTr: 'Emma haberi "umut ışığından 312 pencereli bir hastane" diye yazacaktır.', hintTr: 'Emma\'nın manşeti ne olacak?', keywordGroups: [['yaz', 'haber'], ['umut', 'pencere']] },
+    { id: 'lf_b1_k6', textTr: 'Konferanstan sonra yine yağmurda kahve içerler; Daniel başlangıçların kapısını kendisinin açması gerektiğini öğrenir.', hintTr: 'Ders neydi?', keywordGroups: [['kahve', 'yağmur'], ['kapı', 'başlangıç', 'fırsat']] },
+  ],
+  misleading: [
+    { tokens: ['evlendiler', 'nişanlandılar'], noteTr: 'Bu bölümde evlilik yok — sadece yeniden karşılaşma ve kahve içme.' },
+    { tokens: ['emma mimar'], noteTr: 'Emma mimar değil GAZETECİ; mimar Daniel.' },
+  ],
+};
+
+// ---------------------------------------------------------------------------
+// BÖLÜM FİNALİ — B2 (Ünite 25-32)
+// ---------------------------------------------------------------------------
+const EN_STORY_LF_B2: CheckpointStory = {
+  id: 'story_lf_b2',
+  kind: 'levelFinal',
+  checkpoint: null,
+  unitFrom: 25,
+  unitTo: 32,
+  levelId: 'B2',
+  nextLevelId: 'C1/C2',
+  titleRu: 'The Turning Point',
+  titleTr: 'Dönüm Noktası',
+  framingTr: `B2 FİNALİ. Daniel: "Hastane açıldı. Şehirde herkes konuşuyordu. Ve bir akşam, bir röportaj teklifiyle her şey değişti."`,
+  icon: '⚡',
+  color: '#f97316',
+  paragraphs: [
+    { speaker: 'Anlatıcı (2035)', narrator: true, ru: `The hospital opened in October. The article about "312 windows of hope" became famous. Even the mayor read it.`, reading: `di HOSpital OUpınd in okTOUbır. di ARtikıl eBAUT "TRII HANdırıd end TUUELv UINDOUZ ıv HOUP" biKEYM FEYmıs. IIVın di MEYır RIID İT`, tr: `Hastane Ekim\'de açıldı. "Umut ışığından 312 pencere" makalesi ünlü oldu. Belediye başkanı bile okudu.` },
+    { speaker: 'Theo', ru: `Daniel, my friend, you are famous. This calls for a celebration. It will be legendary.`, reading: `DENyıl, may FREND, yu AR FEYmıs. Dis KOLZ for e seLıbreYşın. İT UİL Bİ LEDınderi`, tr: `Daniel, dostum, ünlü oldun. Bu bir kutlama gerektirir. Efsanevi olacak.` },
+    { speaker: 'Grace', ru: `If we are celebrating, I will cook. And no, Theo, you are not allowed near the kitchen.`, reading: `İF ui AR seLıbreYting, ay UİL KUK. end NOU, ÞİOU, yu AR NOT eLAUD NIIR di KIÇın`, tr: `Kutlayacaksak yemeği ben yapacağım. Ve hayır Theo, mutfağa yaklaşmana izin yok.` },
+    { speaker: 'Anlatıcı', narrator: true, ru: `During dinner, my phone rang. It was the city newspaper: "Mr. Daniel, would you give an interview about the hospital?"`, reading: `DYUring DİNır, may FOUN RENG. İT UOS di SITI NYUZPEYpır: "MISTır DENyıl, UUD yu GİV en INtırvyu eBAUT di HOSpital?"`, tr: `Yemek sırasında telefonum çaldı. Şehir gazetesiydi: "Daniel Bey, hastane hakkında bir röportaj verir misiniz?"` },
+    { speaker: 'Emma', ru: `Say yes. And this time, I will ask the questions. Professionally. Probably.`, reading: `SEY YES. end Dis TAYM, ay UİL ASK di KUESçıns. prıFEşınıli. PROBıbli`, tr: `Evet de. Ve bu kez soruları ben soracağım. Profesyonelce. Muhtemelen.` },
+    { speaker: 'Daniel', ru: `If the journalist is you, the answer will always be yes.`, reading: `İF di CÖRnılist İZ YU, di ANsır UİL OLueyz Bİ YES`, tr: `Gazeteci sizseniz cevap her zaman evet olur.` },
+    { speaker: 'Anlatıcı (2035)', narrator: true, ru: `Your mother says it was the moment she fell in love. I say it was just good grammar. We still argue about it.`, reading: `yor MADır SEZ İT UOS di MOUmınt Şİ FEL in LAV. ay SEY İT UOS CAST GUD GREmır. ui STİL ARgyu eBAUT İT`, tr: `Anneniz aşık olduğu anın o olduğunu söylüyor. Ben sadece iyi bir gramer olduğunu söylüyorum. Hâlâ tartışırız.` },
+  ],
+  newWords: [
+    { ru: 'famous', reading: 'FEYmıs', tr: 'ünlü', note: `fame (ün) → famous (ünlü).` },
+    { ru: 'celebration', reading: 'seLıbreYşın', tr: 'kutlama', note: `celebrate (kutlamak) → celebration (kutlama).` },
+    { ru: 'to argue', reading: 'tu ARgyu', tr: 'tartışmak', note: `"argue about it" — hakkında tartışmak.` },
+  ],
+  keyPoints: [
+    { id: 'lf_b2_k1', textTr: 'Hastane Ekim\'de açılır ve Emma\'nın makalesi ünlü olur; belediye başkanı bile okur.', hintTr: 'Makale ne kadar ilgi gördü?', keywordGroups: [['makale', 'ünlü'], ['belediye', 'başkan']] },
+    { id: 'lf_b2_k2', textTr: 'Theo bir kutlama önerir ve "efsanevi olacak" der.', hintTr: 'Theo ne önerdi?', keywordGroups: [['theo', 'kutlama'], ['efsanevi']] },
+    { id: 'lf_b2_k3', textTr: 'Grace yemeği kendisi yapacağını söyler ve Theo\'yu mutfaktan uzak tutar.', hintTr: 'Mutfak görevi kimde?', keywordGroups: [['grace', 'yemek'], ['theo', 'mutfak']] },
+    { id: 'lf_b2_k4', textTr: 'Yemek sırasında şehir gazetesi Daniel\'ı arayıp röportaj ister.', hintTr: 'Telefon kimden geldi ve ne istedi?', keywordGroups: [['gazete', 'telefon', 'aradı'], ['röportaj']] },
+    { id: 'lf_b2_k5', textTr: 'Emma soruları kendisinin soracağını söyleyerek evet demesini sağlar.', hintTr: 'Emma ne söyledi?', keywordGroups: [['emma'], ['soru', 'soracağım']] },
+    { id: 'lf_b2_k6', textTr: 'Daniel "gazeteci sizseniz cevap her zaman evet" der — aşkın ilk açık sinyali.', hintTr: 'Daniel ne cevap verdi?', keywordGroups: [['daniel'], ['her zaman', 'evet']] },
+    { id: 'lf_b2_k7', textTr: 'Emma o an aşık olduğunu söyler; Daniel ise "sadece iyi gramer" der ve hâlâ tartışırlar.', hintTr: 'Aile efsanesi ne?', keywordGroups: [['aşık'], ['gramer'], ['tartış']] },
+  ],
+  misleading: [
+    { tokens: ['theo yemek yaptı', 'theo pişirdi'], noteTr: 'Yemeği GRACE yaptı; Theo mutfağa yaklaşmaya bile izinli değildi.' },
+    { tokens: ['daniel röportajı reddetti'], noteTr: 'Daniel röportajı KABUL ETTİ — gazeteci Emma olduğu için "her zaman evet".`' },
+  ],
+};
+
+// ---------------------------------------------------------------------------
+// BÖLÜM FİNALİ — C1/C2 (Ünite 33-48)
+// ---------------------------------------------------------------------------
+const EN_STORY_LF_C1: CheckpointStory = {
+  id: 'story_lf_c1',
+  kind: 'levelFinal',
+  checkpoint: null,
+  unitFrom: 33,
+  unitTo: 48,
+  levelId: 'C1/C2',
+  nextLevelId: 'C1/C2',
+  titleRu: 'The Graduation',
+  titleTr: 'Mezuniyet',
+  framingTr: `BÜYÜK FİNAL. Daniel: "Ve böylece çocuklar, hikayenin sonuna geldik. Bu hikaye sizin için değil, sizin başlangıcınız için yazıldı."`,
+  icon: '🎓',
+  color: '#eab308',
+  paragraphs: [
+    { speaker: 'Anlatıcı (2035)', narrator: true, ru: `And here we are, kids. The end of the story — or, as your grandfather would say, "the beginning of the sequel."`, reading: `end HİR ui AR, KİDZ. di END ıv di STORi — OR, ez yor GREYNdfadır UUD SEY, "di biGINing ıv di SIIkuıl"`, tr: `Ve işte buradayız çocuklar. Hikayenin sonu — ya da dedenizin deyişiyle "devam filminin başlangıcı".` },
+    { speaker: 'Anlatıcı', narrator: true, ru: `Two years after the hospital, I finally asked Emma the question. She said: "Finally! I have been waiting since the coffee shop."`, reading: `TUU YIRZ AFtır di HOSpital, ay FAYnıli ASKT Eme di KUESçın. Şİ SED: "FAYnıli! ay HEV BIN UEYting SINS di KOFİ ŞOP"`, tr: `Hastaneden iki yıl sonra Emma\'ya o soruyu sordum. Dedi ki: "Sonunda! Kahveciden beri bekliyorum."` },
+    { speaker: 'Theo', ru: `Best man speech. Ten minutes. Zero jokes. Just kidding — five jokes.`, reading: `BEST MEN SPIIÇ. TEN MİNıts. ZIROU COUKS. CAST KİDing — FAYV COUKS`, tr: `Sağdım konuşması. On dakika. Sıfır şaka. Şaka şaka — beş şaka.` },
+    { speaker: 'Grace', ru: `I object! On legal grounds: this wedding cake is too beautiful to cut.`, reading: `ay ebCEKT! on LIIgıl GRAUNDZ: Dis UEDing KEYK İZ TU BYUUtiful tu KAT`, tr: `İtiraz ediyorum! Hukuki gerekçelerle: bu düğün pastası kesilmeye fazla güzel.` },
+    { speaker: 'Anlatıcı (2035)', narrator: true, ru: `So, kids: rain, a coffee shop, a burned chicken, a legendary interview, a debate, 312 windows and one wedding. That is how I met your mother.`, reading: `SOU, KİDZ: REYN, e KOFİ ŞOP, e BERND ÇIKın, e LEDınderi INtırvyu, e dibEYT, TRII HANdırıd end TUUELv UINDOUZ end UAN UEDing. det İZ hau ay MET yor MADır`, tr: `İşte böyle çocuklar: yağmur, bir kahveci, yanık bir tavuk, efsanevi bir görüşme, bir münazara, 312 pencere ve bir düğün. Annenizle böyle tanıştım.` },
+    { speaker: 'Çocuk', ru: `Dad, and then what happened?`, reading: `DED, end DEN UAT HEpınd?`, tr: `Baba, peki sonra ne oldu?` },
+    { speaker: 'Anlatıcı (2035)', narrator: true, ru: `Then you were born. Then you learned to walk, to talk — and one day you will learn a new language. And that story, my kids, will be yours to tell.`, reading: `DEN yu UER BORN. DEN yu LERND tu UOK, tu TOK — end UAN DEY yu UİL LERN e NYU LENGUİC. end det STORi, may KİDZ, UİL Bİ YORZ tu TEL`, tr: `Sonra siz doğdunuz. Sonra yürümeyi, konuşmayı öğrendiniz — ve bir gün yeni bir dil öğreneceksiniz. Ve o hikaye çocuklar, anlatması size kalacak.` },
+    { speaker: 'Anlatıcı (2035)', narrator: true, ru: `Good night. And remember: every word you learn is a new window. Three hundred and twelve of them — that is a whole hospital of hope.`, reading: `GUD NAYT. end riMEMbır: EVri UORD yu LERN İZ e NYU UINDOU. TRII HANdırıd end TUUELv ıv dem — det İZ e HOUL HOSpital ıv HOUP`, tr: `İyi geceler. Ve unutmayın: öğrendiğiniz her kelime yeni bir penceredir. Üç yüz on iki tanesi — umudun tüm hastanesidir.` },
+  ],
+  newWords: [
+    { ru: 'finally', reading: 'FAYnıli', tr: 'sonunda, nihayet', note: `final (son) → finally (sonunda).` },
+    { ru: 'wedding', reading: 'UEDing', tr: 'düğün', note: `to wed (evlenmek — resmi) → wedding (düğün).` },
+    { ru: 'to be born', reading: 'tu Bİ BORN', tr: 'doğmak', note: `"You were born" — siz doğdunuz (edilgen yapı).` },
+  ],
+  keyPoints: [
+    { id: 'lf_c1_k1', textTr: 'Hastaneden iki yıl sonra Daniel, Emma\'ya evlenme teklif eder; Emma "sonunda" der.', hintTr: 'Teklif ne zaman geldi ve cevap ne oldu?', keywordGroups: [['teklif', 'evlen'], ['sonunda', 'bekliyor']] },
+    { id: 'lf_c1_k2', textTr: 'Theo sağdım konuşması yapar; şaka sayısı konusunda "eski dost" davranışı sergiler.', hintTr: 'Theo düğünde ne yaptı?', keywordGroups: [['theo', 'konuşma', 'sağdım'], ['şaka']] },
+    { id: 'lf_c1_k3', textTr: 'Grace "hukuki gerekçeyle" pastanın çok güzel olduğunu söyleyerek espri yapar.', hintTr: 'Grace\'in itirazı neydi?', keywordGroups: [['grace', 'pasta'], ['itiraz', 'güzel']] },
+    { id: 'lf_c1_k4', textTr: 'Daniel hikayeyi bağlar: yağmur, kahveci, yanık tavuk, görüşme, münazara, 312 pencere ve düğün.', hintTr: 'Daniel hikayeyi nasıl özetledi?', keywordGroups: [['yağmur', 'kahve', 'tavuk', 'düğün'], ['312', 'pencere']] },
+    { id: 'lf_c1_k5', textTr: 'Çocuklardan biri "sonra ne oldu?" diye sorar.', hintTr: 'Çocuklar ne sordu?', keywordGroups: [['çocuk'], ['sonra', 'ne oldu']] },
+    { id: 'lf_c1_k6', textTr: 'Daniel: çocuklar doğdu, yürümeyi ve konuşmayı öğrendiler; bir gün yeni bir dil öğrenecekler.', hintTr: 'Dedelerin cevabı neydi?', keywordGroups: [['doğdu', 'yürüme', 'konuşma'], ['yeni dil', 'öğren']] },
+    { id: 'lf_c1_k7', textTr: 'Daniel son dersi verir: öğrendiğin her kelime yeni bir penceredir; 312 pencere umudun hastanesidir.', hintTr: 'Hikayenin son mesajı ne?', keywordGroups: [['kelime', 'pencere'], ['umut', 'hastane']] },
+  ],
+  misleading: [
+    { tokens: ['emma teklifi reddetti'], noteTr: 'Emma reddetmedi — "Finally! I have been waiting since the coffee shop" diyerek kabul etti.' },
+    { tokens: ['hikaye bitti', 'son veda'], noteTr: 'Bu bir veda değil: Daniel hikayenin çocukların kendi hikayesinin başlangıcı olduğunu söylüyor.' },
+  ],
+};
+
+/** İngilizce hikaye paketi: 4 kontrol noktası + 5 bölüm finali = 9 hikaye. */
+export const EN_STORIES: CheckpointStory[] = [
+  EN_STORY_LF_A1,
+  EN_STORY_1,
+  EN_STORY_LF_A2,
+  EN_STORY_2,
+  EN_STORY_LF_B1,
+  EN_STORY_3,
+  EN_STORY_LF_B2,
+  EN_STORY_4,
+  EN_STORY_LF_C1,
+];

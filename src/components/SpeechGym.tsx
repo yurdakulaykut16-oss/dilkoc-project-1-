@@ -8,6 +8,7 @@ import {
   isSpeechCoachAvailable, listenOnceRu, speechSimilarity, speedCharsPerSec, rateSpeed, SPEED_LABEL,
 } from '../speech/speechCheck';
 import { xpGain, isUltraMode } from '../ultra/ultraMode';
+import { langMeta } from '../content/activeLanguage';
 
 // ==========================================
 // 🗣️ AĞIZ JİMNASTİĞİ — günlük konuşma ödevi
@@ -79,7 +80,7 @@ const SpeechGym: React.FC<Props> = ({ completedUnits, onXp, onRecordResult }) =>
     setMicMsg(null);
     setResult(null);
     try {
-      const att = await listenOnceRu();
+      const att = await listenOnceRu(langMeta().sttTag);
       const sim = att.transcript ? speechSimilarity(att.transcript, drill.target) : 0;
       const cps = speedCharsPerSec(drill.target, att.durationMs);
       const threshold = drill.kind === 'twister' ? 0.55 : 0.6;

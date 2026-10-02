@@ -10,6 +10,7 @@ import { useEffect, useMemo, useRef, useState } from 'react';
 import { ALL_WORDS, ALL_SENTENCES } from '../curriculumData';
 import { skillSummary } from '../learnerModel';
 import { edgeSpeak, getVoicePrefs, stopEdgeSpeech } from '../tts/edgeTts';
+import { isEnglish, isTargetScript } from '../content/activeLanguage';
 
 interface Narr { lang: 'ru' | 'tr'; text: string }
 interface Scene {
@@ -39,7 +40,7 @@ function buildLessons(errorStats: Record<string, { count: number; tr: string; la
   // 1) KELİME DERSLERİ — kronik hatalı kelimeler
   const weakWords = Object.entries(errorStats)
     .map(([ru, v]) => ({ ru, tr: v.tr, count: v.count }))
-    .filter(w => w.count >= 1 && /[а-яё]/i.test(w.ru))
+    .filter(w => w.count >= 1 && isTargetScript(w.ru))
     .sort((a, b) => b.count - a.count)
     .slice(0, 8);
 
@@ -80,11 +81,17 @@ function buildLessons(errorStats: Record<string, { count: number; tr: string; la
   for (const r of weakSkills) {
     if (r.group === 'zaman') {
       const key = r.key;
-      const spec = key === 'tense:past'
-        ? { name: 'Geçmiş Zaman', rule: 'Fiil köküne -л eklenir: erkekse -л, kadınsa -ла, çoğulsa -ли.', ex: [{ ru: 'Я читал книгу.', tr: 'Ben kitap okudum. (erkek)' }, { ru: 'Она была дома.', tr: 'O evdeydi. (kadın)' }] }
-        : key === 'tense:future'
-          ? { name: 'Gelecek Zaman', rule: 'буду / будешь / будет + fiilin mastarı: gelecek planı böyle kurulur.', ex: [{ ru: 'Я буду работать завтра.', tr: 'Yarın çalışacağım.' }, { ru: 'Мы будем говорить по-русски.', tr: 'Rusça konuşacağız.' }] }
-          : { name: 'Şimdiki Zaman', rule: 'Fiil kişiye göre çekilir: я читаю, ты читаешь, он читает…', ex: [{ ru: 'Я живу в Москве.', tr: 'Moskova’da yaşıyorum.' }, { ru: 'Она говорит по-русски.', tr: 'O Rusça konuşuyor.' }] };
+      const spec = isEnglish()
+        ? (key === 'tense:past'
+            ? { name: 'Past Tense', rule: 'Geçmiş: fiil + ed (worked) veya düzensiz biçim (went, saw). Olumsuz/soru: did + fiil (1. hâl).', ex: [{ ru: 'I watched a movie yesterday.', tr: 'Dün bir film izledim.' }, { ru: 'She went home early.', tr: 'O erken eve gitti.' }] }
+            : key === 'tense:future'
+              ? { name: 'Future Tense', rule: 'will + fiil (anlık karar/tahmin) veya be going to (plan).', ex: [{ ru: 'I will call you tomorrow.', tr: 'Yarın arayacağım.' }, { ru: 'We are going to travel in June.', tr: 'Haziranda seyahat edeceğiz.' }] }
+              : { name: 'Present Tense', rule: 'Present Simple: he/she/it + fiil-s. Present Continuous: am/is/are + fiil-ing.', ex: [{ ru: 'She works in a bank.', tr: 'O bir bankada çalışır.' }, { ru: 'I am studying now.', tr: 'Şu anda ders çalışıyorum.' }] })
+        : (key === 'tense:past'
+            ? { name: 'Geçmiş Zaman', rule: 'Fiil köküne -л eklenir: erkekse -л, kadınsa -ла, çoğulsa -ли.', ex: [{ ru: 'Я читал книгу.', tr: 'Ben kitap okudum. (erkek)' }, { ru: 'Она была дома.', tr: 'O evdeydi. (kadın)' }] }
+            : key === 'tense:future'
+              ? { name: 'Gelecek Zaman', rule: 'буду / будешь / будет + fiilin mastarı: gelecek planı böyle kurulur.', ex: [{ ru: 'Я буду работать завтра.', tr: 'Yarın çalışacağım.' }, { ru: 'Мы будем говорить по-русски.', tr: 'Rusça konuşacağız.' }] }
+              : { name: 'Şimdiki Zaman', rule: 'Fiil kişiye göre çekilir: я читаю, ты читаешь, он читает…', ex: [{ ru: 'Я живу в Москве.', tr: 'Moskova’da yaşıyorum.' }, { ru: 'Она говорит по-русски.', tr: 'O Rusça konuşuyor.' }] });
       lessons.push({
         id: `sk_${key}`, tag: '⏳ ZAMAN', title: `${spec.name}: %${r.accuracy} → yukarı çekelim`, color: '#eab308',
         scenes: [
