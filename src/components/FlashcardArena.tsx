@@ -38,12 +38,26 @@ const FlashcardArena: React.FC<Props> = ({ completedUnits, dueSrs, onXp, onMista
     return dueSrs.map(d => byRu.get(d.ru) || ({ id: d.ru, ru: d.ru, tr: d.tr, reading: '', level: 'A1' as const, usageNote: '' }));
   }, [dueSrs]);
 
-  const allPool = useMemo(() => shuffle(ALL_WORDS).slice(0, 40), []);
+  const randomPools = useMemo(() => {
+    const unique = (words: WordDetail[]) => [...new Map(words.map(w => [`${w.ru}|${w.tr}`, w])).values()];
+    const takeRandom = (levels: WordDetail['level'][]) =>
+      shuffle(unique(ALL_WORDS.filter(w => levels.includes(w.level)))).slice(0, 40);
+
+    return {
+      all: shuffle(unique(ALL_WORDS)).slice(0, 40),
+      a: takeRandom(['A1', 'A2']),
+      b: takeRandom(['B1', 'B2']),
+      c: takeRandom(['C1', 'C2', 'C1/C2']),
+    };
+  }, []);
 
   const decks: { id: string; label: string; count: number; words: WordDetail[] }[] = [
     { id: 'due', label: '📅 Vadesi gelen SRS kelimeleri', count: dueWords.length, words: dueWords },
     { id: 'known', label: '🎓 Öğrendiğim kelimeler', count: knownWords.length, words: knownWords },
-    { id: 'all', label: '🌍 Tüm müfredattan rastgele 40', count: allPool.length, words: allPool },
+    { id: 'level-a', label: '🟢 A seviyesi müfredatından rastgele 40', count: randomPools.a.length, words: randomPools.a },
+    { id: 'level-b', label: '🟠 B seviyesi müfredatından rastgele 40', count: randomPools.b.length, words: randomPools.b },
+    { id: 'level-c', label: '🟣 C seviyesi müfredatından rastgele 40', count: randomPools.c.length, words: randomPools.c },
+    { id: 'all', label: '🌍 Tüm müfredattan rastgele 40', count: randomPools.all.length, words: randomPools.all },
   ];
 
   const [deckWords, setDeckWords] = useState<WordDetail[]>([]);

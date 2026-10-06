@@ -1141,7 +1141,7 @@ export default function App() {
         setScreen('FLASHCARD');
       }
     } else {
-      addMistake(q.prompt, q.correct, 'Смешарики Sahnesi Anlama Hatası');
+      addMistake(q.prompt, q.correct, 'Кухня Sahnesi Anlama Hatası');
       setFeedback({ isError: true, message: `❌ Doğrusu: "${q.correct}". Tekrar dene!` });
     }
   };
@@ -2152,11 +2152,13 @@ export default function App() {
                 { icon: '🔀', title: '5. Karışık Pratik (Interleaving)', text: '"Unutulanlar" ve "Aralıklı Tekrar" oturumları FARKLI ünitelerdeki kelimeleri birbirine karıştırarak sorar. Aynı konuyu art arda çalışmak yerine karışık çalışmak, beyni her seferinde "hangi kelimeydi bu?" diye gerçekten düşünmeye zorlar — bu da kalıcılığı artırır.' },
                 { icon: '🗣️', title: '6. Öğretme Tekniği (Feynman Yöntemi)', text: 'Öğrendiğin bir gramer kuralını (örneğin akanje kuralını) kendi cümlelerinle, sanki hiç Rusça bilmeyen birine anlatıyormuş gibi yüksek sesle veya yazarak anlatmayı dene. Bir şeyi başkasına açıklayabiliyorsan, gerçekten öğrenmişsindir.' },
                 { icon: '🎯', title: '7. Üretici Pratik > Pasif Tanıma (Klavyesiz Versiyon)', text: 'Kelimeyi görmeden ÖNCE anlamını zihninden tahmin etmeye çalışmak, sadece okumaktan çok daha güçlüdür. "Hızlı Tanıma Testi" ekranı bunu klavyeye ihtiyaç duymadan sağlar: kelimeyi görüyorsun, cevabı aklından üretiyorsun, sonra 4 seçenek arasından doğrusunu buluyorsun. Kâğıda/klavyeye yazmak isteğe bağlıdır, hafızada kalıcılık için şart değildir.' },
-                { icon: '🐰', title: '8. Anlaşılır Girdi (Comprehensible Input) — Смешарики (Smeshariki) Yöntemi', text: 'Dil edinimindeki en güçlü yöntemlerden biri, seviyenin biraz altındaki ama tamamen anlaşılır içeriği bol bol dinlemektir (Krashen\'in "i+1" hipotezi). Смешарики gerçek Rus çocuklarının bile ilk izlediği çizgi dizidir: kısa cümleler, yavaş tempo, net telaffuz. Her A1/A2 ünitesinin sonunda çıkan "🐰 Смешарики Sahnesi" bu yüzden var: önce basit bir örnek diyalogla ısın, sonra "Gerçek Bölümü Aç" butonuyla YouTube\'da o karakterlerin GERÇEK bölümünü izle. Anlamadığın kelimeler olsa bile durma, akışı takip et — beyin devam ede ede örüntüleri kendi kendine çözer.' },
-                { icon: '🔁', title: '9. Aynı İçeriği Tekrar İzleme (Repeated Viewing)', text: 'Bir Смешарики bölümünü bir kez izlemek yetmez. Aynı bölümü 2-3 gün arayla tekrar izlediğinde, ilk seferde kaçırdığın kelimeleri fark edersin — çünkü artık o kelimeler uygulamada öğrendiğin kelimeler haline geldi. Bu, pasif izlemeyi aktif bir "tanıma tatmini"ne çevirir ve kalıcılığı ciddi şekilde artırır.' },
+                isEnglish()
+                  ? { icon: '🎭', title: '8. Anlaşılır Girdi — Modern Family & HIMYM Yöntemi', text: 'Kısa, bağlamı açık sitcom sahneleri gündelik İngilizceyi duygu ve olayla eşleştirir. İngilizce hikâyelerinin büyük bölümü Modern Family, küçük bir bölümü How I Met Your Mother bölümlerinden uyarlanır. Önce öğretici uyarlamayı oku; ardından bölüm aramasıyla gerçek sahnenin doğal hızını dinle.' }
+                  : { icon: '🍳', title: '8. Anlaşılır Girdi — «Кухня» Yöntemi', text: 'Rusça kısa sahnelerin tamamı «Кухня» bölümlerinden uyarlanır. Önce seviyene göre sadeleştirilmiş diyalogla karakterleri ve olayı tanı; ardından bölüm aramasıyla gerçek sahneyi izle. Tanıdık restoran, kadro ve tekrar eden durumlar yeni kelimeleri bağlama yerleştirir.' },
+                { icon: '🔁', title: '9. Aynı İçeriği Tekrar İzleme (Repeated Viewing)', text: isEnglish() ? 'Aynı Modern Family veya How I Met Your Mother bölüm sahnesini 2-3 gün arayla yeniden izlemek, ilk seferde kaçan gündelik kalıpları görünür hâle getirir.' : 'Aynı «Кухня» bölüm sahnesini 2-3 gün arayla yeniden izlemek, ilk seferde kaçırdığın Rusça kelimeleri ve tonlamayı görünür hâle getirir.' },
                 { icon: '😴', title: '10. Uyku ve Hafıza Pekiştirmesi', text: 'Kısa süreli hafızadaki bilginin uzun süreli hafızaya "kaydedilmesi" büyük ölçüde UYKU sırasında gerçekleşir. Yeni bir üniteyi akşam bitirip hemen ardından uyumak, o bilgiyi sabaha kalıcılaştırma ihtimalini belirgin şekilde artırır.' },
                 { icon: '🎧', title: `11. Kulağı Alıştırma — ${TOPICS_100_TOTAL} Dinleme Konusu (yolun içinde)`, text: `Gözden önce KULAK öğrenir: ${langMeta().name}ya maruz kalmak (exposure) beynin ses örüntülerini tanımasını sağlar. Öğrenme yolundaki önce 🧩 cümle temeli kartları (özne-yüklem-edat), sonra 🎧 rozetli kartlar bunu yapar — ${LETTER_GLYPHS.length} harf/ses konusu + 8 fonetik kuralı ve müfredat ön-hazırlık konuları (ilgili ünitenin hemen öncesinde, yani konuyu duyduktan saniyeler sonra ünitesine girersin). Toplam ${TOPICS_100_TOTAL} konunun her biri kelime kartları odaklıdır: tek tek 🔊 dinle, "Konuyu Dinle" / "Yavaşça Dinle" ile akışa bat, sonra 5 soruluk "dinle & seç" testiyle kanıtla. Günde 3-5 konu dinlemek, 2-3 hafta içinde doğal konuşma hızını kavraman için yeterlidir.` },
-                { icon: '📖', title: '12. Hikaye & Özet — Okuma Anlama + Üretici Çıktı (10\'lu kontrol noktaları + bölüm finalleri)', text: 'İki tür hikaye var: (1) Her 10 müfredat ünitesinin sonunda bir HİKAYE KONTROL NOKTASI açılır: o 10 ünitede öğrendiğin kelimelerle yazılmış, içinde en fazla 3 yeni kelime olan kısa bir konuşma. (2) Her bölümün (A1, A2, B1, B2, C1, C2) sonunda bir BÖLÜM FİNALİ açılır — burada yalnızca konuşma metnini okur, sonra Türkçe çeviri/özet yazarsın. Analiz skoru en az %70 olursa sonraki seviye açılır; %70 altıysa kilitli kalır. Hikayeler iki tarzda: Dima\'nın 2035\'te çocuklarına anlattığı HIMYM tadında bölümler VE «Кухня» dizisinden esinlenen mutfak komedileri (Şef Pyotr, garson Lyosha, Nina, Semyon — «Ван Гог» restoranı). Okurken istediğin satırın çevirisini açabilir, yeni kelimeleri sözlük kartlarından, ESKİ kelimeleri "Eski Kelimeler" bölümünden tekrar edersin — çünkü B\'deyken A kelimeleri unutulmasın diye finallere bilerek serpiştirildiler (kalıcı öğrenme!). Ardından en önemli adım: konuşmaları TÜRKÇELEŞTİRİP ÖZETLE — okuduğunu kendi cümlelerinle yeniden kurmak "üretici çıktı"dır ve pasif tanımadan çok daha güçlü kalıcılaşır. Analiz motoru özetini ana fikirlerle karşılaştırır: kaç doğru nokta yakaladığını, neyi kaçırdığını ve neleri yanlış anladığını söyler. İstersen finalden sonra 10 soruluk seviye tekrar pratiği de çözebilirsin: 6 soru bitirilen bölümden, 4 soru önceki bölümlerden gelir.' },
+                { icon: '📖', title: '12. Hikaye & Özet — Okuma Anlama + Üretici Çıktı (10\'lu kontrol noktaları + bölüm finalleri)', text: `İki tür hikaye var: kontrol noktaları ve seviye finalleri. Metni okuyup Türkçe özetini yazarsın; analiz skoru en az %70 olduğunda sonraki seviye açılır. ${isEnglish() ? 'İngilizce hikâyeler yalnızca Modern Family ve How I Met Your Mother bölümlerinden uyarlanır; ağırlık Modern Family’dedir ve Modern Family dizi finali kullanılmaz.' : 'Rusça hikâyelerin ve kısa dizi sahnelerinin tamamı «Кухня» bölümlerinden uyarlanır; Maks’ın Claude Monet mutfağındaki gelişimi baştan sona izlenir.'} Uyarlamalar özgün dizi repliklerini kopyalamaz. Satır çevirilerini açabilir, yeni ve eski kelimeleri tekrar edebilirsin. En önemli adım, konuşmaları kendi cümlelerinle Türkçeleştirip özetlemektir; analiz motoru yakaladığın ana fikirleri ve kaçırdığın noktaları gösterir.` },
                 { icon: '♾️', title: '13. Hiçbir Kelime Emekli Olmaz — Sınav İçi Karma Tekrar (YENİ, OTOMATİK)', text: 'Bir üniteyi %100 doğru bitirsen bile o ünitenin kelimeleri seninle yolculuğa devam eder: SONRAKİ HER ünitenin bitiş sınavına, önceki ünitelerden seçilen 5 adet "🔁 KALICI TEKRAR" sorusu otomatik karışır. Seçim genişleyen aralık ilkesine göre yapılır: 1, 2, 3, 5, 8, 13 ve 21 ünite geriden kelimeler + TÜM geçmişten rastgele örnekler. Araştırmalar (spaced/expanding retrieval) bunun, bilgiyi tam unutma eşiğinde yakalayıp kalıcılaştırdığını gösteriyor. Bu sorularda yanılırsan kelime Aralıklı Tekrar kutusunda 1. kutuya düşer ve ertesi gün yeniden sorulur.' },
                 { icon: '🔄', title: '14. Üretim Etkisi (Production Effect) — Ters Yön Soruları (YENİ, OTOMATİK)', text: `${langMeta().name} kelimesini görüp Türkçesini TANIMAK kolaydır; zor ve asıl kalıcı olan, Türkçesinden ${langMeta().name}sını GERİ ÇAĞIRMAKTIR. Bu yüzden karma tekrar ve maraton sorularının yarısı ters yönde sorulur: "${isEnglish() ? 'water' : 'tuz'}" kelimesinin ${langMeta().name}sı hangisi? Beynin cevabı üretmek için harcadığı ekstra çaba (desirable difficulty), izi çok daha derin kazır.` },
                 { icon: '🔀', title: '15. Karma Maraton — Kümülatif Rastgele Örnekleme Sınavı (YENİ, İSTEĞE BAĞLI)', text: 'Ana ekrandaki "🔀 Karma Maraton" butonu, tamamladığın TÜM ünitelerin kelime havuzundan rastgele 15 soru çeker — vadesi gelmemiş, çoktan "öğrenilmiş" kelimeler bile her an sorulabilir. Araştırmalar, rastgele örneklenmiş kümülatif testlerin (RST) tüm kelimeleri dengeli biçimde canlı tuttuğunu ve sınav kapsamı büyüdükçe zayıf kelimelerin kendiliğinden ortaya çıktığını gösteriyor. Haftada 2-3 maraton, "eskiden biliyordum" cümlesini sözlüğünden siler.' },
@@ -2184,47 +2186,45 @@ export default function App() {
             <SceneBanner icon="🕸️" color="#f472b6" label="Hikaye Bağlantı Haritası" />
             <h2 style={{ marginTop: 0, color: '#f472b6' }}>Hangi Hikaye Hangisine Bağlanıyor?</h2>
             <p style={{ color: '#cbd5e1', fontSize: '14px', lineHeight: '1.7' }}>
-              13 hikayenin tamamı <b>tek bir dizi evreninde</b> geçer ve iki anlatı kolu üzerinde ilerler.
-              Aşağıda yalnızca hikayelerin <b>birbirine nasıl bağlandığı</b> gösterilir — içerik/özet yoktur, sürpriz bozulmaz.
+              {isEnglish()
+                ? <>9 hikâye yalnızca <b>Modern Family</b> ve <b>How I Met Your Mother</b> bölümlerinden uyarlanır. Modern Family ana kol, HIMYM ise iki bölümlük eşlikçi koldur.</>
+                : <>13 hikâyenin tamamı <b>«Кухня» evreninde</b> ve Claude Monet restoranında ilerleyen tek bir gelişim çizgisidir.</>}
+              {' '}Aşağıdaki harita olay sonlarını açıklamadan hikâyeler arasındaki bağı gösterir.
             </p>
 
             <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(260px, 1fr))', gap: '14px', marginTop: '16px' }}>
-              <div style={{ background: '#0f172a', border: '1px solid #eab308', borderRadius: '12px', padding: '16px' }}>
-                <div style={{ fontWeight: 900, color: '#eab308', marginBottom: '8px' }}>🎙️ KOL 1 — HIMYM Çerçevesi</div>
-                <div style={{ fontSize: '13px', color: '#cbd5e1', lineHeight: '1.7' }}>
-                  Anlatıcı: <b>Dima</b> — 2035 yılında çocuklarına anlatıyor. Bu koldaki her hikaye aynı anlatının bir parçasıdır:
+              {(isEnglish() ? [
+                { color: '#38bdf8', title: '🏡 ANA KOL — Modern Family', text: 'Dunphy–Pritchett–Tucker ailesinin farklı evleri aynı aile temasında birleşir.', items: ['Pilot → Coal Digger → Fizbo', 'Caught in the Act → Dude Ranch', 'Disneyland → Connection Lost (final olmayan bölüm)'] },
+                { color: '#eab308', title: '☂️ EŞLİKÇİ KOL — HIMYM', text: 'Ted ve arkadaşlarının anlatı, varsayım ve ilişki hataları ana temalara ayna tutar.', items: ['Pilot: ilk randevu ve arkadaşlık', 'Slap Bet: varsayım, kanıt ve geçmiş'] },
+              ] : [
+                { color: '#ef4444', title: '🍳 BÖLÜM 1–6 — Mutfağa Giriş', text: 'Maks Claude Monet’ye gelir; Vika, Şef Barinov ve ekiple çalışmayı öğrenir.', items: ['İlk Gün → Yeni Çocuk → Şefin Sınavı', 'Karışan Sipariş → Banket Gecesi', 'Eleştirmen İçin Akşam Yemeği'] },
+                { color: '#f59e0b', title: '🔥 BÖLÜM 7–13 — Sorumluluk', text: 'Teknik sınavlar ekip yönetimi, etik karar ve profesyonellik çizgisine dönüşür.', items: ['Gizli Malzeme → Şefsiz Vardiya', 'Claude Monet Ekibi → Büyük Sipariş', 'Vika’nın Seçimi → Sezonun Son Masası'] },
+              ]).map((branch, i) => (
+                <div key={i} style={{ background: '#0f172a', border: `1px solid ${branch.color}`, borderRadius: '12px', padding: '16px' }}>
+                  <div style={{ fontWeight: 900, color: branch.color, marginBottom: '8px' }}>{branch.title}</div>
+                  <div style={{ fontSize: '13px', color: '#cbd5e1', lineHeight: '1.7' }}>{branch.text}</div>
+                  <ul style={{ fontSize: '13px', color: '#e2e8f0', lineHeight: '1.9', margin: '8px 0 0', paddingLeft: '18px' }}>
+                    {branch.items.map(item => <li key={item}>{item}</li>)}
+                  </ul>
                 </div>
-                <ul style={{ fontSize: '13px', color: '#e2e8f0', lineHeight: '1.9', margin: '8px 0 0', paddingLeft: '18px' }}>
-                  <li>☂️ Sarı Şemsiye <span style={{ color: '#64748b' }}>(A1 Finali — pilot bölüm)</span></li>
-                  <li>🌧️ Bölüm 1: Annenizle Nasıl Tanıştım → 🥂 Bölüm 8: Düğün <span style={{ color: '#64748b' }}>(8 kontrol noktası hikayesi, sırayla)</span></li>
-                  <li>☂️ Gerçek Hikaye <span style={{ color: '#64748b' }}>(C1/C2 Finali — dizi finali)</span></li>
-                </ul>
-              </div>
-              <div style={{ background: '#0f172a', border: '1px solid #38bdf8', borderRadius: '12px', padding: '16px' }}>
-                <div style={{ fontWeight: 900, color: '#38bdf8', marginBottom: '8px' }}>🍽️ KOL 2 — «Ван Гог» Restoranı («Кухня» tarzı)</div>
-                <div style={{ fontSize: '13px', color: '#cbd5e1', lineHeight: '1.7' }}>
-                  Ortak mekân: <b>«Ван Гог» restoranı</b>. Ortak kadro: <b>Şef Pyotr, Lyosha, Nina, Semyon</b>:
-                </div>
-                <ul style={{ fontSize: '13px', color: '#e2e8f0', lineHeight: '1.9', margin: '8px 0 0', paddingLeft: '18px' }}>
-                  <li>🍳 Yeni Garson <span style={{ color: '#64748b' }}>(A2 Finali)</span></li>
-                  <li>🍽️ «Ван Гог»ta Akşam Yemeği <span style={{ color: '#64748b' }}>(B1 Finali — crossover)</span></li>
-                  <li>🌹 Şefin Akşamı <span style={{ color: '#64748b' }}>(B2 Finali)</span></li>
-                </ul>
-              </div>
+              ))}
             </div>
 
             <h3 style={{ color: '#f472b6', margin: '22px 0 10px' }}>🔗 Bağlantılar</h3>
             <div style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}>
-              {[
-                { icon: '☂️', type: 'MOTİF', color: '#eab308', from: 'Sarı Şemsiye (A1 Finali)', to: 'Gerçek Hikaye (C1/C2 Finali)', why: 'Pilot bölümde ortaya çıkan sarı şemsiyenin sırrı, dizi finalinde çözülür. Aynı nesne iki hikayeyi uçtan uca birbirine bağlar.' },
-                { icon: '🎙️', type: 'ANLATICI', color: '#eab308', from: 'Bölüm 1-8 (kontrol noktaları)', to: 'Sarı Şemsiye + Gerçek Hikaye', why: 'Hepsi aynı çerçeve anlatının parçası: Dima 2035\'te çocuklarına anlatıyor. Bölüm 1\'deki soru, ancak dizi finalinde cevaplanır.' },
-                { icon: '💙', type: 'KARAKTER', color: '#eab308', from: 'Son Bekâr (Bölüm 7)', to: 'Düğün (Bölüm 8)', why: 'Bölüm 7\'nin sonu, Bölüm 8\'deki düğünün doğrudan hazırlığıdır — aynı çift, aynı olay örgüsü devam eder.' },
-                { icon: '📍', type: 'MEKÂN + KADRO', color: '#38bdf8', from: 'Yeni Garson (A2 Finali)', to: '«Ван Гог»ta Akşam Yemeği (B1) → Şefin Akşamı (B2)', why: 'Üç hikaye de aynı restoranda geçer; Şef Pyotr, Lyosha, Nina ve Semyon üçünde de sahnededir. Lyosha\'nın restorandaki yolculuğu A2\'de başlar.' },
-                { icon: '🔀', type: 'CROSSOVER', color: '#a78bfa', from: 'HIMYM kadrosu (Bölüm 1-8)', to: '«Ван Гог»ta Akşam Yemeği (B1 Finali)', why: 'İki anlatı kolu burada kesişir: kontrol noktası hikayelerinin karakterleri (Dima, Marina, Tyoma) restoran koluna misafir olur.' },
-                { icon: '🍰', type: 'CALLBACK', color: '#38bdf8', from: '«Ван Гог»ta Akşam Yemeği (B1)', to: 'Şefin Akşamı (B2)', why: 'B1 finalindeki meşhur "düşen tatlı" olayı, B2 finalinde hatırlanır ve göndermeyle geri döner.' },
-                { icon: '💍', type: 'KARAKTER YAYI', color: '#38bdf8', from: 'Şefin Akşamı (B2 Finali)', to: 'Önceki «Ван Гог» hikayeleri', why: 'Pyotr ile Nina arasındaki çizgi A2\'den beri adım adım örülür ve B2 finalinde doruk noktasına ulaşır.' },
-                { icon: '👨‍🍳', type: 'ÜNİTE BAĞI', color: '#10b981', from: 'Aşçılık üniteleri (32-41, 86-96, 135-144, 175-183)', to: '«Ван Гог» hikaye kolu', why: 'Aşçılık ünitelerinin diyalogları da «Ван Гог» mutfağında geçer: Lyosha\'nın çıraklıktan kendi hayaline uzanan yolunu ünite ünite izlersiniz.' }
-              ].map((c, i) => (
+              {(isEnglish() ? [
+                { icon: '👨‍👩‍👧‍👦', type: 'AİLE YAPISI', color: '#38bdf8', from: 'Pilot', to: 'Tüm Modern Family hikâyeleri', why: 'Pilot bölümde tanıtılan üç ev, sonraki hikâyelerde aynı geniş ailenin farklı sorunlarını taşır.' },
+                { icon: '🗣️', type: 'İLETİŞİM', color: '#38bdf8', from: 'Coal Digger', to: 'Caught in the Act → Connection Lost', why: 'Özür, utanç ve eksik bağlam; dürüst iletişim temasını giderek daha karmaşık hâle getirir.' },
+                { icon: '🎉', type: 'PLAN / GERÇEKLİK', color: '#f59e0b', from: 'Fizbo', to: 'Disneyland', why: 'Kusursuz etkinlik planları iki hikâyede de ailenin gerçek ihtiyaçları karşısında değişir.' },
+                { icon: '☂️', type: 'EŞLİKÇİ ANLATI', color: '#eab308', from: 'HIMYM Pilot', to: 'Slap Bet', why: 'Ted’in aceleciliği ve grubun varsayımları, kanıt ile yorum arasındaki farkı iki ayrı bölümde işler.' },
+                { icon: '💻', type: 'İLERİ FİNAL', color: '#a855f7', from: 'Önceki aile iletişimi hikâyeleri', to: 'Connection Lost (S6E16)', why: 'Son öğrenme hikâyesi, aile bağını dijital kanıt ve bağlam üzerinden sınar; Modern Family dizi finali değildir.' },
+              ] : [
+                { icon: '🚪', type: 'BAŞLANGIÇ', color: '#22c55e', from: 'İlk Gün', to: 'Yeni Çocuk → Şefin Sınavı', why: 'Maks’ın istediği şans önce temel işlerle, sonra süreli bir mutfak sınavıyla karşılık bulur.' },
+                { icon: '🧾', type: 'HATA / TELAFİ', color: '#eab308', from: 'Karışan Sipariş', to: 'Claude Monet Ekibi', why: 'Tek bir sipariş hatası, ileride salon ile mutfağın ortak sorumluluk dersine dönüşür.' },
+                { icon: '⏱️', type: 'LİDERLİK', color: '#14b8a6', from: 'Banket Gecesi', to: 'Şefsiz Vardiya → Büyük Sipariş', why: 'Zaman baskısı altında başlayan çalışma, Maks’ın görev dağıtan bir ekip üyesine dönüşmesini sağlar.' },
+                { icon: '⚖️', type: 'ETİK', color: '#ef4444', from: 'Eleştirmen İçin Akşam Yemeği', to: 'Vika’nın Seçimi', why: 'Her misafire aynı özeni gösterme ilkesi, sertifika ve gıda güvenliği kararında kurumsal sorumluluğa yükselir.' },
+                { icon: '🌙', type: 'KARAKTER YAYI', color: '#a855f7', from: 'İlk Gün', to: 'Sezonun Son Masası', why: 'Her şeyi bildiğini kanıtlamak isteyen Maks, profesyonelliği hatasının sorumluluğunu almak olarak yeniden tanımlar.' },
+              ]).map((c, i) => (
                 <div key={i} style={{ background: '#0f172a', border: '1px solid #334155', borderRadius: '12px', padding: '14px 16px', display: 'flex', gap: '14px', alignItems: 'flex-start' }}>
                   <div style={{ fontSize: '26px', flexShrink: 0 }}>{c.icon}</div>
                   <div>
@@ -2838,7 +2838,7 @@ export default function App() {
                       </div>
 
                       <button onClick={() => { if (mod.smeshariki) { setSmeshQIdx(0); setFeedback(null); setScreen('SMESHARIKI'); } else { setScreen('FLASHCARD'); } }} style={primaryBtn}>
-                        {mod.smeshariki ? (mod.smeshariki.source === 'kukhnya' ? '🍳 Кухня Sahnesiyle Pekiştir →' : '🐰 Смешарики Sahnesiyle Pekiştir →') : 'Kelime Kartlarına Geç →'}
+                        {mod.smeshariki ? '🍳 Кухня Sahnesiyle Pekiştir →' : 'Kelime Kartlarına Geç →'}
                       </button>
                     </div>
                   );
@@ -2852,30 +2852,27 @@ export default function App() {
                   const mod = UNITS_DATA[unitIdx];
                   const scene = mod.smeshariki;
                   if (!scene) return null;
-                  const isK = scene.source === 'kukhnya';
-                  const sceneColor = isK ? '#ef4444' : '#fb923c';
+                  const sceneColor = '#ef4444';
                   return (
                     <div>
-                      <SceneBanner icon={isK ? '🍳' : '🐰'} color={sceneColor} label={isK ? 'Кухня (Kitchen) Sahnesiyle Pekiştirme' : 'Смешарики (Smeshariki) ile Pekiştirme'} />
-                      <span style={{ fontSize: '11px', fontWeight: 900, background: '#0f172a', color: sceneColor, padding: '2px 8px', borderRadius: '4px' }}>{isK ? 'DİZİ SAHNESİ — КУХНИЯ TARZI (AI İLE YAZILMIŞ BENZER SAHNE)' : 'ÇİZGİ DİZİ SAHNESİ — GERÇEK BÖLÜMLE DİNLEME PRATİĞİ'}</span>
+                      <SceneBanner icon="🍳" color={sceneColor} label="Кухня (Kitchen) Sahnesiyle Pekiştirme" />
+                      <span style={{ fontSize: '11px', fontWeight: 900, background: '#0f172a', color: sceneColor, padding: '2px 8px', borderRadius: '4px' }}>DİZİ BÖLÜMÜNDEN ÖĞRETİCİ UYARLAMA — ÖZGÜN REPLİK DEĞİLDİR</span>
                       <h2 style={{ marginTop: '8px', marginBottom: '2px', fontSize: '20px' }}>{scene.episodeRu}</h2>
                       <div style={{ fontSize: '13px', color: '#94a3b8', marginBottom: '4px' }}>{scene.episodeTr} • Karakterler: {scene.characters.join(', ')}</div>
                       <p style={{ color: '#cbd5e1', fontSize: '13px' }}>{scene.contextTr}</p>
 
                       <ListenSpeedControl speed={listenSpeed} onChange={setListenSpeed} />
 
-                      {isK && (
-                        <div style={{ borderRadius: '14px', overflow: 'hidden', border: `1px solid ${sceneColor}55`, marginBottom: '14px' }}>
-                          <img src="scene/kuhnya-kitchen.jpg" alt="«Ван Гог» mutfağı sahnesi" style={{ width: '100%', maxHeight: '200px', objectFit: 'cover', display: 'block' }} />
-                        </div>
-                      )}
+                      <div style={{ borderRadius: '14px', overflow: 'hidden', border: `1px solid ${sceneColor}55`, marginBottom: '14px' }}>
+                        <img src="scene/kuhnya-kitchen.webp" alt="«Клод Моне» mutfağı sahnesi" style={{ width: '100%', maxHeight: '200px', objectFit: 'cover', display: 'block' }} />
+                      </div>
 
                       <a href={`https://www.youtube.com/results?search_query=${encodeURIComponent(scene.searchQuery)}`} target="_blank" rel="noopener noreferrer" style={{ textDecoration: 'none' }}>
                         <div style={{ background: `linear-gradient(135deg, ${sceneColor}35, ${sceneColor}0f)`, border: `1px solid ${sceneColor}55`, borderRadius: '12px', padding: '16px', margin: '14px 0', display: 'flex', alignItems: 'center', gap: '12px', cursor: 'pointer' }}>
                           <div style={{ fontSize: '30px' }}>▶️</div>
                           <div>
-                            <div style={{ fontWeight: 800, color: sceneColor }}>{isK ? 'Bu tarz gerçek «Кухня» sahnesini YouTube\'da aç' : 'Gerçek Смешарики Bölümünü YouTube\'da Aç'}</div>
-                            <div style={{ fontSize: '12px', color: '#cbd5e1' }}>{isK ? 'Rusya\'nın efsanevi mutfak komedisi «Кухня»dan bu tarz sahneleri orijinal haliyle izle.' : 'Basit ve yavaş tempolu orijinal sahneyi izleyerek kulağını Rusçaya alıştır.'}</div>
+                            <div style={{ fontWeight: 800, color: sceneColor }}>Bu «Кухня» bölümünü YouTube'da ara</div>
+                            <div style={{ fontSize: '12px', color: '#cbd5e1' }}>«Кухня» bölümünü veya ilgili sahneyi özgün Rusça sesle bulup dinleme pratiği yap.</div>
                           </div>
                         </div>
                       </a>
@@ -2896,7 +2893,7 @@ export default function App() {
                       </div>
 
                       <div style={{ fontSize: '12px', fontWeight: 800, color: '#38bdf8', marginBottom: '8px' }}>
-                        🎧 ANLAMA SORUSU — {smeshQIdx + 1} / {scene.questions.length}{isK ? ' (Кухня sahnesi)' : ''}
+                        🎧 ANLAMA SORUSU — {smeshQIdx + 1} / {scene.questions.length} (Кухня sahnesi)
                       </div>
                       <div style={{ background: '#0f172a', padding: '18px', borderRadius: '12px', border: '1px solid #334155', textAlign: 'center', marginBottom: '14px', fontWeight: 800 }}>
                         {scene.questions[smeshQIdx].prompt}

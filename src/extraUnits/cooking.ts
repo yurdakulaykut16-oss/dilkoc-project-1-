@@ -29,13 +29,13 @@ export const EXTRA_COOKING: UnitModule[] = [
       { ru: 'Кастрюля на плите.', tr: 'Tencere ocakta.', scrambled: ['на', 'Кастрюля', 'плите.'], correct: ['Кастрюля', 'на', 'плите.'] },
       { ru: 'Нож и тарелка на столе.', tr: 'Bıçak ve tabak masada.', scrambled: ['тарелка', 'Нож', 'на столе.', 'и'], correct: ['Нож', 'и', 'тарелка', 'на столе.'] }
     ],
-    sceneTitle: 'Lyosha\'nın İlk Mutfak Turu',
-    sceneContext: '«Ван Гог» mutfağında Şef Pyotr, yeni bulaşıkçı-aday Lyosha\'ya mutfağı tanıtıyor — her eşyanın adını tek tek soruyor.',
+    sceneTitle: 'Maks\'nın İlk Mutfak Turu',
+    sceneContext: '«Клод Моне» mutfağında Şef Pyotr, yeni bulaşıkçı-aday Maks\'ya mutfağı tanıtıyor — her eşyanın adını tek tek soruyor.',
     dialogue: [
-      { speaker: 'Şef Pyotr', ru: 'Лёша! Это — кухня. Это — плита. Что это?', reading: 'Lyóşa! Éta — kúhnya. Éta — plitá. Şto éta?', tr: 'Lyosha! Bu — mutfak. Bu — ocak. Bu ne?' },
-      { speaker: 'Lyosha', ru: 'Это... кастрюля? Или сковорода?', reading: 'Éta... kastryúlya? Íli skavaradá?', tr: 'Bu... tencere mi? Yoksa tava mı?' },
+      { speaker: 'Şef Pyotr', ru: 'Макс! Это — кухня. Это — плита. Что это?', reading: 'Lyóşa! Éta — kúhnya. Éta — plitá. Şto éta?', tr: 'Maks! Bu — mutfak. Bu — ocak. Bu ne?' },
+      { speaker: 'Maks', ru: 'Это... кастрюля? Или сковорода?', reading: 'Éta... kastryúlya? Íli skavaradá?', tr: 'Bu... tencere mi? Yoksa tava mı?' },
       { speaker: 'Şef Pyotr', ru: 'Это кастрюля! Сковорода — там, на плите.', reading: 'Éta kastryúlya! Skavaradá — tam, na plityé.', tr: 'Bu tencere! Tava — orada, ocağın üstünde.' },
-      { speaker: 'Lyosha', ru: 'Понял, шеф! А где нож?', reading: 'Pónyal, şef! A gdye noş?', tr: 'Anladım, şef! Peki bıçak nerede?' }
+      { speaker: 'Maks', ru: 'Понял, шеф! А где нож?', reading: 'Pónyal, şef! A gdye noş?', tr: 'Anladım, şef! Peki bıçak nerede?' }
     ]
   },
   {
@@ -66,12 +66,12 @@ export const EXTRA_COOKING: UnitModule[] = [
       { ru: 'В супе мало соли.', tr: 'Çorbada tuz az.', scrambled: ['мало', 'В супе', 'соли.'], correct: ['В супе', 'мало', 'соли.'] }
     ],
     sceneTitle: 'Eksik Malzeme Krizi',
-    sceneContext: 'Lyosha markete gitmeden önce Nina ile depo sayımı yapıyor — tabii ki en kritik malzeme bitmiştir.',
+    sceneContext: 'Maks markete gitmeden önce Vika ile depo sayımı yapıyor — tabii ki en kritik malzeme bitmiştir.',
     dialogue: [
-      { speaker: 'Nina', ru: 'Лёша, у нас есть мука и сахар?', reading: 'Lyóşa, u nas yest\' muká i sáhar?', tr: 'Lyosha, unumuz ve şekerimiz var mı?' },
-      { speaker: 'Lyosha', ru: 'Мука есть. Сахар есть. Но нет яиц!', reading: 'Muká yest\'. Sáhar yest\'. No nyet yiíts!', tr: 'Un var. Şeker var. Ama yumurta yok!' },
-      { speaker: 'Nina', ru: 'Как нет яиц?! Сегодня блины в меню!', reading: 'Kak nyet yiíts?! Sivódnya bliný v minyú!', tr: 'Nasıl yumurta yok?! Bugün menüde krep var!' },
-      { speaker: 'Lyosha', ru: 'Спокойно! Магазин рядом. Десять минут!', reading: 'Spakóyna! Magazín ryádam. Dyésit\' minút!', tr: 'Sakin ol! Market yakın. On dakika!' }
+      { speaker: 'Vika', ru: 'Макс, у нас есть мука и сахар?', reading: 'Lyóşa, u nas yest\' muká i sáhar?', tr: 'Maks, unumuz ve şekerimiz var mı?' },
+      { speaker: 'Maks', ru: 'Мука есть. Сахар есть. Но нет яиц!', reading: 'Muká yest\'. Sáhar yest\'. No nyet yiíts!', tr: 'Un var. Şeker var. Ama yumurta yok!' },
+      { speaker: 'Vika', ru: 'Как нет яиц?! Сегодня блины в меню!', reading: 'Kak nyet yiíts?! Sivódnya bliný v minyú!', tr: 'Nasıl yumurta yok?! Bugün menüde krep var!' },
+      { speaker: 'Maks', ru: 'Спокойно! Магазин рядом. Десять минут!', reading: 'Spakóyna! Magazín ryádam. Dyésit\' minút!', tr: 'Sakin ol! Market yakın. On dakika!' }
     ]
   },
   {
@@ -99,15 +99,15 @@ export const EXTRA_COOKING: UnitModule[] = [
     ],
     sentences: [
       { ru: 'Сначала надо мыть овощи.', tr: 'Önce sebzeleri yıkamak gerek.', scrambled: ['надо', 'Сначала', 'овощи.', 'мыть'], correct: ['Сначала', 'надо', 'мыть', 'овощи.'] },
-      { ru: 'Лёша чистит картошку и плачет от лука.', tr: 'Lyosha patates soyuyor ve soğandan ağlıyor.', scrambled: ['и плачет', 'картошку', 'Лёша', 'от лука.', 'чистит'], correct: ['Лёша', 'чистит', 'картошку', 'и плачет', 'от лука.'] }
+      { ru: 'Макс чистит картошку и плачет от лука.', tr: 'Maks patates soyuyor ve soğandan ağlıyor.', scrambled: ['и плачет', 'картошку', 'Макс', 'от лука.', 'чистит'], correct: ['Макс', 'чистит', 'картошку', 'и плачет', 'от лука.'] }
     ],
-    sceneTitle: 'Soğan vs. Lyosha: 1-0',
-    sceneContext: 'Lyosha\'nın ilk hazırlık görevi: bir dağ patates ve iki kilo soğan. Gözyaşları gerçek, motivasyon tartışmalı.',
+    sceneTitle: 'Soğan vs. Maks: 1-0',
+    sceneContext: 'Maks\'nın ilk hazırlık görevi: bir dağ patates ve iki kilo soğan. Gözyaşları gerçek, motivasyon tartışmalı.',
     dialogue: [
-      { speaker: 'Şef Pyotr', ru: 'Лёша, чисти картошку. Потом — лук.', reading: 'Lyóşa, çísti kartóşku. Patóm — luk.', tr: 'Lyosha, patatesi soy. Sonra — soğanı.' },
-      { speaker: 'Lyosha', ru: 'Шеф, я плачу! Это лук виноват!', reading: 'Şef, ya pláçu! Éta luk vinavát!', tr: 'Şef, ağlıyorum! Suçlu olan soğan!' },
+      { speaker: 'Şef Pyotr', ru: 'Макс, чисти картошку. Потом — лук.', reading: 'Lyóşa, çísti kartóşku. Patóm — luk.', tr: 'Maks, patatesi soy. Sonra — soğanı.' },
+      { speaker: 'Maks', ru: 'Шеф, я плачу! Это лук виноват!', reading: 'Şef, ya pláçu! Éta luk vinavát!', tr: 'Şef, ağlıyorum! Suçlu olan soğan!' },
       { speaker: 'Şef Pyotr', ru: 'Мой лук холодной водой. И не плачь.', reading: 'Moy luk halódnay vadóy. İ ni plaç\'.', tr: 'Soğanı soğuk suyla yıka. Ve ağlama.' },
-      { speaker: 'Lyosha', ru: 'Это не слёзы, шеф. Это... эмоции!', reading: 'Éta ni slyózı, şef. Éta... emótsii!', tr: 'Bunlar gözyaşı değil, şef. Bunlar... duygular!' }
+      { speaker: 'Maks', ru: 'Это не слёзы, шеф. Это... эмоции!', reading: 'Éta ni slyózı, şef. Éta... emótsii!', tr: 'Bunlar gözyaşı değil, şef. Bunlar... duygular!' }
     ]
   },
   {
@@ -137,13 +137,13 @@ export const EXTRA_COOKING: UnitModule[] = [
       { ru: 'Сколько нужно муки для теста?', tr: 'Hamur için ne kadar un gerekli?', scrambled: ['муки', 'Сколько', 'для теста?', 'нужно'], correct: ['Сколько', 'нужно', 'муки', 'для теста?'] },
       { ru: 'Два стакана муки и половина литра молока.', tr: 'İki bardak un ve yarım litre süt.', scrambled: ['и половина', 'муки', 'Два стакана', 'литра молока.'], correct: ['Два стакана', 'муки', 'и половина', 'литра молока.'] }
     ],
-    sceneTitle: 'Lyosha\'nın "Göz Kararı" Felsefesi',
-    sceneContext: 'Nina tarif defteriyle hassas ölçüm yaparken Lyosha "göz kararı" ekolünü savunuyor. Şefin sabrı ölçülemiyor.',
+    sceneTitle: 'Maks\'nın "Göz Kararı" Felsefesi',
+    sceneContext: 'Vika tarif defteriyle hassas ölçüm yaparken Maks "göz kararı" ekolünü savunuyor. Şefin sabrı ölçülemiyor.',
     dialogue: [
-      { speaker: 'Nina', ru: 'Рецепт: двести грамм сахара. Ровно.', reading: 'Ritsépt: dvyésti gram sáhara. Róvna.', tr: 'Tarif: iki yüz gram şeker. Tam olarak.' },
-      { speaker: 'Lyosha', ru: 'Зачем? Я вижу глазами! Немного сахара — и всё.', reading: 'Zaçyém? Ya víju glazámi! Nimnóga sáhara — i fsyo.', tr: 'Niye? Ben gözle görüyorum! Biraz şeker — o kadar.' },
-      { speaker: 'Nina', ru: 'В прошлый раз твоё "немного" — это был килограмм!', reading: 'F próşlıy ras tvayó "nimnóga" — éta bıl kilagrám!', tr: 'Geçen sefer senin "biraz"ın — bir kiloydu!' },
-      { speaker: 'Lyosha', ru: 'И все сказали: очень вкусно!', reading: 'İ fsye skazáli: óçin\' fkúsna!', tr: 'Ve herkes dedi ki: çok lezzetli!' }
+      { speaker: 'Vika', ru: 'Рецепт: двести грамм сахара. Ровно.', reading: 'Ritsépt: dvyésti gram sáhara. Róvna.', tr: 'Tarif: iki yüz gram şeker. Tam olarak.' },
+      { speaker: 'Maks', ru: 'Зачем? Я вижу глазами! Немного сахара — и всё.', reading: 'Zaçyém? Ya víju glazámi! Nimnóga sáhara — i fsyo.', tr: 'Niye? Ben gözle görüyorum! Biraz şeker — o kadar.' },
+      { speaker: 'Vika', ru: 'В прошлый раз твоё "немного" — это был килограмм!', reading: 'F próşlıy ras tvayó "nimnóga" — éta bıl kilagrám!', tr: 'Geçen sefer senin "biraz"ın — bir kiloydu!' },
+      { speaker: 'Maks', ru: 'И все сказали: очень вкусно!', reading: 'İ fsye skazáli: óçin\' fkúsna!', tr: 'Ve herkes dedi ki: çok lezzetli!' }
     ]
   },
   {
@@ -173,13 +173,13 @@ export const EXTRA_COOKING: UnitModule[] = [
       { ru: 'Я варю кашу на завтрак.', tr: 'Kahvaltıya kaşa pişiriyorum.', scrambled: ['кашу', 'Я', 'на завтрак.', 'варю'], correct: ['Я', 'варю', 'кашу', 'на завтрак.'] },
       { ru: 'Блины готовы — очень вкусно!', tr: 'Krepler hazır — çok lezzetli!', scrambled: ['готовы —', 'Блины', 'вкусно!', 'очень'], correct: ['Блины', 'готовы —', 'очень', 'вкусно!'] }
     ],
-    sceneTitle: 'Lyosha\'nın İlk Blini Zaferi',
-    sceneContext: 'Lyosha hayatında ilk kez tek başına blini pişiriyor. İlk üç tanesi tavana yapıştı ama dördüncüsü... bir şaheser.',
+    sceneTitle: 'Maks\'nın İlk Blini Zaferi',
+    sceneContext: 'Maks hayatında ilk kez tek başına blini pişiriyor. İlk üç tanesi tavana yapıştı ama dördüncüsü... bir şaheser.',
     dialogue: [
-      { speaker: 'Lyosha', ru: 'Шеф! Я жарю блины! Первый блин... упал.', reading: 'Şef! Ya járyu blinı́! Pyérvıy blin... upál.', tr: 'Şef! Krep pişiriyorum! İlk krep... düştü.' },
+      { speaker: 'Maks', ru: 'Шеф! Я жарю блины! Первый блин... упал.', reading: 'Şef! Ya járyu blinı́! Pyérvıy blin... upál.', tr: 'Şef! Krep pişiriyorum! İlk krep... düştü.' },
       { speaker: 'Şef Pyotr', ru: 'Первый блин комом. Это нормально. Жарь дальше!', reading: 'Pyérvıy blin kómam. Éta narmál\'na. Jar\' dál\'şe!', tr: 'İlk krep topak olur (atasözü). Bu normal. Pişirmeye devam!' },
-      { speaker: 'Lyosha', ru: 'Четвёртый готов! Нина, попробуй!', reading: 'Çitvyórtıy gatóf! Nína, papróbuy!', tr: 'Dördüncü hazır! Nina, tadına bak!' },
-      { speaker: 'Nina', ru: 'Хм... Вкусно! Лёша, это правда вкусно!', reading: 'Hm... Fkúsna! Lyóşa, éta právda fkúsna!', tr: 'Hmm... Lezzetli! Lyosha, bu gerçekten lezzetli!' }
+      { speaker: 'Maks', ru: 'Четвёртый готов! Вика, попробуй!', reading: 'Çitvyórtıy gatóf! Nína, papróbuy!', tr: 'Dördüncü hazır! Vika, tadına bak!' },
+      { speaker: 'Vika', ru: 'Хм... Вкусно! Макс, это правда вкусно!', reading: 'Hm... Fkúsna! Lyóşa, éta právda fkúsna!', tr: 'Hmm... Lezzetli! Maks, bu gerçekten lezzetli!' }
     ]
   },
 
@@ -211,12 +211,12 @@ export const EXTRA_COOKING: UnitModule[] = [
       { ru: 'Сначала разогрейте сковороду, потом жарьте.', tr: 'Önce tavayı ısıtın, sonra kızartın.', scrambled: ['потом жарьте.', 'разогрейте', 'Сначала', 'сковороду,'], correct: ['Сначала', 'разогрейте', 'сковороду,', 'потом жарьте.'] }
     ],
     sceneTitle: 'Bıçak Akademisi',
-    sceneContext: 'Şef Pyotr, Lyosha\'ya doğrama teknikleri öğretiyor. Lyosha\'nın "küpleri" şu an daha çok soyut sanat.',
+    sceneContext: 'Şef Pyotr, Maks\'ya doğrama teknikleri öğretiyor. Maks\'nın "küpleri" şu an daha çok soyut sanat.',
     dialogue: [
-      { speaker: 'Şef Pyotr', ru: 'Лёша, нарежь морковь кубиками. Кубиками!', reading: 'Lyóşa, naryéj markóf\' kúbikami. Kúbikami!', tr: 'Lyosha, havucu küp küp doğra. Küp küp!' },
-      { speaker: 'Lyosha', ru: 'Шеф, это и есть кубики! Просто... творческие.', reading: 'Şef, éta i yest\' kúbiki! Prósta... tvórçiskiye.', tr: 'Şef, bunlar zaten küp! Sadece... yaratıcı küpler.' },
+      { speaker: 'Şef Pyotr', ru: 'Макс, нарежь морковь кубиками. Кубиками!', reading: 'Lyóşa, naryéj markóf\' kúbikami. Kúbikami!', tr: 'Maks, havucu küp küp doğra. Küp küp!' },
+      { speaker: 'Maks', ru: 'Шеф, это и есть кубики! Просто... творческие.', reading: 'Şef, éta i yest\' kúbiki! Prósta... tvórçiskiye.', tr: 'Şef, bunlar zaten küp! Sadece... yaratıcı küpler.' },
       { speaker: 'Şef Pyotr', ru: 'Это не кубики, это абстракция. Смотри: держи нож так и режь медленно.', reading: 'Éta ni kúbiki, éta abstráktsiya. Smatrí: dirjí noş tak i ryeş myédlinna.', tr: 'Bunlar küp değil, soyutlama. Bak: bıçağı böyle tut ve yavaş kes.' },
-      { speaker: 'Lyosha', ru: 'О! Получается! Я — художник ножа!', reading: 'O! Paluçáyitsa! Ya — hudójnik najá!', tr: 'O! Oluyor! Ben — bıçağın ressamıyım!' }
+      { speaker: 'Maks', ru: 'О! Получается! Я — художник ножа!', reading: 'O! Paluçáyitsa! Ya — hudójnik najá!', tr: 'O! Oluyor! Ben — bıçağın ressamıyım!' }
     ]
   },
   {
@@ -247,12 +247,12 @@ export const EXTRA_COOKING: UnitModule[] = [
       { ru: 'Варите суп двадцать минут на медленном огне.', tr: 'Çorbayı kısık ateşte yirmi dakika pişirin.', scrambled: ['двадцать минут', 'Варите', 'на медленном огне.', 'суп'], correct: ['Варите', 'суп', 'двадцать минут', 'на медленном огне.'] }
     ],
     sceneTitle: 'Tarif Defteri Kutsal Kitaptır',
-    sceneContext: 'Nina, büyükannesinin el yazısı tarif defterini mutfağa getirmiştir. Lyosha "ben tarif okumam, hissederim" diyor. Sonuç: tartışma.',
+    sceneContext: 'Vika, büyükannesinin el yazısı tarif defterini mutfağa getirmiştir. Maks "ben tarif okumam, hissederim" diyor. Sonuç: tartışma.',
     dialogue: [
-      { speaker: 'Nina', ru: 'Читай рецепт: сначала — тесто, затем — начинка.', reading: 'Çitáy ritsépt: snaçála — tyésta, zatyém — naçínka.', tr: 'Tarifi oku: önce — hamur, ardından — iç harç.' },
-      { speaker: 'Lyosha', ru: 'Я не читаю рецепты. Я чувствую кухню сердцем!', reading: 'Ya ni çitáyu ritséptı. Ya çústvuyu kúhnyu syértsem!', tr: 'Ben tarif okumam. Mutfağı kalbimle hissederim!' },
-      { speaker: 'Nina', ru: 'Твоё сердце в прошлый раз забыло сахар.', reading: 'Tvayó syértse f próşlıy ras zabı́la sáhar.', tr: 'Senin kalbin geçen sefer şekeri unuttu.' },
-      { speaker: 'Lyosha', ru: 'Ладно. Сначала тесто. Я читаю, читаю!', reading: 'Ládna. Snaçála tyésta. Ya çitáyu, çitáyu!', tr: 'Tamam. Önce hamur. Okuyorum, okuyorum!' }
+      { speaker: 'Vika', ru: 'Читай рецепт: сначала — тесто, затем — начинка.', reading: 'Çitáy ritsépt: snaçála — tyésta, zatyém — naçínka.', tr: 'Tarifi oku: önce — hamur, ardından — iç harç.' },
+      { speaker: 'Maks', ru: 'Я не читаю рецепты. Я чувствую кухню сердцем!', reading: 'Ya ni çitáyu ritséptı. Ya çústvuyu kúhnyu syértsem!', tr: 'Ben tarif okumam. Mutfağı kalbimle hissederim!' },
+      { speaker: 'Vika', ru: 'Твоё сердце в прошлый раз забыло сахар.', reading: 'Tvayó syértse f próşlıy ras zabı́la sáhar.', tr: 'Senin kalbin geçen sefer şekeri unuttu.' },
+      { speaker: 'Maks', ru: 'Ладно. Сначала тесто. Я читаю, читаю!', reading: 'Ládna. Snaçála tyésta. Ya çitáyu, çitáyu!', tr: 'Tamam. Önce hamur. Okuyorum, okuyorum!' }
     ]
   },
   {
@@ -283,12 +283,12 @@ export const EXTRA_COOKING: UnitModule[] = [
       { ru: 'Бульон должен кипеть на медленном огне два часа.', tr: 'Et suyu kısık ateşte iki saat kaynamalı.', scrambled: ['должен кипеть', 'два часа.', 'Бульон', 'на медленном огне'], correct: ['Бульон', 'должен кипеть', 'на медленном огне', 'два часа.'] }
     ],
     sceneTitle: 'Borşç Sınavı',
-    sceneContext: 'Şef Pyotr\'un ünlü borşç testi: Lyosha ilk kez tek başına borşç pişirdi. Şef tadıyor... mutfak nefesini tuttu.',
+    sceneContext: 'Şef Pyotr\'un ünlü borşç testi: Maks ilk kez tek başına borşç pişirdi. Şef tadıyor... mutfak nefesini tuttu.',
     dialogue: [
       { speaker: 'Şef Pyotr', ru: 'Так. Цвет — хороший. Запах — хороший. Пробую.', reading: 'Tak. Tsvyet — haróşiy. Zápah — haróşiy. Próbuyu.', tr: 'Evet. Renk — iyi. Koku — iyi. Tadıyorum.' },
-      { speaker: 'Lyosha', ru: 'Шеф, я варил бульон три часа! Как бабушка учила!', reading: 'Şef, ya varíl bul\'ón tri çisá! Kak bábuşka uçíla!', tr: 'Şef, et suyunu üç saat kaynattım! Büyükannemin öğrettiği gibi!' },
-      { speaker: 'Şef Pyotr', ru: '...Наваристый. Добавь сметану и укроп. Это... хороший борщ, Лёша.', reading: '...Navárist\u0131y. Dabáf\' smitánu i ukróp. Éta... haróşiy borşç, Lyóşa.', tr: '...Özlü olmuş. Smetana ve dereotu ekle. Bu... iyi bir borşç, Lyosha.' },
-      { speaker: 'Nina', ru: 'Лёша, он улыбается. Запомни этот день.', reading: 'Lyóşa, on ulıbáyitsa. Zapómni état dyen\'.', tr: 'Lyosha, gülümsüyor. Bu günü aklına yaz.' }
+      { speaker: 'Maks', ru: 'Шеф, я варил бульон три часа! Как бабушка учила!', reading: 'Şef, ya varíl bul\'ón tri çisá! Kak bábuşka uçíla!', tr: 'Şef, et suyunu üç saat kaynattım! Büyükannemin öğrettiği gibi!' },
+      { speaker: 'Şef Pyotr', ru: '...Наваристый. Добавь сметану и укроп. Это... хороший борщ, Макс.', reading: '...Navárist\u0131y. Dabáf\' smitánu i ukróp. Éta... haróşiy borşç, Lyóşa.', tr: '...Özlü olmuş. Smetana ve dereotu ekle. Bu... iyi bir borşç, Maks.' },
+      { speaker: 'Vika', ru: 'Макс, он улыбается. Запомни этот день.', reading: 'Lyóşa, on ulıbáyitsa. Zapómni état dyen\'.', tr: 'Maks, gülümsüyor. Bu günü aklına yaz.' }
     ]
   },
   {
@@ -319,12 +319,12 @@ export const EXTRA_COOKING: UnitModule[] = [
       { ru: 'Пирожки с капустой пекутся в духовке двадцать минут.', tr: 'Lahanalı pirojki fırında yirmi dakika pişer.', scrambled: ['пекутся в духовке', 'Пирожки', 'двадцать минут.', 'с капустой'], correct: ['Пирожки', 'с капустой', 'пекутся в духовке', 'двадцать минут.'] }
     ],
     sceneTitle: 'Pirojki Fabrikası',
-    sceneContext: 'Büyük sipariş: yarına 200 pirojki. Bütün ekip masada hamur açıyor; Lyosha\'nın pirojkileri nedense hep "modern sanat" oluyor.',
+    sceneContext: 'Büyük sipariş: yarına 200 pirojki. Bütün ekip masada hamur açıyor; Maks\'nın pirojkileri nedense hep "modern sanat" oluyor.',
     dialogue: [
-      { speaker: 'Nina', ru: 'Лёша, лепи аккуратно! Начинка не должна убегать.', reading: 'Lyóşa, lipí akurátna! Naçínka ni daljná ubigát\'.', tr: 'Lyosha, düzgün kapat! İç harç kaçmamalı.' },
-      { speaker: 'Lyosha', ru: 'Моя начинка не убегает. Она... исследует мир.', reading: 'Mayá naçínka ni ubigáyit. Aná... islyéduyit mir.', tr: 'Benim iç harcım kaçmıyor. O... dünyayı keşfediyor.' },
+      { speaker: 'Vika', ru: 'Макс, лепи аккуратно! Начинка не должна убегать.', reading: 'Lyóşa, lipí akurátna! Naçínka ni daljná ubigát\'.', tr: 'Maks, düzgün kapat! İç harç kaçmamalı.' },
+      { speaker: 'Maks', ru: 'Моя начинка не убегает. Она... исследует мир.', reading: 'Mayá naçínka ni ubigáyit. Aná... islyéduyit mir.', tr: 'Benim iç harcım kaçmıyor. O... dünyayı keşfediyor.' },
       { speaker: 'Şef Pyotr', ru: 'Раскатай тесто тоньше и лепи как я: раз, два — готово.', reading: 'Raskatáy tyésta tón\'şe i lipí kak ya: ras, dva — gatóva.', tr: 'Hamuru daha ince aç ve benim gibi kapat: bir, iki — tamam.' },
-      { speaker: 'Lyosha', ru: 'Раз, два... О! Красиво! Двести штук — легко!', reading: 'Ras, dva... O! Krasíva! Dvyésti ştuk — lihkó!', tr: 'Bir, iki... O! Güzel! İki yüz tane — çocuk oyuncağı!' }
+      { speaker: 'Maks', ru: 'Раз, два... О! Красиво! Двести штук — легко!', reading: 'Ras, dva... O! Krasíva! Dvyésti ştuk — lihkó!', tr: 'Bir, iki... O! Güzel! İki yüz tane — çocuk oyuncağı!' }
     ]
   },
   {
@@ -355,12 +355,12 @@ export const EXTRA_COOKING: UnitModule[] = [
       { ru: 'Без оливье праздничный стол не праздничный.', tr: 'Olivye olmadan bayram sofrası bayram sofrası değildir.', scrambled: ['праздничный стол', 'Без оливье', 'не праздничный.'], correct: ['Без оливье', 'праздничный стол', 'не праздничный.'] }
     ],
     sceneTitle: 'Olivye Anayasası',
-    sceneContext: 'Yılbaşı menüsü hazırlanıyor. Lyosha, Olivye\'ye "modern bir dokunuş" (avokado!) eklemeyi önerince mutfakta anayasa krizi çıkıyor.',
+    sceneContext: 'Yılbaşı menüsü hazırlanıyor. Maks, Olivye\'ye "modern bir dokunuş" (avokado!) eklemeyi önerince mutfakta anayasa krizi çıkıyor.',
     dialogue: [
-      { speaker: 'Lyosha', ru: 'А давайте добавим в оливье авокадо! Это модно!', reading: 'A daváyte dabávim v aliv\'yé avakáda! Éta módna!', tr: 'Hadi Olivye\'ye avokado ekleyelim! Bu moda!' },
-      { speaker: 'Şef Pyotr', ru: 'Авокадо?! В оливье?! Лёша, это не салат, это преступление.', reading: 'Avakáda?! V aliv\'yé?! Lyóşa, éta ni salát, éta pristupléniye.', tr: 'Avokado mu?! Olivye\'ye mi?! Lyosha, bu salata değil, bu bir suç.' },
-      { speaker: 'Nina', ru: 'Рецепт классический: картошка, морковь, яйца, майонез. Точка.', reading: 'Ritsépt klasíçiskiy: kartóşka, markóf\', yáytsa, mayanés. Tóçka.', tr: 'Tarif klasiktir: patates, havuç, yumurta, mayonez. Nokta.' },
-      { speaker: 'Lyosha', ru: 'Ладно, ладно. Но кубики нарежу я. Я теперь мастер кубиков!', reading: 'Ládna, ládna. No kúbiki naryéju ya. Ya tipyér\' mástir kúbikaf!', tr: 'Tamam, tamam. Ama küpleri ben doğrayacağım. Artık küp ustasıyım!' }
+      { speaker: 'Maks', ru: 'А давайте добавим в оливье авокадо! Это модно!', reading: 'A daváyte dabávim v aliv\'yé avakáda! Éta módna!', tr: 'Hadi Olivye\'ye avokado ekleyelim! Bu moda!' },
+      { speaker: 'Şef Pyotr', ru: 'Авокадо?! В оливье?! Макс, это не салат, это преступление.', reading: 'Avakáda?! V aliv\'yé?! Lyóşa, éta ni salát, éta pristupléniye.', tr: 'Avokado mu?! Olivye\'ye mi?! Maks, bu salata değil, bu bir suç.' },
+      { speaker: 'Vika', ru: 'Рецепт классический: картошка, морковь, яйца, майонез. Точка.', reading: 'Ritsépt klasíçiskiy: kartóşka, markóf\', yáytsa, mayanés. Tóçka.', tr: 'Tarif klasiktir: patates, havuç, yumurta, mayonez. Nokta.' },
+      { speaker: 'Maks', ru: 'Ладно, ладно. Но кубики нарежу я. Я теперь мастер кубиков!', reading: 'Ládna, ládna. No kúbiki naryéju ya. Ya tipyér\' mástir kúbikaf!', tr: 'Tamam, tamam. Ama küpleri ben doğrayacağım. Artık küp ustasıyım!' }
     ]
   },
   {
@@ -391,12 +391,12 @@ export const EXTRA_COOKING: UnitModule[] = [
       { ru: 'Не беда! Начнём заново — и всё получится.', tr: 'Dert değil! Baştan başlayalım — her şey olacak.', scrambled: ['Начнём заново —', 'Не беда!', 'получится.', 'и всё'], correct: ['Не беда!', 'Начнём заново —', 'и всё', 'получится.'] }
     ],
     sceneTitle: 'Tuz Felaketi ve Patates Mucizesi',
-    sceneContext: 'Lyosha telefonda konuşurken çorbaya iki kez tuz attı. Nina panikte, ama Şef Pyotr\'un gizli silahı var: bir adet çiğ patates.',
+    sceneContext: 'Maks telefonda konuşurken çorbaya iki kez tuz attı. Vika panikte, ama Şef Pyotr\'un gizli silahı var: bir adet çiğ patates.',
     dialogue: [
-      { speaker: 'Lyosha', ru: 'Катастрофа! Я пересолил борщ! Дважды!', reading: 'Katastrófa! Ya pirisalíl borşç! Dvájd\u0131!', tr: 'Felaket! Borşçun tuzunu fazla kaçırdım! İki kez!' },
-      { speaker: 'Nina', ru: 'Дважды?! Как можно солить суп и говорить по телефону?!', reading: 'Dvájd\u0131?! Kak mójna salít\' sup i gavarít\' pa tilifónu?!', tr: 'İki kez mi?! İnsan nasıl hem çorba tuzlar hem telefonla konuşur?!' },
+      { speaker: 'Maks', ru: 'Катастрофа! Я пересолил борщ! Дважды!', reading: 'Katastrófa! Ya pirisalíl borşç! Dvájd\u0131!', tr: 'Felaket! Borşçun tuzunu fazla kaçırdım! İki kez!' },
+      { speaker: 'Vika', ru: 'Дважды?! Как можно солить суп и говорить по телефону?!', reading: 'Dvájd\u0131?! Kak mójna salít\' sup i gavarít\' pa tilifónu?!', tr: 'İki kez mi?! İnsan nasıl hem çorba tuzlar hem telefonla konuşur?!' },
       { speaker: 'Şef Pyotr', ru: 'Спокойно. Клади сырую картошку в кастрюлю. Она заберёт соль.', reading: 'Spakóyna. Kladí s\u0131rúyu kartóşku f kastryúlyu. Aná zabiryót sol\'.', tr: 'Sakin. Tencereye çiğ patates koy. Tuzu o çekecek.' },
-      { speaker: 'Lyosha', ru: 'Получилось! Шеф, вы волшебник! Картошка-герой!', reading: 'Paluçílas\'! Şef, v\u0131 valşébnik! Kartóşka-giróy!', tr: 'Oldu! Şef, siz bir sihirbazsınız! Kahraman patates!' }
+      { speaker: 'Maks', ru: 'Получилось! Шеф, вы волшебник! Картошка-герой!', reading: 'Paluçílas\'! Şef, v\u0131 valşébnik! Kartóşka-giróy!', tr: 'Oldu! Şef, siz bir sihirbazsınız! Kahraman patates!' }
     ]
   },
 
@@ -430,10 +430,10 @@ export const EXTRA_COOKING: UnitModule[] = [
     sceneTitle: 'Steak Diplomasisi',
     sceneContext: 'VIP masa "tam pişmiş ama sulu" steak istiyor — fizik kurallarına aykırı bir sipariş. Şef Pyotr\'un yüzü, mutfağın hava durumu raporu.',
     dialogue: [
-      { speaker: 'Nina', ru: 'Столик семь просит стейк полной прожарки. Но сочный.', reading: 'Stólik syem\' prósit steyk pólnay prajárki. No sóçn\u0131y.', tr: 'Yedi numaralı masa tam pişmiş steak istiyor. Ama sulu.' },
+      { speaker: 'Vika', ru: 'Столик семь просит стейк полной прожарки. Но сочный.', reading: 'Stólik syem\' prósit steyk pólnay prajárki. No sóçn\u0131y.', tr: 'Yedi numaralı masa tam pişmiş steak istiyor. Ama sulu.' },
       { speaker: 'Şef Pyotr', ru: 'Полная прожарка И сочный?! Это как холодный кипяток!', reading: 'Pólnaya prajárka İ sóçn\u0131y?! Éta kak halódn\u0131y kipitók!', tr: 'Tam pişmiş VE sulu mu?! Bu soğuk kaynar su gibi bir şey!' },
-      { speaker: 'Lyosha', ru: 'Шеф, а если запекать медленно и дать мясу отдохнуть?', reading: 'Şef, a yésli zapikát\' myédlinna i dat\' myásu atdahnút\'?', tr: 'Şef, ya yavaş fırınlar ve eti dinlendirirsek?' },
-      { speaker: 'Şef Pyotr', ru: '...Лёша. Иногда ты меня удивляешь. Делаем так!', reading: '...Lyóşa. İnagdá t\u0131 minyá udivlyáyeş. Dyélayem tak!', tr: '...Lyosha. Bazen beni şaşırtıyorsun. Öyle yapıyoruz!' }
+      { speaker: 'Maks', ru: 'Шеф, а если запекать медленно и дать мясу отдохнуть?', reading: 'Şef, a yésli zapikát\' myédlinna i dat\' myásu atdahnút\'?', tr: 'Şef, ya yavaş fırınlar ve eti dinlendirirsek?' },
+      { speaker: 'Şef Pyotr', ru: '...Макс. Иногда ты меня удивляешь. Делаем так!', reading: '...Lyóşa. İnagdá t\u0131 minyá udivlyáyeş. Dyélayem tak!', tr: '...Maks. Bazen beni şaşırtıyorsun. Öyle yapıyoruz!' }
     ]
   },
   {
@@ -464,12 +464,12 @@ export const EXTRA_COOKING: UnitModule[] = [
       { ru: 'Медовик должен ночь стоять в холодильнике.', tr: 'Medovik bir gece buzdolabında beklemeli.', scrambled: ['должен', 'Медовик', 'в холодильнике.', 'ночь стоять'], correct: ['Медовик', 'должен', 'ночь стоять', 'в холодильнике.'] }
     ],
     sceneTitle: 'Medovik Operasyonu',
-    sceneContext: 'Nina\'nın doğum günü yarın. Şef Pyotr gizlice medovik yapıyor; Lyosha "yardım" ediyor — yani kremayı kaşıklıyor.',
+    sceneContext: 'Vika\'nın doğum günü yarın. Şef Pyotr gizlice medovik yapıyor; Maks "yardım" ediyor — yani kremayı kaşıklıyor.',
     dialogue: [
       { speaker: 'Şef Pyotr', ru: 'Тише! Это сюрприз. Взбей крем, а я делаю коржи.', reading: 'Tíşe! Éta syurprís. Vzbyey krem, a ya dyélayu karjí.', tr: 'Sessiz! Bu bir sürpriz. Kremayı çırp, ben katları yapıyorum.' },
-      { speaker: 'Lyosha', ru: 'Крем готов! Я только... проверил вкус. Восемь раз.', reading: 'Krem gatóf! Ya tól\'ka... pravyéril fkus. Vósim\' ras.', tr: 'Krema hazır! Ben sadece... tadını kontrol ettim. Sekiz kez.' },
-      { speaker: 'Şef Pyotr', ru: 'Восемь?! Лёша! Ладно. Украсим ягодами — и в холодильник.', reading: 'Vósim\'?! Lyóşa! Ládna. Ukrásim yágadami — i f haladíl\'nik.', tr: 'Sekiz mi?! Lyosha! Neyse. Meyvelerle süsleyelim — ve buzdolabına.' },
-      { speaker: 'Nina', ru: '(на следующий день) Медовик?! Для меня?! Вы... вы лучшие.', reading: '(na slyéduyuşşiy dyen\') Midavík?! Dlya minyá?! V\u0131... v\u0131 lúçşiye.', tr: '(ertesi gün) Medovik mi?! Benim için mi?! Siz... siz harikasınız.' }
+      { speaker: 'Maks', ru: 'Крем готов! Я только... проверил вкус. Восемь раз.', reading: 'Krem gatóf! Ya tól\'ka... pravyéril fkus. Vósim\' ras.', tr: 'Krema hazır! Ben sadece... tadını kontrol ettim. Sekiz kez.' },
+      { speaker: 'Şef Pyotr', ru: 'Восемь?! Макс! Ладно. Украсим ягодами — и в холодильник.', reading: 'Vósim\'?! Lyóşa! Ládna. Ukrásim yágadami — i f haladíl\'nik.', tr: 'Sekiz mi?! Maks! Neyse. Meyvelerle süsleyelim — ve buzdolabına.' },
+      { speaker: 'Vika', ru: '(на следующий день) Медовик?! Для меня?! Вы... вы лучшие.', reading: '(na slyéduyuşşiy dyen\') Midavík?! Dlya minyá?! V\u0131... v\u0131 lúçşiye.', tr: '(ertesi gün) Medovik mi?! Benim için mi?! Siz... siz harikasınız.' }
     ]
   },
   {
@@ -500,11 +500,11 @@ export const EXTRA_COOKING: UnitModule[] = [
       { ru: 'Варенье пьют с чаем, а не мажут на хлеб.', tr: 'Reçel çayla içilir, ekmeğe sürülmez.', scrambled: ['с чаем,', 'Варенье пьют', 'на хлеб.', 'а не мажут'], correct: ['Варенье пьют', 'с чаем,', 'а не мажут', 'на хлеб.'] }
     ],
     sceneTitle: 'Babuşkanın Kavanoz İmparatorluğu',
-    sceneContext: 'Şef Pyotr\'un annesi restorana "biraz" kışlık getirmiş: 47 kavanoz. Lyosha kileri düzenlerken kavanoz felsefesiyle tanışıyor.',
+    sceneContext: 'Şef Pyotr\'un annesi restorana "biraz" kışlık getirmiş: 47 kavanoz. Maks kileri düzenlerken kavanoz felsefesiyle tanışıyor.',
     dialogue: [
-      { speaker: 'Lyosha', ru: 'Шеф, тут сорок семь банок! Кто это всё съест?!', reading: 'Şef, tut sórak syem\' bának! Kto éta fsyo s\u0131yést?!', tr: 'Şef, burada kırk yedi kavanoz var! Bunları kim yiyecek?!' },
+      { speaker: 'Maks', ru: 'Шеф, тут сорок семь банок! Кто это всё съест?!', reading: 'Şef, tut sórak syem\' bának! Kto éta fsyo s\u0131yést?!', tr: 'Şef, burada kırk yedi kavanoz var! Bunları kim yiyecek?!' },
       { speaker: 'Şef Pyotr', ru: 'Мама говорит: запас карман не тянет. Неси в погреб.', reading: 'Máma gavarít: zapás karmán ni tyánit. Nisí f pógryip.', tr: 'Annem der ki: stok cebe yük olmaz. Kilere taşı.' },
-      { speaker: 'Lyosha', ru: 'О, вишнёвое варенье! Можно я... одну ложку?', reading: 'O, vişnyóvaye varyén\'ye! Mójna ya... adnú lóşku?', tr: 'O, vişne reçeli! Ben bir... bir kaşık alabilir miyim?' },
+      { speaker: 'Maks', ru: 'О, вишнёвое варенье! Можно я... одну ложку?', reading: 'O, vişnyóvaye varyén\'ye! Mójna ya... adnú lóşku?', tr: 'O, vişne reçeli! Ben bir... bir kaşık alabilir miyim?' },
       { speaker: 'Şef Pyotr', ru: 'Одну! И это — с чаем, культурно. Не из банки!', reading: 'Adnú! İ éta — s çáyem, kul\'túrna. Ni iz bánki!', tr: 'Bir tane! O da — çayla, kültürlü şekilde. Kavanozdan değil!' }
     ]
   },
@@ -536,11 +536,11 @@ export const EXTRA_COOKING: UnitModule[] = [
       { ru: 'Сначала закуски, потом горячее, в конце — десерт.', tr: 'Önce mezeler, sonra ana yemek, en sonda — tatlı.', scrambled: ['потом горячее,', 'Сначала закуски,', '— десерт.', 'в конце'], correct: ['Сначала закуски,', 'потом горячее,', 'в конце', '— десерт.'] }
     ],
     sceneTitle: 'Restoranda Özel Gün Menüsü',
-    sceneContext: 'Büyük bir aile, yıldönümü yemeği için restoranı komple kiralamıştır. Menü planı: Nina\'nın hassas düzeni vs. büyükbabanın "her şeyden çok olsun" talebi.',
+    sceneContext: 'Büyük bir aile, yıldönümü yemeği için restoranı komple kiralamıştır. Menü planı: Vika\'nın hassas düzeni vs. büyükbabanın "her şeyden çok olsun" talebi.',
     dialogue: [
-      { speaker: 'Nina', ru: 'План меню: три закуски, борщ, на горячее — утка, десерт — медовик.', reading: 'Plan minyú: tri zakúski, borşç, na garyáçiye — útka, disyért — midavík.', tr: 'Menü planı: üç meze, borşç, ana yemek — ördek, tatlı — medovik.' },
+      { speaker: 'Vika', ru: 'План меню: три закуски, борщ, на горячее — утка, десерт — медовик.', reading: 'Plan minyú: tri zakúski, borşç, na garyáçiye — útka, disyért — midavík.', tr: 'Menü planı: üç meze, borşç, ana yemek — ördek, tatlı — medovik.' },
       { speaker: 'Şef Pyotr', ru: 'Хорошо. Сервировка — праздничная. Салфетки — тканевые!', reading: 'Haraşó. Sirvirófka — prázniçnaya. Salfyétki — tkániv\u0131ye!', tr: 'Güzel. Sofra düzeni — bayramlık. Peçeteler — kumaş!' },
-      { speaker: 'Lyosha', ru: 'А если гости попросят добавки? Дедушка выглядит серьёзно.', reading: 'A yésli gósti paprósyat dabáfki? Dyéduşka v\u0131́gliditsa siryózna.', tr: 'Ya misafirler tekrar isterse? Büyükbaba ciddi görünüyor.' },
+      { speaker: 'Maks', ru: 'А если гости попросят добавки? Дедушка выглядит серьёзно.', reading: 'A yésli gósti paprósyat dabáfki? Dyéduşka v\u0131́gliditsa siryózna.', tr: 'Ya misafirler tekrar isterse? Büyükbaba ciddi görünüyor.' },
       { speaker: 'Şef Pyotr', ru: 'Готовим с запасом! Хозяйка вечера сказала: никто не уйдёт голодным!', reading: 'Gatóvim s zapásam! Hazyáyka vyéçira skazála: niktó ni uydyót galódn\u0131m!', tr: 'Yedekli pişiriyoruz! Gecenin ev sahibesi dedi ki: kimse aç gitmeyecek!' }
     ]
   },
@@ -572,12 +572,12 @@ export const EXTRA_COOKING: UnitModule[] = [
       { ru: 'Пятница, вечер, полный зал — у нас аврал, но команда успевает.', tr: 'Cuma, akşam, salon dolu — koşuşturma var ama ekip yetişiyor.', scrambled: ['полный зал —', 'Пятница, вечер,', 'но команда успевает.', 'у нас аврал,'], correct: ['Пятница, вечер,', 'полный зал —', 'у нас аврал,', 'но команда успевает.'] }
     ],
     sceneTitle: 'Cuma Akşamı: Tam Kadro Savaş',
-    sceneContext: 'Salon dolu, siparişler yağıyor, bir ocak arızalı. Şef Pyotr orkestra şefi gibi; Lyosha ilk kez sıcak bölümde ve hayatta kalmaya çalışıyor.',
+    sceneContext: 'Salon dolu, siparişler yağıyor, bir ocak arızalı. Şef Pyotr orkestra şefi gibi; Maks ilk kez sıcak bölümde ve hayatta kalmaya çalışıyor.',
     dialogue: [
-      { speaker: 'Şef Pyotr', ru: 'Аврал! Лёша — в горячий цех! Нина — подача на семь и девять!', reading: 'Avrál! Lyóşa — v garyáçiy tseh! Nína — padáça na syem\' i dyévit\'!', tr: 'Koşuşturma! Lyosha — sıcak bölüme! Nina — yedi ve dokuza servis!' },
-      { speaker: 'Lyosha', ru: 'Три заказа сразу! Шеф, я не успеваю!', reading: 'Tri zakáza srázu! Şef, ya ni uspiváyu!', tr: 'Aynı anda üç sipariş! Şef, yetişemiyorum!' },
+      { speaker: 'Şef Pyotr', ru: 'Аврал! Макс — в горячий цех! Вика — подача на семь и девять!', reading: 'Avrál! Lyóşa — v garyáçiy tseh! Nína — padáça na syem\' i dyévit\'!', tr: 'Koşuşturma! Maks — sıcak bölüme! Vika — yedi ve dokuza servis!' },
+      { speaker: 'Maks', ru: 'Три заказа сразу! Шеф, я не успеваю!', reading: 'Tri zakáza srázu! Şef, ya ni uspiváyu!', tr: 'Aynı anda üç sipariş! Şef, yetişemiyorum!' },
       { speaker: 'Şef Pyotr', ru: 'Успеваешь! Дыши. Один заказ — одно движение. Кухня — это команда!', reading: 'Uspiváyeş! D\u0131şı́. Adín zakás — adnó dvijéniye. Kúhnya — éta kamánda!', tr: 'Yetişiyorsun! Nefes al. Bir sipariş — bir hamle. Mutfak — bir ekiptir!' },
-      { speaker: 'Nina', ru: 'Зал аплодирует, шеф. Все заказы вышли вовремя. Все.', reading: 'Zal apladíruyit, şef. Fsye zakáz\u0131 v\u0131́şli vóvrimya. Fsye.', tr: 'Salon alkışlıyor, şef. Bütün siparişler zamanında çıktı. Hepsi.' }
+      { speaker: 'Vika', ru: 'Зал аплодирует, шеф. Все заказы вышли вовремя. Все.', reading: 'Zal apladíruyit, şef. Fsye zakáz\u0131 v\u0131́şli vóvrimya. Fsye.', tr: 'Salon alkışlıyor, şef. Bütün siparişler zamanında çıktı. Hepsi.' }
     ]
   },
 
@@ -609,12 +609,12 @@ export const EXTRA_COOKING: UnitModule[] = [
       { ru: 'Уварите соус наполовину — редукция даст глубокий вкус.', tr: 'Sosu yarıya indirin — redüksiyon derin bir tat verecek.', scrambled: ['наполовину —', 'Уварите соус', 'глубокий вкус.', 'редукция даст'], correct: ['Уварите соус', 'наполовину —', 'редукция даст', 'глубокий вкус.'] }
     ],
     sceneTitle: 'Usta Sınıfı: Şefin Akademisi',
-    sceneContext: 'Şef Pyotr, artık sıcak bölümün yıldızı olan Lyosha\'ya yüksek mutfak tekniklerini öğretiyor. Lyosha not defteri tutuyor — evet, ARTIK not tutuyor.',
+    sceneContext: 'Şef Pyotr, artık sıcak bölümün yıldızı olan Maks\'ya yüksek mutfak tekniklerini öğretiyor. Maks not defteri tutuyor — evet, ARTIK not tutuyor.',
     dialogue: [
       { speaker: 'Şef Pyotr', ru: 'Сегодня — соусы. Смотри: уварива­ем наполовину. Это редукция.', reading: 'Sivódnya — sóus\u0131. Smatrí: uvarívayem napalavínu. Éta ridúktsiya.', tr: 'Bugün — soslar. Bak: yarıya indiriyoruz. Bu redüksiyon.' },
-      { speaker: 'Lyosha', ru: 'Записываю: редукция — душа соуса. А соус — душа блюда!', reading: 'Zapís\u0131vayu: ridúktsiya — duşá sóusa. A sóus — duşá blyúda!', tr: 'Not alıyorum: redüksiyon — sosun ruhu. Sos da — yemeğin ruhu!' },
+      { speaker: 'Maks', ru: 'Записываю: редукция — душа соуса. А соус — душа блюда!', reading: 'Zapís\u0131vayu: ridúktsiya — duşá sóusa. A sóus — duşá blyúda!', tr: 'Not alıyorum: redüksiyon — sosun ruhu. Sos da — yemeğin ruhu!' },
       { speaker: 'Şef Pyotr', ru: 'Теперь бланшируй спаржу. Цвет должен остаться ярким.', reading: 'Tipyér\' blanşíruy spárju. Tsvyet dóljen astátsa yárkim.', tr: 'Şimdi kuşkonmazı blanşe et. Renk canlı kalmalı.' },
-      { speaker: 'Lyosha', ru: 'Шеф... а когда-нибудь я стану су-шефом?', reading: 'Şef... a kagdá-nibut\' ya stánu su-şéfam?', tr: 'Şef... bir gün sous-şef olabilecek miyim?' }
+      { speaker: 'Maks', ru: 'Шеф... а когда-нибудь я стану су-шефом?', reading: 'Şef... a kagdá-nibut\' ya stánu su-şéfam?', tr: 'Şef... bir gün sous-şef olabilecek miyim?' }
     ]
   },
   {
@@ -645,12 +645,12 @@ export const EXTRA_COOKING: UnitModule[] = [
       { ru: 'Выложите гарнир кольцом и добавьте яркий акцент соусом.', tr: 'Garnitürü halka şeklinde yerleştirin ve sosla canlı bir vurgu ekleyin.', scrambled: ['кольцом', 'Выложите гарнир', 'соусом.', 'и добавьте яркий акцент'], correct: ['Выложите гарнир', 'кольцом', 'и добавьте яркий акцент', 'соусом.'] }
     ],
     sceneTitle: 'Tabak Ressamları',
-    sceneContext: 'Yeni menü fotoğraf çekimi var. Her tabak bir tablo olmalı. Lyosha\'nın "bol soslu bereket" ekolü, Nina\'nın minimalizmiyle karşı karşıya.',
+    sceneContext: 'Yeni menü fotoğraf çekimi var. Her tabak bir tablo olmalı. Maks\'nın "bol soslu bereket" ekolü, Vika\'nın minimalizmiyle karşı karşıya.',
     dialogue: [
-      { speaker: 'Nina', ru: 'Минимализм, Лёша: большая тарелка, маленькая порция, один акцент.', reading: 'Minimalízm, Lyóşa: bal\'şáya taryélka, málin\'kaya pórtsiya, adín aktsént.', tr: 'Minimalizm, Lyosha: büyük tabak, küçük porsiyon, tek vurgu.' },
-      { speaker: 'Lyosha', ru: 'Но гость хочет есть! Где еда? Тут два кусочка и точка соуса!', reading: 'No gost\' hóçit yest\'! Gdye idá? Tut dva kusóçka i tóçka sóusa!', tr: 'Ama misafir yemek istiyor! Yemek nerede? Burada iki dilimcik ve bir nokta sos var!' },
+      { speaker: 'Vika', ru: 'Минимализм, Макс: большая тарелка, маленькая порция, один акцент.', reading: 'Minimalízm, Lyóşa: bal\'şáya taryélka, málin\'kaya pórtsiya, adín aktsént.', tr: 'Minimalizm, Maks: büyük tabak, küçük porsiyon, tek vurgu.' },
+      { speaker: 'Maks', ru: 'Но гость хочет есть! Где еда? Тут два кусочка и точка соуса!', reading: 'No gost\' hóçit yest\'! Gdye idá? Tut dva kusóçka i tóçka sóusa!', tr: 'Ama misafir yemek istiyor! Yemek nerede? Burada iki dilimcik ve bir nokta sos var!' },
       { speaker: 'Şef Pyotr', ru: 'Композиция — как картина. Выложи гарнир кольцом... Вот так. Видишь?', reading: 'Kampazítsiya — kak kartína. V\u0131́laji garnír kal\'tsóm... Vot tak. Vídiş?', tr: 'Kompozisyon — tablo gibidir. Garnitürü halka yap... İşte böyle. Görüyor musun?' },
-      { speaker: 'Lyosha', ru: 'Ох... Выглядит аппетитно. Ладно, красота тоже еда!', reading: 'Oh... V\u0131́gliditsa apitítna. Ládna, krasatá tóje idá!', tr: 'Oh... İştah açıcı görünüyor. Tamam, güzellik de yemekmiş!' }
+      { speaker: 'Maks', ru: 'Ох... Выглядит аппетитно. Ладно, красота тоже еда!', reading: 'Oh... V\u0131́gliditsa apitítna. Ládna, krasatá tóje idá!', tr: 'Oh... İştah açıcı görünüyor. Tamam, güzellik de yemekmiş!' }
     ]
   },
   {
@@ -683,10 +683,10 @@ export const EXTRA_COOKING: UnitModule[] = [
     sceneTitle: 'Eleştirmen Geldi',
     sceneContext: 'Moskova\'nın en korkulan yemek eleştirmeni rezervasyonsuz gelmiştir. Mutfakta herkes nefesini tuttu; sadece tabaklar konuşacak.',
     dialogue: [
-      { speaker: 'Nina', ru: 'Столик три... это ОН. Критик. Тот самый.', reading: 'Stólik tri... éta ON. Krítik. Tot sám\u0131y.', tr: 'Üç numaralı masa... o, TA KENDİSİ. Eleştirmen. O meşhur olan.' },
+      { speaker: 'Vika', ru: 'Столик три... это ОН. Критик. Тот самый.', reading: 'Stólik tri... éta ON. Krítik. Tot sám\u0131y.', tr: 'Üç numaralı masa... o, TA KENDİSİ. Eleştirmen. O meşhur olan.' },
       { speaker: 'Şef Pyotr', ru: 'Без паники. Готовим как всегда: с душой. Подача — идеальная.', reading: 'Bis pániki. Gatóvim kak fsigdá: s duşóy. Padáça — idiál\'naya.', tr: 'Panik yok. Her zamanki gibi pişiriyoruz: ruhla. Sunum — kusursuz.' },
-      { speaker: 'Lyosha', ru: 'Он попробовал борщ... Он молчит... Почему он молчит?!', reading: 'On papróbaval borşç... On malçít... Paçimú on malçít?!', tr: 'Borşçu tattı... Susuyor... Neden susuyor?!' },
-      { speaker: 'Nina', ru: 'Он написал: "Гармония. Изысканно. Как у бабушки, но в смокинге."', reading: 'On napisál: "Garmóniya. İz\u0131́skanna. Kak u bábuşki, no f smókinge."', tr: 'Şöyle yazmış: "Harmoni. Rafine. Büyükannemin yemeği gibi ama smokinli."' }
+      { speaker: 'Maks', ru: 'Он попробовал борщ... Он молчит... Почему он молчит?!', reading: 'On papróbaval borşç... On malçít... Paçimú on malçít?!', tr: 'Borşçu tattı... Susuyor... Neden susuyor?!' },
+      { speaker: 'Vika', ru: 'Он написал: "Гармония. Изысканно. Как у бабушки, но в смокинге."', reading: 'On napisál: "Garmóniya. İz\u0131́skanna. Kak u bábuşki, no f smókinge."', tr: 'Şöyle yazmış: "Harmoni. Rafine. Büyükannemin yemeği gibi ama smokinli."' }
     ]
   },
   {
@@ -716,13 +716,13 @@ export const EXTRA_COOKING: UnitModule[] = [
       { ru: 'Себестоимость блюда — треть цены в меню.', tr: 'Yemeğin maliyeti — menü fiyatının üçte biri.', scrambled: ['блюда —', 'Себестоимость', 'в меню.', 'треть цены'], correct: ['Себестоимость', 'блюда —', 'треть цены', 'в меню.'] },
       { ru: 'Кто не рискует, тот не открывает ресторан.', tr: 'Risk almayan, restoran açamaz.', scrambled: ['тот не открывает', 'Кто не рискует,', 'ресторан.'], correct: ['Кто не рискует,', 'тот не открывает', 'ресторан.'] }
     ],
-    sceneTitle: 'Lyosha\'nın Hayali: «Блин!» Kafe',
-    sceneContext: 'Yıllar sonra... Lyosha kendi krep kafesini açmak istiyor. İş planını eski ustası Şef Pyotr\'a sunuyor. Ustalık yolculuğu tamamlanıyor.',
+    sceneTitle: 'Maks\'nın Hayali: «Блин!» Kafe',
+    sceneContext: 'Yıllar sonra... Maks kendi krep kafesini açmak istiyor. İş planını eski ustası Şef Pyotr\'a sunuyor. Ustalık yolculuğu tamamlanıyor.',
     dialogue: [
-      { speaker: 'Lyosha', ru: 'Шеф, моя концепция: кафе «Блин!». Блины, варенье, душа.', reading: 'Şef, mayá kantséptsiya: kafé «Blin!». Bliný, varyén\'ye, duşá.', tr: 'Şef, konseptim: «Blin!» kafe. Krepler, reçel, ruh.' },
+      { speaker: 'Maks', ru: 'Шеф, моя концепция: кафе «Блин!». Блины, варенье, душа.', reading: 'Şef, mayá kantséptsiya: kafé «Blin!». Bliný, varyén\'ye, duşá.', tr: 'Şef, konseptim: «Blin!» kafe. Krepler, reçel, ruh.' },
       { speaker: 'Şef Pyotr', ru: 'Себестоимость? Маржа? Поставщики? Аренда?', reading: 'Sibistóimast\'? Márja? Pastafşşikí? Aryénda?', tr: 'Maliyet? Marj? Tedarikçiler? Kira?' },
-      { speaker: 'Lyosha', ru: 'Всё посчитано. Вот бизнес-план. Я учился у лучшего.', reading: 'Fsyo pasşítana. Vot bíznis-plan. Ya uçílsya u lúçşiva.', tr: 'Hepsi hesaplandı. İşte iş planı. En iyisinden öğrendim.' },
-      { speaker: 'Şef Pyotr', ru: '(листает план) ...Первый блин не будет комом, Лёша. Я приду на открытие. С мамиными банками.', reading: '(listáyit plan) ...Pyérv\u0131y blin ni búdit kómam, Lyóşa. Ya pridú na atkr\u0131́tiye. S máminimi bánkami.', tr: '(planı karıştırır) ...İlk krep topak olmayacak, Lyosha. Açılışa geleceğim. Annemin kavanozlarıyla.' }
+      { speaker: 'Maks', ru: 'Всё посчитано. Вот бизнес-план. Я учился у лучшего.', reading: 'Fsyo pasşítana. Vot bíznis-plan. Ya uçílsya u lúçşiva.', tr: 'Hepsi hesaplandı. İşte iş planı. En iyisinden öğrendim.' },
+      { speaker: 'Şef Pyotr', ru: '(листает план) ...Первый блин не будет комом, Макс. Я приду на открытие. С мамиными банками.', reading: '(listáyit plan) ...Pyérv\u0131y blin ni búdit kómam, Lyóşa. Ya pridú na atkr\u0131́tiye. S máminimi bánkami.', tr: '(planı karıştırır) ...İlk krep topak olmayacak, Maks. Açılışa geleceğim. Annemin kavanozlarıyla.' }
     ]
   }
 ];
