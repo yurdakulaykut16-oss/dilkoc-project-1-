@@ -5,6 +5,16 @@ import { getLocalAnswerCache, LOCAL_INTELLIGENCE_MAX_LABEL, putLocalAnswerCache 
 import { LOCAL_RUSSIAN_FACT_COUNT, RUSSIAN_KNOWLEDGE_BASE } from '../ai/russianExpertise';
 import { speakWithBotVoice, stopBotVoice } from '../tts/voiceStudio';
 import VoiceStudioPanel from './VoiceStudioPanel';
+import VoicePlanet from './VoicePlanet';
+import {
+  PLANET_POSE_ASKING,
+  PLANET_POSE_IDLE,
+  PLANET_POSE_LISTEN,
+  PLANET_POSE_THINK,
+  planetPoseTrack,
+  type PlanetPose,
+  type PlanetViseme,
+} from './planetGestures';
 import { isEnglish, langMeta } from '../content/activeLanguage';
 
 type LearningWord = { ru: string; tr: string; reading?: string };
@@ -23,7 +33,7 @@ type LearningFocus = {
 type CoachMistake = { ru: string; tr: string; reason: string };
 type SrsItem = { ru: string; tr: string; box: number; nextReview: number; type: 'word' | 'letter' };
 
-type MouthViseme = 'rest' | 'closed' | 'open' | 'wide' | 'round' | 'teeth' | 'smile';
+type MouthViseme = PlanetViseme;
 type RecognitionAlternative = { transcript: string; confidence?: number };
 type RecognitionResult = { readonly length: number; readonly isFinal?: boolean; [index: number]: RecognitionAlternative };
 type RecognitionResultList = { readonly length: number; [index: number]: RecognitionResult };
@@ -394,6 +404,8 @@ export default function AiChat(props: AiChatProps) {
   const [isSpeaking, setIsSpeaking] = useState(false);
   const [isListening, setIsListening] = useState(false);
   const [mouthViseme, setMouthViseme] = useState<MouthViseme>('rest');
+  /** Seslendirilen cümlenin jesti: kolların ne yapacağını bunu belirler. */
+  const [speakPose, setSpeakPose] = useState<PlanetPose>(PLANET_POSE_IDLE);
   const abortRef = useRef<AbortController | null>(null);
   const recognitionRef = useRef<BrowserSpeechRecognition | null>(null);
   const mouthTimerRef = useRef<number | null>(null);
@@ -402,15 +414,22 @@ export default function AiChat(props: AiChatProps) {
 
   const contextPreview = useMemo(() => `${props.learningFocus.icon} ${props.learningFocus.title} • ${props.learningFocus.pathPosition}/${props.learningFocus.pathTotal}`, [props.learningFocus]);
 
-  const mouthShapes: Record<MouthViseme, React.CSSProperties> = {
-    rest: { width: '34px', height: '7px', borderRadius: '999px', top: '95px', background: '#061226' },
-    closed: { width: '36px', height: '5px', borderRadius: '999px', top: '97px', background: '#061226' },
-    open: { width: '30px', height: '30px', borderRadius: '50%', top: '84px', background: '#061226' },
-    wide: { width: '50px', height: '14px', borderRadius: '999px', top: '92px', background: '#061226' },
-    round: { width: '27px', height: '27px', borderRadius: '50%', top: '86px', background: '#061226' },
-    teeth: { width: '44px', height: '12px', borderRadius: '9px', top: '93px', background: 'linear-gradient(180deg, #f8fafc 0 42%, #061226 43% 100%)' },
-    smile: { width: '44px', height: '13px', borderRadius: '0 0 999px 999px', top: '93px', background: '#061226' },
-  };
+  /**
+   * Gezegenin şu anki jesti. Öncelik sırası bilerek böyle:
+   * mikrofon açıkken el kulağa gider, ajan yanıt ararken el çeneye iner,
+   * seslendirme sırasında ise jest *okunan cümleden* gelir (animateMouth günceller).
+   */
+  const planetPose = useMemo<PlanetPose>(() => {
+    if (isListening) return PLANET_POSE_LISTEN;
+    if (busy && !isSpeaking) {
+      // Son kullanıcı mesajı bir soruysa gezegen avuçlarını açar, düz bir
+      // talimat/tekrarsa çenesine gider.
+      const lastQuestion = [...messages].reverse().find(message => message.role === 'user')?.text ?? '';
+      return /\?|ne demek|nedir|nasıl|neden|hangi/.test(lastQuestion) ? PLANET_POSE_ASKING : PLANET_POSE_THINK;
+    }
+    if (isSpeaking) return speakPose;
+    return PLANET_POSE_IDLE;
+  }, [isListening, busy, isSpeaking, speakPose, messages]);
 
   const stopMouthAnimation = () => {
     if (mouthTimerRef.current !== null) {
@@ -418,15 +437,25 @@ export default function AiChat(props: AiChatProps) {
       mouthTimerRef.current = null;
     }
     setMouthViseme('rest');
+    setSpeakPose(PLANET_POSE_IDLE);
   };
 
   const animateMouth = (text: string, lang: 'tr-TR' | 'ru-RU' | 'en-US') => {
     stopMouthAnimation();
     const chars = Array.from(text || ' ');
+    // Her karakterin okunduğu anda hangi cümlede olunduğu önceden hesaplanır;
+    // kol jesti metni okurken cümle cümle kendini günceller.
+    const poseTrack = planetPoseTrack(chars);
     let index = 0;
+    let lastGesture = '';
     const tick = () => {
       const char = chars[index % chars.length];
       setMouthViseme(visemeForChar(char));
+      const pose = poseTrack[index % poseTrack.length];
+      if (pose && pose.gesture !== lastGesture) {
+        lastGesture = pose.gesture;
+        setSpeakPose(pose);
+      }
       index += 1;
       mouthTimerRef.current = window.setTimeout(tick, visemeDelayForChar(char, lang));
     };
@@ -663,32 +692,6 @@ export default function AiChat(props: AiChatProps) {
 
   return (
     <section style={{ marginBottom: '16px', borderRadius: '20px', padding: '16px', background: 'linear-gradient(135deg, rgba(34,197,94,.12), rgba(56,189,248,.12), #0f172a)', border: '1px solid rgba(56,189,248,.52)' }}>
-      <style>{`
-        @keyframes voicePlanetFloat { 0%, 100% { transform: translateY(0) rotate(-1deg); } 50% { transform: translateY(-12px) rotate(1deg); } }
-        @keyframes voicePlanetOrbit { from { transform: rotate(0deg); } to { transform: rotate(360deg); } }
-        @keyframes voicePlanetRing { 0%, 100% { transform: translate(-50%, -50%) rotate(-15deg) scaleX(1); } 50% { transform: translate(-50%, -50%) rotate(-10deg) scaleX(1.05); } }
-        @keyframes voicePlanetListen { 0%, 100% { box-shadow: 0 0 0 0 rgba(34,197,94,.48), 0 0 42px rgba(56,189,248,.25); } 50% { box-shadow: 0 0 0 18px rgba(34,197,94,0), 0 0 58px rgba(34,197,94,.34); } }
-        @keyframes voicePlanetTalk { 0%, 100% { transform: translateY(0) scale(1); } 50% { transform: translateY(-4px) scale(1.025); } }
-        .voice-planet-stage { position: relative; min-height: 264px; overflow: hidden; border-radius: 22px; margin-bottom: 14px; display: grid; place-items: center; background: radial-gradient(circle at 50% 12%, rgba(56,189,248,.25), transparent 31%), radial-gradient(circle at 18% 85%, rgba(245,158,11,.13), transparent 28%), linear-gradient(180deg, #050816 0%, #0f172a 58%, #111827 100%); border: 1px solid rgba(125,211,252,.24); box-shadow: inset 0 0 60px rgba(14,165,233,.08); }
-        .voice-planet-stage::before, .voice-planet-stage::after { content: '✦'; position: absolute; color: #dbeafe; opacity: .72; font-size: 17px; animation: voicePlanetOrbit 5s ease-in-out infinite alternate; }
-        .voice-planet-stage::before { left: 15%; top: 18%; }
-        .voice-planet-stage::after { right: 14%; top: 34%; animation-delay: 1.2s; }
-        .voice-planet-avatar { position: relative; width: 210px; height: 210px; display: grid; place-items: center; filter: drop-shadow(0 25px 44px rgba(14,165,233,.24)); animation: voicePlanetFloat 4.2s ease-in-out infinite; }
-        .voice-planet-avatar.speaking { animation: voicePlanetTalk .42s ease-in-out infinite, voicePlanetFloat 4.2s ease-in-out infinite; }
-        .voice-planet-avatar.listening { animation: voicePlanetListen 1.2s ease-in-out infinite, voicePlanetFloat 4.2s ease-in-out infinite; border-radius: 50%; }
-        .voice-planet-orbit { position: absolute; inset: -29px; border: 1px dashed rgba(125,211,252,.25); border-radius: 50%; animation: voicePlanetOrbit 18s linear infinite; }
-        .voice-planet-ring { position: absolute; left: 50%; top: 51%; width: 288px; height: 68px; transform: translate(-50%, -50%) rotate(-15deg); border-radius: 50%; background: linear-gradient(90deg, transparent 0%, rgba(250,204,21,.16) 15%, #facc15 36%, #fde68a 50%, #f59e0b 65%, rgba(250,204,21,.14) 84%, transparent 100%); box-shadow: 0 0 22px rgba(245,158,11,.26); animation: voicePlanetRing 3.6s ease-in-out infinite; }
-        .voice-planet-ring::after { content: ''; position: absolute; inset: 17px 31px; border-radius: 50%; background: #071122; }
-        .voice-planet-core { position: relative; width: 142px; height: 142px; border-radius: 50%; background: radial-gradient(circle at 30% 20%, #eff6ff 0 10%, #7dd3fc 25%, #2563eb 60%, #1e3a8a 100%); border: 3px solid rgba(191,219,254,.55); overflow: hidden; animation: voicePlanetFloat 4.2s ease-in-out infinite; box-shadow: inset -22px -28px 42px rgba(15,23,42,.38), inset 12px 12px 24px rgba(255,255,255,.24); }
-        .voice-planet-core::before { content: ''; position: absolute; left: -18px; top: 38px; width: 182px; height: 38px; background: rgba(255,255,255,.16); transform: rotate(-18deg); border-radius: 999px; }
-        .voice-planet-face { position: absolute; inset: 0; z-index: 2; }
-        .voice-planet-eye { position: absolute; top: 50px; width: 15px; height: 20px; border-radius: 999px; background: #061226; box-shadow: inset 3px 5px 0 rgba(255,255,255,.18); }
-        .voice-planet-eye.left { left: 42px; }
-        .voice-planet-eye.right { right: 42px; }
-        .voice-planet-mouth { position: absolute; left: 50%; transform: translateX(-50%); transition: width .075s linear, height .075s linear, top .075s linear, border-radius .075s linear, background .075s linear; box-shadow: inset 0 -4px 0 rgba(255,255,255,.08), 0 1px 0 rgba(255,255,255,.1); }
-        .voice-planet-caption { position: absolute; bottom: 10px; z-index: 3; padding: 5px 10px; border-radius: 999px; background: rgba(2,6,23,.64); color: #bae6fd; font-size: 11px; font-weight: 900; }
-        @media (max-width: 560px) { .voice-planet-stage { min-height: 238px; } .voice-planet-avatar { transform: scale(.88); } }
-      `}</style>
       <div style={{ display: 'flex', alignItems: 'flex-start', justifyContent: 'space-between', gap: '12px', flexWrap: 'wrap' }}>
         <div>
           <div style={{ color: '#86efac', fontSize: '11px', fontWeight: 950, letterSpacing: '.6px' }}>🧠 {isEnglish() ? 'YEREL İNGİLİZCE ZEKASI' : 'YEREL RUSÇA ZEKASI'} • API YOK • TOKEN YOK</div>
@@ -715,22 +718,13 @@ export default function AiChat(props: AiChatProps) {
 
       {showVoiceStudio && <VoiceStudioPanel />}
 
-      <div className="voice-planet-stage" aria-live="polite">
-        <div className={`voice-planet-avatar ${isSpeaking ? 'speaking' : ''} ${isListening ? 'listening' : ''}`}>
-          <div className="voice-planet-orbit" />
-          <div className="voice-planet-ring" />
-          <div className="voice-planet-core">
-            <div className="voice-planet-face">
-              <span className="voice-planet-eye left" />
-              <span className="voice-planet-eye right" />
-              <span className="voice-planet-mouth" style={mouthShapes[mouthViseme]} />
-            </div>
-          </div>
-        </div>
-        <div className="voice-planet-caption">
-          {isSpeaking ? '🗣️ Konuşuyor…' : isListening ? '🎙️ Seni dinliyorum…' : '🪐 Hazır — sorunu yaz veya mikrofona konuş'}
-        </div>
-      </div>
+      <VoicePlanet
+        viseme={mouthViseme}
+        pose={planetPose}
+        speaking={isSpeaking}
+        listening={isListening}
+        thinking={busy}
+      />
 
       <div style={{ marginTop: '14px', minHeight: '130px', maxHeight: '420px', overflowY: 'auto', display: 'grid', gap: '10px', padding: '4px' }}>
         {messages.map(message => {
