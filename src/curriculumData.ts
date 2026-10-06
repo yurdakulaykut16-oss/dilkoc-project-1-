@@ -5,6 +5,8 @@ import { createDailyLife90 } from './extraUnits/dailyLife90';
 import { isEnglish } from './content/activeLanguage';
 import { EN_UNITS } from './content/en/units';
 import { EN_EXTRA_UNITS, EN_NEW_UNITS } from './content/en/enExtraUnits';
+import { CORE_WORD_CLASS_UNITS_RU } from './content/coreWordClassUnitsRu';
+import { CORE_WORD_CLASS_UNITS_EN } from './content/en/coreWordClassUnits';
 import { CIT_RU_A } from './content/citizenship/citRuA';
 import { CIT_RU_B } from './content/citizenship/citRuB';
 import { CIT_RU_C } from './content/citizenship/citRuC';
@@ -13,6 +15,8 @@ import { EN_CIT_A } from './content/en/enCitA';
 import { EN_CIT_B } from './content/en/enCitB';
 import { EN_CIT_C } from './content/en/enCitC';
 import { EN_CIT_D } from './content/en/enCitD';
+import { CIT_RU_INTERVIEW } from './content/citizenship/citRuInterview';
+import { EN_INTERVIEW_UNITS } from './content/en/enInterviewUnits';
 
 export interface WordDetail {
   id: string;
@@ -114,24 +118,22 @@ const BASE_UNITS: UnitModule[] = [
       { speaker: 'Anna', ru: 'Спасибо, всё хорошо!', reading: "Spasíba, vsyo haraşó!", tr: 'Teşekkürler, her şey yolunda!' }
     ],
     smeshariki: {
-      episodeRu: 'Крош и Ёжик знакомятся',
-      episodeTr: 'Kroş ve Yoji tanışıyor',
-      characters: ['Крош', 'Ёжик'],
-      searchQuery: 'Смешарики первая серия Крош Ёжик',
-      contextTr: 'Smeshariki dünyasında meraklı tavşan Kroş, sakin ve kitap seven kirpi Yoji ile ilk kez karşılaşır. Konuşma çok yavaş ve tek tek kelimelerle ilerler — bu yüzden A1 seviyesi için idealdir.',
+      source: 'kukhnya',
+      episodeRu: 'Первый день Макса',
+      episodeTr: 'Maks’ın İlk Günü',
+      characters: ['Макс', 'Вика', 'Шеф Баринов'],
+      searchQuery: 'Кухня сериал 1 серия Макс первый день',
+      contextTr: '«Кухня»nın ilk bölümünden uyarlama: Maks Claude Monet’ye gelir, Vika’yla tanışır ve Şef Barinov’dan bir şans ister.',
       miniDialogue: [
-        { speaker: 'Крош', ru: 'Привет! Как дела?', reading: 'Privét! Kak dilá?', tr: 'Selam! Nasılsın?' },
-        { speaker: 'Ёжик', ru: 'Здравствуй. Меня зовут Ёжик.', reading: "Zdrástvuy. Minyá zavút Yózhik.", tr: 'Merhaba. Benim adım Yoji.' },
-        { speaker: 'Крош', ru: 'Очень приятно! Я Крош.', reading: "Óchen' priyátna! Ya Krosh.", tr: 'Memnun oldum! Ben Kroş.' },
-        { speaker: 'Крош', ru: 'А это Ёжик?! Смешное имя!', reading: "A éta Yózhik?! Smishnóye ímya!", tr: 'Bu Yoji mi?! Ne komik bir isim!' },
-        { speaker: 'Ёжик', ru: 'Не смешное, а простое.', reading: 'Ni smishnóye, a prostóye.', tr: 'Komik değil, sade bir isim.' },
-        { speaker: 'Крош', ru: 'Ха-ха, ладно! Будем дружить?', reading: "Kha-kha, ládna! Búdem druzhít'?", tr: 'Haha, tamam! Arkadaş olalım mı?' }
+        { speaker: 'Макс', ru: 'Здравствуйте! Меня зовут Макс. Я повар.', reading: 'Zdrástvuyte! Minyá zavút Maks. Ya póvar.', tr: 'Merhaba! Benim adım Maks. Ben aşçıyım.' },
+        { speaker: 'Вика', ru: 'Очень приятно. Я Вика.', reading: 'Óçen priyátna. Ya Víka.', tr: 'Memnun oldum. Ben Vika.' },
+        { speaker: 'Шеф Баринов', ru: 'Это моя кухня. Ты готов работать?', reading: 'Éta mayá kúhnya. Tı gatóf rabótat?', tr: 'Burası benim mutfağım. Çalışmaya hazır mısın?' },
+        { speaker: 'Макс', ru: 'Да, шеф. Дайте мне шанс!', reading: 'Da, şef. Dáyti mnye şans!', tr: 'Evet Şef. Bana bir şans verin!' },
       ],
       questions: [
-        { prompt: 'Ёжик Крош\'a nasıl seslenir?', correct: 'Здравствуй', options: shuffle(['Здравствуй', 'До свидания', 'Спокойной ночи', 'Извините']) },
-        { prompt: 'Крош kendini tanıtırken hangi kalıbı kullanır?', correct: 'Я Крош', options: shuffle(['Я Крош', 'Это Крош', 'Нет Кроша', 'Крош там']) },
-        { prompt: 'Kroş Yoji\'nin ismi hakkında ne düşünür?', correct: 'Смешное имя', options: shuffle(['Смешное имя', 'Красивое имя', 'Длинное имя', 'Странное имя']) },
-        { prompt: 'Kroş sahnenin sonunda ne teklif eder?', correct: 'Будем дружить?', options: shuffle(['Будем дружить?', 'Пойдём домой?', 'Хочешь чай?', 'Идём гулять?']) }
+        { prompt: 'Maks kendini hangi meslekle tanıtır?', correct: 'Я повар', options: shuffle(['Я повар', 'Я официант', 'Я бармен', 'Я гость']) },
+        { prompt: 'Restoranın sanat yönetmeninin adı nedir?', correct: 'Вика', options: shuffle(['Вика', 'Настя', 'Сеня', 'Федя']) },
+        { prompt: 'Maks Şef’ten ne ister?', correct: 'Дайте мне шанс', options: shuffle(['Дайте мне шанс', 'Дайте меню', 'Дайте счёт', 'Дайте отпуск']) },
       ]
     }
   },
@@ -324,24 +326,22 @@ const BASE_UNITS: UnitModule[] = [
       { speaker: 'Komşu 2', ru: "Да, очень холодно и дождь.", reading: "Da, óchen' hóladna i dozhd'.", tr: 'Evet, çok soğuk ve yağmurlu.' }
     ],
     smeshariki: {
-      episodeRu: 'Ёжик проверяет погоду',
-      episodeTr: 'Yoji hava durumunu kontrol ediyor',
-      characters: ['Ёжик', 'Крош', 'Совунья'],
-      searchQuery: 'Смешарики погода дождь серия',
-      contextTr: 'Hava durumu Smeshariki\'de sıkça işlenen bir temadır: kışın kar, yazın güneş, sonbaharda yağmur karakterlerin planlarını hep değiştirir. Bu basit örnek sahnede Yoji dışarı çıkmadan önce Baykuş Sovunya\'ya hava durumunu sorar.',
+      source: 'kukhnya',
+      episodeRu: 'Дождь перед сменой',
+      episodeTr: 'Vardiya Öncesi Yağmur',
+      characters: ['Макс', 'Вика', 'Костя'],
+      searchQuery: 'Кухня сериал Макс дождь перед сменой',
+      contextTr: '«Кухня»nın erken bölümlerinden esinlenen sahnede yağmur, Maks’ın işe yetişme planını bozar; ekip vardiya öncesi hava durumunu konuşur.',
       miniDialogue: [
-        { speaker: 'Ёжик', ru: 'Совунья, какая сегодня погода?', reading: 'Savún\'ya, kakáya sivódnya pagóda?', tr: 'Sovunya, bugün hava nasıl?' },
-        { speaker: 'Совунья', ru: 'На улице холодно и дождь.', reading: "Na úlitse hóladna i dozhd'.", tr: 'Dışarısı soğuk ve yağmurlu.' },
-        { speaker: 'Ёжик', ru: 'Тогда я останусь дома.', reading: "Tagdá ya astánus' dóma.", tr: 'O zaman evde kalacağım.' },
-        { speaker: 'Крош', ru: 'А может, наоборот, солнце?', reading: "A mózhet, naabarót, sóntse?", tr: 'Ya da tam tersi, güneş olabilir mi?' },
-        { speaker: 'Совунья', ru: 'Нет, Крош, я редко ошибаюсь!', reading: "Nyet, Krosh, ya rétka ashibáyus'!", tr: 'Hayır Kroş, ben nadiren yanılırım!' },
-        { speaker: 'Ёжик', ru: 'Тогда возьму зонтик на всякий случай.', reading: "Tagdá vaz'mú zóntik na vsyákiy slúchay.", tr: 'O zaman ihtiyaten şemsiye alayım.' }
+        { speaker: 'Макс', ru: 'На улице холодно и идёт дождь.', reading: 'Na úlitse hóladna i idyót dojd.', tr: 'Dışarısı soğuk ve yağmur yağıyor.' },
+        { speaker: 'Вика', ru: 'Ты опять опоздал из-за погоды?', reading: 'Tı apyát apazdál iz-za pagódı?', tr: 'Yine hava yüzünden mi geç kaldın?' },
+        { speaker: 'Макс', ru: 'Автобус стоял в пробке. Я взял зонтик, но не помогло.', reading: 'Aftóbus stayál f próbke. Ya vzyal zóntik, no ni pamagló.', tr: 'Otobüs trafikte kaldı. Şemsiye aldım ama işe yaramadı.' },
+        { speaker: 'Костя', ru: 'Завтра будет солнце. Приходи вовремя.', reading: 'Záftra búdit sóntse. Prihadí vávremya.', tr: 'Yarın güneşli olacak. Zamanında gel.' },
       ],
       questions: [
-        { prompt: 'Sovunya bugünkü havayı nasıl tarif eder?', correct: "Холодно и дождь", options: shuffle(["Холодно и дождь", 'Очень жарко', 'Солнце и тепло', 'Идёт снег']) },
-        { prompt: 'Yoji hava durumunu duyunca ne karar verir?', correct: 'Останусь дома', options: shuffle(['Останусь дома', 'Пойду гулять', 'Поеду на автобусе', 'Позвоню другу']) },
-        { prompt: 'Kroş alternatif olarak neyi önerir?', correct: 'Солнце', options: shuffle(['Солнце', 'Снег', 'Туман', 'Ветер']) },
-        { prompt: 'Yoji sonunda ne yapmaya karar verir?', correct: 'Возьму зонтик', options: shuffle(['Возьму зонтик', 'Позвоню Крошу', 'Пойду гулять', 'Буду петь']) }
+        { prompt: 'Dışarıdaki hava nasıldır?', correct: 'Холодно и дождь', options: shuffle(['Холодно и дождь', 'Жарко и сухо', 'Снег и ветер', 'Тепло и ясно']) },
+        { prompt: 'Maks neden gecikmiştir?', correct: 'Автобус стоял в пробке', options: shuffle(['Автобус стоял в пробке', 'Он долго спал', 'Он потерял ключ', 'Ресторан закрыт']) },
+        { prompt: 'Kostya yarın için ne söyler?', correct: 'Будет солнце', options: shuffle(['Будет солнце', 'Будет снег', 'Будет буря', 'Будет туман']) },
       ]
     }
   },
@@ -383,24 +383,22 @@ const BASE_UNITS: UnitModule[] = [
       { speaker: 'Satıcı', ru: 'Хорошо, сделаю скидку для вас.', reading: 'Haraşó, sdélayu skítku dlya vas.', tr: 'Tamam, size indirim yapayım.' }
     ],
     smeshariki: {
-      episodeRu: 'Нюша хочет скидку',
-      episodeTr: 'Nyuşa indirim istiyor',
-      characters: ['Нюша', 'Копатыч'],
-      searchQuery: 'Смешарики Нюша магазин покупки серия',
-      contextTr: 'Şımarık ve güzelliğine düşkün domuzcuk Nyuşa, alışverişi çok sever ve neredeyse her bölümde yeni bir şey almak ister. Bu sahnede çiftçi Kopatiç\'in tezgahında pazarlık yapar.',
+      source: 'kukhnya',
+      episodeRu: 'Покупки для кухни',
+      episodeTr: 'Mutfak Alışverişi',
+      characters: ['Макс', 'Сеня', 'Поставщик'],
+      searchQuery: 'Кухня сериал закупка продуктов Сеня Макс',
+      contextTr: '«Кухня» bölüm atmosferinden: Maks ve Senya pazardan restoran için ürün alır; fiyat ile kalite arasında karar vermeleri gerekir.',
       miniDialogue: [
-        { speaker: 'Нюша', ru: 'Копатыч, сколько это стоит?', reading: "Kapátych, skól'ka éta stóit?", tr: 'Kopatiç, bu ne kadar?' },
-        { speaker: 'Копатыч', ru: 'Это дорого, Нюша.', reading: 'Éta dóraga, Nyúsha.', tr: 'Bu pahalı, Nyuşa.' },
-        { speaker: 'Нюша', ru: 'Сделай скидку, пожалуйста!', reading: 'Sdélay skítku, pazhálusta!', tr: 'Lütfen indirim yap!' },
-        { speaker: 'Нюша', ru: 'Ой, я упаду в обморок от цены!', reading: "Oy, ya upadú v ábmarak ad tsiný!", tr: 'Aman, bu fiyattan bayılacağım!' },
-        { speaker: 'Копатыч', ru: 'Не преувеличивай, Нюша.', reading: 'Ni priuvilíchivay, Nyúsha.', tr: 'Abartma Nyuşa.' },
-        { speaker: 'Нюша', ru: 'Ладно, беру за полцены!', reading: 'Ládna, birú za poltsiný!', tr: 'Tamam, yarı fiyatına alıyorum!' }
+        { speaker: 'Макс', ru: 'Сколько стоит этот ящик помидоров?', reading: 'Skólka stóit état yáşşik pamidóraf?', tr: 'Bu kasa domates ne kadar?' },
+        { speaker: 'Поставщик', ru: 'Три тысячи. Помидоры свежие.', reading: 'Tri tısyaçi. Pamidórı svéjiye.', tr: 'Üç bin. Domatesler taze.' },
+        { speaker: 'Сеня', ru: 'Это дорого. Сделайте скидку для ресторана.', reading: 'Éta dóraga. Sdélayti skítku dlya ristorána.', tr: 'Bu pahalı. Restoran için indirim yapın.' },
+        { speaker: 'Поставщик', ru: 'Хорошо, но возьмите два ящика.', reading: 'Haraşó, no vazmíti dva yáşşika.', tr: 'Peki ama iki kasa alın.' },
       ],
       questions: [
-        { prompt: 'Nyuşa Kopatiç\'e ne sorar?', correct: "Сколько это стоит?", options: shuffle(["Сколько это стоит?", 'Где это?', 'Что это?', 'Когда это?']) },
-        { prompt: 'Kopatiç ürün hakkında ne söyler?', correct: 'Это дорого', options: shuffle(['Это дорого', 'Это дёшево', 'Это плохо', 'Это ново']) },
-        { prompt: 'Nyuşa fiyat karşısında abartarak ne yapacağını söyler?', correct: 'Упаду в обморок', options: shuffle(['Упаду в обморок', 'Пойду домой', 'Куплю два', 'Позвоню маме']) },
-        { prompt: 'Nyuşa sonunda ürünü nasıl almayı teklif eder?', correct: 'За полцены', options: shuffle(['За полцены', 'За полную цену', 'Бесплатно', 'В долг']) }
+        { prompt: 'Maks neyin fiyatını sorar?', correct: 'Ящик помидоров', options: shuffle(['Ящик помидоров', 'Килограмм рыбы', 'Новый нож', 'Бутылка воды']) },
+        { prompt: 'Senya ne ister?', correct: 'Скидку', options: shuffle(['Скидку', 'Меню', 'Рецепт', 'Работу']) },
+        { prompt: 'Tedarikçinin koşulu nedir?', correct: 'Взять два ящика', options: shuffle(['Взять два ящика', 'Платить завтра', 'Привезти рыбу', 'Позвать шефа']) },
       ]
     }
   },
@@ -588,24 +586,22 @@ const BASE_UNITS: UnitModule[] = [
       { speaker: 'Arkadaş 1', ru: 'Мне весело, не переживай!', reading: "Mnye véselo, ni pirizhivháy!", tr: 'Ben neşeliyim, üzülme!' }
     ],
     smeshariki: {
-      episodeRu: 'Бараш грустит',
-      episodeTr: 'Baraş üzülüyor',
-      characters: ['Бараш', 'Крош', 'Нюша'],
-      searchQuery: 'Смешарики Бараш грустит стихи серия',
-      contextTr: 'Melankolik ve şair ruhlu koç Baraş, dizide sık sık kederlenir ve şiir yazar. Arkadaşları onu neşelendirmeye çalışır — bu, "duygu" kelimelerini öğrenmek için mükemmel bir sahnedir.',
+      source: 'kukhnya',
+      episodeRu: 'Макс расстроен после ошибки',
+      episodeTr: 'Maks Hatasından Sonra Üzgün',
+      characters: ['Макс', 'Настя', 'Вика'],
+      searchQuery: 'Кухня сериал Макс ошибка Настя поддерживает',
+      contextTr: '«Кухня»dan uyarlanan sahnede Maks bir siparişi bozduğu için üzülür; Nastya ve Vika hatayı düzeltmesine yardım eder.',
       miniDialogue: [
-        { speaker: 'Крош', ru: 'Бараш, что случилось?', reading: "Barásh, shto sluchílas'?", tr: 'Baraş, ne oldu?' },
-        { speaker: 'Бараш', ru: 'Мне очень грустно, Крош.', reading: "Mnye óchen' grústna, Krosh.", tr: 'Çok üzgünüm, Kroş.' },
-        { speaker: 'Нюша', ru: 'Не грусти! Будет весело!', reading: 'Ni grustí! Búdet véselo!', tr: 'Üzülme! Eğlenceli olacak!' },
-        { speaker: 'Бараш', ru: 'Даже облака сегодня грустные...', reading: "Dázhe abluká sivódnya grústnyye...", tr: 'Bugün bulutlar bile üzgün...' },
-        { speaker: 'Крош', ru: 'Ха-ха, Бараш, это просто облака!', reading: 'Kha-kha, Barásh, éta prósta abluká!', tr: 'Haha Baraş, onlar sadece bulut!' },
-        { speaker: 'Бараш', ru: 'Ладно... Пойдём есть пирог?', reading: "Ládna... Paydyóm yest' pirók?", tr: 'Tamam... Pasta yemeye gidelim mi?' }
+        { speaker: 'Настя', ru: 'Макс, что случилось? Ты грустный.', reading: 'Maks, şto sluçilás? Tı grústnıy.', tr: 'Maks, ne oldu? Üzgün görünüyorsun.' },
+        { speaker: 'Макс', ru: 'Я перепутал заказ. Шеф сердится.', reading: 'Ya piripútal zakás. Şef sérditsa.', tr: 'Siparişi karıştırdım. Şef kızgın.' },
+        { speaker: 'Вика', ru: 'Не обижайся. Исправь блюдо и поговори с гостем.', reading: 'Ni abijáysya. İspráf blyúda i pagavarí s góstem.', tr: 'Alınma. Yemeği düzelt ve misafirle konuş.' },
+        { speaker: 'Макс', ru: 'Спасибо. Теперь мне спокойнее.', reading: 'Spasíba. Tipér mnye spakóyniye.', tr: 'Teşekkürler. Şimdi daha sakinim.' },
       ],
       questions: [
-        { prompt: 'Kroş Baraş\'a ne sorar?', correct: "Что случилось?", options: shuffle(["Что случилось?", 'Куда ты идёшь?', 'Сколько тебе лет?', 'Где твой дом?']) },
-        { prompt: 'Nyuşa Baraş\'ı neşelendirmek için ne der?', correct: 'Будет весело!', options: shuffle(['Будет весело!', 'Будет скучно!', 'Мне грустно!', 'Я боюсь!']) },
-        { prompt: 'Baraş neyi bile üzgün bulur?', correct: 'Облака', options: shuffle(['Облака', 'Деревья', 'Цветы', 'Птицы']) },
-        { prompt: 'Baraş sonunda ne teklif eder?', correct: 'Есть пирог', options: shuffle(['Есть пирог', 'Спать', 'Плакать', 'Читать стихи']) }
+        { prompt: 'Maks neden üzgündür?', correct: 'Перепутал заказ', options: shuffle(['Перепутал заказ', 'Потерял телефон', 'Опоздал домой', 'Забыл имя']) },
+        { prompt: 'Şef nasıl hisseder?', correct: 'Сердится', options: shuffle(['Сердится', 'Радуется', 'Боится', 'Смеётся']) },
+        { prompt: 'Vika Maks’a ne önerir?', correct: 'Исправить блюдо', options: shuffle(['Исправить блюдо', 'Уйти домой', 'Закрыть ресторан', 'Позвонить маме']) },
       ]
     }
   },
@@ -640,24 +636,22 @@ const BASE_UNITS: UnitModule[] = [
       { speaker: 'Doktor', ru: 'Хорошо, я дам вам лекарство.', reading: 'Haraşó, ya dam vam likárstva.', tr: 'Tamam, size ilaç vereceğim.' }
     ],
     smeshariki: {
-      episodeRu: 'Совунья лечит Кроша',
-      episodeTr: 'Sovunya Kroş\'u tedavi ediyor',
-      characters: ['Совунья', 'Крош'],
-      searchQuery: 'Смешарики Совунья доктор лечит серия',
-      contextTr: 'Baykuş Sovunya köyün doktoru gibidir; sağlıklı yaşam ve doğal tedaviler konusunda ısrarcıdır. Bu sahnede başı ağrıyan Kroş\'u muayene eder.',
+      source: 'kukhnya',
+      episodeRu: 'Шефу нужен врач',
+      episodeTr: 'Şefin Doktora İhtiyacı Var',
+      characters: ['Шеф Баринов', 'Вика', 'Макс'],
+      searchQuery: 'Кухня сериал шеф Баринов плохо врач',
+      contextTr: '«Кухня» bölümünden uyarlama: yoğun servis sırasında Şef kendini kötü hisseder; Vika çalışmayı bırakıp doktora görünmesinde ısrar eder.',
       miniDialogue: [
-        { speaker: 'Крош', ru: 'Совунья, у меня болит голова.', reading: 'Savún\'ya, u minyá balít galavá.', tr: 'Sovunya, başım ağrıyor.' },
-        { speaker: 'Совунья', ru: 'У тебя температура?', reading: 'U tibyá timpiratúra?', tr: 'Ateşin var mı?' },
-        { speaker: 'Крош', ru: 'Да, кажется, есть.', reading: "Da, kázhetsya, yest'.", tr: 'Evet, sanırım var.' },
-        { speaker: 'Совунья', ru: 'Это потому, что ты съел десять пирожков!', reading: "Éta patamú, shto ty s'yel désit' pirazhkóv!", tr: 'Çünkü on tane börek yedin!' },
-        { speaker: 'Крош', ru: 'Всего десять? Это же мало!', reading: "Fsivó désit'? Éta zhe málo!", tr: 'Sadece on mu? Bu az sayılır ki!' },
-        { speaker: 'Совунья', ru: 'Ох, Крош... Пей чай с травами.', reading: 'Okh, Krosh... Pyey chay s trávami.', tr: 'Oh Kroş... Bitki çayı iç.' }
+        { speaker: 'Шеф Баринов', ru: 'У меня болит голова, но смена продолжается.', reading: 'U minyá balít galavá, no smyéna pradaljáyetsa.', tr: 'Başım ağrıyor ama vardiya devam ediyor.' },
+        { speaker: 'Вика', ru: 'У вас температура. Вам нужен врач.', reading: 'U vas timpiratúra. Vam nújin vraç.', tr: 'Ateşiniz var. Doktora ihtiyacınız var.' },
+        { speaker: 'Макс', ru: 'Я закончу соус. Шеф, отдохните.', reading: 'Ya zakónçu sus. Şef, atdahn íti.', tr: 'Sosu ben bitiririm. Şef, dinlenin.' },
+        { speaker: 'Шеф Баринов', ru: 'Хорошо. Но не пересолите суп.', reading: 'Haraşó. No ni p iris alíti sup.', tr: 'Peki. Ama çorbayı fazla tuzlamayın.' },
       ],
       questions: [
-        { prompt: 'Kroş\'un neresi ağrıyor?', correct: 'Голова', options: shuffle(['Голова', 'Нога', 'Рука', 'Живот']) },
-        { prompt: 'Sovunya Kroş\'a ne sorar?', correct: 'У тебя температура?', options: shuffle(['У тебя температура?', 'Где ты живёшь?', 'Сколько тебе лет?', 'Ты голоден?']) },
-        { prompt: 'Sovunya\'ya göre Kroş\'un başı neden ağrıyor?', correct: 'Съел десять пирожков', options: shuffle(['Съел десять пирожков', 'Мало спал', 'Много бегал', 'Простудился']) },
-        { prompt: 'Sovunya Kroş\'a ne içmesini önerir?', correct: 'Чай с травами', options: shuffle(['Чай с травами', 'Холодную воду', 'Молоко', 'Сок']) }
+        { prompt: 'Şefin neresi ağrır?', correct: 'Голова', options: shuffle(['Голова', 'Нога', 'Рука', 'Спина']) },
+        { prompt: 'Vika Şef’in neyi olduğunu söyler?', correct: 'Температура', options: shuffle(['Температура', 'Аллергия', 'Кашель', 'Голод']) },
+        { prompt: 'Maks hangi işi üstlenir?', correct: 'Закончить соус', options: shuffle(['Закончить соус', 'Закрыть бар', 'Вызвать гостя', 'Купить хлеб']) },
       ]
     }
   },
@@ -692,24 +686,23 @@ const BASE_UNITS: UnitModule[] = [
       { speaker: 'Arkadaş 2', ru: 'Давай рисовать!', reading: 'Daváy risavát\'!', tr: 'Hadi resim çizelim!' }
     ],
     smeshariki: {
-      episodeRu: 'Лосяш изобретает, Кар-Карыч поёт',
-      episodeTr: 'Losyaş icat yapıyor, Kar-Karıç şarkı söylüyor',
-      characters: ['Лосяш', 'Кар-Карыч', 'Пин'],
-      searchQuery: 'Смешарики Лосяш изобретение Кар-Карыч поёт серия',
-      contextTr: 'Bilim insanı geyik Losyaş sürekli yeni bir şey icat eder, eski aktör karga Kar-Karıç ise şarkı söylemeyi ve hikaye anlatmayı sever. Her karakterin farklı bir hobisi olması, bu kelimeleri karakterlerle ilişkilendirerek ezberlemeyi kolaylaştırır.',
+      source: 'kukhnya',
+      episodeRu: 'Хобби после смены',
+      episodeTr: 'Vardiya Sonrası Hobiler',
+      characters: ['Костя', 'Настя', 'Сеня', 'Федя'],
+      searchQuery: 'Кухня сериал после смены Костя Настя Сеня Федя',
+      contextTr: '«Кухня» ekibinin vardiya sonrası sohbetinden uyarlama: karakterler boş zamanlarında yapmayı sevdikleri şeyleri anlatır.',
       miniDialogue: [
-        { speaker: 'Пин', ru: 'Лосяш, что ты любишь делать?', reading: "Lasyásh, shto ty lyúbish' délat'?", tr: 'Losyaş, ne yapmayı seversin?' },
-        { speaker: 'Лосяш', ru: 'Я люблю изобретать.', reading: "Ya lyublyú izabritát'.", tr: 'İcat etmeyi severim.' },
-        { speaker: 'Кар-Карыч', ru: 'А я люблю петь!', reading: "A ya lyublyú pyet'!", tr: 'Ben de şarkı söylemeyi severim!' },
-        { speaker: 'Пин', ru: 'А я люблю чинить роботов!', reading: "A ya lyublyú chinít' rabótav!", tr: 'Ben de robot tamir etmeyi severim!' },
-        { speaker: 'Кар-Карыч', ru: 'О, тогда почини мой голос, он скрипит!', reading: 'O, tagdá pachiní moy gólas, on skripít!', tr: 'O zaman sesimi tamir et, gıcırdıyor!' },
-        { speaker: 'Лосяш', ru: 'Ха! Это уже не техника, а искусство.', reading: "Kha! Éta uzhé ni tékhnika, a iskústva.", tr: 'Ha! O artık teknik değil, sanat.' }
+        { speaker: 'Настя', ru: 'Что вы любите делать в свободное время?', reading: 'Şto vı lyúbiti délat f svabódnaye vrémya?', tr: 'Boş zamanınızda ne yapmayı seversiniz?' },
+        { speaker: 'Костя', ru: 'Я люблю играть музыку.', reading: 'Ya lyublyú igrát múzıku.', tr: 'Müzik çalmayı severim.' },
+        { speaker: 'Сеня', ru: 'А я люблю придумывать шутки.', reading: 'A ya lyublyú pridúmıvat şútki.', tr: 'Ben de şaka üretmeyi severim.' },
+        { speaker: 'Федя', ru: 'Давай лучше смотреть футбол.', reading: 'Daváy lúçşe smatrét futból.', tr: 'En iyisi hadi futbol izleyelim.' },
+        { speaker: 'Настя', ru: 'Сначала закончим смену!', reading: 'Snaçála zakónçim smyénu!', tr: 'Önce vardiyayı bitirelim!' },
       ],
       questions: [
-        { prompt: 'Losyaş neyi sevdiğini söyler?', correct: 'Изобретать', options: shuffle(['Изобретать', 'Петь', 'Рисовать', 'Читать']) },
-        { prompt: 'Kar-Karıç hangi hobiyi sever?', correct: 'Петь', options: shuffle(['Петь', 'Изобретать', 'Готовить', 'Спать']) },
-        { prompt: 'Pin\'in hobisi nedir?', correct: 'Чинить роботов', options: shuffle(['Чинить роботов', 'Петь', 'Рисовать', 'Готовить']) },
-        { prompt: 'Kar-Karıç şaka yaparak Pin\'den ne ister?', correct: 'Почини мой голос', options: shuffle(['Почини мой голос', 'Почини робота', 'Почини стул', 'Почини часы']) }
+        { prompt: 'Kostya ne yapmayı sever?', correct: 'Играть музыку', options: shuffle(['Играть музыку', 'Рисовать', 'Готовить суп', 'Читать газету']) },
+        { prompt: 'Senya’nın hobisi nedir?', correct: 'Придумывать шутки', options: shuffle(['Придумывать шутки', 'Петь оперу', 'Чинить машину', 'Собирать марки']) },
+        { prompt: 'Fedya ne önerir?', correct: 'Смотреть футбол', options: shuffle(['Смотреть футбол', 'Играть в теннис', 'Читать книгу', 'Идти в театр']) },
       ]
     }
   },
@@ -1248,34 +1241,34 @@ Bir metinde her kelimeyi bilmesen bile, cümleleri birbirine bağlayan kelimeler
       { ru: 'Я уронил букет в суп!', tr: 'Buketi çorbaya düşürdüm!', scrambled: ['в суп!', 'букет', 'уронил', 'Я'], correct: ['Я', 'уронил', 'букет', 'в суп!'] }
     ],
     sceneTitle: 'Kulaklıktaki Manitacı',
-    sceneContext: 'Dima\'nın ilk buluşmasında Töma kulaklıkla komut veriyor — her şey ters giden klasik bir sit-com gecesi.',
+    sceneContext: 'Maks\'nın ilk buluşmasında Töma kulaklıkla komut veriyor — her şey ters giden klasik bir sit-com gecesi.',
     dialogue: [
-      { speaker: 'Tyoma', ru: 'Дима, слушай внимательно. Открой ей дверь. Это романтика!', reading: 'Díma, slúshay vnimátel\'na. Atkróy yey dvér. Éta romántika!', tr: 'Dima, dikkatle dinle. Ona kapıyı aç. Bu romantizm!' },
-      { speaker: 'Dima', ru: 'Марина, вот наш столик. Свечи, цветы — всё специально для тебя.', reading: 'Marína, vot nash stólik. Svechí, tsvetý — fsyo spetsiál\'na dlya tibyá.', tr: 'Marina, işte masamız. Mumlar, çiçekler — hepsi özellikle senin için.' },
-      { speaker: 'Marina', ru: 'Красиво... А кто этот мужчина, который кричит из наушника?', reading: 'Krasíva... A kta état múzhchina, katóryy krichít iz naúshnika?', tr: 'Güzel... Peki bu kulaklıktan bağıran adam kim?' },
-      { speaker: 'Tyoma', ru: 'Скажи: «Ты сегодня очень красивая!»', reading: 'Skazhí: «Ty sivódnya óchen\' krasívaya!»', tr: 'De ki: "Bugün çok güzelsin!"' },
-      { speaker: 'Dima', ru: 'Ты сегодня очень... Ой! Я уронил букет в суп!', reading: 'Ty sivódnya óchen\'... Oy! Ya uroníl bukét f sup!', tr: 'Bugün çok... Ay! Buketi çorbaya düşürdüm!' },
-      { speaker: 'Marina', ru: 'Не волнуйся. Это самый неловкий и самый смешной ужин в моей жизни. Я влюбляюсь.', reading: 'Ne valnúysya. Éta sámyy nilófkiy i sámyy smeshnóy úzhin v mayó zhýzni. Ya vlyublyáyus\'.', tr: 'Endişelenme. Bu hayatımdaki en utandırıcı ve en komik akşam yemeği. Âşık oluyorum.' }
+      { speaker: 'Senya', ru: 'Макс, слушай внимательно. Открой ей дверь. Это романтика!', reading: 'Maks, slúshay vnimátel\'na. Atkróy yey dvér. Éta romántika!', tr: 'Maks, dikkatle dinle. Ona kapıyı aç. Bu romantizm!' },
+      { speaker: 'Maks', ru: 'Вика, вот наш столик. Свечи, цветы — всё специально для тебя.', reading: 'Víka, vot nash stólik. Svechí, tsvetý — fsyo spetsiál\'na dlya tibyá.', tr: 'Vika, işte masamız. Mumlar, çiçekler — hepsi özellikle senin için.' },
+      { speaker: 'Vika', ru: 'Красиво... А кто этот мужчина, который кричит из наушника?', reading: 'Krasíva... A kta état múzhchina, katóryy krichít iz naúshnika?', tr: 'Güzel... Peki bu kulaklıktan bağıran adam kim?' },
+      { speaker: 'Senya', ru: 'Скажи: «Ты сегодня очень красивая!»', reading: 'Skazhí: «Ty sivódnya óchen\' krasívaya!»', tr: 'De ki: "Bugün çok güzelsin!"' },
+      { speaker: 'Maks', ru: 'Ты сегодня очень... Ой! Я уронил букет в суп!', reading: 'Ty sivódnya óchen\'... Oy! Ya uroníl bukét f sup!', tr: 'Bugün çok... Ay! Buketi çorbaya düşürdüm!' },
+      { speaker: 'Vika', ru: 'Не волнуйся. Это самый неловкий и самый смешной ужин в моей жизни. Я влюбляюсь.', reading: 'Ne valnúysya. Éta sámyy nilófkiy i sámyy smeshnóy úzhin v mayó zhýzni. Ya vlyublyáyus\'.', tr: 'Endişelenme. Bu hayatımdaki en utandırıcı ve en komik akşam yemeği. Âşık oluyorum.' }
     ],
     smeshariki: {
       source: 'kukhnya',
-      episodeRu: 'Первое свидание в «Ван Гоге»',
+      episodeRu: 'Первое свидание в «Клод Монее»',
       episodeTr: '"Van Gogh"ta İlk Randevu',
-      characters: ['Лёша', 'Нина', 'Шеф Пётр', 'Гость'],
+      characters: ['Макс', 'Вика', 'Шеф Баринов', 'Гость'],
       searchQuery: 'Кухня сериал свидание в ресторане смешная сцена',
-      contextTr: '«Кухня» dizisinin ruhuna yazılmış bir sahne: «Ван Гог» restoranında bir ilk randevu. Garson Lyosha, mumlar ve buket hazır — geriye yalnızca hiçbir şeyi düşürmemek kalıyor. Elbette bir şeyler düşecek.',
+      contextTr: '«Кухня» dizisinin ruhuna yazılmış bir sahne: «Клод Моне» restoranında bir ilk randevu. Garson Maks, mumlar ve buket hazır — geriye yalnızca hiçbir şeyi düşürmemek kalıyor. Elbette bir şeyler düşecek.',
       miniDialogue: [
-        { speaker: 'Лёша', ru: 'Добрый вечер! Столик на двоих? Свечи — есть, меню — есть. Романтика!', reading: 'Dóbry vécher! Stólik na dvóikh? Svyéchi — yest\', menyú — yest\'. Ramántika!', tr: 'İyi akşamlar! İki kişilik masa? Mumlar — var, menü — var. Romantizm!' },
+        { speaker: 'Макс', ru: 'Добрый вечер! Столик на двоих? Свечи — есть, меню — есть. Романтика!', reading: 'Dóbry vécher! Stólik na dvóikh? Svyéchi — yest\', menyú — yest\'. Ramántika!', tr: 'İyi akşamlar! İki kişilik masa? Mumlar — var, menü — var. Romantizm!' },
         { speaker: 'Гость', ru: 'Спасибо! Мы на первом свидании. Всё должно быть идеально.', reading: 'Spasíba! Mы na pyérvam sidániyi. Fsyó dólzhna byt\' idiyál\'na.', tr: 'Teşekkürler! İlk randevumuzdayız. Her şey mükemmel olmalı.' },
-        { speaker: 'Нина', ru: 'Лёша, не перепутай столики! В прошлый раз ты поздравил не ту пару.', reading: 'Lyósha, ni piryputyáy stóliki! F próshly ras ty pazdravíl ne tú páru.', tr: 'Lyosha, masaları karıştırma! Geçen sefer yanlış çifti tebrik ettin.' },
-        { speaker: 'Лёша', ru: '(приносит два блюда) Для вас... и для вас! М-м... кажется, это не тот столик.', reading: '(prinósit dva blyúda) Dlya vas... i dlya vas! M-m... kázhetsya, éta ne tot stólik.', tr: '(iki tabak getirir) Sizin için... ve sizin için! Mmm... galiba bu doğru masa değil.' },
-        { speaker: 'Шеф Пётр', ru: '(из кухни) ЛЁША! Это блюдо — для столика номер девять! Быстро! Замена!', reading: '(iz kúkhni) LYÓSHA! Éta blyúda — dlya stólika nómir dyévyat\'! Býstra! Zamyéna!', tr: '(mutfaktan) LYOSHA! O yemek — dokuz numaralı masa için! Çabuk! Değiştir!' },
+        { speaker: 'Вика', ru: 'Макс, не перепутай столики! В прошлый раз ты поздравил не ту пару.', reading: 'Lyósha, ni piryputyáy stóliki! F próshly ras ty pazdravíl ne tú páru.', tr: 'Maks, masaları karıştırma! Geçen sefer yanlış çifti tebrik ettin.' },
+        { speaker: 'Макс', ru: '(приносит два блюда) Для вас... и для вас! М-м... кажется, это не тот столик.', reading: '(prinósit dva blyúda) Dlya vas... i dlya vas! M-m... kázhetsya, éta ne tot stólik.', tr: '(iki tabak getirir) Sizin için... ve sizin için! Mmm... galiba bu doğru masa değil.' },
+        { speaker: 'Шеф Баринов', ru: '(из кухни) ЛЁША! Это блюдо — для столика номер девять! Быстро! Замена!', reading: '(iz kúkhni) LYÓSHA! Éta blyúda — dlya stólika nómir dyévyat\'! Býstra! Zamyéna!', tr: '(mutfaktan) LYOSHA! O yemek — dokuz numaralı masa için! Çabuk! Değiştir!' },
         { speaker: 'Гость', ru: 'Ничего страшного! Наше первое свидание уже легендарно.', reading: 'Nichivó stráshnava! Náshe pyérvaye sidániye uzhe lyegándarna.', tr: 'Önemli değil! İlk randevumuz çoktan efsane oldu.' }
       ],
       questions: [
         { prompt: 'Мisafirler masada neyi kutluyor?', correct: 'Первое свидание', options: shuffle(['Первое свидание', 'День рождения', 'Помолвку', 'Годовщину']) },
-        { prompt: 'Nina, Lyosha\'yı neye karşı uyarır?', correct: 'Не перепутай столики', options: shuffle(['Не перепутай столики', 'Не разбей стакан', 'Не опоздай', 'Не забудь счёт']) },
-        { prompt: 'Şef Пётр ne diye bağırır?', correct: 'Замена!', options: shuffle(['Замена!', 'Пожар!', 'Ура!', 'Помогите!']) },
+        { prompt: 'Vika, Maks\'yı neye karşı uyarır?', correct: 'Не перепутай столики', options: shuffle(['Не перепутай столики', 'Не разбей стакан', 'Не опоздай', 'Не забудь счёт']) },
+        { prompt: 'Şef Баринов ne diye bağırır?', correct: 'Замена!', options: shuffle(['Замена!', 'Пожар!', 'Ура!', 'Помогите!']) },
         { prompt: 'Misafir sahnenin sonunda ne der?', correct: 'Уже легендарно', options: shuffle(['Уже легендарно', 'Очень плохо', 'Мы уходим', 'Никогда больше']) }
       ]
     }
@@ -1307,14 +1300,14 @@ Bir metinde her kelimeyi bilmesen bile, cümleleri birbirine bağlayan kelimeler
       { ru: 'Я скучаю по тебе, зайка.', tr: 'Seni özlüyorum, tavşanım.', scrambled: ['зайка.', 'по тебе,', 'скучаю', 'Я'], correct: ['Я', 'скучаю', 'по тебе,', 'зайка.'] }
     ],
     sceneTitle: 'İki Güvercin Krizi',
-    sceneContext: 'Evli çift Jenya ve Lena\'nın şekerlemeleri, Töma\'nın ise sabrı taşar — klasik kafe sahnesi.',
+    sceneContext: 'Evli çift Jenya ve Nastya\'nın şekerlemeleri, Töma\'nın ise sabrı taşar — klasik kafe sahnesi.',
     dialogue: [
-      { speaker: 'Zhenya', ru: 'Лена, солнышко моё, доброе утро! Кофе уже готов.', reading: 'Lyéna, sólnyshka mayó, dóbraye útra! Kófe uzhe gótav.', tr: 'Lena, güneşim, günaydın! Kahve hazır.' },
-      { speaker: 'Lena', ru: 'Спасибо, котёнок. Ты самый лучший!', reading: 'Spasíba, katyónak. Ty sámyy lúchshiy!', tr: 'Sağ ol kedicik. Sen en iyisisin!' },
-      { speaker: 'Tyoma', ru: 'Фу! Вы опять как голубки! Мне больно на это смотреть!', reading: 'Fu! Vy apyát\' kak galúbki! Mne ból\'na na éta smatrét\'!', tr: 'İğrenç! Yine iki güvercin gibi oldunuz! Bunu izlemek canımı acıtıyor!' },
+      { speaker: 'Zhenya', ru: 'Настя, солнышко моё, доброе утро! Кофе уже готов.', reading: 'Lyéna, sólnyshka mayó, dóbraye útra! Kófe uzhe gótav.', tr: 'Nastya, güneşim, günaydın! Kahve hazır.' },
+      { speaker: 'Nastya', ru: 'Спасибо, котёнок. Ты самый лучший!', reading: 'Spasíba, katyónak. Ty sámyy lúchshiy!', tr: 'Sağ ol kedicik. Sen en iyisisin!' },
+      { speaker: 'Senya', ru: 'Фу! Вы опять как голубки! Мне больно на это смотреть!', reading: 'Fu! Vy apyát\' kak galúbki! Mne ból\'na na éta smatrét\'!', tr: 'İğrenç! Yine iki güvercin gibi oldunuz! Bunu izlemek canımı acıtıyor!' },
       { speaker: 'Zhenya', ru: 'Однажды ты тоже влюбишься — и будешь говорить «зайка».', reading: 'Adnazhdý ty tózhe vlyúbish\'sya — i búdyeš gavarít\' «záyka».', tr: 'Bir gün sen de âşık olacaksın — ve "tavşanım" diyeceksin.' },
-      { speaker: 'Tyoma', ru: 'Никогда! Я? «Зайка»? Невозможно!', reading: 'Nikagdá! Ya? «Záyka»? Nyevazmózhna!', tr: 'Asla! Ben mi? "Tavşanım"? İmkânsız!' },
-      { speaker: 'Marina', ru: 'Он вчера назвал «зайкой» свой костюм.', reading: 'On vcherá nazvál «záykay» svóy kastyúm.', tr: 'Dün akşam takım elbisesine "tavşanım" dedi.' }
+      { speaker: 'Senya', ru: 'Никогда! Я? «Зайка»? Невозможно!', reading: 'Nikagdá! Ya? «Záyka»? Nyevazmózhna!', tr: 'Asla! Ben mi? "Tavşanım"? İmkânsız!' },
+      { speaker: 'Vika', ru: 'Он вчера назвал «зайкой» свой костюм.', reading: 'On vcherá nazvál «záykay» svóy kastyúm.', tr: 'Dün akşam takım elbisesine "tavşanım" dedi.' }
     ]
   },
   {
@@ -1344,14 +1337,14 @@ Bir metinde her kelimeyi bilmesen bile, cümleleri birbirine bağlayan kelimeler
       { ru: 'Он красиво ухаживает за ней.', tr: 'Ona güzelce kur yapıyor.', scrambled: ['за ней.', 'красиво', 'ухаживает', 'Он'], correct: ['Он', 'красиво', 'ухаживает', 'за ней.'] }
     ],
     sceneTitle: 'Çift İlan Ediyoruz',
-    sceneContext: 'Dima, Marina\'yı arkadaş grubuna "kız arkadaşım" olarak tanıtırken Töma\'nın tek kelimelik komedi bombası patlar.',
+    sceneContext: 'Maks, Vika\'yı arkadaş grubuna "kız arkadaşım" olarak tanıtırken Töma\'nın tek kelimelik komedi bombası patlar.',
     dialogue: [
-      { speaker: 'Dima', ru: 'Ребята, познакомьтесь! Это Марина. Мы... короче, мы пара.', reading: 'Rebyáta, paznakómtyes\'! Éta Marína. My... kórachye, my para.', tr: 'Çocuklar, tanışın! Bu Marina. Biz... kısacası biz bir çiftiz.' },
-      { speaker: 'Tyoma', ru: 'Пара?! Вы встречаетесь три дня!', reading: 'Para?! Vy vstrycháyetes\' tri dnya!', tr: 'Çift mi?! Üç gündür çıkıyorsunuz!' },
-      { speaker: 'Marina', ru: 'Четыре дня. И он не ревнивый — это большой плюс.', reading: 'Chetýre dnya. I on ne rivnívyy — éta bal\'shóy plyus.', tr: 'Dört gün. Ve o kıskanç değil — bu büyük artı.' },
+      { speaker: 'Maks', ru: 'Ребята, познакомьтесь! Это Вика. Мы... короче, мы пара.', reading: 'Rebyáta, paznakómtyes\'! Éta Víka. My... kórachye, my para.', tr: 'Çocuklar, tanışın! Bu Vika. Biz... kısacası biz bir çiftiz.' },
+      { speaker: 'Senya', ru: 'Пара?! Вы встречаетесь три дня!', reading: 'Para?! Vy vstrycháyetes\' tri dnya!', tr: 'Çift mi?! Üç gündür çıkıyorsunuz!' },
+      { speaker: 'Vika', ru: 'Четыре дня. И он не ревнивый — это большой плюс.', reading: 'Chetýre dnya. I on ne rivnívyy — éta bal\'shóy plyus.', tr: 'Dört gün. Ve o kıskanç değil — bu büyük artı.' },
       { speaker: 'Zhenya', ru: 'Поздравляю! Моё сердце радуется за вас.', reading: 'Pazdravlyáyú! Mayó sértse ráduyetsya za vas.', tr: 'Tebrikler! Kalbim sizin için seviniyor.' },
-      { speaker: 'Tyoma', ru: 'Я тоже хочу отношения... минут на двадцать.', reading: 'Ya tózhe khachú anashéniya... minút na dvátsat\'.', tr: 'Ben de ilişki istiyorum... yirmi dakikalığına.' },
-      { speaker: 'Lena', ru: 'Тёма!!!', reading: 'Tyóma!!!', tr: 'Töma!!!' }
+      { speaker: 'Senya', ru: 'Я тоже хочу отношения... минут на двадцать.', reading: 'Ya tózhe khachú anashéniya... minút na dvátsat\'.', tr: 'Ben de ilişki istiyorum... yirmi dakikalığına.' },
+      { speaker: 'Nastya', ru: 'Сеня!!!', reading: 'Sénya!!!', tr: 'Töma!!!' }
     ]
   },
   {
@@ -1896,9 +1889,9 @@ Bir metinde her kelimeyi bilmesen bile, cümleleri birbirine bağlayan kelimeler
     sceneContext: 'Dizi terasında bir tarafın duygusunu açtığı, diğerinin nazikçe sınır koyduğu sahne.',
     dialogue: [
       { speaker: 'Kirill', ru: 'Слушай, мне с тобой легко. Хочу признаться: ты мне нравишься.', reading: 'Slúshay, mne s tabóy lekhkó. Khachú priznát\'sya: ty mne nrávish\'sya.', tr: 'Dinle, seninle olmak kolay. İtiraf edeyim: sen hoşuma gidiyorsun.' },
-      { speaker: 'Lena', ru: 'Спасибо. Ты меня не смущай... Но давай останемся друзьями.', reading: 'Spasíba. Ty minyá ne smushcháy... No daváy astánemsya druz\'yámi.', tr: 'Teşekkürler. Beni utandırma... Ama arkadaş kalalım.' },
+      { speaker: 'Nastya', ru: 'Спасибо. Ты меня не смущай... Но давай останемся друзьями.', reading: 'Spasíba. Ty minyá ne smushcháy... No daváy astánemsya druz\'yámi.', tr: 'Teşekkürler. Beni utandırma... Ama arkadaş kalalım.' },
       { speaker: 'Kirill', ru: 'Понял. Без обид. Серьёзно.', reading: 'Pónyal. Bez abíd. Sir\'yózna.', tr: 'Anladım. Alınganlık yok. Cidden.' },
-      { speaker: 'Lena', ru: 'Спасибо, что не обиделся.', reading: 'Spasíba, shto ne abídel\'sya.', tr: 'Alınmadığın için teşekkürler.' }
+      { speaker: 'Nastya', ru: 'Спасибо, что не обиделся.', reading: 'Spasíba, shto ne abídel\'sya.', tr: 'Alınmadığın için teşekkürler.' }
     ]
   },
   {
@@ -1966,11 +1959,11 @@ Bir metinde her kelimeyi bilmesen bile, cümleleri birbirine bağlayan kelimeler
     sceneContext: 'Jenya Sevgililer Günü\'nü unutur; Töma devreye "efsanevi" yedek planıyla girer.',
     dialogue: [
       { speaker: 'Zhenya', ru: 'Сегодня четырнадцатое февраля?! Я забыл подарок!', reading: 'Sivódnya chetýrnadtsataye fyevrálya?! Ya zabýl padárak!', tr: 'Bugün 14 Şubat mı?! Hediyeyi unuttum!' },
-      { speaker: 'Tyoma', ru: 'Спокойно. У меня запасной план. Один звонок — и через час у вас дома сто воздушных шариков.', reading: 'Spakóyna. U minyá zapasnóy plan. Adín zvának — i cherez chás u vas dóma sta vózduşnykh sharíkav.', tr: 'Sakin ol. Yedek planım var. Tek telefon — bir saat sonra evinizde yüz balon.' },
-      { speaker: 'Lena', ru: 'Сто шариков? Романтично... Но у меня аллергия, Тёма.', reading: 'Sta sharíkav? Ramántichna... No u minyá allergíya, Tyóma.', tr: 'Yüz balon mu? Romantik... Ama benim alerjim var, Töma.' },
-      { speaker: 'Zhenya', ru: 'Лена, прости. Моё признание в любви: ты важнее всех праздников.', reading: 'Lyéna, prastí. Mayó priznániye v lyubví: ty vázhneye fsyekh praznikav.', tr: 'Lena, affet. Aşk itirafım şu: sen tüm bayramlardan daha önemlisin.' },
-      { speaker: 'Lena', ru: 'Вот это — лучший сюрприз. Ты меня порадовал.', reading: 'Vot éta — lúchshiy syurpríz. Ty minyá paradóval.', tr: 'İşte bu en iyi sürpriz. Beni sevindirdin.' },
-      { speaker: 'Tyoma', ru: 'А шарики я всё-таки закажу. Для драмы!', reading: 'A sharíki ya fsyo-táki zakazhú. Dlya drámy!', tr: 'Balonları yine de söyleyeceğim. Dramatik olsun diye!' }
+      { speaker: 'Senya', ru: 'Спокойно. У меня запасной план. Один звонок — и через час у вас дома сто воздушных шариков.', reading: 'Spakóyna. U minyá zapasnóy plan. Adín zvának — i cherez chás u vas dóma sta vózduşnykh sharíkav.', tr: 'Sakin ol. Yedek planım var. Tek telefon — bir saat sonra evinizde yüz balon.' },
+      { speaker: 'Nastya', ru: 'Сто шариков? Романтично... Но у меня аллергия, Сеня.', reading: 'Sta sharíkav? Ramántichna... No u minyá allergíya, Sénya.', tr: 'Yüz balon mu? Romantik... Ama benim alerjim var, Töma.' },
+      { speaker: 'Zhenya', ru: 'Настя, прости. Моё признание в любви: ты важнее всех праздников.', reading: 'Lyéna, prastí. Mayó priznániye v lyubví: ty vázhneye fsyekh praznikav.', tr: 'Nastya, affet. Aşk itirafım şu: sen tüm bayramlardan daha önemlisin.' },
+      { speaker: 'Nastya', ru: 'Вот это — лучший сюрприз. Ты меня порадовал.', reading: 'Vot éta — lúchshiy syurpríz. Ty minyá paradóval.', tr: 'İşte bu en iyi sürpriz. Beni sevindirdin.' },
+      { speaker: 'Senya', ru: 'А шарики я всё-таки закажу. Для драмы!', reading: 'A sharíki ya fsyo-táki zakazhú. Dlya drámy!', tr: 'Balonları yine de söyleyeceğim. Dramatik olsun diye!' }
     ]
   },
   {
@@ -2000,14 +1993,14 @@ Bir metinde her kelimeyi bilmesen bile, cümleleri birbirine bağlayan kelimeler
       { ru: 'У нас разные привычки, но общий быт.', tr: 'Alışkanlıklarımız farklı ama ev düzenimiz ortak.', scrambled: ['быт.', 'общий', 'но', 'привычки,', 'разные', 'У нас'], correct: ['У нас', 'разные', 'привычки,', 'но', 'общий', 'быт.'] }
     ],
     sceneTitle: 'Buzdolabındaki Çoraplar',
-    sceneContext: 'Jenya ve Lena birlikte yaşamaya başlar; Töma ise "özgürlük" nutukları çekmektedir.',
+    sceneContext: 'Jenya ve Nastya birlikte yaşamaya başlar; Töma ise "özgürlük" nutukları çekmektedir.',
     dialogue: [
-      { speaker: 'Zhenya', ru: 'Лена, мы теперь живём вместе! Общая квартира, общий быт...', reading: 'Lyéna, my tipér\' zhivyóm vméstye! Obshchaya kvartíra, obshchiy byt...', tr: 'Lena, artık birlikte yaşıyoruz! Ortak daire, ortak ev düzeni...' },
-      { speaker: 'Lena', ru: 'Носки не общие! Я нашла твои носки в холодильнике. Это беспорядок!', reading: 'Nóski ne obshchiye! Ya nashlá tvai nóski f chaladíl\'nike. Éta bisparyádak!', tr: 'Çoraplar ortak değil! Senin çoraplarını buzdolabında buldum. Bu dağınıklık!' },
+      { speaker: 'Zhenya', ru: 'Настя, мы теперь живём вместе! Общая квартира, общий быт...', reading: 'Lyéna, my tipér\' zhivyóm vméstye! Obshchaya kvartíra, obshchiy byt...', tr: 'Nastya, artık birlikte yaşıyoruz! Ortak daire, ortak ev düzeni...' },
+      { speaker: 'Nastya', ru: 'Носки не общие! Я нашла твои носки в холодильнике. Это беспорядок!', reading: 'Nóski ne obshchiye! Ya nashlá tvai nóski f chaladíl\'nike. Éta bisparyádak!', tr: 'Çoraplar ortak değil! Senin çoraplarını buzdolabında buldum. Bu dağınıklık!' },
       { speaker: 'Zhenya', ru: 'Прости, привычка. Давай разделим: я готовлю, ты следишь за порядком.', reading: 'Prastí, privýchka. Daváy razdylím: ya gatávlyu, ty sledísh\' za paryádkam.', tr: 'Affet, alışkanlık. Bölelim: ben yemek yapayım, sen düzene dikkat et.' },
-      { speaker: 'Lena', ru: 'Договорились. Но если я снова найду носки в холодильнике...', reading: 'Dagavarílisy. No yésli ya snóva naydú nóski f chaladíl\'nike...', tr: 'Anlaştık. Ama buzdolabında yine çorap bulursam...' },
-      { speaker: 'Tyoma', ru: 'Вы обсуждаете носки, а я говорю о свободе! Жить вместе? Никогда!', reading: 'Vy absuzhdayete nóski, a ya gavaryú o svabódye! Zhit\' vméstye? Nikagdá!', tr: 'Siz çorapları tartışıyorsunuz, ben özgürlükten bahsediyorum! Birlikte yaşamak mı? Asla!' },
-      { speaker: 'Marina', ru: 'Он говорит это уже пять лет.', reading: 'On gavarít éta uzhe pyat\' lyet.', tr: 'Bunu söyleyeli beş yıl oldu.' }
+      { speaker: 'Nastya', ru: 'Договорились. Но если я снова найду носки в холодильнике...', reading: 'Dagavarílisy. No yésli ya snóva naydú nóski f chaladíl\'nike...', tr: 'Anlaştık. Ama buzdolabında yine çorap bulursam...' },
+      { speaker: 'Senya', ru: 'Вы обсуждаете носки, а я говорю о свободе! Жить вместе? Никогда!', reading: 'Vy absuzhdayete nóski, a ya gavaryú o svabódye! Zhit\' vméstye? Nikagdá!', tr: 'Siz çorapları tartışıyorsunuz, ben özgürlükten bahsediyorum! Birlikte yaşamak mı? Asla!' },
+      { speaker: 'Vika', ru: 'Он говорит это уже пять лет.', reading: 'On gavarít éta uzhe pyat\' lyet.', tr: 'Bunu söyleyeli beş yıl oldu.' }
     ]
   },
   {
@@ -2037,34 +2030,34 @@ Bir metinde her kelimeyi bilmesen bile, cümleleri birbirine bağlayan kelimeler
       { ru: 'Она тихо ответила: «Я согласна».', tr: 'O sessizce cevap verdi: "Kabul ediyorum".', scrambled: ['«Я согласна».', 'ответила:', 'тихо', 'Она'], correct: ['Она', 'тихо', 'ответила:', '«Я согласна».'] }
     ],
     sceneTitle: 'Güvercinli Teklif',
-    sceneContext: 'Töma, Dima\'nın evlilik teklifini "efsanevi" bir prodüksiyona çevirmeye çalışır; sonuç klasik bir sit-com anıdır.',
+    sceneContext: 'Töma, Maks\'nın evlilik teklifini "efsanevi" bir prodüksiyona çevirmeye çalışır; sonuç klasik bir sit-com anıdır.',
     dialogue: [
-      { speaker: 'Tyoma', ru: 'План: ресторан, оркестр, сто роз и голубь с кольцом. Это будет легендарно!', reading: 'Plan: ristarán, arkéstr, sta róz i gólub\' s kal\'tsóm. Éta búdit lyendárna!', tr: 'Plan: restoran, orkestra, yüz gül ve yüzüklü güvercin. Bu efsanevi olacak!' },
-      { speaker: 'Dima', ru: 'Тёма, это слишком. Я просто встану на колени и скажу: «Ты выйдешь за меня?»', reading: 'Tyóma, éta slíshkam. Ya prósta vstánu na kályeni i skazhú: «Ty výydeş\' za minyá?»', tr: 'Töma, bu fazla. Ben sadece diz çökeceğim ve diyeceğim ki: "Benimle evlenir misin?"' },
-      { speaker: 'Tyoma', ru: 'А голубя можно оставить?', reading: 'A gólubya mózhna astávit\'?', tr: 'Peki güvercin kalsın mı?' },
-      { speaker: 'Dima', ru: 'Без голубя! Мои руки дрожат от волнения...', reading: 'Byez gólubya! Maí rúki drazhát at valnéniya...', tr: 'Güvercinsiz! Ellerim heyecandan titriyor...' },
-      { speaker: 'Marina', ru: 'Дима... да! Я согласна! Это самый незабываемый вечер в моей жизни.', reading: 'Díma... da! Ya saglásna! Éta sámyy nezabyváyemıy vécher v mayó zhýzni.', tr: 'Dima... evet! Kabul ediyorum! Bu hayatımdaki en unutulmaz akşam.' },
+      { speaker: 'Senya', ru: 'План: ресторан, оркестр, сто роз и голубь с кольцом. Это будет легендарно!', reading: 'Plan: ristarán, arkéstr, sta róz i gólub\' s kal\'tsóm. Éta búdit lyendárna!', tr: 'Plan: restoran, orkestra, yüz gül ve yüzüklü güvercin. Bu efsanevi olacak!' },
+      { speaker: 'Maks', ru: 'Сеня, это слишком. Я просто встану на колени и скажу: «Ты выйдешь за меня?»', reading: 'Sénya, éta slíshkam. Ya prósta vstánu na kályeni i skazhú: «Ty výydeş\' za minyá?»', tr: 'Töma, bu fazla. Ben sadece diz çökeceğim ve diyeceğim ki: "Benimle evlenir misin?"' },
+      { speaker: 'Senya', ru: 'А голубя можно оставить?', reading: 'A gólubya mózhna astávit\'?', tr: 'Peki güvercin kalsın mı?' },
+      { speaker: 'Maks', ru: 'Без голубя! Мои руки дрожат от волнения...', reading: 'Byez gólubya! Maí rúki drazhát at valnéniya...', tr: 'Güvercinsiz! Ellerim heyecandan titriyor...' },
+      { speaker: 'Vika', ru: 'Макс... да! Я согласна! Это самый незабываемый вечер в моей жизни.', reading: 'Maks... da! Ya saglásna! Éta sámyy nezabyváyemıy vécher v mayó zhýzni.', tr: 'Maks... evet! Kabul ediyorum! Bu hayatımdaki en unutulmaz akşam.' },
       { speaker: 'Anlatıcı', ru: 'Голубь всё-таки прилетел. Кольцо уцелело. Легендарно.', reading: 'Gólub\' fsyo-táki prilyetél. Kal\'tsó atseléla. Lyendárna.', tr: 'Güvercin yine de geldi. Yüzük sağ kaldı. Efsanevi.' }
     ],
     smeshariki: {
       source: 'kukhnya',
       episodeRu: 'Предложение в ресторане',
       episodeTr: 'Restoranda Evlilik Teklifi',
-      characters: ['Гость', 'Семён', 'Лёша', 'Нина', 'Марта'],
+      characters: ['Гость', 'Сеня', 'Макс', 'Вика', 'Марта'],
       searchQuery: 'Кухня сериал предложение руки и сердца сцена',
-      contextTr: '«Кухня» tarzı bir klasik: bir misafir tatlıya yüzük saklayarak evlilik teklifi yapacak. Plan mükemmel — tek sorun tatlıyı Lyosha\'nın hazırlaması.',
+      contextTr: '«Кухня» tarzı bir klasik: bir misafir tatlıya yüzük saklayarak evlilik teklifi yapacak. Plan mükemmel — tek sorun tatlıyı Maks\'nın hazırlaması.',
       miniDialogue: [
         { speaker: 'Гость', ru: 'Сегодня вечером я предлагаю руку и сердце. Кольцо — в десерте. План идеальный!', reading: 'Sivódnya vyécharam ya pridlagáyu rúku i sérdtse. Kal\'tsó — f dyesértye. Plan idiál\'ny!', tr: 'Bu akşam evlilik teklifi ediyorum. Yüzük — tatlıda. Plan mükemmel!' },
-        { speaker: 'Семён', ru: 'Отличный план, сударь. Одна проблема: десерт сегодня готовит Лёша.', reading: 'Atlíchny plan, sudár\'. Adná práblima: dyesért sivódnya gótavit Lyósha.', tr: 'Mükemmel plan efendim. Tek sorun: bugün tatlıyı Lyosha hazırlıyor.' },
-        { speaker: 'Лёша', ru: 'Я всё понял! Кольцо — в десерт, десерт — на столик. Легко!', reading: 'Ya fsyó panyál! Kal\'tsó — f dyesért, dyesért — na stólik. Légka!', tr: 'Her şeyi anladım! Yüzük — tatlıya, tatlı — masaya. Kolay!' },
-        { speaker: 'Нина', ru: 'Лёша. Не съешь кольцо. Пожалуйста.', reading: 'Lyósha. Ni syésh kal\'tsó. Pazhálusta.', tr: 'Lyosha. Yüzüğü yeme. Lütfen.' },
-        { speaker: 'Лёша', ru: '(приносит десерт) Ваш десерт! И... небольшое волнение в соусе.', reading: '(prinósit dyesért) Vash dyesért! I... nyebal\'shóye valnyéniye f saúsye.', tr: '(tatlıyı getirir) Tatlıınız! Ve... sostaki küçük heyecan.' },
+        { speaker: 'Сеня', ru: 'Отличный план, сударь. Одна проблема: десерт сегодня готовит Макс.', reading: 'Atlíchny plan, sudár\'. Adná práblima: dyesért sivódnya gótavit Lyósha.', tr: 'Mükemmel plan efendim. Tek sorun: bugün tatlıyı Maks hazırlıyor.' },
+        { speaker: 'Макс', ru: 'Я всё понял! Кольцо — в десерт, десерт — на столик. Легко!', reading: 'Ya fsyó panyál! Kal\'tsó — f dyesért, dyesért — na stólik. Légka!', tr: 'Her şeyi anladım! Yüzük — tatlıya, tatlı — masaya. Kolay!' },
+        { speaker: 'Вика', ru: 'Макс. Не съешь кольцо. Пожалуйста.', reading: 'Lyósha. Ni syésh kal\'tsó. Pazhálusta.', tr: 'Maks. Yüzüğü yeme. Lütfen.' },
+        { speaker: 'Макс', ru: '(приносит десерт) Ваш десерт! И... небольшое волнение в соусе.', reading: '(prinósit dyesért) Vash dyesért! I... nyebal\'shóye valnyéniye f saúsye.', tr: '(tatlıyı getirir) Tatlıınız! Ve... sostaki küçük heyecan.' },
         { speaker: 'Гость', ru: '(встаёт на колени) Марта! Ты выйдешь за меня?', reading: '(fstayót na kólni) Márta! Ty výydyesh za minyá?', tr: '(diz çöker) Marta! Benimle evlenir misin?' },
         { speaker: 'Марта', ru: '(находит кольцо в клубнике) Я согласна! Незабываемо!', reading: '(nakhódit kal\'tsó f klubníkye) Ya saglásna! Nezabyváyima!', tr: '(yüzüğü çilekte bulur) Evet! Unutulmaz!' }
       ],
       questions: [
         { prompt: 'Misafir yüzüğü nereye saklar?', correct: 'В десерте', options: shuffle(['В десерте', 'В цветах', 'В кармане', 'В шампанском']) },
-        { prompt: 'Semyon\'un tek sorunu nedir?', correct: 'Десерт готовит Лёша', options: shuffle(['Десерт готовит Лёша', 'Ресторан закрыт', 'Кольцо потерялось', 'Марта опоздала']) },
+        { prompt: 'Senya\'un tek sorunu nedir?', correct: 'Десерт готовит Макс', options: shuffle(['Десерт готовит Макс', 'Ресторан закрыт', 'Кольцо потерялось', 'Марта опоздала']) },
         { prompt: 'Adam ne zaman diz çöker?', correct: 'После десерта', options: shuffle(['После десерта', 'До ужина', 'На кухне', 'У входа']) },
         { prompt: 'Marta ne cevap verir?', correct: 'Я согласна', options: shuffle(['Я согласна', 'Нет, спасибо', 'Я подумаю', 'Забей']) }
       ]
@@ -2097,14 +2090,14 @@ Bir metinde her kelimeyi bilmesen bile, cümleleri birbirine bağlayan kelimeler
       { ru: 'Верность важнее расстояния.', tr: 'Sadakat, mesafeden daha önemlidir.', scrambled: ['расстояния.', 'важнее', 'Верность'], correct: ['Верность', 'важнее', 'расстояния.'] }
     ],
     sceneTitle: 'Gece Yarısı Video Çağrısı',
-    sceneContext: 'Marina iş için başka şehirdedir; Dima ise saat dilimlerini hesaplamayı hâlâ öğrenmektedir.',
+    sceneContext: 'Vika iş için başka şehirdedir; Maks ise saat dilimlerini hesaplamayı hâlâ öğrenmektedir.',
     dialogue: [
-      { speaker: 'Dima', ru: 'Марина! Соединение отличное! Я так соскучился.', reading: 'Marína! Saydinyéniye atlíchwaye! Ya tak saskuchílsa.', tr: 'Marina! Bağlantı harika! Çok özledim.' },
-      { speaker: 'Marina', ru: 'Дима, у меня три часа ночи. Ты звонишь в третий раз.', reading: 'Díma, u minyá tri chasá nóchi. Ty zvónish\' f trétiy ras.', tr: 'Dima, bende gece üç. Üçüncü kez arıyorsun.' },
-      { speaker: 'Dima', ru: 'Любовь на расстоянии — это проверка. Я верю в нашу верность.', reading: 'Lyubóf\' na rastayánii — éta pravérka. Ya vyerú f náshu vérnast\'.', tr: 'Uzaktan aşk bir sınavdır. Sadakatimize inanıyorum.' },
-      { speaker: 'Marina', ru: 'Я тоже. Но влюблённым нужен сон. Терпеливо жди утра.', reading: 'Ya tózhe. No vlyublyónnym núzhen son. Tyrpyelíva zhdí útra.', tr: 'Ben de. Ama âşıklara uyku gerekir. Sabaha sabırla bekle.' },
-      { speaker: 'Dima', ru: 'Хорошо... Один вопрос: ты по мне скучаешь?', reading: 'Haraşó... Adín vápras: ty pa mné skucháyesh\'?', tr: 'Tamam... Bir soru: Beni özlüyor musun?' },
-      { speaker: 'Marina', ru: 'Дима!!! Спокойной ночи!', reading: 'Díma!!! Spakóynay nóchi!', tr: 'Dima!!! İyi geceler!' }
+      { speaker: 'Maks', ru: 'Вика! Соединение отличное! Я так соскучился.', reading: 'Víka! Saydinyéniye atlíchwaye! Ya tak saskuchílsa.', tr: 'Vika! Bağlantı harika! Çok özledim.' },
+      { speaker: 'Vika', ru: 'Макс, у меня три часа ночи. Ты звонишь в третий раз.', reading: 'Maks, u minyá tri chasá nóchi. Ty zvónish\' f trétiy ras.', tr: 'Maks, bende gece üç. Üçüncü kez arıyorsun.' },
+      { speaker: 'Maks', ru: 'Любовь на расстоянии — это проверка. Я верю в нашу верность.', reading: 'Lyubóf\' na rastayánii — éta pravérka. Ya vyerú f náshu vérnast\'.', tr: 'Uzaktan aşk bir sınavdır. Sadakatimize inanıyorum.' },
+      { speaker: 'Vika', ru: 'Я тоже. Но влюблённым нужен сон. Терпеливо жди утра.', reading: 'Ya tózhe. No vlyublyónnym núzhen son. Tyrpyelíva zhdí útra.', tr: 'Ben de. Ama âşıklara uyku gerekir. Sabaha sabırla bekle.' },
+      { speaker: 'Maks', ru: 'Хорошо... Один вопрос: ты по мне скучаешь?', reading: 'Haraşó... Adín vápras: ty pa mné skucháyesh\'?', tr: 'Tamam... Bir soru: Beni özlüyor musun?' },
+      { speaker: 'Vika', ru: 'Макс!!! Спокойной ночи!', reading: 'Maks!!! Spakóynay nóchi!', tr: 'Maks!!! İyi geceler!' }
     ]
   },
   {
@@ -2720,13 +2713,13 @@ Bir metinde her kelimeyi bilmesen bile, cümleleri birbirine bağlayan kelimeler
       { ru: 'Иногда нужно просто выговориться.', tr: 'Bazen sadece içini dökmek gerekir.', scrambled: ['выговориться.', 'просто', 'нужно', 'Иногда'], correct: ['Иногда', 'нужно', 'просто', 'выговориться.'] }
     ],
     sceneTitle: 'Bir Aylık Ziyaret',
-    sceneContext: 'Anlatıcı gözüyle: Jenya ve Lena\'nın evliliğinde kriz — kayınvalide bir aylığına taşınmıştır.',
+    sceneContext: 'Anlatıcı gözüyle: Jenya ve Nastya\'nın evliliğinde kriz — kayınvalide bir aylığına taşınmıştır.',
     dialogue: [
-      { speaker: 'Anlatıcı', ru: 'У Жени и Лены начался кризис: тёща приехала на месяц.', reading: 'U Zhéni i Lyény nachálsya krízis: tyóshcha priyékhala na mésyats.', tr: 'Jenya ve Lena\'da kriz başladı: kayınvalide bir aylığına geldi.' },
+      { speaker: 'Anlatıcı', ru: 'У Жени и Лены начался кризис: тёща приехала на месяц.', reading: 'U Zhéni i Lyény nachálsya krízis: tyóshcha priyékhala na mésyats.', tr: 'Jenya ve Nastya\'da kriz başladı: kayınvalide bir aylığına geldi.' },
       { speaker: 'Zhenya', ru: 'У нас ссора каждый день. Обиды копились пять лет.', reading: 'U nas ssóra kázhdy den\'. Abýdy kapílis\' pyat\' lyet.', tr: 'Her gün kavgamız var. Kırgınlıklar beş yıldır birikiyor.' },
-      { speaker: 'Lena', ru: 'Мама хочет помочь, но проверяет мой холодильник и твой характер.', reading: 'Máma khóchit pamóch\', no pravyáryet moy chaladíl\'nik i tvóy kharáktar.', tr: 'Annem yardım etmek istiyor ama benim buzdolabımı ve senin karakterini denetliyor.' },
+      { speaker: 'Nastya', ru: 'Мама хочет помочь, но проверяет мой холодильник и твой характер.', reading: 'Máma khóchit pamóch\', no pravyáryet moy chaladíl\'nik i tvóy kharáktar.', tr: 'Annem yardım etmek istiyor ama benim buzdolabımı ve senin karakterini denetliyor.' },
       { speaker: 'Zhenya', ru: 'Нам нужно выговориться. Спокойно, без криков.', reading: 'Nam núzhna vıgavarít\'sya. Spakóyna, byez krikóf.', tr: 'İçimizi dökmeliyiz. Sakince, bağırış olmadan.' },
-      { speaker: 'Lena', ru: 'И пойти на уступки. Обе стороны.', reading: 'I paytí na ustúpki. Abyé staraný.', tr: 'Ve ödün vermeliyiz. İki taraf da.' },
+      { speaker: 'Nastya', ru: 'И пойти на уступки. Обе стороны.', reading: 'I paytí na ustúpki. Abyé staraný.', tr: 'Ve ödün vermeliyiz. İki taraf da.' },
       { speaker: 'Anlatıcı', ru: 'Они проговорили до утра. Кризис закончился. Тёща осталась ещё на два месяца.', reading: 'Oni pragavaríli da útra. Krízis zakónchilsya. Tyóshcha astálas\' yeshchó na dva myesyatsa.', tr: 'Sabaha kadar konuştular. Kriz bitti. Kayınvalide iki ay daha kaldı.' }
     ]
   },
@@ -2760,9 +2753,9 @@ Bir metinde her kelimeyi bilmesen bile, cümleleri birbirine bağlayan kelimeler
     sceneContext: 'Elli yaşında, yeni boşanmış Vova Amca, gençlerden manitacılık dersi alır — sonuç beklenmedik olur.',
     dialogue: [
       { speaker: 'Anlatıcı', ru: 'Дяде Вове пятьдесят. После развода он решил начать с чистого листа.', reading: 'Dyáde Vóvye pídyesyat. Pósle razvóta on ryshíl nachát\' s chístava lísta.', tr: 'Vova Amca elli yaşında. Boşanmadan sonra yeni bir sayfa açmaya karar verdi.' },
-      { speaker: 'Tyoma', ru: 'Дядя Вова, у тебя второй шанс. Главное — уверенность. И костюм.', reading: 'Dyády Vóva, u tibyá vtaróy shans. Glávnaye — uvyérennast\'. I kastyúm.', tr: 'Vova Amca, ikinci şansın var. En önemlisi özgüven. Ve takım elbise.' },
+      { speaker: 'Senya', ru: 'Дядя Вова, у тебя второй шанс. Главное — уверенность. И костюм.', reading: 'Dyády Vóva, u tibyá vtaróy shans. Glávnaye — uvyérennast\'. I kastyúm.', tr: 'Vova Amca, ikinci şansın var. En önemlisi özgüven. Ve takım elbise.' },
       { speaker: 'Vova', ru: 'Костюм есть. А оптимизма нет — я пережил развод, мне страшно.', reading: 'Kastyúm yest\'. A aptimízma nyet — ya piryzhýl razvót, mne stráshna.', tr: 'Takım elbise var. Ama iyimserlik yok — boşanmayı atlattım, korkuyorum.' },
-      { speaker: 'Tyoma', ru: 'В пятницу свидание вслепую. Она архитектор и любит пельмени.', reading: 'F pyátnitsu svidániye vslipyúyu. Aná arkhitéhtar i lyúbit pel\'méni.', tr: 'Cuma kör randevu. O bir mimar ve mantı seviyor.' },
+      { speaker: 'Senya', ru: 'В пятницу свидание вслепую. Она архитектор и любит пельмени.', reading: 'F pyátnitsu svidániye vslipyúyu. Aná arkhitéhtar i lyúbit pel\'méni.', tr: 'Cuma kör randevu. O bir mimar ve mantı seviyor.' },
       { speaker: 'Vova', ru: 'Пельмени?! Тогда я согласен. Жизнь продолжается!', reading: 'Pel\'méni?! Tagdá ya saglásen. Zhýzn\' pradaldzháyetsya!', tr: 'Mantı mı?! O zaman razıyım. Hayat devam ediyor!' },
       { speaker: 'Anlatıcı', ru: 'Спойлер: через год они поженились. Но это уже другая серия.', reading: 'Spóyler: cherez gód oni pazhyenílisy. No éta uzhe drugáya sériya.', tr: 'Spoiler: bir yıl sonra evlendiler. Ama o artık başka bir bölüm.' }
     ]
@@ -2794,37 +2787,37 @@ Bir metinde her kelimeyi bilmesen bile, cümleleri birbirine bağlayan kelimeler
       { ru: 'Его речь была очень трогательной.', tr: 'Onun konuşması çok duygulandırıcıydı.', scrambled: ['трогательной.', 'очень', 'была', 'речь', 'Его'], correct: ['Его', 'речь', 'была', 'очень', 'трогательной.'] }
     ],
     sceneTitle: 'Sağdıcın Konuşması',
-    sceneContext: 'Dima ve Marina\'nın düğünü: Töma sağdıçtır ve herkes konuşmasını hem bekliyor hem korkuyor.',
+    sceneContext: 'Maks ve Vika\'nın düğünü: Töma sağdıçtır ve herkes konuşmasını hem bekliyor hem korkuyor.',
     dialogue: [
-      { speaker: 'Anlatıcı', ru: 'Свадьба Димы и Марины. Тёма — шафер. Его речь ждали все. И боялись.', reading: 'Svádb\'a Dímy i Maríny. Tyóma — shafér. Yevó rech\' zhdalí fsye. I bayális\'.', tr: 'Dima ve Marina\'nın düğünü. Töma sağdıç. Konuşmasını herkes bekliyordu. Ve korkuyordu.' },
-      { speaker: 'Tyoma', ru: 'Дамы и господа! Поднимем бокалы! Я знаю Диму двадцать лет. Он влюблялся сорок семь раз.', reading: 'Dámy i gaspadá! Padnímim bákaly! Ya znáyú Dímu dvátsat\' lyet. On vlyublyálsya sórak syém ras.', tr: 'Hanımlar ve beyler! Kadehleri kaldıralım! Dima\'yı yirmi yıldır tanırım. Kırk yedi kez âşık oldu.' },
-      { speaker: 'Dima', ru: 'Тёма!', reading: 'Tyóma!', tr: 'Töma!' },
-      { speaker: 'Tyoma', ru: 'Но Марина — последняя. За новобрачных!', reading: 'No Marína — paslyédnyaya. Za navabrachnýkh!', tr: 'Ama Marina — sonuncusu. Yeni evlilere!' },
-      { speaker: 'Marina', ru: 'Самая трогательная и самая нелепая речь. Спасибо, Тёма.', reading: 'Samáya tragátel\'naya i samáya nilépaya rech\'. Spasíba, Tyóma.', tr: 'En duygulandırıcı ve en saçma konuşma. Teşekkürler, Töma.' },
+      { speaker: 'Anlatıcı', ru: 'Свадьба Макса и Вики. Сеня — шафер. Его речь ждали все. И боялись.', reading: 'Svádb\'a Dímy i Maríny. Sénya — shafér. Yevó rech\' zhdalí fsye. I bayális\'.', tr: 'Maks ve Vika\'nın düğünü. Töma sağdıç. Konuşmasını herkes bekliyordu. Ve korkuyordu.' },
+      { speaker: 'Senya', ru: 'Дамы и господа! Поднимем бокалы! Я знаю Макса двадцать лет. Он влюблялся сорок семь раз.', reading: 'Dámy i gaspadá! Padnímim bákaly! Ya znáyú Dímu dvátsat\' lyet. On vlyublyálsya sórak syém ras.', tr: 'Hanımlar ve beyler! Kadehleri kaldıralım! Maks\'yı yirmi yıldır tanırım. Kırk yedi kez âşık oldu.' },
+      { speaker: 'Maks', ru: 'Сеня!', reading: 'Sénya!', tr: 'Töma!' },
+      { speaker: 'Senya', ru: 'Но Вика — последняя. За новобрачных!', reading: 'No Víka — paslyédnyaya. Za navabrachnýkh!', tr: 'Ama Vika — sonuncusu. Yeni evlilere!' },
+      { speaker: 'Vika', ru: 'Самая трогательная и самая нелепая речь. Спасибо, Сеня.', reading: 'Samáya tragátel\'naya i samáya nilépaya rech\'. Spasíba, Sénya.', tr: 'En duygulandırıcı ve en saçma konuşma. Teşekkürler, Töma.' },
       { speaker: 'Тамада', ru: 'Горько! Горько! Шампанское для всех!', reading: 'Gór\'ka! Gór\'ka! Shampánskaye dlya fsyekh!', tr: 'Acı! Acı! Herkese şampanya!' },
       { speaker: 'Anlatıcı', ru: 'Клятву они дали тихо. А поцеловались пять минут. Легендарно.', reading: 'Klyátvu oni dáli tíkha. A patsyalavális\' pyat\' minút. Lyendárna.', tr: 'Yemini sessizce ettiler. Öpüşmeleri ise beş dakika sürdü. Efsanevi.' }
     ],
     smeshariki: {
       source: 'kukhnya',
-      episodeRu: 'Свадьба в «Ван Гоге»',
+      episodeRu: 'Свадьба в «Клод Монее»',
       episodeTr: '"Van Gogh"ta Düğün',
-      characters: ['Семён', 'Шафер', 'Тамада', 'Шеф Пётр', 'Лёша'],
+      characters: ['Сеня', 'Шафер', 'Тамада', 'Шеф Баринов', 'Макс'],
       searchQuery: 'Кухня сериал свадьба тост сцена',
-      contextTr: '«Ван Гог» bir düğüne ev sahipliği yapıyor: tamada, ağlayan sağdıç, şefin pastası ve tabii ki Lyosha\'nın tepsiyi düşürme anı. Klasik bir Rus düğün komedisi sahnesi.',
+      contextTr: '«Клод Моне» bir düğüne ev sahipliği yapıyor: tamada, ağlayan sağdıç, şefin pastası ve tabii ki Maks\'nın tepsiyi düşürme anı. Klasik bir Rus düğün komedisi sahnesi.',
       miniDialogue: [
-        { speaker: 'Семён', ru: 'Добрый вечер! Свадьба на сорок гостей. Тамада — вот там, шафер — волнуется.', reading: 'Dóbry vécher! Svádb\'a na sórak góstey. Tamadá — vot tam, shafér — valnúyetsya.', tr: 'İyi akşamlar! Kırk kişilik düğün. Sunucu — şurada, sağdıç — heyecanlı.' },
+        { speaker: 'Сеня', ru: 'Добрый вечер! Свадьба на сорок гостей. Тамада — вот там, шафер — волнуется.', reading: 'Dóbry vécher! Svádb\'a na sórak góstey. Tamadá — vot tam, shafér — valnúyetsya.', tr: 'İyi akşamlar! Kırk kişilik düğün. Sunucu — şurada, sağdıç — heyecanlı.' },
         { speaker: 'Шафер', ru: 'Моя речь готова. Я репетировал двенадцать раз. Никто не будет плакать. Никто!', reading: 'Mayá rech\' gótava. Ya ripyetíral dvyénadtsat\' ras. Niktó nye búdit plákat\'. Niktó!', tr: 'Konuşmam hazır. On iki kez prova yaptım. Kimse ağlamayacak. KİMSE!' },
         { speaker: 'Тамада', ru: 'Поднимем бокалы! Слово — шаферу!', reading: 'Padnímim bákaly! Slóva — shaféru!', tr: 'Kadehleri kaldıralım! Söz — sağdıçta!' },
         { speaker: 'Шафер', ru: '(дрожит) Дорогие новобрачные! Вы... вы... (плачет) Простите.', reading: '(drazhýt) Daragíye novabráchныe! Vy... vy... (pláchit) Prastítye.', tr: '(titrer) Sevgili gelin ve damat! Siz... siz... (ağlar) Affedersiniz.' },
-        { speaker: 'Шеф Пётр', ru: '(выходит с тортом) Так! Клятву дали, торт на месте, шампанское холодное. Продолжаем!', reading: '(vыkhódit s tórtam) Tak! Klyátvu dáli, tort na myéstye, shampánskaye khalódnaye. Pradálzhayem!', tr: '(pastayla çıkar) Tamam! Yemini ettiler, pasta yerinde, şampanya soğuk. Devam!' },
+        { speaker: 'Шеф Баринов', ru: '(выходит с тортом) Так! Клятву дали, торт на месте, шампанское холодное. Продолжаем!', reading: '(vыkhódit s tórtam) Tak! Klyátvu dáli, tort na myéstye, shampánskaye khalódnaye. Pradálzhayem!', tr: '(pastayla çıkar) Tamam! Yemini ettiler, pasta yerinde, şampanya soğuk. Devam!' },
         { speaker: 'Тамада', ru: 'Трогательная речь! А теперь — горько!', reading: 'Tragátyel\'naya rech\'! A tyéper\' — gór\'ka!', tr: 'Dokunaklı bir konuşma! Ve şimdi — acı!' },
-        { speaker: 'Лёша', ru: '(роняет поднос) Почти идеально...', reading: '(ránayet padnós) Póchti idiál\'na...', tr: '(tepsiyi düşürür) Neredeyse mükemmel...' }
+        { speaker: 'Макс', ru: '(роняет поднос) Почти идеально...', reading: '(ránayet padnós) Póchti idiál\'na...', tr: '(tepsiyi düşürür) Neredeyse mükemmel...' }
       ],
       questions: [
         { prompt: 'Sağdçın konuşması nasıl gider?', correct: 'Он плачет', options: shuffle(['Он плачет', 'Он поёт', 'Он молчит', 'Он уходит']) },
-        { prompt: 'Şef Пётр mutfağından neyle çıkar?', correct: 'С тортом', options: shuffle(['С тортом', 'Со счётом', 'С гитарой', 'С кольцом']) },
+        { prompt: 'Şef Баринов mutfağından neyle çıkar?', correct: 'С тортом', options: shuffle(['С тортом', 'Со счётом', 'С гитарой', 'С кольцом']) },
         { prompt: 'Tamada sonunda ne ister?', correct: 'Горько!', options: shuffle(['Горько!', 'Тише!', 'Пожар!', 'Ура!']) },
-        { prompt: 'Lyosha sahnenin sonunda ne yapar?', correct: 'Роняет поднос', options: shuffle(['Роняет поднос', 'Поёт песню', 'Танцует вальс', 'Читает речь']) }
+        { prompt: 'Maks sahnenin sonunda ne yapar?', correct: 'Роняет поднос', options: shuffle(['Роняет поднос', 'Поёт песню', 'Танцует вальс', 'Читает речь']) }
       ]
     }
   },
@@ -3033,9 +3026,9 @@ Bir metinde her kelimeyi bilmesen bile, cümleleri birbirine bağlayan kelimeler
     sceneContext: 'İki yakın arkadaşın yorgunluk ve sınır hakkında konuştuğu sahne.',
     dialogue: [
       { speaker: 'Sasha', ru: 'Мне тяжело. Выгорание уже не шутка.', reading: 'Mne tizheló. Vygarániye uzhé ne shútka.', tr: 'Bana zor. Tükenmişlik artık şaka değil.' },
-      { speaker: 'Nina', ru: 'Я рядом. Какие границы тебе нужны?', reading: 'Ya ryádom. Kakíye granítsy tibé nuzhny?', tr: 'Yanındayım. Hangi sınırlara ihtiyacın var?' },
+      { speaker: 'Vika', ru: 'Я рядом. Какие границы тебе нужны?', reading: 'Ya ryádom. Kakíye granítsy tibé nuzhny?', tr: 'Yanındayım. Hangi sınırlara ihtiyacın var?' },
       { speaker: 'Sasha', ru: 'Пространство и меньше ожиданий. Тревога душит.', reading: 'Prostránstva i mén\'she ozhidániy. Trevóga dushít.', tr: 'Alan ve daha az beklenti. Kaygı boğuyor.' },
-      { speaker: 'Nina', ru: 'Ок. Поддержка без давления. Ты не слабый.', reading: 'Ok. Paddérzhka bez davléniya. Ty ne slábyy.', tr: 'Tamam. Baskısız destek. Zayıf değilsin.' }
+      { speaker: 'Vika', ru: 'Ок. Поддержка без давления. Ты не слабый.', reading: 'Ok. Paddérzhka bez davléniya. Ty ne slábyy.', tr: 'Tamam. Baskısız destek. Zayıf değilsin.' }
     ]
   },
   {
@@ -3206,6 +3199,7 @@ function splitAdvancedLevel(unit: UnitModule): UnitModule {
 
 const RU_UNITS_DATA: UnitModule[] = dedupeSimilarUnits([
   ...ORIGINAL_UNITS,
+  ...CORE_WORD_CLASS_UNITS_RU,
   ...RESTAURANT_SERVICE_UNITS,
   ...DAILY_LIFE_90_UNITS,
   ...DAILY_LIFE_PLUS_UNITS,
@@ -3213,6 +3207,7 @@ const RU_UNITS_DATA: UnitModule[] = dedupeSimilarUnits([
   ...CIT_RU_B,
   ...CIT_RU_C,
   ...CIT_RU_D,
+  ...CIT_RU_INTERVIEW,
 ]).map(splitAdvancedLevel).sort((a, b) =>
   LEVEL_ORDER[a.levelGroup] - LEVEL_ORDER[b.levelGroup] ||
   a.unitNumber - b.unitNumber ||
@@ -3220,7 +3215,7 @@ const RU_UNITS_DATA: UnitModule[] = dedupeSimilarUnits([
   a.id.localeCompare(b.id),
 );
 
-const EN_UNITS_DATA: UnitModule[] = [...EN_UNITS, ...EN_EXTRA_UNITS, ...EN_NEW_UNITS, ...EN_CIT_A, ...EN_CIT_B, ...EN_CIT_C, ...EN_CIT_D]
+const EN_UNITS_DATA: UnitModule[] = [...EN_UNITS, ...EN_EXTRA_UNITS, ...EN_NEW_UNITS, ...CORE_WORD_CLASS_UNITS_EN, ...EN_CIT_A, ...EN_CIT_B, ...EN_CIT_C, ...EN_CIT_D, ...EN_INTERVIEW_UNITS]
   .map(splitAdvancedLevel)
   .sort((a, b) =>
     LEVEL_ORDER[a.levelGroup] - LEVEL_ORDER[b.levelGroup] ||
