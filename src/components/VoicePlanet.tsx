@@ -102,8 +102,10 @@ export default function VoicePlanet(props: VoicePlanetProps) {
   const [pop, setPop] = useState(false);
 
   useEffect(() => {
-    const energy = speaking || thinking ? VISEME_ENERGY[viseme] ?? 0.2 : 0.1;
-    targetRef.current = pose.amplitude * (0.5 + energy * 0.95);
+    const energy = speaking || thinking ? VISEME_ENERGY[viseme] ?? 0.2 : 0.34;
+    // Boşta salınım "ölmüş" görünmesin: konuşma dışı hallerde bir taban genlik var.
+    const floor = speaking || thinking ? 0 : 0.62;
+    targetRef.current = Math.max(floor, pose.amplitude * (0.5 + energy * 0.95));
     activeRef.current = speaking || listening || thinking;
   }, [viseme, pose, speaking, listening, thinking]);
 
@@ -187,8 +189,7 @@ export default function VoicePlanet(props: VoicePlanetProps) {
         @keyframes voicePlanetLipWiggle { 0%, 100% { transform: translateX(-50%) scaleX(1); } 50% { transform: translateX(-50%) scaleX(1.06); } }
 
         /* ===================== boru kol salınımları ==================== */
-        @keyframes vpSwayIdle { 0%, 100% { transform: rotate(calc(var(--vp-amp, .5) * -3deg)); } 50% { transform: rotate(calc(var(--vp-amp, .5) * 4deg)); } }
-        @keyframes vpFloatFlap { 0%, 100% { transform: rotate(calc(var(--vp-amp, .5) * -8deg)) scaleY(1); } 50% { transform: rotate(calc(var(--vp-amp, .5) * 11deg)) scaleY(calc(1 + var(--vp-amp, .5) * .09)); } }
+        /* taban: konuşma sırasında her iki kolun omuz/dirsek salınımı */
         @keyframes vpSwayA { 0%, 100% { transform: rotate(calc(var(--vp-amp, .5) * -10deg)) scaleY(1); } 50% { transform: rotate(calc(var(--vp-amp, .5) * 11deg)) scaleY(calc(1 + var(--vp-amp, .5) * .07)); } }
         @keyframes vpSwayB { 0%, 100% { transform: rotate(calc(var(--vp-amp, .5) * 8deg)); } 50% { transform: rotate(calc(var(--vp-amp, .5) * -9deg)); } }
         @keyframes vpChop { 0%, 100% { transform: rotate(calc(var(--vp-amp, .5) * -17deg)) scaleY(1.05); } 44% { transform: rotate(calc(var(--vp-amp, .5) * 8deg)) scaleY(.96); } }
@@ -200,9 +201,17 @@ export default function VoicePlanet(props: VoicePlanetProps) {
         /* çizgi film bilek "flick": hızlı atış, sonra anlık bekleme */
         @keyframes vpWristFlick { 0% { transform: rotate(calc(var(--vp-amp, .5) * -20deg)); } 16% { transform: rotate(calc(var(--vp-amp, .5) * 24deg)); } 34% { transform: rotate(calc(var(--vp-amp, .5) * -12deg)); } 52%, 100% { transform: rotate(calc(var(--vp-amp, .5) * 4deg)); } }
         @keyframes vpPoke { 0%, 100% { transform: rotate(calc(var(--vp-amp, .5) * -3deg)); } 38% { transform: rotate(calc(var(--vp-amp, .5) * 15deg)); } 56% { transform: rotate(calc(var(--vp-amp, .5) * 5deg)); } }
-        @keyframes vpFingerCurl { 0%, 100% { transform: rotate(0deg); height: 10px; } 50% { transform: rotate(-36deg); height: 7px; } }
-        @keyframes vpFingerWiggle { 0%, 100% { transform: rotate(-5deg); } 50% { transform: rotate(9deg); } }
-        @keyframes vpClap { 0%, 100% { transform: rotate(calc(var(--vp-amp, .5) * -12deg)); } 50% { transform: rotate(calc(118deg + var(--vp-amp, .5) * 22deg)); } }
+        /* parmaklar artık dışarı taşan püsküller değil, eldivenin alt kenarındaki
+           mürekkep ayırma çizgileri; kıvrılma yükseklik+opaklıkla okunur */
+        @keyframes vpFingerCurl { 0%, 100% { height: 9px; opacity: .75; } 50% { height: 4px; opacity: .4; } }
+        /* boşta canlılık: kol in-kalk + ön kol süzülme + ara omuz gerinmesi (ayrı
+           rotate özelliğiyle: duruş açısını (--vp-sh) ezmez, üstüne biner) */
+        @keyframes vpIdleFlap { 0%, 100% { transform: rotate(calc(-6deg - var(--vp-amp, .5) * 8deg)) scaleY(.985); } 50% { transform: rotate(calc(5deg + var(--vp-amp, .5) * 9deg)) scaleY(1.05); } }
+        @keyframes vpIdleFore { 0%, 100% { transform: rotate(calc(-4deg - var(--vp-amp, .5) * 7deg)); } 50% { transform: rotate(calc(4deg + var(--vp-amp, .5) * 8deg)); } }
+        @keyframes vpIdleShoulder { 0%, 64%, 100% { rotate: 0deg; } 74% { rotate: -20deg; } 86% { rotate: 7deg; } 94% { rotate: 0deg; } }
+        @keyframes vpIdleFlourish { 0%, 50%, 100% { transform: rotate(0deg) scaleY(1); } 58% { transform: rotate(calc(-19deg - var(--vp-amp, .5) * 13deg)) scaleY(1.09); } 68% { transform: rotate(calc(15deg + var(--vp-amp, .5) * 11deg)) scaleY(1.03); } 78% { transform: rotate(calc(-15deg)) scaleY(1.06); } 88% { transform: rotate(0deg) scaleY(1); } }
+        @keyframes vpFingerWiggle { 0%, 100% { translate: 0 0; opacity: .78; } 50% { translate: 0 -2px; opacity: .5; } }
+        @keyframes vpClap { 0%, 100% { transform: rotate(calc(var(--vp-amp, .5) * -10deg)); } 50% { transform: rotate(calc(74deg + var(--vp-amp, .5) * 16deg)); } }
         /* vücut ağırlık kaydırma + eski film titremesi */
         @keyframes vpWeightShift { 0%, 100% { transform: translateX(0) rotate(0deg); } 18% { transform: translateX(-4px) rotate(-1.6deg); } 42% { transform: translateX(3px) rotate(1.2deg); } 66% { transform: translateX(-2px) rotate(-.8deg); } 84% { transform: translateX(4px) rotate(1.6deg); } }
         @keyframes vpFilmJitter { 0% { translate: .5px -.4px; } 20% { translate: -.6px .3px; } 40% { translate: .4px .5px; } 60% { translate: -.4px -.5px; } 80% { translate: .6px .2px; } 100% { translate: 0 0; } }
@@ -256,7 +265,7 @@ export default function VoicePlanet(props: VoicePlanetProps) {
         .vp-acrobat-3d { display: grid; place-items: center; transform-style: preserve-3d; animation: vpFrontFlip 29s steps(6, end) infinite; animation-delay: 8s; }
         .vp-acrobat-3d.celebrate { animation: vpHoorayFlip 1.1s cubic-bezier(.3,1.5,.5,1) 1; }
 
-        .voice-planet-avatar { --vp-sh: -100deg; --vp-el: -8deg; --vp-wr: -6deg; --vp-ease: cubic-bezier(.2,1.55,.4,1); position: relative; width: 210px; height: 210px; display: grid; place-items: center; filter: drop-shadow(0 22px 34px rgba(2,8,23,.55)); animation: voicePlanetFloat 4.6s steps(7, end) infinite; }
+        .voice-planet-avatar { --vp-sh: -58deg; --vp-el: 26deg; --vp-wr: 8deg; --vp-ease: cubic-bezier(.2,1.55,.4,1); position: relative; width: 210px; height: 210px; display: grid; place-items: center; filter: drop-shadow(0 22px 34px rgba(2,8,23,.55)); animation: voicePlanetFloat 4.6s steps(7, end) infinite; }
         .voice-planet-avatar.speaking { animation: voicePlanetTalk .4s steps(2, end) infinite, voicePlanetFloat 4.6s steps(7, end) infinite; }
         .voice-planet-avatar.listening { animation: voicePlanetListen 1.2s ease-in-out infinite, voicePlanetFloat 4.6s steps(7, end) infinite; border-radius: 50%; }
         .voice-planet-avatar.thinking { animation: voicePlanetFloat 6.2s steps(8, end) infinite; }
@@ -264,18 +273,18 @@ export default function VoicePlanet(props: VoicePlanetProps) {
         .voice-planet-avatar.g-greet { animation: voicePlanetCheer 1s steps(5, end) infinite, voicePlanetFloat 4.6s steps(7, end) infinite; }
 
         /* gövde grubu: kollar + küre birlikte ağırlık kaydırır (eski çizgi filmde "shift in position") */
-        .vp-body { position: absolute; inset: 0; display: grid; place-items: center; animation: vpWeightShift 7.4s steps(7, end) infinite; }
+        .vp-body { position: absolute; inset: 0; z-index: 4; display: grid; place-items: center; animation: vpWeightShift 7.4s steps(7, end) infinite; }
         .g-idle .vp-body { animation-duration: 9.2s; }
-        .vp-head { position: relative; width: 142px; height: 142px; z-index: 3; }
+        .vp-head { position: relative; width: 142px; height: 142px; z-index: 1; }
         .voice-planet-avatar.pop .vp-head { animation: voicePlanetSquash .34s steps(4, end) 1; }
 
-        .voice-planet-orbit { position: absolute; inset: -29px; border: 1px dashed rgba(125,211,252,.25); border-radius: 50%; animation: voicePlanetOrbit 18s linear infinite; }
-        .voice-planet-ring { position: absolute; left: 50%; top: 52%; width: 288px; height: 68px; transform: translate(-50%, -50%) rotate(-15deg); border-radius: 50%; overflow: hidden; background: linear-gradient(90deg, transparent 0%, rgba(250,204,21,.16) 15%, #facc15 36%, #fde68a 50%, #f59e0b 65%, rgba(250,204,21,.14) 84%, transparent 100%); box-shadow: 0 0 22px rgba(245,158,11,.26); animation: voicePlanetRing 3.6s ease-in-out infinite; z-index: 2; }
-        .voice-planet-ring::after { content: ''; position: absolute; inset: 17px 31px; border-radius: 50%; background: #071122; }
+        .voice-planet-orbit { position: absolute; inset: -26px; border: 1px dashed rgba(125,211,252,.25); border-radius: 50%; animation: voicePlanetOrbit 18s linear infinite; }
+        .voice-planet-ring { position: absolute; left: 50%; top: 53%; width: 266px; height: 54px; transform: translate(-50%, -50%) rotate(-15deg); border-radius: 50%; overflow: hidden; background: linear-gradient(90deg, transparent 0%, rgba(250,204,21,.14) 15%, #facc15 36%, #fde68a 50%, #f59e0b 65%, rgba(250,204,21,.12) 84%, transparent 100%); box-shadow: 0 0 18px rgba(245,158,11,.22); animation: voicePlanetRing 3.6s ease-in-out infinite; z-index: 1; }
+        .voice-planet-ring::after { content: ''; position: absolute; inset: 13px 26px; border-radius: 50%; background: #071122; }
         .voice-planet-ring i { position: absolute; top: 0; left: -42%; width: 32%; height: 100%; background: linear-gradient(90deg, transparent, rgba(255,255,255,.9), transparent); filter: blur(1px); animation: voicePlanetRingGlint 4.4s steps(12, end) infinite; }
 
-        .voice-planet-core { position: relative; width: 142px; height: 142px; border-radius: 50%; background: radial-gradient(circle at 31% 22%, #eaf6ff 0 12%, #7dd3fc 30%, #2f6fd0 64%, #16307a 100%); border: 3px solid #081428; overflow: hidden; animation: voicePlanetBreath calc(var(--vp-dur, 1s) * 3.4) steps(5, end) infinite; box-shadow: inset -18px -22px 34px rgba(4,17,45,.42), inset 10px 10px 20px rgba(255,255,255,.22); z-index: 3; }
-        .voice-planet-core::before { content: ''; position: absolute; left: -18px; top: 38px; width: 182px; height: 34px; background: rgba(255,255,255,.18); transform: rotate(-18deg); border-radius: 999px; }
+        .voice-planet-core { position: relative; width: 142px; height: 142px; border-radius: 50%; background: radial-gradient(circle at 24% 14%, rgba(255,255,255,.62) 0 7%, rgba(255,255,255,0) 26%), radial-gradient(circle at 50% 56%, #4f93e8 0 38%, #2f6fd0 62%, #16307a 100%); border: 3px solid #081428; overflow: hidden; animation: voicePlanetBreath calc(var(--vp-dur, 1s) * 3.4) steps(5, end) infinite; box-shadow: inset -18px -22px 34px rgba(4,17,45,.42), inset 10px 10px 20px rgba(255,255,255,.22); z-index: 3; }
+        .voice-planet-core::before { content: ''; position: absolute; left: -18px; top: 96px; width: 182px; height: 26px; background: rgba(255,255,255,.12); transform: rotate(-14deg); border-radius: 999px; }
         .vp-surface { position: absolute; inset: 0; border-radius: 50%; opacity: .85; background: repeating-linear-gradient(104deg, transparent 0 15px, rgba(134,239,172,.28) 15px 27px, transparent 27px 46px, rgba(45,212,191,.2) 46px 60px); animation: voicePlanetSpinSurface 8.5s steps(10, end) infinite; }
 
         /* ========================== yüz =============================== */
@@ -283,7 +292,7 @@ export default function VoicePlanet(props: VoicePlanetProps) {
         .speaking .voice-planet-face { animation: vpNod calc(var(--vp-dur, 1s) * 1.7) steps(6, end) infinite; }
 
         /* klasik çizgi filmi gözleri: beyaz akl + kontur + koyu bebek + yakalama ışığı */
-        .voice-planet-eye { position: absolute; top: 49px; width: 21px; height: 25px; border-radius: 50% 50% 48% 48%; background: radial-gradient(circle at 42% 30%, #ffffff, #e6f2ff 72%, #bfdbfe); border: 2.4px solid #081428; animation: voicePlanetBlink 5.2s steps(3, end) infinite; }
+        .voice-planet-eye { position: absolute; top: 52px; width: 22px; height: 26px; border-radius: 50% 50% 48% 48%; background: radial-gradient(circle at 42% 30%, #ffffff, #e6f2ff 72%, #bfdbfe); border: 2.8px solid #081428; box-shadow: 0 1px 0 rgba(8,20,40,.25); animation: voicePlanetBlink 5.2s steps(3, end) infinite; }
         .voice-planet-eye.left { left: 39px; }
         .voice-planet-eye.right { right: 39px; animation-delay: .12s; }
         .voice-planet-avatar.pop .voice-planet-eye { animation: voicePlanetPop .34s steps(3, end) 1, voicePlanetBlink 5.2s steps(3, end) infinite; }
@@ -302,7 +311,7 @@ export default function VoicePlanet(props: VoicePlanetProps) {
         .speaking .vp-lash { animation: vpLashFlutter calc(var(--vp-dur, 1s) * 1.1) steps(3, end) infinite; }
         .g-idle .vp-lash { animation: vpLashFlutter 3.1s steps(3, end) infinite; }
 
-        .voice-planet-brow { position: absolute; top: 29px; width: 23px; height: 5px; border-radius: 999px; background: #081428; transform: translateY(0) rotate(0deg); transition: transform .24s var(--vp-ease); }
+        .voice-planet-brow { position: absolute; top: 33px; width: 24px; height: 5.5px; border-radius: 999px; background: #081428; transform: translateY(0) rotate(0deg); transition: transform .24s var(--vp-ease); }
         .voice-planet-brow.left { left: 36px; }
         .voice-planet-brow.right { right: 36px; }
         .brows-up .voice-planet-brow { transform: translateY(-7px) rotate(-10deg); }
@@ -313,7 +322,7 @@ export default function VoicePlanet(props: VoicePlanetProps) {
 
         .voice-planet-mouth { position: absolute; left: 50%; transform: translateX(-50%); border: 2.2px solid #081428; transition: width .07s steps(2, end), height .07s steps(2, end), top .07s steps(2, end), border-radius .12s steps(3, end), background .12s steps(3, end); box-shadow: inset 0 -3px 0 rgba(255,255,255,.12); }
         .speaking .voice-planet-mouth { animation: voicePlanetLipWiggle calc(var(--vp-dur, 1s) * .8) steps(3, end) infinite; }
-        .vp-cheek { position: absolute; top: 78px; width: 21px; height: 12px; border-radius: 50%; background: radial-gradient(circle, rgba(251,113,133,.9), rgba(251,113,133,0) 72%); opacity: calc(.14 + var(--vp-amp, .5) * .34); filter: blur(.6px); }
+        .vp-cheek { position: absolute; top: 84px; width: 21px; height: 12px; border-radius: 50%; background: radial-gradient(circle, rgba(251,113,133,.9), rgba(251,113,133,0) 72%); opacity: calc(.14 + var(--vp-amp, .5) * .34); filter: blur(.6px); }
         .vp-cheek.left { left: 19px; }
         .vp-cheek.right { right: 19px; }
 
@@ -327,97 +336,116 @@ export default function VoicePlanet(props: VoicePlanetProps) {
 
         /* ===================== BORU KOLLAR + ELDİVEN ==================== */
         /* omuz pimleri kürenin ÇEVRESİNDE: kol gövdeden biter (Miss Minutes gibi) */
-        .vp-arm { position: absolute; top: 108px; width: 0; height: 0; z-index: 5; transform: scaleX(var(--vp-side, 1)); }
+        .vp-arm { position: absolute; top: 106px; width: 0; height: 0; z-index: 3; transform: scaleX(var(--vp-side, 1)); }
         .vp-arm-left { left: 38px; --vp-side: -1; --vp-delay: 0s; }
         .vp-arm-right { left: 172px; --vp-side: 1; --vp-delay: calc(var(--vp-dur, 1s) / -2); }
-        .vp-shoulder-pose { position: absolute; left: 0; top: 0; width: 0; height: 0; transform: rotate(var(--vp-sh, -100deg)); transition: transform .24s var(--vp-ease); }
-        .vp-elbow-pose { position: absolute; left: 0; top: 38px; width: 0; height: 0; transform: rotate(var(--vp-el, -8deg)); transition: transform .24s var(--vp-ease); }
-        .vp-wrist-pose { position: absolute; left: 0; top: 30px; width: 0; height: 0; transform: rotate(var(--vp-wr, -6deg)); transition: transform .2s var(--vp-ease); }
+        .vp-shoulder-pose { position: absolute; left: 0; top: 0; width: 0; height: 0; transform: rotate(var(--vp-sh, -58deg)); transition: transform .24s var(--vp-ease); }
+        .vp-elbow-pose { position: absolute; left: 0; top: 38px; width: 0; height: 0; transform: rotate(var(--vp-el, 26deg)); transition: transform .24s var(--vp-ease); }
+        .vp-wrist-pose { position: absolute; left: 0; top: 30px; width: 0; height: 0; transform: rotate(var(--vp-wr, 8deg)); transition: transform .2s var(--vp-ease); }
 
         /* tek parça görünen yuvarlak boru: silindirik gölge + koyu kontur */
-        .vp-upper { position: absolute; left: -8px; top: 0; width: 16px; height: 44px; border-radius: 999px; transform-origin: 50% 0; background: linear-gradient(90deg, #0b2350 0 16%, #2f6fd0 46%, #7dd3fc 60%, #12305c); border: 2px solid #081428; animation: vpSwayA var(--vp-dur, 1s) steps(4, end) infinite; animation-delay: var(--vp-delay, 0s); }
-        .vp-fore { position: absolute; left: -7px; top: 0; width: 14px; height: 34px; border-radius: 999px; transform-origin: 50% 0; background: linear-gradient(90deg, #0b2350 0 18%, #3b82f6 50%, #93c5fd 62%, #12305c); border: 2px solid #081428; animation: vpSwayB var(--vp-dur, 1s) steps(4, end) infinite; animation-delay: calc(var(--vp-delay, 0s) - var(--vp-dur, 1s) / 6); }
-        .vp-hand { position: absolute; left: -14px; top: 0; width: 28px; height: 26px; border-radius: 13px 13px 12px 12px; transform-origin: 50% 0; background: linear-gradient(180deg, #ffffff 0 42%, #e8f2ff 74%, #b9d6f5); border: 2.2px solid #081428; box-shadow: inset 0 -4px 0 rgba(8,20,40,.12), 0 0 calc(6px + var(--vp-amp, .5) * 18px) rgba(147,197,253,.55); animation: vpWristFlick calc(var(--vp-dur, 1s) * 1.5) steps(6, end) infinite; }
-        /* eldivenin üstündeki iki dikiş çizgisi */
-        .vp-hand::before { content: ''; position: absolute; left: 7px; top: 8px; width: 2px; height: 9px; border-radius: 2px; background: rgba(8,20,40,.55); box-shadow: 5px 1px 0 rgba(8,20,40,.4); }
+        .vp-upper { position: absolute; left: -10px; top: 0; width: 20px; height: 44px; border-radius: 999px; transform-origin: 50% 0; background: linear-gradient(90deg, #17427f 0 14%, #4f9aea 42%, #a9d6ff 58%, #1c4a8d); border: 2.2px solid #081428; animation: vpSwayA var(--vp-dur, 1s) steps(4, end) infinite; animation-delay: var(--vp-delay, 0s); }
+        .vp-fore { position: absolute; left: -8.5px; top: 0; width: 17px; height: 34px; border-radius: 999px; transform-origin: 50% 0; background: linear-gradient(90deg, #17427f 0 16%, #6ab2f5 46%, #c2e0ff 60%, #22508f); border: 2.2px solid #081428; animation: vpSwayB var(--vp-dur, 1s) steps(4, end) infinite; animation-delay: calc(var(--vp-delay, 0s) - var(--vp-dur, 1s) / 6); }
+        .vp-hand { position: absolute; left: -15px; top: 0; width: 30px; height: 27px; border-radius: 15px 15px 13px 13px; transform-origin: 50% 0; background: linear-gradient(180deg, #ffffff 0 46%, #eaf4ff 76%, #c3daf5); border: 2.4px solid #081428; box-shadow: inset 0 -3px 0 rgba(8,20,40,.1), 0 0 calc(4px + var(--vp-amp, .5) * 11px) rgba(147,197,253,.42); animation: vpWristFlick calc(var(--vp-dur, 1s) * 1.5) steps(6, end) infinite; }
         /* başparmak: çizgi film standardı, avucun dışına çıkan kısa lob */
-        .vp-hand::after { content: ''; position: absolute; left: -7px; top: 7px; width: 10px; height: 13px; border-radius: 6px 3px 6px 6px; background: linear-gradient(180deg, #ffffff, #cfe3fb); border: 2px solid #081428; transform: rotate(-24deg); }
-        .vp-finger { position: absolute; bottom: -7px; width: 7px; height: 10px; border-radius: 4px 4px 5px 5px; border: 2px solid #081428; border-top: none; background: linear-gradient(180deg, #ffffff, #dcebfc); animation: vpFingerCurl var(--vp-dur, 1s) steps(4, end) infinite; }
-        .vp-finger-1 { left: 1px; }
-        .vp-finger-2 { left: 10px; animation-delay: .09s; }
-        .vp-finger-3 { left: 19px; animation-delay: .18s; }
+        .vp-hand::before { content: ''; position: absolute; left: -6px; top: 9px; width: 11px; height: 13px; border-radius: 6px 3px 6px 6px; background: linear-gradient(180deg, #ffffff, #cfe3fb); border: 2.2px solid #081428; transform: rotate(-15deg); }
+        /* parmaklar minik çıkıntı değil, avucun ALT KENARINDA mürekkep çizgileri */
+        .vp-finger { position: absolute; bottom: 2px; width: 2.4px; height: 9px; border-radius: 2px; background: rgba(8,20,40,.5); transform-origin: 50% 100%; animation: vpFingerCurl var(--vp-dur, 1s) steps(4, end) infinite; }
+        .vp-finger-1 { left: 8px; transform: rotate(-8deg); }
+        .vp-finger-2 { left: 14px; }
+        .vp-finger-3 { left: 20px; transform: rotate(8deg); animation-delay: .16s; }
 
-        /* ---- duruşlar. Sözleşme: NEGATİF = kol dışarı, POZİTİF = içeri ---- */
-        /* boşta: kollar sağa-sola açık, ağırlıksız süzülme + parmak kıpırtısı */
-        .g-idle { --vp-sh: -102deg; --vp-el: -10deg; --vp-wr: -8deg; }
-        .g-idle .vp-upper { animation: vpFloatFlap 4.4s steps(4, end) infinite; }
-        .g-idle .vp-fore { animation: vpFloatFlap 5.6s steps(4, end) infinite; animation-delay: -1.1s; }
-        .g-idle .vp-hand { animation: vpPalmsUp 6.4s steps(5, end) infinite; }
-        .g-idle .vp-finger { animation: vpFingerWiggle 2.6s steps(4, end) infinite; }
-        .g-idle .vp-finger-2 { animation-delay: .3s; }
-        .g-idle .vp-finger-3 { animation-delay: .6s; }
+        /*
+         * Duruşlar. Sözleşme: NEGATİF = kol dışarı, POZİTİF = içeri.
+         * 0° = kol aşağı sarkık, -90° = tam yan (180° açıklık). Boşta duruş
+         * bilinçli olarak -58°: kolaçan açık ama "T-pozu" değil, hafif aşağı
+         * dönük süzülen kartun duruşu — dirsek kırık, ön kol gevşek.
+         */
+
+        /* boşta: kollar açık ve HAREKETLİ (in-kalk kol + süzülen ön kol + ara gerinme) */
+        .g-idle { --vp-sh: -58deg; --vp-el: 26deg; --vp-wr: 8deg; }
+        .g-idle .vp-upper { animation: vpIdleFlap 3.2s steps(5, end) infinite; }
+        .g-idle .vp-fore { animation: vpIdleFore 2.6s steps(4, end) infinite; animation-delay: -.7s; }
+        .g-idle .vp-shoulder-pose { animation: vpIdleShoulder 11s steps(6, end) infinite; }
+        .g-idle .vp-arm-right .vp-fore { animation: vpIdleFlourish 9.4s steps(7, end) infinite; animation-delay: 0s; }
+        .g-idle .vp-hand { animation: vpPalmsUp 4.2s steps(4, end) infinite; }
+        .g-idle .vp-finger { animation: vpFingerWiggle 2.4s steps(3, end) infinite; }
+        .g-idle .vp-finger-2 { animation-delay: .26s; }
+        .g-idle .vp-finger-3 { animation-delay: .52s; }
         .g-idle .vp-arm-right, .g-question .vp-arm-right, .g-shrug .vp-arm-right, .g-cheer .vp-arm-right, .g-listen .vp-arm-right, .g-think .vp-arm-right, .g-calm .vp-arm-right { --vp-delay: 0s; }
 
-        /* sakin anlatım */
-        .g-calm { --vp-sh: -78deg; --vp-el: -18deg; }
+        /* sakin anlatım: kol hafif açık, ön kol gevşek, tempo yumuşak */
+        .g-calm { --vp-sh: -50deg; --vp-el: 30deg; --vp-wr: 4deg; }
 
         /* örnekli / madde madde anlatım: kollar sırayla keser */
-        .g-explain { --vp-sh: -72deg; --vp-el: -32deg; }
+        .g-explain { --vp-sh: -44deg; --vp-el: 16deg; }
         .g-explain .vp-upper { animation-name: vpChop; }
         .g-explain .vp-fore { animation-name: vpChopFore; }
         .g-explain .voice-planet-face { --vp-tilt: -3.5deg; }
 
-        /* soru: kollar yana-yukarı, avuçlar tavana dönük, omuz kalkar */
-        .g-question { --vp-sh: -118deg; --vp-el: -46deg; --vp-wr: -22deg; }
+        /* soru: kollar yana-kalkık, avuçlar tavana, omuzlar yükselir */
+        .g-question { --vp-sh: -70deg; --vp-el: -6deg; --vp-wr: -16deg; }
         .g-question .vp-upper { animation-name: vpShrug; }
         .g-question .vp-fore { animation-name: vpPalmsUp; }
         .g-question .voice-planet-face { --vp-tilt: 4.5deg; }
 
-        /* coşku: kollar "V", pompalama, vücut zıplar */
-        .g-cheer { --vp-sh: -152deg; --vp-el: -14deg; --vp-wr: 8deg; }
+        /* coşku: kollar "V" olup pompalanır, vücut zıplar */
+        .g-cheer { --vp-sh: -138deg; --vp-el: 12deg; --vp-wr: 6deg; }
         .g-cheer .vp-upper { animation-name: vpPump; }
         .g-cheer .vp-fore { animation-name: vpWaveHand; }
         .g-cheer .vp-hand { animation-name: vpWaveHand; animation-duration: calc(var(--vp-dur, 1s) * .7); }
         .g-cheer .vp-finger { animation: none; }
 
-        /* vurgu: sağ kol uzanır, tek parmak açık (diğerleri kıvrık) */
-        .g-point { --vp-sh: -88deg; --vp-el: -10deg; }
-        .g-point .vp-arm-right { --vp-sh: -95deg; --vp-el: -4deg; --vp-wr: 4deg; }
+        /* vurgu: sağ kol yana uzanıp işaret parmağını çıkarır, diğerleri kıvrılır */
+        .g-point { --vp-sh: -52deg; --vp-el: 24deg; }
+        .g-point .vp-arm-right { --vp-sh: -78deg; --vp-el: 4deg; --vp-wr: 0deg; }
         .g-point .vp-arm-right .vp-fore { animation-name: vpPoke; }
-        .g-point .vp-arm-right .vp-finger-1 { animation: none; height: 18px; width: 8px; }
-        .g-point .vp-arm-right .vp-finger-2, .g-point .vp-arm-right .vp-finger-3 { animation: none; height: 4px; transform: rotate(-30deg); }
+        .g-point .vp-arm-right .vp-finger-2, .g-point .vp-arm-right .vp-finger-3 { animation: none; height: 3px; opacity: .35; }
+        /* işaret parmağı: çizgi filmin klasik pointing eldiveni — sadece o parmak dışarı çıkar */
+        .g-point .vp-arm-right .vp-finger-1 {
+          bottom: -12px;
+          left: 11px;
+          width: 8px;
+          height: 17px;
+          border-radius: 5px 5px 4px 4px;
+          background: linear-gradient(180deg, #ffffff, #dcebfc);
+          border: 2px solid #081428;
+          border-top: none;
+          transform: rotate(-4deg);
+          animation: none;
+        }
 
-        /* sayma: sağ eldiven baş hizasında, parmaklar vuruşla kıvrılır */
-        .g-count { --vp-sh: -88deg; --vp-el: -10deg; }
-        .g-count .vp-arm-right { --vp-sh: -140deg; --vp-el: 30deg; }
-        .g-count .vp-arm-right .vp-finger { animation-duration: calc(var(--vp-dur, 1s) * .85); }
+        /* sayma: sağ eldiven kulak hizasında, çizgiler vuruşla kısalır (parmak sayar) */
+        .g-count { --vp-sh: -52deg; --vp-el: 24deg; }
+        .g-count .vp-arm-right { --vp-sh: -116deg; --vp-el: 4deg; --vp-wr: -10deg; }
+        .g-count .vp-arm-right .vp-finger { animation-duration: calc(var(--vp-dur, 1s) * .8); }
 
-        /* selam: sağ kol kalkar, eldiven bilekten hızlı sallar */
-        .g-greet { --vp-sh: -88deg; --vp-el: -10deg; }
-        .g-greet .vp-arm-right { --vp-sh: -132deg; --vp-el: -26deg; }
+        /* selam: sağ kol kalkar, eldiven bilekten hızlı hızlı sallar */
+        .g-greet { --vp-sh: -52deg; --vp-el: 24deg; }
+        .g-greet .vp-arm-right { --vp-sh: -112deg; --vp-el: 18deg; --vp-wr: -6deg; }
         .g-greet .vp-arm-right .vp-upper { animation-name: vpPalmsUp; }
         .g-greet .vp-arm-right .vp-fore { animation-name: vpWaveHand; }
         .g-greet .vp-arm-right .vp-hand { animation-name: vpWaveHand; animation-duration: calc(var(--vp-dur, 1s) * .5); }
         .g-greet .vp-arm-right .vp-finger { animation: none; }
 
-        /* omuz silkiyor: kollar yana, avuçlar yukarı, yavaş */
-        .g-shrug { --vp-sh: -96deg; --vp-el: -54deg; --vp-wr: -26deg; }
+        /* omuz silkiyor: kollar yarım açık, avuçlar yukarı, hareket yavaş */
+        .g-shrug { --vp-sh: -62deg; --vp-el: 2deg; --vp-wr: -18deg; }
         .g-shrug .vp-upper { animation-name: vpShrug; }
         .g-shrug .vp-fore { animation-name: vpPalmsUp; animation-duration: calc(var(--vp-dur, 1s) * 1.4); }
 
         /* dinliyor: sağ eldiven kulağın/antenin yanına kıvrılır, sol kol açık süzülür */
-        .g-listen { --vp-sh: -100deg; --vp-el: -10deg; }
-        .g-listen .vp-arm-left { --vp-sh: -106deg; --vp-el: -6deg; }
-        .g-listen .vp-arm-right { --vp-sh: -112deg; --vp-el: -118deg; --vp-wr: -26deg; }
-        .g-listen .vp-upper { animation: vpSwayIdle 3.4s steps(4, end) infinite; }
-        .g-listen .vp-fore { animation: vpSwayIdle 4.2s steps(4, end) infinite; }
+        .g-listen { --vp-sh: -58deg; --vp-el: 26deg; }
+        .g-listen .vp-arm-left { --vp-sh: -64deg; --vp-el: 22deg; }
+        .g-listen .vp-arm-right { --vp-sh: -96deg; --vp-el: -122deg; --vp-wr: -24deg; }
+        .g-listen .vp-upper { animation: vpIdleFore 3.4s steps(4, end) infinite; }
+        .g-listen .vp-fore { animation: vpIdleFore 4.2s steps(4, end) infinite; }
         .g-listen .vp-hand, .g-listen .vp-finger { animation: none; }
 
-        /* düşünüyor: sol eldiven çenenin altında, sağ kol açık */
-        .g-think { --vp-sh: -100deg; --vp-el: -10deg; }
-        .g-think .vp-arm-left { --vp-sh: -10deg; --vp-el: 96deg; --vp-wr: -34deg; }
-        .g-think .vp-arm-right { --vp-sh: -106deg; --vp-el: -6deg; }
-        .g-think .vp-upper { animation: vpSwayIdle 4s steps(4, end) infinite; }
+        /* düşünüyor: sol eldiven çenenin altında, sağ kol açık süzülür */
+        .g-think { --vp-sh: -58deg; --vp-el: 26deg; }
+        .g-think .vp-arm-left { --vp-sh: -18deg; --vp-el: 90deg; --vp-wr: -30deg; }
+        .g-think .vp-arm-right { --vp-sh: -64deg; --vp-el: 22deg; }
+        .g-think .vp-arm-right .vp-upper { animation: vpIdleFlap 4s steps(4, end) infinite; }
         .g-think .vp-hand, .g-think .vp-finger { animation: none; }
 
         /* ================== cümle sonu kutlaması ======================= */

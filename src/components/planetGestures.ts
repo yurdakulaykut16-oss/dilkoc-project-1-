@@ -88,7 +88,7 @@ const GESTURE_RULES: GestureRule[] = [
 const POSE_CALM: PlanetPose = { gesture: 'calm', amplitude: 0.62, duration: 1.05, brows: 'neutral', label: 'anlatıyor 🪐' };
 
 /** Boşta, yani konuşmuyorken: kollar gevşek, uzun ve nefes alır gibi sallanır. */
-export const PLANET_POSE_IDLE: PlanetPose = { gesture: 'idle', amplitude: 0.3, duration: 3.4, brows: 'neutral', label: 'hazırda bekliyor 🪐' };
+export const PLANET_POSE_IDLE: PlanetPose = { gesture: 'idle', amplitude: 0.72, duration: 2.9, brows: 'neutral', label: 'hazırda bekliyor 🪐' };
 /** Dinlerken sağ el kulağa (antene) gider, sol kol yavaşça salınır. */
 export const PLANET_POSE_LISTEN: PlanetPose = { gesture: 'listen', amplitude: 0.4, duration: 1.9, brows: 'up', label: 'seni dinliyor 🎙️' };
 /** Yanıt aranırken: el çenede, düşünme pozu. */
