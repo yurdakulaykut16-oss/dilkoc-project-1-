@@ -14,6 +14,8 @@ import { VISEME_ENERGY, type PlanetPose, type PlanetViseme } from './planetGestu
  * --vp-dur ve duruş açıları ise cümle değiştikçe pose'tan gelir.
  * Böylece uzun/enerjik cümlelerde kollar sert ve hızlı, sakin cümlelerde
  * yavaş ve küçük sallanır; soru sorarken avuçlar açılır, ünlemde kollar kalkar.
+ * Boşta kollar sağa-sola AÇık süzülür; gezegen ara sıra kendi etrafında takla atar
+ * (takla katmanları avatar'ın dışındadır, bu yüzden konuşma salınımı bozulmaz).
  */
 
 export interface VoicePlanetProps {
@@ -130,12 +132,12 @@ export default function VoicePlanet(props: VoicePlanetProps) {
     <div className="voice-planet-stage" aria-live="polite">
       <style>{`
         /* ── temel hareketler ─────────────────────────────────────────── */
-        @keyframes voicePlanetFloat { 0%, 100% { transform: translateY(0) rotate(-1deg); } 50% { transform: translateY(-12px) rotate(1deg); } }
+        @keyframes voicePlanetFloat { 0% { transform: translate(0, 0) rotate(-2.5deg); } 32% { transform: translate(8px, -14px) rotate(1.5deg); } 64% { transform: translate(-8px, -7px) rotate(2.5deg); } 100% { transform: translate(0, 0) rotate(-2.5deg); } }
         @keyframes voicePlanetOrbit { from { transform: rotate(0deg); } to { transform: rotate(360deg); } }
         @keyframes voicePlanetRing { 0%, 100% { transform: translate(-50%, -50%) rotate(-15deg) scaleX(1); } 50% { transform: translate(-50%, -50%) rotate(-10deg) scaleX(1.05); } }
         @keyframes voicePlanetRingGlint { 0% { left: -40%; opacity: 0; } 22% { opacity: .9; } 60% { left: 108%; opacity: 0; } 100% { left: 108%; opacity: 0; } }
         @keyframes voicePlanetListen { 0%, 100% { box-shadow: 0 0 0 0 rgba(34,197,94,.48), 0 0 42px rgba(56,189,248,.25); } 50% { box-shadow: 0 0 0 18px rgba(34,197,94,0), 0 0 58px rgba(34,197,94,.34); } }
-        @keyframes voicePlanetTalk { 0%, 100% { transform: translateY(0) scale(1); } 50% { transform: translateY(-4px) scale(1.025); } }
+        @keyframes voicePlanetTalk { 0%, 100% { transform: translateY(0) scale(1) rotate(-1.4deg); } 50% { transform: translateY(-6px) scale(1.035) rotate(1.4deg); } }
         @keyframes voicePlanetCheer { 0%, 100% { transform: translateY(0) scale(1); } 40% { transform: translateY(-12px) scale(1.05); } 70% { transform: translateY(-3px) scale(1.015); } }
         @keyframes voicePlanetSpinSurface { from { background-position: 0 0; } to { background-position: 224px 0; } }
         @keyframes voicePlanetTwinkle { 0%, 100% { opacity: .2; transform: scale(.7); } 50% { opacity: 1; transform: scale(1.25); } }
@@ -158,22 +160,41 @@ export default function VoicePlanet(props: VoicePlanetProps) {
         @keyframes vpWaveHand { 0%, 100% { transform: rotate(calc(var(--vp-amp, .5) * -22deg)); } 50% { transform: rotate(calc(var(--vp-amp, .5) * 22deg)); } }
         @keyframes vpPoke { 0%, 100% { transform: rotate(calc(var(--vp-amp, .5) * -2deg)); } 42% { transform: rotate(calc(var(--vp-amp, .5) * 11deg)); } 62% { transform: rotate(calc(var(--vp-amp, .5) * 4deg)); } }
         @keyframes vpFingerCurl { 0%, 100% { transform: rotate(0deg); height: 11px; } 50% { transform: rotate(-30deg); height: 8px; } }
-        @keyframes vpClap { 0%, 100% { transform: rotate(calc(var(--vp-amp, .5) * -12deg)); } 50% { transform: rotate(calc(19deg + var(--vp-amp, .5) * 5deg)); } }
+        @keyframes vpClap { 0%, 100% { transform: rotate(calc(var(--vp-amp, .5) * -14deg)); } 50% { transform: rotate(calc(44deg + var(--vp-amp, .5) * 9deg)); } }
         @keyframes vpBurstRing { from { transform: scale(.5); opacity: .9; } to { transform: scale(1.6); opacity: 0; } }
         @keyframes vpConfetti { 0% { transform: translate(0, 0) scale(1); opacity: 1; } 100% { transform: translate(var(--vp-cx, 0px), var(--vp-cy, -60px)) scale(.4); opacity: 0; } }
-        @keyframes vpStretch {
-          0%, 58%, 100% { transform: rotate(0deg); }
-          66% { transform: rotate(calc(-30deg * (0.6 + var(--vp-amp, .5)))); }
-          78% { transform: rotate(calc(-44deg * (0.6 + var(--vp-amp, .5)))); }
-          88% { transform: rotate(0deg); }
+        /* boşta kolların ağırlıksız çırpınışı (ayna simetrisi iki kolu birlikte kaldırır) */
+        @keyframes vpFloatFlap { 0%, 100% { transform: rotate(calc(var(--vp-amp, .5) * -7deg)); } 50% { transform: rotate(calc(var(--vp-amp, .5) * 9deg)); } }
+        @keyframes vpFingerWiggle { 0%, 100% { transform: rotate(-4deg); } 50% { transform: rotate(7deg); } }
+        /* gezegenin kendi etrafında taklası: hazırlan → 360 döndür → kon → küçük sekme */
+        @keyframes vpCartwheel {
+          0% { transform: rotate(-3deg) translateY(0) scale(1); }
+          9% { transform: rotate(2.5deg) translateY(-6px) scale(1.005); }
+          20% { transform: rotate(-3.5deg) translateY(3px) scale(.998); }
+          33% { transform: rotate(3deg) translateY(-8px) scale(1.006); }
+          45% { transform: rotate(-2deg) translateY(2px) scale(1); }
+          56% { transform: rotate(0deg) translateY(0) scale(1); }
+          61% { transform: rotate(15deg) translateY(7px) scale(.985, .97); }
+          74% { transform: rotate(296deg) translateY(-16px) scale(.9); }
+          82% { transform: rotate(360deg) translateY(-3px) scale(.98, 1.03); }
+          87% { transform: rotate(356deg) translateY(2px) scale(1.005, .99); }
+          93%, 100% { transform: rotate(360deg) translateY(0) scale(1); }
         }
+        @keyframes vpFrontFlip { 0%, 70% { transform: rotateX(0deg) scale(1); } 81% { transform: rotateX(360deg) scale(.93); } 88% { transform: rotateX(374deg) scale(1.02); } 95%, 100% { transform: rotateX(360deg) scale(1); } }
+        @keyframes vpHoorayFlip { 0% { transform: rotate(0deg) scale(1); } 42% { transform: rotate(-190deg) scale(1.02); } 72% { transform: rotate(-360deg) scale(.97); } 100% { transform: rotate(-360deg) scale(1); } }
+        @keyframes vpShootingStar { 0% { transform: translate(-140%, 30%) rotate(18deg); opacity: 0; } 8% { opacity: .95; } 46% { transform: translate(150%, -34%) rotate(18deg); opacity: 0; } 100% { transform: translate(150%, -34%) rotate(18deg); opacity: 0; } }
+        @keyframes vpNod { 0%, 100% { transform: rotate(calc(var(--vp-tilt, 0deg) - 1.8deg)); } 50% { transform: rotate(calc(var(--vp-tilt, 0deg) + 2.4deg)); } }
 
         /* ── sahne ──────────────────────────────────────────────────────── */
-        .voice-planet-stage { --vp-amp: .5; position: relative; min-height: 312px; overflow: hidden; border-radius: 22px; margin-bottom: 14px; display: grid; place-items: center; background: radial-gradient(circle at 50% 12%, rgba(56,189,248,.25), transparent 31%), radial-gradient(circle at 18% 85%, rgba(245,158,11,.13), transparent 28%), linear-gradient(180deg, #050816 0%, #0f172a 58%, #111827 100%); border: 1px solid rgba(125,211,252,.24); box-shadow: inset 0 0 60px rgba(14,165,233,.08); }
+        .voice-planet-stage { --vp-amp: .5; position: relative; perspective: 900px; min-height: 356px; overflow: hidden; border-radius: 22px; margin-bottom: 14px; display: grid; place-items: center; background: radial-gradient(circle at 50% 12%, rgba(56,189,248,.25), transparent 31%), radial-gradient(circle at 18% 85%, rgba(245,158,11,.13), transparent 28%), linear-gradient(180deg, #050816 0%, #0f172a 58%, #111827 100%); border: 1px solid rgba(125,211,252,.24); box-shadow: inset 0 0 60px rgba(14,165,233,.08); }
         .voice-planet-stage::before, .voice-planet-stage::after { content: '✦'; position: absolute; color: #dbeafe; opacity: .72; font-size: 17px; animation: voicePlanetOrbit 5s ease-in-out infinite alternate; }
         .voice-planet-stage::before { left: 15%; top: 18%; }
         .voice-planet-stage::after { right: 14%; top: 34%; animation-delay: 1.2s; }
 
+        /* takla katmanları: avatar'ın kendi transform'unu (float/talk) bozmamak için ayrı sarmalayıcı */
+        .vp-acrobat { display: grid; place-items: center; transform-style: preserve-3d; animation: vpCartwheel 14s cubic-bezier(.42,.02,.58,1) infinite; }
+        .vp-acrobat-3d { display: grid; place-items: center; transform-style: preserve-3d; animation: vpFrontFlip 33s ease-in-out infinite; animation-delay: 9s; }
+        .vp-shooting-star { position: absolute; left: 0; top: 0; width: 120px; height: 2px; border-radius: 999px; background: linear-gradient(90deg, transparent, rgba(224,242,254,.15) 30%, #e0f2fe 92%, #fff); box-shadow: 0 0 12px rgba(125,211,252,.8); animation: vpShootingStar 9.5s ease-in infinite; pointer-events: none; z-index: 0; }
         .voice-planet-sparks { position: absolute; inset: 0; pointer-events: none; }
         .voice-planet-sparks i { position: absolute; width: 4px; height: 4px; border-radius: 50%; background: #e0f2fe; box-shadow: 0 0 9px rgba(125,211,252,.9); animation: voicePlanetTwinkle 3.1s ease-in-out infinite; }
         .voice-planet-sparks i:nth-child(1) { left: 26%; top: 26%; }
@@ -181,6 +202,8 @@ export default function VoicePlanet(props: VoicePlanetProps) {
         .voice-planet-sparks i:nth-child(3) { left: 40%; top: 78%; animation-delay: 1.6s; }
         .voice-planet-sparks i:nth-child(4) { left: 84%; top: 20%; animation-delay: 2.2s; }
         .voice-planet-sparks i:nth-child(5) { left: 8%; top: 52%; animation-delay: 1.1s; }
+        .voice-planet-sparks i:nth-child(6) { left: 60%; top: 12%; animation-delay: 2.6s; }
+        .voice-planet-sparks i:nth-child(7) { left: 20%; top: 88%; animation-delay: 3.3s; }
 
         /* uydular — gezegenin etrafında dönen iki küçük küre */
         .vp-moon-track { position: absolute; left: 50%; top: 50%; width: 300px; height: 200px; margin: -100px 0 0 -150px; border-radius: 50%; z-index: 1; animation: voicePlanetOrbit 13s linear infinite; pointer-events: none; }
@@ -188,7 +211,7 @@ export default function VoicePlanet(props: VoicePlanetProps) {
         .vp-moon { position: absolute; left: 50%; top: -6px; width: 12px; height: 12px; margin-left: -6px; border-radius: 50%; background: radial-gradient(circle at 32% 28%, #f8fafc, #94a3b8 62%, #475569); box-shadow: 0 0 12px rgba(148,163,184,.6); animation: voicePlanetBreath 2.6s ease-in-out infinite; }
         .vp-moon-track.slow .vp-moon { width: 8px; height: 8px; margin-left: -4px; background: radial-gradient(circle at 30% 30%, #fde68a, #f59e0b 60%, #92400e); box-shadow: 0 0 14px rgba(245,158,11,.7); }
 
-        .voice-planet-avatar { --vp-sh: -8deg; --vp-el: 14deg; --vp-wr: 0deg; position: relative; width: 210px; height: 210px; display: grid; place-items: center; filter: drop-shadow(0 25px 44px rgba(14,165,233,.24)); animation: voicePlanetFloat 4.2s ease-in-out infinite; }
+        .voice-planet-avatar { --vp-sh: -100deg; --vp-el: -14deg; --vp-wr: 0deg; position: relative; width: 210px; height: 210px; display: grid; place-items: center; filter: drop-shadow(0 25px 44px rgba(14,165,233,.24)); animation: voicePlanetFloat 4.2s ease-in-out infinite; }
         .voice-planet-avatar.speaking { animation: voicePlanetTalk .42s ease-in-out infinite, voicePlanetFloat 4.2s ease-in-out infinite; }
         .voice-planet-avatar.listening { animation: voicePlanetListen 1.2s ease-in-out infinite, voicePlanetFloat 4.2s ease-in-out infinite; border-radius: 50%; }
         .voice-planet-avatar.thinking { animation: voicePlanetFloat 5.6s ease-in-out infinite; }
@@ -206,6 +229,7 @@ export default function VoicePlanet(props: VoicePlanetProps) {
 
         /* yüz */
         .voice-planet-face { position: absolute; inset: 0; z-index: 2; transform: rotate(var(--vp-tilt, 0deg)); transition: transform .35s ease; }
+        .speaking .voice-planet-face { animation: vpNod calc(var(--vp-dur, 1s) * 1.7) ease-in-out infinite; }
         .voice-planet-eye { position: absolute; top: 50px; width: 15px; height: 20px; border-radius: 999px; background: #061226; box-shadow: inset 3px 5px 0 rgba(255,255,255,.18); animation: voicePlanetBlink 5.4s ease-in-out infinite; }
         .voice-planet-eye.left { left: 42px; }
         .voice-planet-eye.right { right: 42px; animation-delay: .15s; }
@@ -239,12 +263,14 @@ export default function VoicePlanet(props: VoicePlanetProps) {
         .vp-elbow-pose { position: absolute; left: 0; top: 42px; width: 0; height: 0; transform: rotate(var(--vp-el, -16deg)); transition: transform .42s cubic-bezier(.34,1.35,.5,1); }
         .vp-wrist-pose { position: absolute; left: 0; top: 32px; width: 0; height: 0; transform: rotate(var(--vp-wr, 0deg)); transition: transform .3s cubic-bezier(.34,1.35,.5,1); }
 
-        .vp-upper { position: absolute; left: -12px; top: 0; width: 24px; height: 46px; border-radius: 12px 12px 10px 10px; transform-origin: 50% 0; background: linear-gradient(180deg, #e0f2fe, #60a5fa 46%, #1e40af); box-shadow: inset -4px -7px 9px rgba(2,6,23,.42), inset 3px 3px 0 rgba(255,255,255,.42), 0 4px 11px rgba(2,6,23,.45); animation: vpSwayA var(--vp-dur, 1s) ease-in-out infinite; animation-delay: var(--vp-delay, 0s); }
+        .vp-upper { position: absolute; left: -12px; top: 0; width: 24px; height: 46px; border-radius: 12px 12px 10px 10px; transform-origin: 50% 0; background: linear-gradient(180deg, #eff6ff 0 12%, #7dd3fc 32%, #2563eb 66%, #1e3a8a); box-shadow: inset -4px -7px 9px rgba(15,23,42,.45), inset 3px 3px 0 rgba(255,255,255,.42), 0 4px 11px rgba(2,6,23,.45); animation: vpSwayA var(--vp-dur, 1s) ease-in-out infinite; animation-delay: var(--vp-delay, 0s); }
         .vp-upper::after { content: ''; position: absolute; left: 4px; top: 6px; width: 6px; height: 18px; border-radius: 999px; background: rgba(255,255,255,.4); }
-        .vp-fore { position: absolute; left: -9px; top: 0; width: 18px; height: 38px; border-radius: 9px 9px 8px 8px; transform-origin: 50% 0; background: linear-gradient(180deg, #cfe8ff, #38bdf8 52%, #1d4ed8); box-shadow: inset -3px -6px 8px rgba(2,6,23,.4), inset 2px 2px 0 rgba(255,255,255,.36), 0 3px 9px rgba(2,6,23,.4); animation: vpSwayB var(--vp-dur, 1s) ease-in-out infinite; animation-delay: calc(var(--vp-delay, 0s) - var(--vp-dur, 1s) / 5); }
-        .vp-hand { position: absolute; left: -11px; top: 0; width: 22px; height: 22px; border-radius: 11px 11px 9px 9px; transform-origin: 50% 0; background: linear-gradient(180deg, #ffe3ca, #f9bd93 58%, #e08d5c); box-shadow: inset -3px -4px 6px rgba(120,53,15,.35), inset 2px 2px 0 rgba(255,255,255,.6), 0 0 calc(5px + var(--vp-amp, .5) * 15px) rgba(125,211,252,.45); animation: vpPalmsUp calc(var(--vp-dur, 1s) * 2) ease-in-out infinite; }
-        .vp-hand::before { content: ''; position: absolute; left: -5px; top: 5px; width: 8px; height: 13px; border-radius: 6px; background: linear-gradient(180deg, #ffe9d6, #eda878); transform: rotate(-22deg); }
-        .vp-finger { position: absolute; bottom: -8px; width: 5px; height: 11px; border-radius: 4px; transform-origin: 50% 0; background: linear-gradient(180deg, #ffdcc0, #e79c6d); animation: vpFingerCurl var(--vp-dur, 1s) ease-in-out infinite; }
+        .vp-fore { position: absolute; left: -9px; top: 0; width: 18px; height: 38px; border-radius: 9px 9px 8px 8px; transform-origin: 50% 0; background: linear-gradient(180deg, #dbeafe, #38bdf8 48%, #1e40af); box-shadow: inset -3px -6px 8px rgba(15,23,42,.42), inset 2px 2px 0 rgba(255,255,255,.36), 0 3px 9px rgba(2,6,23,.4); animation: vpSwayB var(--vp-dur, 1s) ease-in-out infinite; animation-delay: calc(var(--vp-delay, 0s) - var(--vp-dur, 1s) / 5); }
+        .vp-hand { position: absolute; left: -11px; top: 0; width: 22px; height: 22px; border-radius: 11px 11px 9px 9px; transform-origin: 50% 0; background: radial-gradient(circle at 30% 22%, #eff6ff 0 14%, #7dd3fc 34%, #2563eb 68%, #1e3a8a 100%); box-shadow: inset -3px -4px 6px rgba(15,23,42,.5), inset 2px 2px 0 rgba(255,255,255,.5), 0 0 calc(6px + var(--vp-amp, .5) * 20px) rgba(125,211,252,.55); animation: vpPalmsUp calc(var(--vp-dur, 1s) * 2) ease-in-out infinite; }
+        /* başparmak + bilek manşonu: gezegenin halkasının amber rengiyle bağ kurar */
+        .vp-hand::before { content: ''; position: absolute; left: -5px; top: 5px; width: 8px; height: 13px; border-radius: 6px; background: linear-gradient(180deg, #bae6fd, #3b82f6 70%, #1e40af); transform: rotate(-22deg); }
+        .vp-hand::after { content: ''; position: absolute; left: 2px; top: -4px; width: 18px; height: 5px; border-radius: 4px; background: linear-gradient(90deg, rgba(253,230,138,.35), #facc15 45%, #f59e0b 70%, rgba(245,158,11,.25)); box-shadow: 0 0 8px rgba(245,158,11,.5); }
+        .vp-finger { position: absolute; bottom: -8px; width: 5px; height: 11px; border-radius: 4px; transform-origin: 50% 0; background: linear-gradient(180deg, #e0f2fe, #60a5fa 55%, #1d4ed8); box-shadow: 0 0 6px rgba(125,211,252,.5); animation: vpFingerCurl var(--vp-dur, 1s) ease-in-out infinite; }
         .vp-finger-1 { left: 1px; }
         .vp-finger-2 { left: 8px; animation-delay: .1s; }
         .vp-finger-3 { left: 15px; animation-delay: .2s; }
@@ -255,50 +281,55 @@ export default function VoicePlanet(props: VoicePlanetProps) {
          * aynalandığı için aynı değişken iki kolda da simetrik durur.
          */
 
-        /* boşta: gevşek duruş + ara sıra gerinme */
-        .g-idle { --vp-sh: -7deg; --vp-el: 12deg; }
-        .g-idle .vp-upper { animation-name: vpStretch; animation-duration: 8.6s; }
-        .g-idle .vp-fore { animation-name: vpSwayIdle; animation-duration: 5.2s; }
-        .g-idle .vp-hand { animation: none; }
-        .g-idle .vp-finger { animation: none; }
+        /*
+         * Boşta duruş: kollar sağa ve sola AÇIK (ağırlıksız ortamda süzülür gibi),
+         * dirsekler çok hafif kırık, avuçlar dışarı dönük. Araxda bir gerinme gelir.
+         */
+        .g-idle { --vp-sh: -98deg; --vp-el: -12deg; --vp-wr: -8deg; }
+        .g-idle .vp-upper { animation-name: vpFloatFlap; animation-duration: 4.6s; }
+        .g-idle .vp-fore { animation-name: vpFloatFlap; animation-duration: 5.8s; animation-delay: calc(var(--vp-dur, 1s) * -1.1); }
+        .g-idle .vp-hand { animation-name: vpPalmsUp; animation-duration: 6.4s; }
+        .g-idle .vp-finger { animation: vpFingerWiggle 2.7s ease-in-out infinite; }
+        .g-idle .vp-finger-2 { animation-delay: .3s; }
+        .g-idle .vp-finger-3 { animation-delay: .6s; }
         .g-idle .vp-arm-right, .g-question .vp-arm-right, .g-shrug .vp-arm-right, .g-cheer .vp-arm-right, .g-listen .vp-arm-right, .g-think .vp-arm-right, .g-calm .vp-arm-right { --vp-delay: 0s; }
 
         /* sakin anlatım: kollar gevşek, hafif salınım */
-        .g-calm { --vp-sh: -14deg; --vp-el: 18deg; }
+        .g-calm { --vp-sh: -74deg; --vp-el: -18deg; }
 
         /* madde madde / örnekli anlatım: kollar sırayla keser */
-        .g-explain { --vp-sh: -24deg; --vp-el: -30deg; }
+        .g-explain { --vp-sh: -66deg; --vp-el: -34deg; }
         .g-explain .vp-upper { animation-name: vpChop; }
         .g-explain .vp-fore { animation-name: vpChopFore; }
         .g-explain .voice-planet-face { --vp-tilt: -3deg; }
 
         /* soru: avuçlar yukarı dönük, kollar yana açık, omuzla birlikte kalkar */
-        .g-question { --vp-sh: -22deg; --vp-el: -52deg; --vp-wr: -12deg; }
+        .g-question { --vp-sh: -84deg; --vp-el: -58deg; --vp-wr: -18deg; }
         .g-question .vp-upper { animation-name: vpShrug; }
         .g-question .vp-fore { animation-name: vpPalmsUp; }
         .g-question .voice-planet-face { --vp-tilt: 4deg; }
 
         /* coşku: kollar "V" şeklinde yukarı, tempo en yüksek */
-        .g-cheer { --vp-sh: -152deg; --vp-el: -18deg; --vp-wr: 4deg; }
+        .g-cheer { --vp-sh: -158deg; --vp-el: -16deg; --vp-wr: 6deg; }
         .g-cheer .vp-upper { animation-name: vpPump; }
         .g-cheer .vp-fore { animation-name: vpWaveHand; }
         .g-cheer .vp-hand { animation-name: vpWaveHand; }
         .g-cheer .vp-finger { animation: none; }
 
         /* vurgu / uyarı: sağ kol yana uzanır, işaret parmağı batar */
-        .g-point { --vp-sh: -10deg; --vp-el: 14deg; }
+        .g-point { --vp-sh: -88deg; --vp-el: -10deg; }
         .g-point .vp-arm-right { --vp-sh: -80deg; --vp-el: -8deg; }
         .g-point .vp-arm-right .vp-fore { animation-name: vpPoke; }
         .g-point .vp-arm-right .vp-finger-1 { animation: none; height: 17px; }
         .g-point .vp-arm-right .vp-finger-2, .g-point .vp-arm-right .vp-finger-3 { animation: none; height: 6px; transform: rotate(-26deg); }
 
         /* sayma: sağ el baş hizasında yukarıda, parmaklar vuruşla kıvrılır */
-        .g-count { --vp-sh: -10deg; --vp-el: 14deg; }
+        .g-count { --vp-sh: -88deg; --vp-el: -10deg; }
         .g-count .vp-arm-right { --vp-sh: -150deg; --vp-el: 22deg; }
         .g-count .vp-arm-right .vp-finger { animation-duration: calc(var(--vp-dur, 1s) * .9); }
 
         /* selam: sağ kol kalkar, el bilekten hızlı hızlı sallar */
-        .g-greet { --vp-sh: -10deg; --vp-el: 14deg; }
+        .g-greet { --vp-sh: -88deg; --vp-el: -10deg; }
         .g-greet .vp-arm-right { --vp-sh: -128deg; --vp-el: -26deg; }
         .g-greet .vp-arm-right .vp-upper { animation-name: vpPalmsUp; }
         .g-greet .vp-arm-right .vp-fore { animation-name: vpWaveHand; }
@@ -306,20 +337,22 @@ export default function VoicePlanet(props: VoicePlanetProps) {
         .g-greet .vp-arm-right .vp-finger { animation: none; }
 
         /* omuz silkiyor: iki kol yana, avuçlar yukarı, hareket yavaş */
-        .g-shrug { --vp-sh: -26deg; --vp-el: -58deg; --vp-wr: -18deg; }
+        .g-shrug { --vp-sh: -80deg; --vp-el: -52deg; --vp-wr: -22deg; }
         .g-shrug .vp-upper { animation-name: vpShrug; }
         .g-shrug .vp-fore { animation-name: vpPalmsUp; animation-duration: calc(var(--vp-dur, 1s) * 1.4); }
 
         /* dinliyor: sağ el kulağının/antenin yanına kıvrılır, sol kol yavaş salınır */
-        .g-listen { --vp-sh: -7deg; --vp-el: 12deg; }
+        .g-listen { --vp-sh: -98deg; --vp-el: -12deg; }
+        .g-listen .vp-arm-left { --vp-sh: -104deg; --vp-el: -8deg; }
         .g-listen .vp-arm-right { --vp-sh: -110deg; --vp-el: -120deg; --vp-wr: -24deg; }
         .g-listen .vp-upper { animation-name: vpSwayIdle; animation-duration: 3.4s; }
         .g-listen .vp-fore { animation-name: vpSwayIdle; animation-duration: 4.2s; }
         .g-listen .vp-hand, .g-listen .vp-finger { animation: none; }
 
         /* düşünüyor: sol el çenenin altında, sağ kol gevşek */
-        .g-think { --vp-sh: -7deg; --vp-el: 12deg; }
-        .g-think .vp-arm-left { --vp-sh: -17deg; --vp-el: 89deg; --vp-wr: -30deg; }
+        .g-think { --vp-sh: -98deg; --vp-el: -12deg; }
+        .g-think .vp-arm-left { --vp-sh: -14deg; --vp-el: 96deg; --vp-wr: -34deg; }
+        .g-think .vp-arm-right { --vp-sh: -104deg; --vp-el: -8deg; }
         .g-think .vp-upper { animation-name: vpSwayIdle; animation-duration: 4s; }
         .g-think .vp-hand, .g-think .vp-finger { animation: none; }
 
@@ -336,6 +369,7 @@ export default function VoicePlanet(props: VoicePlanetProps) {
         .celebrate .vp-burst { animation: vpBurstRing 1.15s ease-out 1; box-shadow: 0 0 34px rgba(34,197,94,.45); }
         .celebrate .vp-confetti { opacity: 1; }
         .celebrate .vp-confetti i { animation: vpConfetti 1.1s ease-out 1; }
+        .vp-acrobat-3d.celebrate { animation: vpHoorayFlip 1.15s cubic-bezier(.3,1.4,.5,1) 1; }
         .celebrate .vp-upper { animation-name: vpClap; animation-duration: .34s; animation-timing-function: ease-in-out; }
         .celebrate .vp-arm-right { --vp-delay: 0s; }
         .celebrate .vp-fore, .celebrate .vp-hand, .celebrate .vp-finger { animation: none; }
@@ -343,7 +377,7 @@ export default function VoicePlanet(props: VoicePlanetProps) {
         .voice-planet-caption { position: absolute; bottom: 10px; z-index: 6; padding: 5px 10px; border-radius: 999px; background: rgba(2,6,23,.64); color: #bae6fd; font-size: 11px; font-weight: 900; }
 
         @media (max-width: 560px) {
-          .voice-planet-stage { min-height: 280px; }
+          .voice-planet-stage { min-height: 300px; }
           /* scale ayrı bir özelliktir: transform'u animate eden keyframe'leri bozmaz. */
           .voice-planet-avatar { scale: .82; }
           .vp-moon-track { width: 250px; height: 170px; margin: -85px 0 0 -125px; }
@@ -355,33 +389,38 @@ export default function VoicePlanet(props: VoicePlanetProps) {
         }
       `}</style>
 
-      <div className="voice-planet-sparks" aria-hidden="true"><i /><i /><i /><i /><i /></div>
+      <div className="vp-shooting-star" aria-hidden="true" />
+      <div className="voice-planet-sparks" aria-hidden="true"><i /><i /><i /><i /><i /><i /><i /></div>
       <div className="vp-confetti" aria-hidden="true"><i /><i /><i /><i /><i /><i /></div>
       <div className="vp-moon-track" aria-hidden="true"><span className="vp-moon" /></div>
       <div className="vp-moon-track slow" aria-hidden="true"><span className="vp-moon" /></div>
 
-      <div
-        className={avatarClass}
-        ref={avatarRef}
-        style={{ '--vp-dur': `${pose.duration.toFixed(2)}s` } as React.CSSProperties}
-      >
-        <div className="vp-burst" aria-hidden="true" />
-        <div className="voice-planet-orbit" />
-        <div className="voice-planet-ring"><i /></div>
-        <Arm side="left" />
-        <Arm side="right" />
-        <div className="voice-planet-core">
-          <div className="vp-surface" />
-          <div className="vp-antenna"><i /></div>
-          <div className="vp-think-dots" aria-hidden="true"><i /><i /><i /></div>
-          <div className="voice-planet-face">
-            <span className="voice-planet-brow left" />
-            <span className="voice-planet-brow right" />
-            <span className="voice-planet-eye left"><span className="vp-pupil" /></span>
-            <span className="voice-planet-eye right"><span className="vp-pupil" /></span>
-            <span className="vp-cheek left" />
-            <span className="vp-cheek right" />
-            <span className="voice-planet-mouth" style={mouthShapes[viseme]} />
+      <div className="vp-acrobat">
+        <div className={`vp-acrobat-3d${celebrate ? ' celebrate' : ''}`}>
+          <div
+            className={avatarClass}
+            ref={avatarRef}
+            style={{ '--vp-dur': `${pose.duration.toFixed(2)}s` } as React.CSSProperties}
+          >
+            <div className="vp-burst" aria-hidden="true" />
+            <div className="voice-planet-orbit" />
+            <div className="voice-planet-ring"><i /></div>
+            <Arm side="left" />
+            <Arm side="right" />
+            <div className="voice-planet-core">
+              <div className="vp-surface" />
+              <div className="vp-antenna"><i /></div>
+              <div className="vp-think-dots" aria-hidden="true"><i /><i /><i /></div>
+              <div className="voice-planet-face">
+                <span className="voice-planet-brow left" />
+                <span className="voice-planet-brow right" />
+                <span className="voice-planet-eye left"><span className="vp-pupil" /></span>
+                <span className="voice-planet-eye right"><span className="vp-pupil" /></span>
+                <span className="vp-cheek left" />
+                <span className="vp-cheek right" />
+                <span className="voice-planet-mouth" style={mouthShapes[viseme]} />
+              </div>
+            </div>
           </div>
         </div>
       </div>

@@ -579,19 +579,32 @@ export default function AiChat(props: AiChatProps) {
     speechRunRef.current = runId;
     stopBotVoice();
     setIsSpeaking(true);
+    // Ses motoru (VoiceStudio/cloud) o an hazır değilse maskot "taklit" moduna geçer:
+    // ağız ve kollar tahmini okuma süresi boyunca hareket etmeye devam eder. Böylece
+    // ses yokken ajanın konuşması bir anda kesilmiş görünmez, jestler cümleyi izler.
+    const startedAt = Date.now();
+    const mimicMs = Math.min(8200, 600 + spoken.length * 46);
+    let realVoice = false;
     try {
       for (const segment of splitSpeechSegments(spoken)) {
         if (speechRunRef.current !== runId) return;
         animateMouth(segment.text, segment.lang);
         const usedAiVoice = await speakWithBotVoice(segment.text, 1);
-        if (!usedAiVoice) {
-          setStatus('VoiceStudio sesi hazır değil; tarayıcı sesi kullanılmadı.');
-        }
+        if (usedAiVoice) realVoice = true;
+      }
+      if (!realVoice) {
+        setStatus('🔇 Ses motoru hazır değil — gezegen sessiz taklit ediyor; kollar yine cümleye göre sallanıyor.');
       }
     } finally {
       if (speechRunRef.current === runId) {
-        stopMouthAnimation();
-        setIsSpeaking(false);
+        if (!realVoice) {
+          const left = mimicMs - (Date.now() - startedAt);
+          if (left > 0) await new Promise<void>(resolve => { window.setTimeout(resolve, left); });
+        }
+        if (speechRunRef.current === runId) {
+          stopMouthAnimation();
+          setIsSpeaking(false);
+        }
       }
     }
   };
