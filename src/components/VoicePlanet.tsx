@@ -14,11 +14,14 @@ import { VISEME_ENERGY, type PlanetPose, type PlanetViseme } from './planetGestu
  *    bebekler simetrik, iki göz aynı fazda kıpırdar). Bebekler BÜYÜK ve KOYU.
  *    Kırpma insanlardaki gibi: üst GÖZ KAPAĞI yukarıdan inip gözü kapatır, kirpiklar
  *    kapakla birlikte iner. Kaş, yanak allığı, küçük burun ve sonsuz esneyen ağız var.
- * 3) SAAT: Miss Minutes bir saat — kayınbirde (alt karın) gömülü bir kadran var:
- *    12 çentik, yelkovan + saat kolu, cam parlaması. Yüzle ASLA çarpışmaz (gözler
- *    40-69px, burun 58-69px, ağız 74-100px bandında; kadran 104-136px'te).
- *    Yelkovan konuşurken HIZLANIR (süre cümlenin ritminden gelir).
- * 4) AKICILIK: steps()/kare kare zamanlama YOK, film titremesi YOK. Konuşurken TAKLA
+ * 3) SAAT: topun ZEMİNİ bir saat kadranı — 12 çentik + dört uzun çentik + kadrans
+ *    çizgisi. AKREP VE YELKOVAN YOK, hareket de yok (dönen şeritler kaldırıldı);
+ *    çentikler 87-98% yarıçap bandında, yani kaş/göz/burun/ağız kutularına girmez.
+ * 4) ELLER: Mr Minutes gibi YUMRUK — boğum çizgili, asimetrik kütle, yatık
+ *    başparmak. Yumruk kolun ritmiyle sarkar gibi sallanır; düşünme/aydınlanmada
+ *    havaya kalkar, onayda başparmak dikilir, göstermede boğum şeridi tek parmağa
+ *    dönüşür, "eller belde"de iki yumruk topun alt yanlarına oturur.
+ * 5) AKICILIK: steps()/kare kare zamanlama YOK, film titremesi YOK. Konuşurken TAKLA
  *    YOK — takla boşta olan tek atımlık bir hareket; cümle başlarsa yenisi başlamaz.
  *
  * Kanal disiplini (bir elementi iki animasyonun bozmaması için her davranış ayrı
@@ -225,7 +228,6 @@ export default function VoicePlanet(props: VoicePlanetProps) {
         @keyframes voicePlanetListen { 0%, 100% { box-shadow: 0 0 0 0 rgba(34,197,94,.5), 0 0 42px rgba(56,189,248,.25); } 50% { box-shadow: 0 0 0 20px rgba(34,197,94,0), 0 0 60px rgba(34,197,94,.34); } }
         @keyframes voicePlanetTalk { 0%, 100% { transform: translateY(0) scale(1) rotate(-1.4deg); } 50% { transform: translateY(-6px) scale(1.03) rotate(1.4deg); } }
         @keyframes voicePlanetCheer { 0%, 100% { transform: translateY(0) scale(1); } 38% { transform: translateY(-14px) scale(1.05); } 62% { transform: translateY(-3px) scale(.99); } 78% { transform: translateY(-7px) scale(1.02); } }
-        @keyframes voicePlanetSpinSurface { from { background-position: 0 0; } to { background-position: 224px 0; } }
         @keyframes voicePlanetTwinkle { 0%, 100% { opacity: .18; transform: scale(.65); } 50% { opacity: 1; transform: scale(1.3); } }
         @keyframes voicePlanetGaze { 0%, 34%, 100% { translate: 0 0; } 44% { translate: 1.6px -.6px; } 58% { translate: -1.6px .4px; } 72% { translate: .4px 1.2px; } }
         @keyframes voicePlanetPop { 0% { scale: 1 1; } 40% { scale: 1.22 .82; } 100% { scale: 1 1; } }
@@ -240,11 +242,6 @@ export default function VoicePlanet(props: VoicePlanetProps) {
         @keyframes vpLashFlutter { 0%, 100% { rotate: 0deg; } 50% { rotate: -5deg; } }
         @keyframes vpBrowTwitch { 0%, 100% { translate: 0 0; } 50% { translate: 0 -1.5px; } }
 
-        /* ---- saat kadranı: yelkovan konuşurken hızlanır, saat kolu ağır ---- */
-        @keyframes vpClockMin { from { transform: rotate(0deg); } to { transform: rotate(360deg); } }
-        @keyframes vpClockHour { from { transform: rotate(28deg); } to { transform: rotate(388deg); } }
-        @keyframes vpClockTick { 0%, 88% { transform: rotate(-1.4deg); } 50% { transform: rotate(1.4deg); } 100% { transform: rotate(-1.4deg); } }
-
         /* ---- tek parça kol salınımları ---- */
         @keyframes vpSwayA { 0%, 100% { transform: rotate(calc(var(--vp-amp, .5) * -9deg)) ; } 50% { transform: rotate(calc(var(--vp-amp, .5) * 10deg)); } }
         @keyframes vpStretch { 0%, 100% { scale: 1 1; } 50% { scale: calc(1 - var(--vp-amp, .5) * .035) calc(1 + var(--vp-amp, .5) * .06); } }
@@ -253,11 +250,14 @@ export default function VoicePlanet(props: VoicePlanetProps) {
         @keyframes vpShrug { 0%, 100% { transform: rotate(calc(var(--vp-amp, .5) * 5deg)); } 50% { transform: rotate(calc(var(--vp-amp, .5) * -13deg)); } }
         @keyframes vpPalmsUp { 0%, 100% { scale: 1 1; rotate: calc(var(--vp-amp, .5) * -9deg); } 50% { scale: 1.1 .92; rotate: calc(var(--vp-amp, .5) * 12deg); } }
         @keyframes vpPump { 0%, 100% { transform: translateY(0) rotate(calc(var(--vp-amp, .5) * -8deg)); } 50% { transform: translateY(-12px) rotate(calc(var(--vp-amp, .5) * 9deg)); } }
-        @keyframes vpWaveHand { 0%, 100% { transform: rotate(calc(var(--vp-amp, .5) * -19deg)); } 50% { transform: rotate(calc(var(--vp-amp, .5) * 19deg)); } }
-        @keyframes vpHandTilt { 0%, 100% { transform: rotate(calc(var(--vp-amp, .5) * -7deg)); } 34% { transform: rotate(calc(var(--vp-amp, .5) * 10deg)); } 66% { transform: rotate(calc(var(--vp-amp, .5) * -3deg)); } }
+        /* yumruk sallanması: kolun ritmiyle aynı saatte, bilekte sarkar gibi */
+        @keyframes vpFistSwing { 0%, 100% { transform: rotate(calc(var(--vp-amp, .5) * -12deg)); } 34% { transform: rotate(calc(var(--vp-amp, .5) * 15deg)); } 68% { transform: rotate(calc(var(--vp-amp, .5) * -5deg)); } }
+        /* havaya kalkık yumruk: ağır ağır yukarı doğru itilir (düşünme/aydınlanma) */
+        @keyframes vpFistLift { 0%, 100% { translate: 0 0; } 50% { translate: -1px -6px; } }
+        @keyframes vpPunchArm { 0%, 100% { transform: rotate(0deg); } 34% { transform: rotate(calc(-13deg - var(--vp-amp, .5) * 6deg)); } 62% { transform: rotate(calc(5deg + var(--vp-amp, .5) * 3deg)); } }
+        @keyframes vpHipsBob { 0%, 100% { transform: rotate(calc(var(--vp-amp, .5) * -2.4deg)); } 50% { transform: rotate(calc(var(--vp-amp, .5) * 2.8deg)); } }
         @keyframes vpPoke { 0%, 100% { transform: rotate(calc(var(--vp-amp, .5) * -4deg)); } 38% { transform: rotate(calc(var(--vp-amp, .5) * 14deg)); } 58% { transform: rotate(calc(var(--vp-amp, .5) * 4deg)); } }
         @keyframes vpHandTap { 0%, 100% { translate: 0 0; } 46% { translate: 0 5px; } 70% { translate: 0 -2px; } }
-        @keyframes vpClap { 0%, 100% { transform: rotate(calc(var(--vp-amp, .5) * -8deg)); } 50% { transform: rotate(118deg); } }
 
         /* ---- boşta canlılık: kollar hiç durmaz, ama 180 derece açılmaz ---- */
         @keyframes vpIdleFlap { 0%, 100% { transform: rotate(calc(-3deg - var(--vp-amp, .5) * 8deg)); } 38% { transform: rotate(calc(2deg + var(--vp-amp, .5) * 9deg)); } 66% { transform: rotate(calc(-1deg + var(--vp-amp, .5) * 3deg)); } }
@@ -344,7 +344,6 @@ export default function VoicePlanet(props: VoicePlanetProps) {
 
         .voice-planet-core { position: relative; width: 142px; height: 142px; border-radius: 50%; background: radial-gradient(circle at 24% 14%, rgba(255,255,255,.6) 0 7%, rgba(255,255,255,0) 26%), radial-gradient(circle at 50% 56%, #4f93e8 0 38%, #2f6fd0 62%, #16307a 100%); border: 2px solid rgba(8,20,40,.6); overflow: hidden; animation: voicePlanetBreath calc(var(--vp-dur, 1s) * 4.6) ease-in-out infinite; box-shadow: inset -18px -22px 34px rgba(4,17,45,.42), inset 10px 10px 20px rgba(255,255,255,.22); z-index: 3; }
         .voice-planet-core::before { content: ''; position: absolute; left: -18px; top: 96px; width: 182px; height: 26px; background: rgba(255,255,255,.12); transform: rotate(-14deg); border-radius: 999px; }
-        .vp-surface { position: absolute; inset: 0; border-radius: 50%; opacity: .82; background: repeating-linear-gradient(104deg, transparent 0 15px, rgba(134,239,172,.26) 15px 27px, transparent 27px 46px, rgba(45,212,191,.18) 46px 60px); animation: voicePlanetSpinSurface 11s linear infinite; }
 
         /* ========================== yüz =============================== */
         .voice-planet-face { position: absolute; inset: 0; z-index: 4; transform: rotate(var(--vp-tilt, 0deg)); transition: transform .34s var(--vp-ease); }
@@ -401,16 +400,13 @@ export default function VoicePlanet(props: VoicePlanetProps) {
         .vp-cheek.left { left: 15px; }
         .vp-cheek.right { right: 15px; }
 
-        /* ============ SAAT: Miss Minutes'ın karnındaki kadran (yüzle çarpışmaz) ==== */
-        .vp-clock { position: absolute; left: 50%; top: 104px; width: 32px; height: 32px; margin-left: -16px; border-radius: 50%; background: radial-gradient(circle at 32% 26%, #fffdf2, #fdeec6 56%, #e6c274 100%); border: 2px solid #0b1428; box-shadow: inset 0 -3px 6px rgba(146,94,10,.32), 0 1px 0 rgba(8,20,40,.35), 0 0 calc(5px + var(--vp-amp, .5) * 9px) rgba(250,204,21,.28); z-index: 3; animation: vpClockTick 2.6s ease-in-out infinite; }
-        /* 12 çenti̇k: koni̇ks desen + ortası maskeli yüzük */
-        .vp-clock::before { content: ''; position: absolute; inset: 2px; border-radius: 50%; background: repeating-conic-gradient(from -90deg, rgba(11,20,40,.72) 0 1.8deg, rgba(11,20,40,0) 1.8deg 30deg); -webkit-mask: radial-gradient(circle, transparent 0 44%, #000 46% 66%, transparent 68%); mask: radial-gradient(circle, transparent 0 44%, #000 46% 66%, transparent 68%); }
-        /* cam parlamasi */
-        .vp-clock::after { content: ''; position: absolute; left: 4px; top: 3px; width: 12px; height: 7px; border-radius: 999px; background: rgba(255,255,255,.62); transform: rotate(-26deg); filter: blur(.4px); }
-        .vp-clock-hand { position: absolute; left: 50%; top: 50%; border-radius: 2px; background: #0b1428; transform-origin: 50% 100%; }
-        .vp-clock-min { width: 2px; height: 12px; margin: -12px 0 0 -1px; animation: vpClockMin calc(var(--vp-dur, 1s) * 8) linear infinite; }
-        .vp-clock-hour { width: 2.6px; height: 8px; margin: -8px 0 0 -1.3px; animation: vpClockHour calc(var(--vp-dur, 1s) * 96) linear infinite; }
-        .vp-clock-pin { position: absolute; left: 50%; top: 50%; width: 4px; height: 4px; margin: -2px 0 0 -2px; border-radius: 50%; background: #7c4a06; box-shadow: 0 0 0 1px rgba(11,20,40,.5); }
+        /* ================== SAAT KADRANI (zemin, akrepsiz) ==================
+           Eskisi gibi karnında ayrı bir saat + dönen akrep YOK; topun kendini
+           çevreleyen durağan çentik halkası var — Miss Minutes kağıt maketindeki
+           gibi. Hiçbir şey döndürülmüyor, şerit/şerit hareket yok. */
+        .vp-dial { position: absolute; inset: 0; border-radius: 50%; z-index: 1; pointer-events: none; background: repeating-conic-gradient(from -90deg, rgba(8,22,50,.5) 0 2.2deg, rgba(8,22,50,0) 2.2deg 30deg); -webkit-mask: radial-gradient(circle, transparent 0 86%, #000 87% 98%, transparent 99%); mask: radial-gradient(circle, transparent 0 86%, #000 87% 98%, transparent 99%); }
+        .vp-dial::before { content: ''; position: absolute; inset: 0; border-radius: 50%; background: repeating-conic-gradient(from -90deg, rgba(8,22,50,.6) 0 3.2deg, rgba(8,22,50,0) 3.2deg 90deg); -webkit-mask: radial-gradient(circle, transparent 0 74%, #000 75% 98%, transparent 99%); mask: radial-gradient(circle, transparent 0 74%, #000 75% 98%, transparent 99%); }
+        .vp-dial::after { content: ''; position: absolute; inset: 10.5%; border-radius: 50%; border: 1.4px solid rgba(199,231,255,.26); box-shadow: inset 0 0 12px rgba(8,22,50,.18); }
 
         /* anten + düşünme noktaları + işaret parıltısı */
         .vp-antenna { position: absolute; left: 50%; top: -30px; width: 4px; height: 32px; margin-left: -2px; border-radius: 4px; background: #123565; transform-origin: 50% 100%; animation: vpAntenna 3.1s ease-in-out infinite; z-index: 5; }
@@ -425,6 +421,9 @@ export default function VoicePlanet(props: VoicePlanetProps) {
         .vp-think-mark { position: absolute; left: -30px; top: -28px; width: 26px; height: 26px; display: grid; place-items: center; opacity: 0; transform: scale(.5); transition: opacity .34s ease, transform .34s var(--vp-ease), left .42s var(--vp-ease), top .42s var(--vp-ease); pointer-events: none; z-index: 6; }
         .vp-think-mark::after { content: ''; position: absolute; color: #fde68a; font-size: 21px; font-weight: 900; line-height: 1; text-shadow: 0 0 10px rgba(250,204,21,.8); }
         .thinking .vp-think-mark::after, .g-think .vp-think-mark::after { content: '✦'; }
+        .g-eureka .vp-think-mark::after { content: '✦'; color: #fef3c7; font-size: 26px; text-shadow: 0 0 14px rgba(250,204,21,.95); }
+        .g-thumbup .vp-think-mark::after { content: '✓'; color: #bbf7d0; font-size: 20px; text-shadow: 0 0 12px rgba(74,222,128,.8); }
+        .g-thumbup .vp-think-mark { left: 168px; top: 26px; opacity: 1; transform: scale(1); }
         .g-point .vp-think-mark::after { content: '◎'; color: #bbf7d0; text-shadow: 0 0 10px rgba(74,222,128,.8); }
         .g-question .vp-think-mark::after { content: '?'; color: #fed7aa; }
         .g-explain .vp-think-mark::after { content: '•'; color: #bae6fd; font-size: 30px; }
@@ -443,7 +442,13 @@ export default function VoicePlanet(props: VoicePlanetProps) {
         .vp-arm-right { left: 170px; --vp-side: 1; --vp-delay: calc(var(--vp-dur, 1s) / -2); }
         .vp-shoulder-pose { position: absolute; left: 0; top: 0; width: 0; height: 0; transform: rotate(var(--vp-sh, -38deg)); transition: transform .42s var(--vp-ease); animation: vpIdleShoulder 13s ease-in-out infinite; }
         .vp-limb { position: absolute; left: -7.5px; top: 0; width: 15px; height: 54px; border-radius: 999px; transform-origin: 50% 0; background: linear-gradient(100deg, rgba(19,52,110,.95) 0 14%, #4f93e8 44%, #b9dcff 60%, rgba(17,44,94,.95)); box-shadow: 0 0 12px rgba(56,189,248,.22); animation: vpSwayA var(--vp-dur, 1s) ease-in-out infinite, vpStretch calc(var(--vp-dur, 1s) * 2) ease-in-out infinite; animation-delay: var(--vp-delay, 0s); }
-        .vp-hand { position: absolute; left: -5.5px; top: 48px; width: 26px; height: 25px; border-radius: 50% 50% 47% 47%; transform-origin: 50% 0; rotate: var(--vp-wr, 8deg); background: radial-gradient(circle at 34% 26%, #f4faff 0 16%, #7cbbf7 54%, #1f4f9e 100%); box-shadow: 0 0 calc(7px + var(--vp-amp, .5) * 15px) rgba(125,211,252,calc(.26 + var(--vp-amp, .5) * .32)), inset -2px -3px 7px rgba(6,20,48,.4); animation: vpHandTilt calc(var(--vp-dur, 1s) * 2.2) ease-in-out infinite; transition: rotate .42s var(--vp-ease), width .3s var(--vp-ease), border-radius .3s var(--vp-ease); }
+        /* YUMRUK: Mr Minutes'ın eli gibi — tek top değil, parmak boğumlu, hafif
+           asimetrik yumruk kütlesi. Renk gezegenin kendi paleti (insan derisi yok). */
+        .vp-hand { position: absolute; left: -6px; top: 46px; width: 27px; height: 26px; border-radius: 48% 52% 46% 46% / 44% 46% 56% 54%; transform-origin: 50% 0; rotate: var(--vp-wr, 8deg); background: radial-gradient(circle at 32% 24%, #f4faff 0 14%, #7cbbf7 52%, #1c4894 100%); box-shadow: 0 0 calc(7px + var(--vp-amp, .5) * 15px) rgba(125,211,252,calc(.26 + var(--vp-amp, .5) * .32)), inset -2px -3px 7px rgba(6,20,48,.42), inset 2px 3px 5px rgba(255,255,255,.28); animation: vpFistSwing calc(var(--vp-dur, 1s) * 1.5) ease-in-out infinite; transition: rotate .42s var(--vp-ease), width .3s var(--vp-ease), height .3s var(--vp-ease), border-radius .3s var(--vp-ease); }
+        /* boğum çizgileri: yumruğun üst kenarında kıvrık parmaklar */
+        .vp-hand::before { content: ''; position: absolute; left: 3px; right: 4px; top: 3px; height: 10px; border-radius: 6px; background: repeating-linear-gradient(90deg, rgba(9,24,52,.46) 0 1.7px, rgba(9,24,52,0) 1.7px 6.4px), linear-gradient(180deg, rgba(255,255,255,.34), rgba(255,255,255,0)); box-shadow: inset 0 -1.2px 0 rgba(9,24,52,.22); transition: all .3s var(--vp-ease); }
+        /* başparmak yumruğun üstinde yatık durur; sadece 'onay' jestinde dikilir */
+        .vp-hand::after { content: ''; position: absolute; left: -2px; top: 8px; width: 11px; height: 9px; border-radius: 5px 3px 5px 5px; background: radial-gradient(circle at 40% 30%, #f4faff, #74b6f5 60%, #1f4f9e); opacity: .8; transform: rotate(-16deg); transition: all .3s var(--vp-ease); }
 
         /*
          * Duruşlar. Sözleşme: NEGATİF = kol dışarı, POZİTİF = içeri.
@@ -479,41 +484,83 @@ export default function VoicePlanet(props: VoicePlanetProps) {
         /* coşku: kollar V olup pompalar */
         .g-cheer { --vp-sh: -152deg; --vp-wr: 12deg; }
         .g-cheer .vp-limb { animation-name: vpPump; }
-        .g-cheer .vp-hand { animation-name: vpWaveHand; animation-duration: calc(var(--vp-dur, 1s) * .7); }
+        .g-cheer .vp-arm-right { --vp-wr: 146deg; }
+        .g-cheer .vp-arm-left { --vp-wr: -150deg; }
+        .g-cheer .vp-hand { animation: vpFistLift calc(var(--vp-dur, 1s) * .8) cubic-bezier(.3,.8,.4,1) infinite; }
 
         /* gösterme: kol uzanır, el sivrilir ve ucunda bir HEDEF parlar */
         .g-point { --vp-sh: -40deg; --vp-wr: 0deg; }
         .g-point .vp-arm-right { --vp-sh: -96deg; --vp-wr: -6deg; }
         .g-point .vp-arm-right .vp-limb { animation-name: vpPoke; }
-        .g-point .vp-arm-right .vp-hand { animation: none; transform: rotate(-4deg); width: 22px; height: 31px; border-radius: 46% 54% 40% 40% / 26% 26% 74% 74%; }
+        .g-point .vp-arm-right .vp-hand { animation: none; transform: rotate(-4deg); }
+        /* boğum şeridi tek parmağa dönüşür: yumruk + uzayan işaret parmağı */
+        .g-point .vp-arm-right .vp-hand::before { left: 9px; right: auto; top: 16px; width: 8px; height: 17px; border-radius: 4px 4px 3px 3px; background: linear-gradient(180deg, #f4faff, #74b6f5 62%, #1f4f9e); box-shadow: inset 0 0 0 1.2px rgba(9,24,52,.3); }
+        .g-point .vp-arm-right .vp-hand::after { opacity: .5; transform: rotate(-30deg) scale(.8); }
+        .g-think .vp-arm-right .vp-hand::after, .g-eureka .vp-arm-right .vp-hand::after, .g-hips .vp-hand::after { transform: rotate(-6deg) translateY(-1px); }
 
         /* sayma: el baş hizasında her vuruşta aşağı tapeler */
         .g-count { --vp-sh: -34deg; --vp-wr: 4deg; }
-        .g-count .vp-arm-right { --vp-sh: -128deg; --vp-wr: -10deg; }
+        .g-count .vp-arm-right { --vp-sh: -128deg; --vp-wr: 118deg; }
         .g-count .vp-arm-right .vp-limb { animation: vpHandTap calc(var(--vp-dur, 1s) * .85) ease-in-out infinite; }
-        .g-count .vp-arm-right .vp-hand { animation-name: vpHandSway; }
+        .g-count .vp-arm-right .vp-hand { animation-name: vpHandSway; animation-duration: calc(var(--vp-dur, 1s) * .85); }
 
         /* selam: kol antenin yanına kalkar, el hızlı sallanır */
         .g-greet { --vp-sh: -30deg; --vp-wr: 6deg; }
-        .g-greet .vp-arm-right { --vp-sh: -168deg; --vp-wr: -8deg; }
+        .g-greet .vp-arm-right { --vp-sh: -168deg; --vp-wr: 150deg; }
         .g-greet .vp-arm-right .vp-limb { animation-name: vpPalmsUp; }
-        .g-greet .vp-arm-right .vp-hand { animation-name: vpWaveHand; animation-duration: calc(var(--vp-dur, 1s) * .5); }
+        .g-greet .vp-arm-right .vp-hand { animation: vpFistLift calc(var(--vp-dur, 1s) * .5) ease-in-out infinite; }
 
         /* dinliyor: el kulağın/antenin yanına kıvrılır */
         .g-listen { --vp-sh: -34deg; --vp-wr: 8deg; }
-        .g-listen .vp-arm-right { --vp-sh: -152deg; --vp-wr: -20deg; }
+        .g-listen .vp-arm-right { --vp-sh: -152deg; --vp-wr: 138deg; }
         .g-listen .vp-limb { animation: vpIdleFlap 4.4s ease-in-out infinite; }
         .g-listen .vp-hand { animation: vpIdleHand 5.2s ease-in-out infinite; }
 
-        /* düşünüyor: TEK kol yukarı kalkıp bir NOKTAYI işaret eder, gözler oraya bakar */
+        /* düşünüyor: tek YUMRUK havaya kalkar, gözler yumruğun peşine gider,
+           baş ona doğru eğilir — "bir şeyi tutup havada eviriyor" gibi. */
         .g-think { --vp-sh: -30deg; --vp-wr: 4deg; }
-        .g-think .vp-arm-left { --vp-sh: -160deg; --vp-wr: -10deg; }
-        .g-think .vp-arm-left .vp-limb { animation: vpPoke calc(var(--vp-dur, 1s) * 2.2) ease-in-out infinite; }
-        .g-think .vp-arm-left .vp-hand { animation: none; transform: rotate(-6deg); width: 22px; height: 30px; border-radius: 46% 54% 40% 40% / 26% 26% 74% 74%; }
-        .g-think .vp-pupil { animation: none; translate: -2px -2.5px; }
-        .g-think .voice-planet-face { --vp-tilt: 5deg; }
-        .thinking .vp-arm-left { --vp-sh: -160deg; --vp-wr: -10deg; }
-        .thinking .vp-pupil { animation: none; translate: -2px -2.5px; }
+        .g-think .vp-arm-right { --vp-sh: -168deg; --vp-wr: 156deg; }
+        .g-think .vp-arm-right .vp-limb { animation: vpPunchArm calc(var(--vp-dur, 1s) * 1.7) ease-in-out infinite; }
+        .g-think .vp-arm-right .vp-hand { animation: vpFistLift 2.6s ease-in-out infinite; }
+        .g-think .vp-arm-left { --vp-sh: 14deg; --vp-wr: -18deg; }
+        .g-think .vp-arm-left .vp-limb { animation-name: vpHipsBob; }
+        .g-think .vp-pupil { animation: none; translate: 2px -2.6px; }
+        .g-think .voice-planet-face { --vp-tilt: -5deg; }
+        .g-think .vp-think-mark { left: 150px; top: -16px; }
+        .thinking { --vp-sh: -30deg; }
+        .thinking .vp-arm-right { --vp-sh: -168deg; --vp-wr: 156deg; }
+        .thinking .vp-arm-right .vp-hand { animation: vpFistLift 2.6s ease-in-out infinite; }
+        .thinking .vp-pupil { animation: none; translate: 2px -2.6px; }
+        .thinking .vp-think-mark { left: 150px; top: -16px; }
+
+        /* aydınlanma: yumruk havaya pompalanır, parıltı patlar, baş sarsılır */
+        .g-eureka { --vp-sh: -34deg; --vp-wr: 0deg; }
+        .g-eureka .vp-arm-right { --vp-sh: -152deg; --vp-wr: 148deg; }
+        .g-eureka .vp-arm-right .vp-limb { animation-name: vpPunchArm; animation-duration: calc(var(--vp-dur, 1s) * 1.1); }
+        .g-eureka .vp-arm-right .vp-hand { animation: vpFistLift 1.1s cubic-bezier(.3,.8,.4,1) infinite; }
+        .g-eureka .vp-arm-left { --vp-sh: 14deg; --vp-wr: -16deg; }
+        .g-eureka .voice-planet-face { --vp-tilt: -3.5deg; }
+        .g-eureka .vp-think-mark { left: 158px; top: -26px; opacity: 1; transform: scale(1.15); }
+        .g-eureka .vp-think-mark::before { animation: vpMarkRing 1.1s ease-out infinite; }
+        .g-eureka .vp-cheek { opacity: calc(.3 + var(--vp-amp, .5) * .4); }
+
+        /* onay: göğüs hizasında yumruk, başparmak dik (kol neredeyse sarkık ki
+           parmak gerçekten yukarı baksın); öbür el belde */
+        .g-thumbup { --vp-sh: -36deg; --vp-wr: 6deg; }
+        .g-thumbup .vp-arm-right { --vp-sh: 26deg; --vp-wr: -8deg; }
+        .g-thumbup .vp-arm-right .vp-limb { animation-name: vpPunchArm; animation-duration: calc(var(--vp-dur, 1s) * 1.6); }
+        .g-thumbup .vp-arm-right .vp-hand { animation: vpHandSway calc(var(--vp-dur, 1s) * 1.6) ease-in-out infinite; width: 25px; height: 24px; }
+        /* başparmak dikilir */
+        .g-thumbup .vp-arm-right .vp-hand::after { opacity: 1; left: 3px; top: -12px; width: 10px; height: 16px; border-radius: 5px 5px 4px 4px; transform: rotate(5deg); }
+        .g-thumbup .vp-arm-right .vp-hand::before { left: 4px; right: 4px; top: 6px; height: 9px; }
+        .g-thumbup .vp-arm-left { --vp-sh: 14deg; --vp-wr: -20deg; }
+
+        /* eller belde: kendinden emin, iki yumruk topun alt yanlarında */
+        .g-hips { --vp-sh: 14deg; --vp-wr: -22deg; }
+        .g-hips .vp-limb { animation: vpHipsBob calc(var(--vp-dur, 1s) * 1.4) ease-in-out infinite; }
+        .g-hips .vp-hand { animation: none; transform: rotate(-8deg); }
+        .g-hips .voice-planet-face { --vp-tilt: 1.6deg; }
+        .g-hips .vp-body { animation-duration: 7.4s; }
 
         /* ================== cümle sonu kutlaması ======================= */
         .vp-burst { position: absolute; left: 50%; top: 50%; width: 196px; height: 196px; margin: -98px 0 0 -98px; border-radius: 50%; border: 2.5px solid rgba(134,239,172,.75); opacity: 0; pointer-events: none; z-index: 1; }
@@ -528,10 +575,16 @@ export default function VoicePlanet(props: VoicePlanetProps) {
         .celebrate .vp-burst { animation: vpBurstRing 1.15s ease-out 1; box-shadow: 0 0 34px rgba(34,197,94,.45); }
         .celebrate .vp-confetti { opacity: 1; }
         .celebrate .vp-confetti i { animation: vpConfetti 1.1s cubic-bezier(.2,.8,.4,1) 1; }
-        /* alkış: iki el topu saat kadrının önünde buluşur */
-        .celebrate .vp-limb { animation: vpClap .44s cubic-bezier(.3,.8,.4,1) infinite; }
+        /* Kutlama: yumruklar yan yukarı kalkıp pompalar. Düz kol + 130px omuz
+           açıklığında alkış için gereken kavuşma noktası ağız satırına (110-132px)
+           düşüyor, yani ağız kapanıyordu — o yüzden alkış yerine iki yumruk havada. */
+        .celebrate { --vp-sh: -150deg; --vp-wr: 146deg; }
+        .celebrate .vp-limb { animation: vpPump .46s cubic-bezier(.3,.8,.4,1) infinite; }
         .celebrate .vp-arm-right { --vp-delay: 0s; }
-        .celebrate .vp-hand { animation: vpPalmsUp .44s ease-in-out infinite; }
+        .celebrate .vp-hand { animation: vpFistLift .46s cubic-bezier(.3,.8,.4,1) infinite; }
+        .celebrate .vp-cheek { opacity: .58; }
+        .celebrate .vp-think-mark { left: 158px; top: -30px; opacity: 1; transform: scale(1.2); }
+        .celebrate .vp-think-mark::after { content: '✦'; color: #fef3c7; font-size: 26px; }
 
         .voice-planet-caption { position: absolute; bottom: 10px; z-index: 6; padding: 5px 10px; border-radius: 999px; background: rgba(2,6,23,.68); border: 1px solid rgba(125,211,252,.22); color: #bae6fd; font-size: 11px; font-weight: 900; }
 
@@ -575,7 +628,7 @@ export default function VoicePlanet(props: VoicePlanetProps) {
                 <span className="vp-think-mark" aria-hidden="true" />
 
                 <div className="voice-planet-core">
-                  <div className="vp-surface" />
+                  <div className="vp-dial" aria-hidden="true" />
                   <div className="voice-planet-face">
                     <span className="voice-planet-brow left" />
                     <span className="voice-planet-brow right" />
@@ -585,11 +638,6 @@ export default function VoicePlanet(props: VoicePlanetProps) {
                     <span className="vp-cheek left" />
                     <span className="vp-cheek right" />
                     <span className="voice-planet-mouth" style={mouthStyle(viseme, pose)} />
-                  </div>
-                  <div className="vp-clock" aria-hidden="true">
-                    <span className="vp-clock-hand vp-clock-hour" />
-                    <span className="vp-clock-hand vp-clock-min" />
-                    <span className="vp-clock-pin" />
                   </div>
                 </div>
               </div>

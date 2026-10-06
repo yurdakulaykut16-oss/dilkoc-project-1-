@@ -27,7 +27,13 @@ export type PlanetGesture =
   | 'greet'
   | 'shrug'
   | 'listen'
-  | 'think';
+  | 'think'
+  /** Yumruk havada, 'işte bunu buldum' aydınlanması. */
+  | 'eureka'
+  /** Tek yumruk yukarı, başparmak dışarı: onay/övüş işareti. */
+  | 'thumbup'
+  /** İki yumruk belde, net ve kendinden emin duruş. */
+  | 'hips';
 
 export interface PlanetPose {
   gesture: PlanetGesture;
@@ -63,6 +69,9 @@ const RX_EMPHASIS = /dikkat|önemli|unutma|sakın|asla|kesinlikle|yanlış|hata|
 const RX_LIST = /(?:^|\s)(?:[-•*]|\d+\s*[).])|\d+\s*%|→|➜|✔️|✅/u;
 const RX_COUNT = /(?:^|\s)\d+\s*(?:gün|kez|kere|satır|kelime|soru|puan|%|yüzde|dakika|saat|hafta|ay|yıl)\b|birinc|ikinc|üçünc|список|раз|два/iu;
 const RX_EXPLAIN = /örnek|mesela|örn|yani|açıkla|anlat|böyle|şöyle|böylece|например|допустим|напр|for\s+example|for\s+instance|example/iu;
+const RX_THUMBUP = /aferin|harikas[ıın]|harika|m[üu]kemmel|s[üu]per|bravo|çok\s+iyi|g[üu]zel\b|do[ğg]ru\b|iyi\s+gidiyorsun|ene\s+iyi|tebrik|отлично|молодец|браво|well\s+done|great\s+job|nice|excellent|👍|💪|🙌/iu;
+const RX_EUREKA = /\bi[şs]te\b|buldum|p[üu]f\b|ak[ıı]lda\s+tut|form[üu]l|kural[ıi]?\s+şu|yan[ıi]t\s+şu|c[eé]vap\s+şu|unutma|dikkat\s+et|ş[öo]yle\s+yap|adımla|öneri(?:rim|m)?|tavsiye|запомни|обрати\s+внимание|here\s+(?:you\s+go|it\s+is)|pro\s+tip|remember\s+this|💡|✨/iu;
+const RX_HIPS = /\basl[ıi]nda\b|\boysa\b|\bama\b|\bfakat\b|\bger[çc]i\b|do[ğg]rusu|k[ıi]sacas[ıi]|\bhay[ıi]r\b|\bо\s?й\b|кстати|actually|however|on\s+the\s+contrary|to\s+be\s+precise/iu;
 const RX_SHRUG = /bilmiyorum|emin\s+değil|sanırım|belki|muhtemelen|olsa\s+gerek|kusura|pardon|üzgünüm|не\s+знаю|наверное|возможно|извини|i\s+think|probably|not\s+sure|maybe|sorry/iu;
 
 interface GestureRule {
@@ -77,22 +86,26 @@ interface GestureRule {
 /** Sıra önemli: ilk eşleşen kural kazanır (özel jestler genelden önce). */
 const GESTURE_RULES: GestureRule[] = [
   { gesture: 'greet', pattern: RX_GREET, amplitude: 1.15, duration: 0.5, brows: 'up', label: 'selamlıyor 👋' },
+  { gesture: 'thumbup', pattern: RX_THUMBUP, amplitude: 1.18, duration: 0.62, brows: 'up', label: 'onaylayıp başparmağını kaldırıyor 👍' },
+  { gesture: 'eureka', pattern: RX_EUREKA, amplitude: 1.42, duration: 0.44, brows: 'up', label: 'yumruğunu havaya kaldırıyor 💡' },
   { gesture: 'cheer', pattern: RX_CHEER, amplitude: 1.6, duration: 0.36, brows: 'up', label: 'coşkuyla anlatıyor 🙌' },
   { gesture: 'question', pattern: RX_QUESTION, amplitude: 1.05, duration: 0.72, brows: 'up', label: 'soruyor, avuçlarını açıyor 🤔' },
   { gesture: 'shrug', pattern: RX_SHRUG, amplitude: 0.66, duration: 0.95, brows: 'up', label: 'omuzlarını silkiyor 🤷' },
+  { gesture: 'hips', pattern: RX_HIPS, amplitude: 0.54, duration: 1.15, brows: 'neutral', label: 'eller belde, net konuşuyor 🧍' },
   { gesture: 'point', pattern: RX_EMPHASIS, amplitude: 0.82, duration: 0.46, brows: 'down', label: 'parmağıyla vurguluyor ☝️' },
   { gesture: 'count', pattern: RX_COUNT, amplitude: 0.78, duration: 0.42, brows: 'neutral', label: 'sayıyor 🔢' },
   { gesture: 'explain', pattern: RX_EXPLAIN, amplitude: 1.02, duration: 0.6, brows: 'neutral', label: 'örnekle anlatıyor 🗒️' },
   { gesture: 'explain', pattern: RX_LIST, amplitude: 0.95, duration: 0.54, brows: 'neutral', label: 'madde madde anlatıyor 📑' },
 ];
+
 const POSE_CALM: PlanetPose = { gesture: 'calm', amplitude: 0.62, duration: 1.05, brows: 'neutral', label: 'anlatıyor 🪐' };
 
 /** Boşta, yani konuşmuyorken: kollar gevşek, uzun ve nefes alır gibi sallanır. */
 export const PLANET_POSE_IDLE: PlanetPose = { gesture: 'idle', amplitude: 0.72, duration: 2.9, brows: 'neutral', label: 'hazırda bekliyor 🪐' };
 /** Dinlerken sağ el kulağa (antene) gider, sol kol yavaşça salınır. */
 export const PLANET_POSE_LISTEN: PlanetPose = { gesture: 'listen', amplitude: 0.4, duration: 1.9, brows: 'up', label: 'seni dinliyor 🎙️' };
-/** Yanıt aranırken: el çenede, düşünme pozu. */
-export const PLANET_POSE_THINK: PlanetPose = { gesture: 'think', amplitude: 0.34, duration: 2.2, brows: 'down', label: 'düşünüyor 🧠' };
+/** Yanıt aranırken: tek yumruk havada, gözler onun peşinde, kafa eğik. */
+export const PLANET_POSE_THINK: PlanetPose = { gesture: 'think', amplitude: 0.58, duration: 1.85, brows: 'down', label: 'yumruğu havada düşünüyor 🤔' };
 /** Kullanıcı soru sorduysa yanıt aranırken avuçlar yukarı — "birlikte düşünüyoruz" pozu. */
 export const PLANET_POSE_ASKING: PlanetPose = { gesture: 'question', amplitude: 0.72, duration: 1.4, brows: 'up', label: 'sorunu tartıyor 🤔' };
 
@@ -101,8 +114,19 @@ export const PLANET_POSE_ASKING: PlanetPose = { gesture: 'question', amplitude: 
  * genliği büyütür, tempoyu hızlandırır; kısa cümleler sakin kalır.
  */
 export function planetPoseForSentence(sentence: string): PlanetPose {
-  const text = (sentence || '').replace(/\s+/g, ' ').trim();
-  if (!text) return POSE_CALM;
+  const raw = (sentence || '').replace(/\s+/g, ' ').trim();
+  if (!raw) return POSE_CALM;
+  /**
+   * Türkçe eşleştirme düzeltmesi: 'İ' Unicode katlamada 'i̇' (iki birim) olduğu için
+   * tek karakterlik kalıplar "İşte"yi yakalayamıyordu. Önce tr küçük harfine çevir,
+   * sonra birleşik nokta işaretini at, sonra tekrar birleştir — böylece tüm kalıplar
+   * İ/i/I/ı ve Ş/S varyantlarını tek seferde görür.
+   */
+  const text = raw
+    .toLocaleLowerCase('tr')
+    .normalize('NFD')
+    .replace(/\u0307/g, '')
+    .normalize('NFC');
 
   const words = text.split(' ').filter(Boolean).length;
   const bangs = (text.match(/!/g) || []).length;
