@@ -1,9 +1,10 @@
 import { SpeechRecognition as NativeSpeechRecognition } from '@capacitor-community/speech-recognition';
 import React, { useEffect, useMemo, useRef, useState } from 'react';
 import { answerWithLocalRussianAgent } from '../ai/localRussianAgent';
-import { getLocalAnswerCache, LOCAL_INTELLIGENCE_MAX_LABEL, putLocalAnswerCache } from '../ai/localIntelligenceStore';
+import { clearLocalAnswerCache } from '../ai/localIntelligenceStore';
 import { LOCAL_RUSSIAN_FACT_COUNT, RUSSIAN_KNOWLEDGE_BASE } from '../ai/russianExpertise';
 import { speakWithBotVoice, stopBotVoice } from '../tts/voiceStudio';
+import AiPlanetAvatar, { type AvatarCue } from './AiPlanetAvatar';
 import VoiceStudioPanel from './VoiceStudioPanel';
 import { isEnglish, langMeta } from '../content/activeLanguage';
 
@@ -23,7 +24,7 @@ type LearningFocus = {
 type CoachMistake = { ru: string; tr: string; reason: string };
 type SrsItem = { ru: string; tr: string; box: number; nextReview: number; type: 'word' | 'letter' };
 
-type MouthViseme = 'rest' | 'closed' | 'open' | 'wide' | 'round' | 'teeth' | 'smile';
+type MouthViseme = 'rest' | 'closed' | 'open' | 'wide' | 'round' | 'teeth' | 'flat';
 type RecognitionAlternative = { transcript: string; confidence?: number };
 type RecognitionResult = { readonly length: number; readonly isFinal?: boolean; [index: number]: RecognitionAlternative };
 type RecognitionResultList = { readonly length: number; [index: number]: RecognitionResult };
@@ -73,22 +74,9 @@ export interface AiChatProps {
   onEarnXp?: (amount: number) => void;
 }
 
-const CHAT_KEY = 'dilkoc_ai_agent_chat_v1';
+const LEGACY_CHAT_KEY = 'dilkoc_ai_agent_chat_v1';
 const AUTO_SPEAK_KEY = 'dilkoc_ai_agent_autospeak_v1';
 const SPEAK_SCOPE_KEY = 'dilkoc_ai_agent_speakscope_v1';
-
-function restoreChat(): ChatEntry[] {
-  try {
-    const raw = localStorage.getItem(CHAT_KEY);
-    if (raw) {
-      const parsed = JSON.parse(raw) as ChatEntry[];
-      if (Array.isArray(parsed) && parsed.length > 0 && parsed.every(entry => entry && typeof entry.text === 'string')) {
-        return parsed.slice(-24);
-      }
-    }
-  } catch { /* bozuk kayıt varsa sessizce yeni sohbet aç */ }
-  return initialChat();
-}
 
 function initialChat(): ChatEntry[] {
   return [{
@@ -125,17 +113,71 @@ function visemeForChar(char: string): MouthViseme {
   if ('bmpбпм'.includes(c)) return 'closed';
   if ('aıаая'.includes(c)) return 'open';
   if ('eiиеэы'.includes(c)) return 'wide';
-  if ('ouöüоуюё'.includes(c)) return 'round';
+  if ('ouöüоуюёw'.includes(c)) return 'round';
   if ('fvszşjчцсзжшщх'.includes(c)) return 'teeth';
-  if ('rlйyğ'.includes(c)) return 'smile';
-  return 'wide';
+  return 'flat';
 }
 
 function visemeDelayForChar(char: string, lang: 'tr-TR' | 'ru-RU' | 'en-US') {
-  if (/[.!?]/.test(char)) return 170;
-  if (/[,;:]/.test(char)) return 120;
-  if (!char.trim()) return 54;
-  return lang === 'tr-TR' ? 70 : 76;
+  if (/[.!?…]/.test(char)) return 205;
+  if (/[,;:]/.test(char)) return 130;
+  if (!char.trim()) return 56;
+  const c = char.toLocaleLowerCase('tr-TR');
+  if ('aıааяeiиеэыоuöüоуё'.includes(c)) return lang === 'tr-TR' ? 102 : 96;
+  if ('bmpбпм'.includes(c)) return 54;
+  return lang === 'tr-TR' ? 68 : 74;
+}
+
+const RESTING_AVATAR_CUE: AvatarCue = { gesture: 'idle', expression: 'neutral', gaze: 'center' };
+type SpeechCueSpan = { start: number; end: number; cue: AvatarCue };
+
+function cueForPhrase(phrase: string, phraseIndex: number): AvatarCue {
+  const text = phrase.toLocaleLowerCase('tr-TR');
+  const question = /[?¿]|(?:^|\s)(?:mi|mı|mu|mü)(?:\s|$|[?!.,])|\b(?:neden|nasıl|nasil|hangi|hangisi|acaba|why|how|what|which)\b/i.test(text)
+    || ['почему', 'зачем', 'как', 'что', 'какой', 'какая', 'какое', 'какие', 'ли'].some(word => text.includes(word));
+  if (question) return { gesture: 'question', expression: 'curious', gaze: 'up' };
+
+  const comparison = /\b(?:fark|farklı|farkli|karşılaştır|karsilastir|kıyas|kiyas|arasında|arasinda|oysa|buna karşı|buna karsi|compare|difference|versus|whereas|while)\b/i.test(text)
+    || ['разница', 'сравн', 'между', 'чем'].some(word => text.includes(word));
+  if (comparison) return { gesture: 'compare', expression: 'focused', gaze: phraseIndex % 2 === 0 ? 'left' : 'right' };
+
+  const caution = /\b(?:dikkat|unutma|istisna|hata|yanlış|yanlis|uyarı|uyari|sakın|sakin|avoid|warning|mistake|exception)\b/i.test(text)
+    || ['ошиб', 'исключен', 'осторож', 'нельзя'].some(word => text.includes(word));
+  if (caution) return { gesture: 'caution', expression: 'concerned', gaze: 'center' };
+
+  const encouragement = /\b(?:harika|güzel|guzel|doğru|dogru|başar|basar|tebrik|mükemmel|mukemmel|great|correct|well done|excellent)\b/i.test(text)
+    || ['отлично', 'правильно', 'молодец'].some(word => text.includes(word));
+  if (encouragement) return { gesture: 'encourage', expression: 'warm', gaze: 'center' };
+
+  const emphasis = /\b(?:önemli|onemli|temel|kural|özellikle|ozellikle|kesinlikle|mutlaka|always|never|must|rule|важно|главн)\b/i.test(text)
+    || /!/.test(phrase);
+  if (emphasis) return { gesture: 'emphasis', expression: 'surprised', gaze: 'center' };
+
+  if (/\b(?:özet|ozet|sonuç|sonuc|kısaca|kisaca|in summary|в итоге)\b/i.test(text)) {
+    return { gesture: 'present-both', expression: 'warm', gaze: 'center' };
+  }
+
+  const side = phraseIndex % 2 === 0 ? 'left' : 'right';
+  return {
+    gesture: side === 'left' ? 'present-left' : 'present-right',
+    expression: 'warm',
+    gaze: side,
+  };
+}
+
+function speechCueTimeline(text: string): SpeechCueSpan[] {
+  const spans: SpeechCueSpan[] = [];
+  const separators = /[.!?;:,\n]+/g;
+  let start = 0;
+  for (const match of text.matchAll(separators)) {
+    const end = (match.index ?? start) + match[0].length;
+    const phrase = text.slice(start, end);
+    if (phrase.trim()) spans.push({ start, end, cue: cueForPhrase(phrase, spans.length) });
+    start = end;
+  }
+  const remainder = text.slice(start);
+  if (remainder.trim()) spans.push({ start, end: text.length, cue: cueForPhrase(remainder, spans.length) });
+  return spans.length > 0 ? spans : [{ start: 0, end: text.length, cue: cueForPhrase(text, 0) }];
 }
 
 type SpeechSegment = { text: string; lang: 'tr-TR' | 'ru-RU' | 'en-US' };
@@ -383,7 +425,7 @@ function extractTargetTerm(text: string): string | null {
 }
 
 export default function AiChat(props: AiChatProps) {
-  const [messages, setMessages] = useState<ChatEntry[]>(restoreChat);
+  const [messages, setMessages] = useState<ChatEntry[]>(initialChat);
   const [input, setInput] = useState('');
   const [busy, setBusy] = useState(false);
   const [autoSpeak, setAutoSpeak] = useState(() => localStorage.getItem(AUTO_SPEAK_KEY) !== '0');
@@ -392,8 +434,10 @@ export default function AiChat(props: AiChatProps) {
   const [showVoiceStudio, setShowVoiceStudio] = useState(false);
   const [status, setStatus] = useState(langMeta().code === 'en' ? '🧠 Yerel İngilizce zekası hazır • 0 token' : '🧠 Yerel Rusça zekası hazır • 0 token');
   const [isSpeaking, setIsSpeaking] = useState(false);
+  const [speechPending, setSpeechPending] = useState(false);
   const [isListening, setIsListening] = useState(false);
   const [mouthViseme, setMouthViseme] = useState<MouthViseme>('rest');
+  const [avatarCue, setAvatarCue] = useState<AvatarCue>(RESTING_AVATAR_CUE);
   const abortRef = useRef<AbortController | null>(null);
   const recognitionRef = useRef<BrowserSpeechRecognition | null>(null);
   const mouthTimerRef = useRef<number | null>(null);
@@ -403,13 +447,18 @@ export default function AiChat(props: AiChatProps) {
   const contextPreview = useMemo(() => `${props.learningFocus.icon} ${props.learningFocus.title} • ${props.learningFocus.pathPosition}/${props.learningFocus.pathTotal}`, [props.learningFocus]);
 
   const mouthShapes: Record<MouthViseme, React.CSSProperties> = {
-    rest: { width: '34px', height: '7px', borderRadius: '999px', top: '95px', background: '#061226' },
-    closed: { width: '36px', height: '5px', borderRadius: '999px', top: '97px', background: '#061226' },
-    open: { width: '30px', height: '30px', borderRadius: '50%', top: '84px', background: '#061226' },
-    wide: { width: '50px', height: '14px', borderRadius: '999px', top: '92px', background: '#061226' },
-    round: { width: '27px', height: '27px', borderRadius: '50%', top: '86px', background: '#061226' },
-    teeth: { width: '44px', height: '12px', borderRadius: '9px', top: '93px', background: 'linear-gradient(180deg, #f8fafc 0 42%, #061226 43% 100%)' },
-    smile: { width: '44px', height: '13px', borderRadius: '0 0 999px 999px', top: '93px', background: '#061226' },
+    // Idle yüz ifadesi diş göstermeyen ince çizgi; konuşurken fonem biçimleri kullanılır.
+    rest: {
+      width: '22%', height: '4px', borderRadius: '999px', top: '66%',
+      background: '#071226',
+      boxShadow: 'none',
+    },
+    closed: { width: '19%', height: '4px', borderRadius: '999px', top: '77%', background: '#071226' },
+    open: { width: '24%', height: '17px', borderRadius: '48%', top: '72%', background: 'radial-gradient(ellipse at 50% 20%, #793855 0%, #351329 46%, #080e1b 100%)' },
+    wide: { width: '32%', height: '15px', borderRadius: '7px', top: '72%', background: 'radial-gradient(ellipse at 50% 12%, #793855 0%, #351329 46%, #080e1b 100%)' },
+    round: { width: '17%', height: '15px', borderRadius: '50%', top: '72%', background: 'radial-gradient(ellipse at 50% 22%, #60304a 0%, #0b101d 78%)' },
+    teeth: { width: '27%', height: '9px', borderRadius: '999px', top: '74%', background: '#21101d' },
+    flat: { width: '25%', height: '8px', borderRadius: '999px', top: '75%', background: '#071226' },
   };
 
   const stopMouthAnimation = () => {
@@ -418,15 +467,31 @@ export default function AiChat(props: AiChatProps) {
       mouthTimerRef.current = null;
     }
     setMouthViseme('rest');
+    setAvatarCue(RESTING_AVATAR_CUE);
   };
 
   const animateMouth = (text: string, lang: 'tr-TR' | 'ru-RU' | 'en-US') => {
     stopMouthAnimation();
-    const chars = Array.from(text || ' ');
+    const chars = (text || ' ').split('');
+    const cueSpans = speechCueTimeline(text || ' ');
     let index = 0;
+    let cueIndex = 0;
+    let activeCue: AvatarCue | null = null;
     const tick = () => {
-      const char = chars[index % chars.length];
+      if (index >= chars.length) {
+        setMouthViseme('rest');
+        setAvatarCue(RESTING_AVATAR_CUE);
+        mouthTimerRef.current = null;
+        return;
+      }
+      const char = chars[index];
       setMouthViseme(visemeForChar(char));
+      while (cueIndex + 1 < cueSpans.length && index >= cueSpans[cueIndex].end) cueIndex += 1;
+      const cue = cueSpans[cueIndex]?.cue || RESTING_AVATAR_CUE;
+      if (cue !== activeCue) {
+        activeCue = cue;
+        setAvatarCue(cue);
+      }
       index += 1;
       mouthTimerRef.current = window.setTimeout(tick, visemeDelayForChar(char, lang));
     };
@@ -437,6 +502,7 @@ export default function AiChat(props: AiChatProps) {
     speechRunRef.current += 1;
     stopMouthAnimation();
     setIsSpeaking(false);
+    setSpeechPending(false);
     stopBotVoice();
   };
 
@@ -456,7 +522,7 @@ export default function AiChat(props: AiChatProps) {
   };
 
   const startListening = async () => {
-    if (isSpeaking || isListening || busy) return;
+    if (isSpeaking || speechPending || isListening || busy) return;
     setIsListening(true);
     setStatus('Dinliyorum… Türkçe konuşabilirsin.');
 
@@ -517,6 +583,9 @@ export default function AiChat(props: AiChatProps) {
   };
 
   useEffect(() => {
+    // Remove data left by older versions; conversations and Q/A pairs are never persisted now.
+    try { localStorage.removeItem(LEGACY_CHAT_KEY); } catch {}
+    void clearLocalAnswerCache();
     return () => {
       abortRef.current?.abort();
       recognitionRef.current?.abort();
@@ -525,12 +594,7 @@ export default function AiChat(props: AiChatProps) {
     };
   }, []);
 
-  const persist = (next: ChatEntry[]) => {
-    const trimmed = next.slice(-24);
-    setMessages(trimmed);
-    // Sohbet geçmişi cihazda kalır; sayfa yenilenince konuşma kaybolmaz.
-    try { localStorage.setItem(CHAT_KEY, JSON.stringify(trimmed)); } catch {}
-  };
+  const updateMessages = (next: ChatEntry[]) => setMessages(next.slice(-24));
 
   const copyAnswer = async (text: string) => {
     // Markdown vurgularını temizleyip düz metin olarak panoya kopyala.
@@ -549,13 +613,19 @@ export default function AiChat(props: AiChatProps) {
     const runId = speechRunRef.current + 1;
     speechRunRef.current = runId;
     stopBotVoice();
-    setIsSpeaking(true);
+    setIsSpeaking(false);
+    setSpeechPending(true);
     try {
       for (const segment of splitSpeechSegments(spoken)) {
         if (speechRunRef.current !== runId) return;
-        animateMouth(segment.text, segment.lang);
-        const usedAiVoice = await speakWithBotVoice(segment.text, 1);
+        const usedAiVoice = await speakWithBotVoice(segment.text, 1, () => {
+          if (speechRunRef.current !== runId) return;
+          setSpeechPending(false);
+          setIsSpeaking(true);
+          animateMouth(segment.text, segment.lang);
+        });
         if (!usedAiVoice) {
+          stopMouthAnimation();
           setStatus('VoiceStudio sesi hazır değil; tarayıcı sesi kullanılmadı.');
         }
       }
@@ -563,6 +633,7 @@ export default function AiChat(props: AiChatProps) {
       if (speechRunRef.current === runId) {
         stopMouthAnimation();
         setIsSpeaking(false);
+        setSpeechPending(false);
       }
     }
   };
@@ -594,15 +665,14 @@ export default function AiChat(props: AiChatProps) {
     abortRef.current = controller;
     const userEntry: ChatEntry = { id: `user-${Date.now()}`, role: 'user', text: query };
     const next = [...messages, userEntry].slice(-24);
-    persist(next);
+    updateMessages(next);
     setInput('');
     setBusy(true);
     setStatus(langMeta().code === 'en' ? 'Yerel İngilizce motoru bilgi bankasını tarıyor…' : 'Yerel Rusça motoru bilgi bankasını tarıyor…');
-
-    const cacheable = !/nerede kald|seviyem|ilerlemem|hangi ünite|hangi unite|konumum/i.test(query);
-    const cached = cacheable ? await getLocalAnswerCache(query, props.learningFocus.title) : null;
+    await new Promise<void>(resolve => window.setTimeout(resolve, 0));
     if (controller.signal.aborted) return;
-    const answer = cached || answerWithLocalRussianAgent(query, {
+
+    const answer = answerWithLocalRussianAgent(query, {
       pathPosition: props.learningFocus.pathPosition,
       pathTotal: props.learningFocus.pathTotal,
       focusTitle: props.learningFocus.title,
@@ -614,21 +684,20 @@ export default function AiChat(props: AiChatProps) {
       mistakes: props.mistakes,
       srsBank: props.srsBank,
     });
-    if (!cached && cacheable) void putLocalAnswerCache(query, props.learningFocus.title, answer);
     const assistantEntry: ChatEntry = {
       id: `local-${Date.now()}`,
       role: 'assistant',
       text: answer.text,
-      provider: cached ? 'yerel zeka · önbellek' : 'yerel zeka',
+      provider: 'yerel zeka',
       sources: answer.sources,
       followUps: answer.followUps,
       depth: answer.depth,
       confidence: answer.confidence,
     };
-    persist([...next, assistantEntry]);
-    // Soru sormak öğrenme davranışıdır; küçük ama düzenli ödüllendirilir.
-    if (!cached && answer.confidence !== 'düşük') props.onEarnXp?.(2);
-    setStatus(`🧠 ${cached ? 'Önbellekten anında' : 'Yerel zeka'} yanıtladı • ${answer.confidence} güven${answer.depth ? ` • ${answer.depth} bilgi noktası` : ''} • 0 token`);
+    updateMessages([...next, assistantEntry]);
+    // Soru sorma davranışı, güvenilir yerel açıklamalar için ödüllendirilir.
+    if (answer.confidence !== 'düşük') props.onEarnXp?.(2);
+    setStatus(`🧠 Yerel zeka yanıtladı • ${answer.confidence} güven${answer.depth ? ` • ${answer.depth} bilgi noktası` : ''} • 0 token`);
     if (autoSpeak) void speakAnswer(answer.text, speakScope);
     if (abortRef.current === controller) abortRef.current = null;
     setBusy(false);
@@ -637,8 +706,9 @@ export default function AiChat(props: AiChatProps) {
   const clearChat = () => {
     abortRef.current?.abort();
     stopSpeech();
-    try { localStorage.removeItem(CHAT_KEY); } catch {}
+    try { localStorage.removeItem(LEGACY_CHAT_KEY); } catch {}
     setMessages(initialChat());
+    setInput('');
     setStatus(langMeta().code === 'en' ? '🧠 Yerel İngilizce zekası hazır • 0 token' : '🧠 Yerel Rusça zekası hazır • 0 token');
   };
 
@@ -663,39 +733,13 @@ export default function AiChat(props: AiChatProps) {
 
   return (
     <section style={{ marginBottom: '16px', borderRadius: '20px', padding: '16px', background: 'linear-gradient(135deg, rgba(34,197,94,.12), rgba(56,189,248,.12), #0f172a)', border: '1px solid rgba(56,189,248,.52)' }}>
-      <style>{`
-        @keyframes voicePlanetFloat { 0%, 100% { transform: translateY(0) rotate(-1deg); } 50% { transform: translateY(-12px) rotate(1deg); } }
-        @keyframes voicePlanetOrbit { from { transform: rotate(0deg); } to { transform: rotate(360deg); } }
-        @keyframes voicePlanetRing { 0%, 100% { transform: translate(-50%, -50%) rotate(-15deg) scaleX(1); } 50% { transform: translate(-50%, -50%) rotate(-10deg) scaleX(1.05); } }
-        @keyframes voicePlanetListen { 0%, 100% { box-shadow: 0 0 0 0 rgba(34,197,94,.48), 0 0 42px rgba(56,189,248,.25); } 50% { box-shadow: 0 0 0 18px rgba(34,197,94,0), 0 0 58px rgba(34,197,94,.34); } }
-        @keyframes voicePlanetTalk { 0%, 100% { transform: translateY(0) scale(1); } 50% { transform: translateY(-4px) scale(1.025); } }
-        .voice-planet-stage { position: relative; min-height: 264px; overflow: hidden; border-radius: 22px; margin-bottom: 14px; display: grid; place-items: center; background: radial-gradient(circle at 50% 12%, rgba(56,189,248,.25), transparent 31%), radial-gradient(circle at 18% 85%, rgba(245,158,11,.13), transparent 28%), linear-gradient(180deg, #050816 0%, #0f172a 58%, #111827 100%); border: 1px solid rgba(125,211,252,.24); box-shadow: inset 0 0 60px rgba(14,165,233,.08); }
-        .voice-planet-stage::before, .voice-planet-stage::after { content: '✦'; position: absolute; color: #dbeafe; opacity: .72; font-size: 17px; animation: voicePlanetOrbit 5s ease-in-out infinite alternate; }
-        .voice-planet-stage::before { left: 15%; top: 18%; }
-        .voice-planet-stage::after { right: 14%; top: 34%; animation-delay: 1.2s; }
-        .voice-planet-avatar { position: relative; width: 210px; height: 210px; display: grid; place-items: center; filter: drop-shadow(0 25px 44px rgba(14,165,233,.24)); animation: voicePlanetFloat 4.2s ease-in-out infinite; }
-        .voice-planet-avatar.speaking { animation: voicePlanetTalk .42s ease-in-out infinite, voicePlanetFloat 4.2s ease-in-out infinite; }
-        .voice-planet-avatar.listening { animation: voicePlanetListen 1.2s ease-in-out infinite, voicePlanetFloat 4.2s ease-in-out infinite; border-radius: 50%; }
-        .voice-planet-orbit { position: absolute; inset: -29px; border: 1px dashed rgba(125,211,252,.25); border-radius: 50%; animation: voicePlanetOrbit 18s linear infinite; }
-        .voice-planet-ring { position: absolute; left: 50%; top: 51%; width: 288px; height: 68px; transform: translate(-50%, -50%) rotate(-15deg); border-radius: 50%; background: linear-gradient(90deg, transparent 0%, rgba(250,204,21,.16) 15%, #facc15 36%, #fde68a 50%, #f59e0b 65%, rgba(250,204,21,.14) 84%, transparent 100%); box-shadow: 0 0 22px rgba(245,158,11,.26); animation: voicePlanetRing 3.6s ease-in-out infinite; }
-        .voice-planet-ring::after { content: ''; position: absolute; inset: 17px 31px; border-radius: 50%; background: #071122; }
-        .voice-planet-core { position: relative; width: 142px; height: 142px; border-radius: 50%; background: radial-gradient(circle at 30% 20%, #eff6ff 0 10%, #7dd3fc 25%, #2563eb 60%, #1e3a8a 100%); border: 3px solid rgba(191,219,254,.55); overflow: hidden; animation: voicePlanetFloat 4.2s ease-in-out infinite; box-shadow: inset -22px -28px 42px rgba(15,23,42,.38), inset 12px 12px 24px rgba(255,255,255,.24); }
-        .voice-planet-core::before { content: ''; position: absolute; left: -18px; top: 38px; width: 182px; height: 38px; background: rgba(255,255,255,.16); transform: rotate(-18deg); border-radius: 999px; }
-        .voice-planet-face { position: absolute; inset: 0; z-index: 2; }
-        .voice-planet-eye { position: absolute; top: 50px; width: 15px; height: 20px; border-radius: 999px; background: #061226; box-shadow: inset 3px 5px 0 rgba(255,255,255,.18); }
-        .voice-planet-eye.left { left: 42px; }
-        .voice-planet-eye.right { right: 42px; }
-        .voice-planet-mouth { position: absolute; left: 50%; transform: translateX(-50%); transition: width .075s linear, height .075s linear, top .075s linear, border-radius .075s linear, background .075s linear; box-shadow: inset 0 -4px 0 rgba(255,255,255,.08), 0 1px 0 rgba(255,255,255,.1); }
-        .voice-planet-caption { position: absolute; bottom: 10px; z-index: 3; padding: 5px 10px; border-radius: 999px; background: rgba(2,6,23,.64); color: #bae6fd; font-size: 11px; font-weight: 900; }
-        @media (max-width: 560px) { .voice-planet-stage { min-height: 238px; } .voice-planet-avatar { transform: scale(.88); } }
-      `}</style>
       <div style={{ display: 'flex', alignItems: 'flex-start', justifyContent: 'space-between', gap: '12px', flexWrap: 'wrap' }}>
         <div>
           <div style={{ color: '#86efac', fontSize: '11px', fontWeight: 950, letterSpacing: '.6px' }}>🧠 {isEnglish() ? 'YEREL İNGİLİZCE ZEKASI' : 'YEREL RUSÇA ZEKASI'} • API YOK • TOKEN YOK</div>
           <h2 style={{ margin: '5px 0 4px', color: '#f8fafc', fontSize: '21px' }}>Sorunu yaz, {isEnglish() ? 'İngilizceyi' : 'Rusçayı'} birlikte konuşalım</h2>
           <div style={{ display: 'flex', gap: '7px', alignItems: 'center', flexWrap: 'wrap', color: '#cbd5e1', fontSize: '12px' }}>
             <span style={{ padding: '4px 8px', borderRadius: '999px', background: 'rgba(56,189,248,.14)', color: '#bae6fd', fontWeight: 800 }}>{contextPreview}</span>
-            <span style={{ padding: '4px 8px', borderRadius: '999px', background: 'rgba(34,197,94,.14)', color: '#86efac', fontWeight: 800 }}>📚 {RUSSIAN_KNOWLEDGE_BASE.length} bölüm • {LOCAL_RUSSIAN_FACT_COUNT.toLocaleString('tr-TR')} bilgi • ≤ {LOCAL_INTELLIGENCE_MAX_LABEL}</span>
+            <span style={{ padding: '4px 8px', borderRadius: '999px', background: 'rgba(34,197,94,.14)', color: '#86efac', fontWeight: 800 }}>📚 {RUSSIAN_KNOWLEDGE_BASE.length} bölüm • {LOCAL_RUSSIAN_FACT_COUNT.toLocaleString('tr-TR')} bilgi • 🔒 Sohbet kaydedilmez</span>
             <span>{status}</span>
           </div>
         </div>
@@ -715,22 +759,16 @@ export default function AiChat(props: AiChatProps) {
 
       {showVoiceStudio && <VoiceStudioPanel />}
 
-      <div className="voice-planet-stage" aria-live="polite">
-        <div className={`voice-planet-avatar ${isSpeaking ? 'speaking' : ''} ${isListening ? 'listening' : ''}`}>
-          <div className="voice-planet-orbit" />
-          <div className="voice-planet-ring" />
-          <div className="voice-planet-core">
-            <div className="voice-planet-face">
-              <span className="voice-planet-eye left" />
-              <span className="voice-planet-eye right" />
-              <span className="voice-planet-mouth" style={mouthShapes[mouthViseme]} />
-            </div>
-          </div>
-        </div>
-        <div className="voice-planet-caption">
-          {isSpeaking ? '🗣️ Konuşuyor…' : isListening ? '🎙️ Seni dinliyorum…' : '🪐 Hazır — sorunu yaz veya mikrofona konuş'}
-        </div>
-      </div>
+      <AiPlanetAvatar
+        isSpeaking={isSpeaking}
+        isListening={isListening}
+        isThinking={busy}
+        mouthViseme={mouthViseme}
+        mouthStyle={mouthShapes[mouthViseme]}
+        gesture={avatarCue.gesture}
+        expression={avatarCue.expression}
+        gaze={avatarCue.gaze}
+      />
 
       <div style={{ marginTop: '14px', minHeight: '130px', maxHeight: '420px', overflowY: 'auto', display: 'grid', gap: '10px', padding: '4px' }}>
         {messages.map(message => {
