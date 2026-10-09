@@ -10,6 +10,7 @@ import { recordWordResult, recordSkill, recordSentenceResult, skillKeyForGrammar
 import { analyzeSentenceDiff } from './semanticFeedback';
 import type { SentenceAnalysis } from './semanticFeedback';
 import LearningRoute from './components/LearningRoute';
+import UnitPathNode from './components/UnitPathNode';
 import WordGraph3D from './components/WordGraph3D';
 import type { RescueTarget } from './components/WordGraph3D';
 import RescueTest from './components/RescueTest';
@@ -512,6 +513,7 @@ const UnitBanner: React.FC<{ unitId: string; icon: string; color: string; label:
 };
 
 const ALPHA_BANNER_COLORS = ['#3b82f6', '#10b981', '#f59e0b', '#8b5cf6', '#ec4899', '#14b8a6', '#f97316', '#64748b'];
+const PATH_NODE_OFFSETS = [0, -14, -24, -14, 0, 14, 24, 14];
 
 const LISTEN_SPEEDS = [0.5, 0.75, 1, 1.25, 1.5];
 const ListenSpeedControl: React.FC<{ speed: number; onChange: (s: number) => void }> = ({ speed, onChange }) => (
@@ -667,7 +669,12 @@ export default function App() {
   const [topicQCorrect, setTopicQCorrect] = useState(0);
   const [topicQDone, setTopicQDone] = useState(false);
   const [soundTest, setSoundTest] = useState<'idle' | 'ok' | 'error'>('idle');
+  const [expandedPathPos, setExpandedPathPos] = useState<number | null>(null);
   const levelRefs = useRef<Record<string, HTMLDivElement | null>>({});
+
+  useEffect(() => {
+    if (screen !== 'MAP' || activeTab !== 'MAP') setExpandedPathPos(null);
+  }, [screen, activeTab]);
 
   const [alphaIdx, setAlphaIdx] = useState(0);
   const [letterIdx, setLetterIdx] = useState(0);
@@ -873,6 +880,7 @@ export default function App() {
     setCardIdx(0);
     setIsFlipped(false);
     setShowResetConfirm(false);
+    setExpandedPathPos(null);
     setActiveTab('MAP');
     setScreen('MAP');
   };
@@ -896,6 +904,7 @@ export default function App() {
   };
 
   const openStep = (s: PathStep) => {
+    setExpandedPathPos(null);
     setFeedback(null);
     if (s.kind === 'alpha') { setAlphaIdx(s.lessonIdx); setLetterIdx(0); setScreen('ALPHA'); }
     else if (s.kind === 'grammar') { setGrammarIdx(s.grammarIdx); setScreen('GRAMMAR'); }
@@ -2004,7 +2013,7 @@ export default function App() {
                 <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', gap: '10px', flexWrap: 'wrap' }}>
                   <div>
                     <div style={{ fontSize: '18px', fontWeight: 900 }}>🗺️ Öğrenme Yolu</div>
-                    <div style={{ fontSize: '12px', color: '#94a3b8', marginTop: '3px' }}>Ünite 1'den {PATH.length}'e kadar tek sıra — her kart, bir önceki bitince açılır.</div>
+                    <div style={{ fontSize: '12px', color: '#94a3b8', marginTop: '3px', lineHeight: 1.5 }}>Ünite 1'den {PATH.length}'e kadar tek yol. Yuvarlağa tıkla, içeriği gör; “Üniteye gir” ile başla. Her ünite, bir önceki bitince açılır.</div>
                   </div>
                   <div style={{ fontSize: '11px', color: '#94a3b8', fontWeight: 700 }}>
                     🔤 {coreAlphaDone}/{CORE_ALPHA_LESSON_COUNT} alfabe • 📖 {readingLessonsDone}/{ALPHABET_LESSONS.length - CORE_ALPHA_LESSON_COUNT} okuma pratiği • 🧩 {completedGrammar.length}/{GRAMMAR_FOUNDATION_UNITS.length} cümle temeli • 🎧 {completedTopics.length}/{TOPICS_100_TOTAL} dinleme • 📚 {completedUnits.length}/{UNITS_DATA.length} ünite • 📕 {completedStories.length}/{STORIES.length} hikaye
@@ -2026,7 +2035,7 @@ export default function App() {
                 </div>
               </div>
 
-              <div style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}>
+              <div className="learning-path">
                 {PATH.map((step, pos) => {
                   const done = isStepDone(step);
                   const unl = isStepUnlocked(pos);
@@ -2064,25 +2073,33 @@ export default function App() {
                     kindTag = '📚 MÜFREDAT';
                   }
                   const cpStories = step.kind === 'unit' ? storiesTriggeredAfterUnit(UNITS_DATA[step.unitIdx].id) : [];
+                  const blockingStory = gateStoryForLevel(lv);
+                  const lockedReason = blockingStory && !completedStories.includes(blockingStory.id)
+                    ? `Bu üniteye girmek için ${blockingStory.levelId} bölüm finalini tamamlamalısın.`
+                    : `Bu üniteye girmek için önce Ünite ${pos}'i tamamlamalısın.`;
                   return (
                     <React.Fragment key={pos}>
-                    <div ref={el => { if (pos === LEVEL_ANCHORS[lv]) levelRefs.current[lv] = el; }} onClick={() => { if (unl) openStep(step); }} style={{
-                      ...cardBox, cursor: unl ? 'pointer' : 'not-allowed', opacity: unl ? 1 : 0.5,
-                      border: `1px solid ${done ? '#10b981' : unl ? color : '#334155'}`, position: 'relative', overflow: 'hidden', scrollMarginTop: '84px'
-                    }}>
-                      <div style={{ display: 'flex', gap: '16px', alignItems: 'center' }}>
-                        <div style={{ width: '56px', height: '56px', borderRadius: '14px', background: color, display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '26px', fontWeight: 900, flexShrink: 0 }}>
-                          {done ? '✅' : unl ? icon : '🔒'}
-                        </div>
-                        <div style={{ flex: 1, minWidth: 0 }}>
-                          <div style={{ display: 'flex', gap: '6px', alignItems: 'center', marginBottom: '4px', flexWrap: 'wrap' }}>
-                            <span style={{ fontSize: '10px', fontWeight: 900, background: '#0f172a', color: LEVEL_COLORS[lv], padding: '2px 6px', borderRadius: '4px' }}>{lv} - ÜNİTE {pos + 1}</span>
-                            <span style={{ fontSize: '10px', fontWeight: 800, color: '#64748b' }}>{kindTag}</span>
-                          </div>
-                          <div style={{ fontWeight: 800, fontSize: '17px' }}>{title}</div>
-                          <div style={{ fontSize: '13px', color: '#cbd5e1', marginTop: '2px' }}>{desc}</div>
-                        </div>
-                      </div>
+                    <div className="learning-path-step" ref={el => { if (pos === LEVEL_ANCHORS[lv]) levelRefs.current[lv] = el; }}>
+                      <UnitPathNode
+                        id={`path-unit-${pos + 1}`}
+                        number={pos + 1}
+                        level={lv}
+                        levelColor={LEVEL_COLORS[lv]}
+                        kindTag={kindTag}
+                        title={title}
+                        description={desc}
+                        icon={icon}
+                        color={color}
+                        completed={done}
+                        unlocked={unl}
+                        expanded={expandedPathPos === pos}
+                        offset={PATH_NODE_OFFSETS[pos % PATH_NODE_OFFSETS.length]}
+                        nextOffset={pos + 1 < PATH.length && cpStories.length === 0 ? PATH_NODE_OFFSETS[(pos + 1) % PATH_NODE_OFFSETS.length] : undefined}
+                        lockedReason={lockedReason}
+                        onToggle={() => setExpandedPathPos(current => current === pos ? null : pos)}
+                        onClose={() => setExpandedPathPos(null)}
+                        onEnter={() => { if (unl) openStep(step); }}
+                      />
                     </div>
                     {cpStories.map(cpStory => (() => {
                       const sDone = storyDone(cpStory);
@@ -2098,7 +2115,7 @@ export default function App() {
                           background: sUnl && !sDone
                             ? (isFinal ? 'linear-gradient(135deg, rgba(251,191,36,0.20), rgba(239,68,68,0.10))' : 'linear-gradient(135deg, rgba(245,158,11,0.16), rgba(217,70,239,0.10))')
                             : '#1e293b',
-                          position: 'relative', overflow: 'hidden'
+                          position: 'relative', overflow: 'hidden', margin: '14px 0 24px'
                         }}>
                           <div style={{ display: 'flex', gap: '16px', alignItems: 'center' }}>
                             <div style={{ width: '56px', height: '56px', borderRadius: '14px', background: sDone ? '#10b981' : sUnl ? (isFinal ? 'linear-gradient(135deg, #fbbf24, #ef4444)' : 'linear-gradient(135deg, #f59e0b, #d946ef)') : '#334155', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '26px', flexShrink: 0 }}>
